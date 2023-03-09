@@ -1,0 +1,28 @@
+[{
+  "name": "Page",
+  "enum": {
+    "values": [{
+      "name": "Home",
+      "value": 1
+    }, {
+      "name": "Account",
+      "value": 2
+    }]
+  }
+}, {
+  "name": "ContentPageState",
+  "message": {
+    "fields": [{
+      "name": "page",
+      "type": "Page"
+    }, {
+      "name": "home",
+      "type": "HomePageState",
+      "import": "./home_page/state"
+    }, {
+      "name": "account",
+      "type": "AccountPageState",
+      "import": "./account_page/state"
+    }]
+  }
+}]
