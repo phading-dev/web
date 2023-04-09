@@ -3,11 +3,11 @@ import { SCHEME } from "../../common/color_scheme";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
-export interface AvatarCanvas {
+export interface ImageCropper {
   on(event: "change", listener: () => void): this;
 }
 
-export class AvatarCanvas extends EventEmitter {
+export class ImageCropper extends EventEmitter {
   public body: HTMLDivElement;
   public canvas: HTMLCanvasElement;
   public sx: number;
@@ -56,23 +56,23 @@ export class AvatarCanvas extends EventEmitter {
         },
         E.divRef(leftColumnRef, {
           class: "avatar-canvas-left-column",
-          style: `flex: 1 0 0; height: 100%; background-color: ${SCHEME.neutral1Translucent};`,
+          style: `height: 100%; background-color: ${SCHEME.neutral1Translucent};`,
         }),
         E.divRef(
           midColumnRef,
           {
             class: "avatar-canvas-mid-column",
-            style: `flex: 0 0 20rem; height: 100%; display: flex; flex-flow: column nowrap;`,
+            style: `height: 100%; display: flex; flex-flow: column nowrap;`,
           },
           E.divRef(midTopBlockRef, {
             class: "avatar-canvas-mid-top-block",
-            style: `flex: 1 0 0; width: 100%; background-color: ${SCHEME.neutral1Translucent};`,
+            style: `width: 100%; background-color: ${SCHEME.neutral1Translucent};`,
           }),
           E.divRef(
             midMidBlockRef,
             {
               class: "avatar-canvas-mid-mid-block",
-              style: `flex: 0 0 20rem; width: 100%; position: relative; box-sizing: border-box; border: .1rem dashed ${SCHEME.primary1};`,
+              style: `width: 100%; position: relative; box-sizing: border-box; border: .1rem dashed ${SCHEME.primary1};`,
             },
             E.div({
               class: "avatar-canvas-mid-mid-circle",
@@ -97,12 +97,12 @@ export class AvatarCanvas extends EventEmitter {
           ),
           E.divRef(midBottmBlockRef, {
             class: "avatar-canvas-mid-bottom-block",
-            style: `flex: 1 0 0; width: 100%; background-color: ${SCHEME.neutral1Translucent};`,
+            style: `width: 100%; background-color: ${SCHEME.neutral1Translucent};`,
           })
         ),
         E.divRef(rightColumnRef, {
           class: "avatar-canvas-right-column",
-          style: `flex: 1 0 0; height: 100%; background-color: ${SCHEME.neutral1Translucent};`,
+          style: `height: 100%; background-color: ${SCHEME.neutral1Translucent};`,
         })
       )
     );
@@ -117,6 +117,7 @@ export class AvatarCanvas extends EventEmitter {
     this.resizePointTopRight = resizePointTopRightRef.val;
     this.resizePointBottmLeft = resizePointBottmLeftRef.val;
     this.resizePointBottmRight = resizePointBottmRightRef.val;
+    this.clear();
 
     this.resizePointTopLeft.addEventListener(
       "mousedown",
@@ -136,8 +137,20 @@ export class AvatarCanvas extends EventEmitter {
     );
   }
 
-  public static create(): AvatarCanvas {
-    return new AvatarCanvas();
+  public static create(): ImageCropper {
+    return new ImageCropper();
+  }
+
+  public clear(): void {
+    this.canvas
+      .getContext("2d")
+      .clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.leftColumn.style.flex = "1 0 0";
+    this.midColumn.style.flex = "0 0 20rem";
+    this.midTopBlock.style.flex = "1 0 0";
+    this.midMidBlock.style.flex = "0 0 20rem";
+    this.midBottmBlock.style.flex = "1 0 0";
+    this.rightColumn.style.flex = "1 0 0";
   }
 
   private startResizingTopLeft = (event: MouseEvent): void => {
@@ -150,9 +163,11 @@ export class AvatarCanvas extends EventEmitter {
   private resizeFromTopLeft = (event: MouseEvent): void => {
     let bodyRect = this.body.getBoundingClientRect();
     let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
+    let x = Math.max(Math.min(event.x, midMidBlockRect.right), bodyRect.left);
+    let y = Math.max(Math.min(event.y, midMidBlockRect.bottom), bodyRect.top);
     let length = Math.min(
-      midMidBlockRect.right - event.x,
-      midMidBlockRect.bottom - event.y
+      midMidBlockRect.right - x,
+      midMidBlockRect.bottom - y
     );
     this.midMidBlock.style.flex = `0 0 ${length}px`;
     this.midTopBlock.style.flex = `0 0 ${
@@ -162,15 +177,18 @@ export class AvatarCanvas extends EventEmitter {
     this.leftColumn.style.flex = `0 0 ${
       midMidBlockRect.right - length - bodyRect.left
     }px`;
-    this.saveSize(bodyRect, midMidBlockRect);
-    this.emit("change");
+    this.saveSize();
   };
 
-  private saveSize(bodyRect: DOMRect, midMidBlockRect: DOMRect): void {
+  private saveSize(): void {
+    // Need to force reflow.
+    let bodyRect = this.body.getBoundingClientRect();
+    let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
     this.sx = midMidBlockRect.left - bodyRect.left;
     this.sy = midMidBlockRect.top - bodyRect.top;
     this.sWidth = midMidBlockRect.width;
     this.sHeight = midMidBlockRect.height;
+    this.emit("change");
   }
 
   private stopResizingFromTopLeft = (event: MouseEvent): void => {
@@ -190,10 +208,9 @@ export class AvatarCanvas extends EventEmitter {
   private resizeFromTopRight = (event: MouseEvent): void => {
     let bodyRect = this.body.getBoundingClientRect();
     let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
-    let length = Math.min(
-      event.x - midMidBlockRect.left,
-      midMidBlockRect.bottom - event.y
-    );
+    let x = Math.min(Math.max(event.x, midMidBlockRect.left), bodyRect.right);
+    let y = Math.max(Math.min(event.y, midMidBlockRect.bottom), bodyRect.top);
+    let length = Math.min(x - midMidBlockRect.left, midMidBlockRect.bottom - y);
     this.midMidBlock.style.flex = `0 0 ${length}px`;
     this.midTopBlock.style.flex = `0 0 ${
       midMidBlockRect.bottom - length - bodyRect.top
@@ -202,8 +219,7 @@ export class AvatarCanvas extends EventEmitter {
     this.rightColumn.style.flex = `0 0 ${
       bodyRect.right - length - midMidBlockRect.left
     }px`;
-    this.saveSize(bodyRect, midMidBlockRect);
-    this.emit("change");
+    this.saveSize();
   };
 
   private stopResizingFromTopRight = (event: MouseEvent): void => {
@@ -223,10 +239,9 @@ export class AvatarCanvas extends EventEmitter {
   private resizeFromBottomRight = (event: MouseEvent): void => {
     let bodyRect = this.body.getBoundingClientRect();
     let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
-    let length = Math.min(
-      event.x - midMidBlockRect.left,
-      event.y - midMidBlockRect.top
-    );
+    let x = Math.min(Math.max(event.x, midMidBlockRect.left), bodyRect.right);
+    let y = Math.min(Math.max(event.y, midMidBlockRect.top), bodyRect.bottom);
+    let length = Math.min(x - midMidBlockRect.left, y - midMidBlockRect.top);
     this.midMidBlock.style.flex = `0 0 ${length}px`;
     this.midBottmBlock.style.flex = `0 0 ${
       bodyRect.bottom - length - midMidBlockRect.top
@@ -235,8 +250,7 @@ export class AvatarCanvas extends EventEmitter {
     this.rightColumn.style.flex = `0 0 ${
       bodyRect.right - length - midMidBlockRect.left
     }px`;
-    this.saveSize(bodyRect, midMidBlockRect);
-    this.emit("change");
+    this.saveSize();
   };
 
   private stopResizingFromBottomRight = (event: MouseEvent): void => {
@@ -259,10 +273,9 @@ export class AvatarCanvas extends EventEmitter {
   private resizeFromBottomLeft = (event: MouseEvent): void => {
     let bodyRect = this.body.getBoundingClientRect();
     let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
-    let length = Math.min(
-      midMidBlockRect.right - event.x,
-      event.y - midMidBlockRect.top
-    );
+    let x = Math.max(Math.min(event.x, midMidBlockRect.right), bodyRect.left);
+    let y = Math.min(Math.max(event.y, midMidBlockRect.top), bodyRect.bottom);
+    let length = Math.min(midMidBlockRect.right - x, y - midMidBlockRect.top);
     this.midMidBlock.style.flex = `0 0 ${length}px`;
     this.midBottmBlock.style.flex = `0 0 ${
       bodyRect.bottom - length - midMidBlockRect.top
@@ -271,8 +284,7 @@ export class AvatarCanvas extends EventEmitter {
     this.leftColumn.style.flex = `0 0 ${
       midMidBlockRect.right - length - bodyRect.left
     }px`;
-    this.saveSize(bodyRect, midMidBlockRect);
-    this.emit("change");
+    this.saveSize();
   };
 
   private stopResizingFromBottomLeft = (event: MouseEvent): void => {
@@ -325,11 +337,7 @@ export class AvatarCanvas extends EventEmitter {
             .getContext("2d")
             .drawImage(image, dx, dy, dWidth, dHeight);
 
-          this.saveSize(
-            this.body.getBoundingClientRect(),
-            this.midMidBlock.getBoundingClientRect()
-          );
-          this.emit("change");
+          this.saveSize();
           resolve();
         };
         image.onerror = () => {
@@ -345,9 +353,6 @@ export class AvatarCanvas extends EventEmitter {
   }
 
   public export(): Promise<Blob> {
-    let bodyRect = this.body.getBoundingClientRect();
-    let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
-    this.saveSize(bodyRect, midMidBlockRect);
     let resultCanvas = document.createElement("canvas");
     resultCanvas.width = this.sWidth;
     resultCanvas.height = this.sHeight;

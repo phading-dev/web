@@ -2,7 +2,7 @@ import EventEmitter = require("events");
 import { SCHEME } from "../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
 import { WEB_SERVICE_CLIENT } from "../../common/web_service_client";
-import { getUserInfo } from "@phading/user_service_interface/client_requests";
+import { getUserProfile } from "@phading/user_service_interface/client_requests";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -156,7 +156,7 @@ export class AccountBasicTab extends EventEmitter {
 
   public async show(): Promise<void> {
     this.body.style.display = "flex";
-    let response = await getUserInfo(this.webServiceClient, {});
+    let response = await getUserProfile(this.webServiceClient, {});
     this.usernameValue.textContent = response.username;
     this.naturalNameValue.textContent = response.naturalName;
     this.emailValue.textContent = response.email;
