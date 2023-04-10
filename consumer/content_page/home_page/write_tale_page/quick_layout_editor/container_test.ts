@@ -55,7 +55,9 @@ TEST_RUNNER.run({
             if (this.errorToThrow) {
               throw this.errorToThrow;
             }
-            return { url: this.imageToReturn } as UploadImageForTaleResponse;
+            return {
+              imagePath: this.imageToReturn,
+            } as UploadImageForTaleResponse;
           }
         })();
         let cut = new QuickLayoutEditor(serviceClientMock);

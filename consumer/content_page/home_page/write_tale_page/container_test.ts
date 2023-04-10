@@ -84,7 +84,7 @@ TEST_RUNNER.run({
                 "request"
               );
               return {
-                card: { text: "some some text", images: [wideImage] },
+                card: { text: "some some text", imagePaths: [wideImage] },
               } as GetQuickTaleResponse;
             }
           })()
@@ -236,7 +236,7 @@ TEST_RUNNER.run({
             {
               quickLayout: {
                 text: "",
-                images: [wideImage],
+                imagePaths: [wideImage],
               },
               tags: ["tag 2", "tag 3"],
               warningTags: [WarningTagType.Gross],

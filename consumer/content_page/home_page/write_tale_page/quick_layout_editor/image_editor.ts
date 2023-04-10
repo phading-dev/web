@@ -24,7 +24,7 @@ export class ImageEditor extends EventEmitter {
   private moveToBottomButton: HTMLDivElement;
   private deleteButton: HTMLDivElement;
 
-  public constructor(public imageUrl: string) {
+  public constructor(public imagePath: string) {
     super();
     let moveToTopButtonRef = new Ref<HTMLDivElement>();
     let moveUpButtonRef = new Ref<HTMLDivElement>();
@@ -44,7 +44,7 @@ export class ImageEditor extends EventEmitter {
         E.image({
           class: "image-editor-preview-image",
           style: `max-width: 100%; max-height: 100%;`,
-          src: imageUrl,
+          src: imagePath,
         })
       ),
       E.div(
@@ -109,8 +109,8 @@ export class ImageEditor extends EventEmitter {
     this.deleteButton.addEventListener("click", () => this.emit("delete"));
   }
 
-  public static create(imageUrl: string): ImageEditor {
-    return new ImageEditor(imageUrl);
+  public static create(imagePath: string): ImageEditor {
+    return new ImageEditor(imagePath);
   }
 
   public showMoveUpButtons(): void {

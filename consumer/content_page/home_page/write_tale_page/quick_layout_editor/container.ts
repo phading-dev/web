@@ -213,11 +213,11 @@ export class QuickLayoutEditor extends EventEmitter {
       return;
     }
 
-    this.addImageEditor(response.url);
+    this.addImageEditor(response.imagePath);
   }
 
-  protected addImageEditor(imageUrl: string): void {
-    let imageEditor = ImageEditor.create(imageUrl);
+  protected addImageEditor(imagePath: string): void {
+    let imageEditor = ImageEditor.create(imagePath);
     this.insertImageEditor(this.imageEditors.length, imageEditor);
     imageEditor.on("top", () => this.moveImageEditorToTop(imageEditor));
     imageEditor.on("up", () => this.moveImageEditorUp(imageEditor));

@@ -211,7 +211,7 @@ export class WriteTalePage extends EventEmitter {
           },
           E.text(response.card.text)
         ),
-        ...WriteTalePage.createImages(response.card.images)
+        ...WriteTalePage.createImages(response.card.imagePaths)
       )
     );
   }
@@ -282,8 +282,8 @@ export class WriteTalePage extends EventEmitter {
     await createTale(this.webServiceClient, {
       quickLayout: {
         text: this.quickLayoutEditor.textInput.value,
-        images: this.quickLayoutEditor.imageEditors.map(
-          (imageEditor) => imageEditor.imageUrl
+        imagePaths: this.quickLayoutEditor.imageEditors.map(
+          (imageEditor) => imageEditor.imagePath
         ),
       },
       tags: this.tags.map((tag) => tag.text),
