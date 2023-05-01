@@ -1,8 +1,10 @@
+import path = require("path");
 import { normalizeBody } from "./common/normalize_body";
 import { SignUpPage } from "./sign_up_page";
 import { E } from "@selfage/element/factory";
+import { setViewport } from "@selfage/puppeteer_test_executor_api";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
-import { TEST_RUNNER, TestCase } from "@selfage/test_runner";
 
 normalizeBody();
 
@@ -14,7 +16,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(1000, 1000);
+        await setViewport(1000, 1000);
         let cut = new SignUpPage(undefined, undefined);
         this.container = E.div({}, cut.body);
         document.body.appendChild(this.container);
@@ -24,9 +26,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/sign_up_page_tall_render.png",
-          __dirname + "/golden/sign_up_page_tall_render.png",
-          __dirname + "/sign_up_page_tall_render_diff.png"
+          path.join(__dirname, "/sign_up_page_tall_render.png"),
+          path.join(__dirname, "/golden/sign_up_page_tall_render.png"),
+          path.join(__dirname, "/sign_up_page_tall_render_diff.png")
         );
       }
       public tearDown() {
@@ -38,7 +40,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(1000, 150);
+        await setViewport(1000, 150);
         let cut = new SignUpPage(undefined, undefined);
         this.container = E.div({}, cut.body);
         document.body.appendChild(this.container);
@@ -48,9 +50,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/sign_up_page_short_render.png",
-          __dirname + "/golden/sign_up_page_short_render.png",
-          __dirname + "/sign_up_page_short_render_diff.png"
+          path.join(__dirname, "/sign_up_page_short_render.png"),
+          path.join(__dirname, "/golden/sign_up_page_short_render.png"),
+          path.join(__dirname, "/sign_up_page_short_render_diff.png")
         );
 
         // Execute
@@ -58,9 +60,12 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/sign_up_page_short_scroll_to_bottom.png",
-          __dirname + "/golden/sign_up_page_short_scroll_to_bottom.png",
-          __dirname + "/sign_up_page_short_scroll_to_bottom_diff.png"
+          path.join(__dirname, "/sign_up_page_short_scroll_to_bottom.png"),
+          path.join(
+            __dirname,
+            "/golden/sign_up_page_short_scroll_to_bottom.png"
+          ),
+          path.join(__dirname, "/sign_up_page_short_scroll_to_bottom_diff.png")
         );
       }
       public tearDown() {

@@ -79,7 +79,7 @@ export class VerticalTextInputWithErrorMsg extends EventEmitter {
 
   public hideError(): void {
     this.errorMsg.textContent = "";
-    this.input.style.borderColor = SCHEME.neutral2;
+    this.input.style.borderColor = SCHEME.neutral1;
   }
 
   public setValue(value: string): void {

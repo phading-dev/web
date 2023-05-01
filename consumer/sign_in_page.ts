@@ -80,9 +80,8 @@ export class SignInPage extends EventEmitter {
           assign(
             submitButtonRef,
             FilledBlockingButton.create(
-              true,
               E.text(LOCALIZED_TEXT.signInButtonLabel)
-            )
+            ).enable()
           ).body
         )
       )
@@ -91,7 +90,6 @@ export class SignInPage extends EventEmitter {
     this.passwordInput = passwordInputRef.val;
     this.switcherToSignUpButton = switcherToSignUpButtonRef.val;
     this.submitButton = submitButtonRef.val;
-    this.hide();
 
     this.submitButton.on("action", () => this.signIn());
     this.switcherToSignUpButton.addEventListener("click", () =>

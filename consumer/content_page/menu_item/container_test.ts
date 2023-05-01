@@ -1,11 +1,11 @@
+import path = require("path");
 import { SCHEME } from "../../common/color_scheme";
 import { createHomeIcon } from "../../common/icons";
 import { normalizeBody } from "../../common/normalize_body";
 import { MenuItem } from "./container";
 import { E } from "@selfage/element/factory";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
-import { TEST_RUNNER, TestCase } from "@selfage/test_runner";
-import "@selfage/puppeteer_test_executor_api";
 
 normalizeBody();
 
@@ -29,9 +29,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/menu_item_render.png",
-          __dirname + "/golden/menu_item_render.png",
-          __dirname + "/menu_item_render_diff.png",
+          path.join(__dirname, "/menu_item_render.png"),
+          path.join(__dirname, "/golden/menu_item_render.png"),
+          path.join(__dirname, "/menu_item_render_diff.png"),
           { fullPage: true }
         );
 
@@ -43,9 +43,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/menu_item_hover.png",
-          __dirname + "/golden/menu_item_hover.png",
-          __dirname + "/menu_item_hover_diff.png",
+          path.join(__dirname, "/menu_item_hover.png"),
+          path.join(__dirname, "/golden/menu_item_hover.png"),
+          path.join(__dirname, "/menu_item_hover_diff.png"),
           { fullPage: true }
         );
 
@@ -57,9 +57,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/menu_item_collapsed.png",
-          __dirname + "/golden/menu_item_render.png",
-          __dirname + "/menu_item_collapsed_diff.png",
+          path.join(__dirname, "/menu_item_collapsed.png"),
+          path.join(__dirname, "/golden/menu_item_render.png"),
+          path.join(__dirname, "/menu_item_collapsed_diff.png"),
           { fullPage: true }
         );
       }

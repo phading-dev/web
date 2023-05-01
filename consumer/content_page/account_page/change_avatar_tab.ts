@@ -1,10 +1,12 @@
 import EventEmitter = require("events");
-import { FilledBlockingButton } from "../../common/blocking_button";
-import { OUTLINE_BUTTON_STYLE } from "../../common/button_styles";
+import {
+  FilledBlockingButton,
+  OutlineBlockingButton,
+} from "../../common/blocking_button";
 import { SCHEME } from "../../common/color_scheme";
+import { ImageCropper } from "../../common/image_cropper/container";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
 import { WEB_SERVICE_CLIENT } from "../../common/web_service_client";
-import { ImageCropper } from "../image_cropper/container";
 import { MenuItem } from "../menu_item/container";
 import { createBackMenuItem } from "../menu_item/factory";
 import { uploadAvatar } from "@phading/user_service_interface/client_requests";
@@ -25,7 +27,7 @@ export class ChangeAvatarTab extends EventEmitter {
   public prependMenuBody: HTMLDivElement;
   // Visible for testing
   public backMenuItem: MenuItem;
-  public chooseFileButton: HTMLDivElement;
+  public chooseFileButton: OutlineBlockingButton;
   public uploadButton: FilledBlockingButton;
   public imageCropper: ImageCropper;
   private loadErrorText: HTMLDivElement;
@@ -35,7 +37,7 @@ export class ChangeAvatarTab extends EventEmitter {
 
   public constructor(protected serviceClient: WebServiceClient) {
     super();
-    let chooseFileButtonRef = new Ref<HTMLDivElement>();
+    let chooseFileButtonRef = new Ref<OutlineBlockingButton>();
     let loadErrorTextRef = new Ref<HTMLDivElement>();
     let imageCropperRef = new Ref<ImageCropper>();
     let previewLargeCanvasRef = new Ref<HTMLCanvasElement>();
@@ -45,24 +47,26 @@ export class ChangeAvatarTab extends EventEmitter {
     this.body = E.div(
       {
         class: "change-avatar",
-        style: `flex-flow: column nowrap; align-items: center; width: 100%; padding: 3rem 0 5rem;`,
+        style: `flex-flow: column nowrap; align-items: center; box-sizing: border-box; width: 100%; padding: 3rem; gap: 2rem;`,
       },
-      E.divRef(
+      assign(
         chooseFileButtonRef,
+        OutlineBlockingButton.create(
+          E.text(LOCALIZED_TEXT.chooseAvatarLabel)
+        ).enable()
+      ).body,
+      E.divRef(
+        loadErrorTextRef,
         {
-          class: "change-avatar-choose-file-button",
-          style: `${OUTLINE_BUTTON_STYLE} color: ${SCHEME.neutral0}; border-color: ${SCHEME.neutral1}; cursor: pointer;`,
+          class: "change-avatar-image-load-error",
+          style: `font-size: 1.4rem; color: ${SCHEME.error0};`,
         },
-        E.text(LOCALIZED_TEXT.chooseAvatarLabel)
+        E.text("1")
       ),
-      E.divRef(loadErrorTextRef, {
-        class: "change-avatar-image-load-error",
-        style: `display: none; margin-top: 1rem; font-size: 1.4rem; color: ${SCHEME.error0};`,
-      }),
       E.div(
         {
           class: "change-avatar-canvas-wrapper",
-          style: `margin: 3rem 0; width: 46rem; height: 46rem;`,
+          style: `width: 46rem; height: 46rem;`,
         },
         assign(imageCropperRef, ImageCropper.create()).body
       ),
@@ -76,7 +80,7 @@ export class ChangeAvatarTab extends EventEmitter {
       E.div(
         {
           class: "change-avatar-preview-line",
-          style: `display: flex; flex-flow: row nowrap; width: 100%; margin: 2rem 0 3rem; justify-content: center; align-items: flex-end;`,
+          style: `display: flex; flex-flow: row nowrap; width: 100%; justify-content: center; align-items: flex-end;`,
         },
         E.div(
           {
@@ -127,15 +131,16 @@ export class ChangeAvatarTab extends EventEmitter {
       ),
       assign(
         uploadButtonRef,
-        FilledBlockingButton.create(
-          false,
-          E.text(LOCALIZED_TEXT.uploadAvatarLabel)
-        )
+        FilledBlockingButton.create(E.text(LOCALIZED_TEXT.uploadAvatarLabel))
       ).body,
-      E.divRef(uploadStatusTextRef, {
-        class: "change-avatar-upload-status-text",
-        style: `font-size: 1.4rem; margin-top: 1rem;`,
-      })
+      E.divRef(
+        uploadStatusTextRef,
+        {
+          class: "change-avatar-upload-status-text",
+          style: `font-size: 1.4rem;`,
+        },
+        E.text("1")
+      )
     );
     this.chooseFileButton = chooseFileButtonRef.val;
     this.loadErrorText = loadErrorTextRef.val;
@@ -149,7 +154,7 @@ export class ChangeAvatarTab extends EventEmitter {
     this.prependMenuBody = this.backMenuItem.body;
 
     this.backMenuItem.on("action", () => this.emit("back"));
-    this.chooseFileButton.addEventListener("click", () => this.chooseFile());
+    this.chooseFileButton.on("action", () => this.chooseFile());
     this.imageCropper.on("change", () => this.preview());
     this.uploadButton.on("action", () => this.uploadAvatar());
     this.uploadButton.on("postAction", (error) => this.postUploadAvatar(error));
@@ -159,19 +164,24 @@ export class ChangeAvatarTab extends EventEmitter {
     return new ChangeAvatarTab(WEB_SERVICE_CLIENT);
   }
 
-  private chooseFile(): void {
-    let fileInput = E.input({ type: "file" });
-    fileInput.addEventListener("input", () => this.load(fileInput.files));
-    fileInput.click();
+  private async chooseFile(): Promise<void> {
+    await new Promise<void>((resolve) => {
+      let fileInput = E.input({ type: "file" });
+      fileInput.addEventListener("input", async () => {
+        await this.load(fileInput.files);
+        resolve();
+      });
+      fileInput.click();
+    });
   }
 
   private async load(files: FileList): Promise<void> {
-    this.loadErrorText.style.display = "none";
+    this.loadErrorText.style.visibility = "hidden";
     try {
       await this.imageCropper.load(files[0]);
     } catch (e) {
       this.loadErrorText.textContent = LOCALIZED_TEXT.loadImageError;
-      this.loadErrorText.style.display = "block";
+      this.loadErrorText.style.visibility = "visible";
       console.error(e);
       this.emit("imageLoaded");
       return;
@@ -227,7 +237,7 @@ export class ChangeAvatarTab extends EventEmitter {
   }
 
   private async uploadAvatar(): Promise<void> {
-    this.uploadStatusText.style.display = "none";
+    this.uploadStatusText.style.visibility = "hidden";
     let blob = await this.imageCropper.export();
     await uploadAvatar(this.serviceClient, blob);
   }
@@ -237,16 +247,17 @@ export class ChangeAvatarTab extends EventEmitter {
       console.error(error);
       this.uploadStatusText.style.color = SCHEME.error0;
       this.uploadStatusText.textContent = LOCALIZED_TEXT.uploadAvatarError;
-      this.uploadStatusText.style.display = "block";
+      this.uploadStatusText.style.visibility = "visible";
     } else {
       this.uploadStatusText.style.color = SCHEME.neutral0;
       this.uploadStatusText.textContent = LOCALIZED_TEXT.uploadAvatarSuccess;
-      this.uploadStatusText.style.display = "block";
+      this.uploadStatusText.style.visibility = "visible";
       this.clear();
     }
   }
 
   private clear(): void {
+    this.loadErrorText.style.visibility = "hidden";
     this.uploadButton.disable();
     this.imageCropper.clear();
     this.previewLargeCanvas
@@ -270,7 +281,7 @@ export class ChangeAvatarTab extends EventEmitter {
   public show(): this {
     this.backMenuItem.show();
     this.body.style.display = "flex";
-    this.uploadStatusText.style.display = "none";
+    this.uploadStatusText.style.visibility = "hidden";
     this.clear();
     return this;
   }

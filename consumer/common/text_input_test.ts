@@ -1,8 +1,9 @@
+import path = require("path");
 import { normalizeBody } from "./normalize_body";
 import { VerticalTextInputWithErrorMsg } from "./text_input";
 import { E } from "@selfage/element/factory";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
-import { TEST_RUNNER, TestCase } from "@selfage/test_runner";
 
 normalizeBody();
 
@@ -34,9 +35,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/vertical_text_input_render.png",
-          __dirname + "/golden/vertical_text_input_render.png",
-          __dirname + "/vertical_text_input_render_diff.png",
+          path.join(__dirname, "/vertical_text_input_render.png"),
+          path.join(__dirname, "/golden/vertical_text_input_render.png"),
+          path.join(__dirname, "/vertical_text_input_render_diff.png"),
           { fullPage: true }
         );
 
@@ -45,9 +46,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/vertical_text_input_with_error.png",
-          __dirname + "/golden/vertical_text_input_with_error.png",
-          __dirname + "/vertical_text_input_with_error_diff.png",
+          path.join(__dirname, "/vertical_text_input_with_error.png"),
+          path.join(__dirname, "/golden/vertical_text_input_with_error.png"),
+          path.join(__dirname, "/vertical_text_input_with_error_diff.png"),
           { fullPage: true }
         );
 
@@ -56,9 +57,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/vertical_text_input_hide_error.png",
-          __dirname + "/golden/vertical_text_input_render.png",
-          __dirname + "/vertical_text_input_hide_error_diff.png",
+          path.join(__dirname, "/vertical_text_input_hide_error.png"),
+          path.join(__dirname, "/golden/vertical_text_input_render.png"),
+          path.join(__dirname, "/vertical_text_input_hide_error_diff.png"),
           { fullPage: true }
         );
       }

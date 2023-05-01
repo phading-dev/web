@@ -1,12 +1,17 @@
 import nonImageFile = require("./test_data/non_image.bin");
 import wideImage = require("./test_data/wide.jpeg");
+import path = require("path");
 import { normalizeBody } from "../../common/normalize_body";
 import { ChangeAvatarTab } from "./change_avatar_tab";
 import { Counter } from "@selfage/counter";
 import { E } from "@selfage/element/factory";
-import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+import { supplyFiles, writeFile } from "@selfage/puppeteer_test_executor_api";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
+import {
+  asyncAssertImage,
+  asyncAssertScreenshot,
+} from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import { TEST_RUNNER, TestCase } from "@selfage/test_runner";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 normalizeBody();
@@ -18,10 +23,10 @@ TEST_RUNNER.run({
       public name = "Render";
       private container: HTMLDivElement;
       public async execute() {
-        // Execute
+        // Prepare
         let cut = new ChangeAvatarTab(undefined).show();
         this.container = E.div(
-          {},
+          { style: `width: 100rem;` },
           E.div(
             {
               style: `position: fixed;`,
@@ -30,28 +35,28 @@ TEST_RUNNER.run({
           ),
           E.div({}, cut.body)
         );
-        document.body.style.width = "1000px";
         document.body.appendChild(this.container);
+
+        // Execute
+        cut.show();
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/change_avatar_tab_render.png",
-          __dirname + "/golden/change_avatar_tab_render.png",
-          __dirname + "/change_avatar_tab_render_diff.png",
+          path.join(__dirname, "/change_avatar_tab_render.png"),
+          path.join(__dirname, "/golden/change_avatar_tab_render.png"),
+          path.join(__dirname, "/change_avatar_tab_render_diff.png"),
           { fullPage: true }
         );
 
         // Execute
-        await puppeteerWaitForFileChooser();
-        cut.chooseFileButton.click();
-        puppeteerFileChooserAccept(wideImage);
+        supplyFiles(() => cut.chooseFileButton.click(), wideImage);
         await new Promise<void>((resolve) => cut.once("imageLoaded", resolve));
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/change_avatar_tab_loaded.png",
-          __dirname + "/golden/change_avatar_tab_loaded.png",
-          __dirname + "/change_avatar_tab_loaded_diff.png",
+          path.join(__dirname, "/change_avatar_tab_loaded.png"),
+          path.join(__dirname, "/golden/change_avatar_tab_loaded.png"),
+          path.join(__dirname, "/change_avatar_tab_loaded_diff.png"),
           { fullPage: true }
         );
 
@@ -66,9 +71,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/change_avatar_tab_moved_resized.png",
-          __dirname + "/golden/change_avatar_tab_moved_resized.png",
-          __dirname + "/change_avatar_tab_moved_resized_diff.png",
+          path.join(__dirname, "/change_avatar_tab_moved_resized.png"),
+          path.join(__dirname, "/golden/change_avatar_tab_moved_resized.png"),
+          path.join(__dirname, "/change_avatar_tab_moved_resized_diff.png"),
           { fullPage: true }
         );
       }
@@ -83,7 +88,7 @@ TEST_RUNNER.run({
         // Prepare
         let cut = new ChangeAvatarTab(undefined).show();
         this.container = E.div(
-          {},
+          { style: `width: 100rem;` },
           E.div(
             {
               style: `position: fixed;`,
@@ -92,20 +97,18 @@ TEST_RUNNER.run({
           ),
           E.div({}, cut.body)
         );
-        document.body.style.width = "1000px";
         document.body.appendChild(this.container);
+        cut.show();
 
         // Execute
-        await puppeteerWaitForFileChooser();
-        cut.chooseFileButton.click();
-        puppeteerFileChooserAccept(nonImageFile);
+        supplyFiles(() => cut.chooseFileButton.click(), nonImageFile);
         await new Promise<void>((resolve) => cut.once("imageLoaded", resolve));
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/change_avatar_tab_load_error.png",
-          __dirname + "/golden/change_avatar_tab_load_error.png",
-          __dirname + "/change_avatar_tab_load_error_diff.png",
+          path.join(__dirname, "/change_avatar_tab_load_error.png"),
+          path.join(__dirname, "/golden/change_avatar_tab_load_error.png"),
+          path.join(__dirname, "/change_avatar_tab_load_error_diff.png"),
           { fullPage: true }
         );
       }
@@ -135,8 +138,8 @@ TEST_RUNNER.run({
                   };
                   fileReader.readAsBinaryString(request.body as Blob);
                 });
-                await puppeteerWriteFile(
-                  __dirname + "/change_avatar_uploaded_image.png",
+                await writeFile(
+                  path.join(__dirname, "/change_avatar_uploaded_image.png"),
                   toBeSent
                 );
                 break;
@@ -147,7 +150,7 @@ TEST_RUNNER.run({
         })();
         let cut = new ChangeAvatarTab(clientMock).show();
         this.container = E.div(
-          {},
+          { style: `width: 100rem;` },
           E.div(
             {
               style: `position: fixed;`,
@@ -156,12 +159,10 @@ TEST_RUNNER.run({
           ),
           E.div({}, cut.body)
         );
-        document.body.style.width = "1000px";
         document.body.appendChild(this.container);
+        cut.show();
 
-        await puppeteerWaitForFileChooser();
-        cut.chooseFileButton.click();
-        puppeteerFileChooserAccept(wideImage);
+        supplyFiles(() => cut.chooseFileButton.click(), wideImage);
         await new Promise<void>((resolve) => cut.once("imageLoaded", resolve));
 
         // Execute
@@ -170,9 +171,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(clientMock.counter.get("send"), eq(1), "send times");
         await asyncAssertScreenshot(
-          __dirname + "/change_avatar_tab_upload_error.png",
-          __dirname + "/golden/change_avatar_tab_upload_error.png",
-          __dirname + "/change_avatar_tab_upload_error_diff.png",
+          path.join(__dirname, "/change_avatar_tab_upload_error.png"),
+          path.join(__dirname, "/golden/change_avatar_tab_upload_error.png"),
+          path.join(__dirname, "/change_avatar_tab_upload_error_diff.png"),
           { fullPage: true }
         );
 
@@ -182,26 +183,15 @@ TEST_RUNNER.run({
         // Verify
         assertThat(clientMock.counter.get("send"), eq(2), "send times");
         await asyncAssertScreenshot(
-          __dirname + "/change_avatar_tab_upload_success.png",
-          __dirname + "/golden/change_avatar_tab_upload_success.png",
-          __dirname + "/change_avatar_tab_upload_success_diff.png",
+          path.join(__dirname, "/change_avatar_tab_upload_success.png"),
+          path.join(__dirname, "/golden/change_avatar_tab_upload_success.png"),
+          path.join(__dirname, "/change_avatar_tab_upload_success_diff.png"),
           { fullPage: true }
         );
-        {
-          let actual = await puppeteerReadFile(
-            __dirname + "/change_avatar_uploaded_image.png",
-            "binary"
-          );
-          let expected = await puppeteerReadFile(
-            __dirname + "/golden/change_avatar_uploaded_image.png",
-            "binary"
-          );
-          assertThat(actual, eq(expected), "uploaded image");
-        }
-
-        // Cleanup
-        await puppeteerDeleteFile(
-          __dirname + "/change_avatar_uploaded_image.png"
+        await asyncAssertImage(
+          path.join(__dirname, "/change_avatar_uploaded_image.png"),
+          path.join(__dirname, "/golden/change_avatar_uploaded_image.png"),
+          path.join(__dirname, "/change_avatar_uploaded_image_diff.png")
         );
       }
       public tearDown() {

@@ -1,3 +1,4 @@
+import path = require("path");
 import {
   BlockingButton,
   FilledBlockingButton,
@@ -6,8 +7,8 @@ import {
 } from "./blocking_button";
 import { normalizeBody } from "./normalize_body";
 import { E } from "@selfage/element/factory";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
-import { TEST_RUNNER, TestCase } from "@selfage/test_runner";
 
 normalizeBody();
 
@@ -15,10 +16,7 @@ class RenderCase implements TestCase {
   private container: HTMLDivElement;
   public constructor(
     public name: string,
-    private buttonFactoryFn: (
-      enabled: boolean,
-      ...childNodes: Array<Node>
-    ) => BlockingButton,
+    private buttonFactoryFn: (...childNodes: Array<Node>) => BlockingButton,
     private renderScreenshotPath: string,
     private renderScreenshotGoldenPath: string,
     private renderScreenshotDiffPath: string,
@@ -31,7 +29,7 @@ class RenderCase implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    let cut = this.buttonFactoryFn(true, E.text("some button")).show();
+    let cut = this.buttonFactoryFn(E.text("some button")).enable().show();
     let resolveFn: Function;
     let resovablePromise = new Promise<void>((resolve) => {
       resolveFn = resolve;
@@ -80,41 +78,41 @@ TEST_RUNNER.run({
     new RenderCase(
       "RenderFilledButton",
       FilledBlockingButton.create,
-      __dirname + "/filled_blocking_button_render.png",
-      __dirname + "/golden/filled_blocking_button_render.png",
-      __dirname + "/filled_blocking_button_render_diff.png",
-      __dirname + "/filled_blocking_button_disabled.png",
-      __dirname + "/golden/filled_blocking_button_disabled.png",
-      __dirname + "/filled_blocking_button_disabled_diff.png",
-      __dirname + "/filled_blocking_button_enabled.png",
-      __dirname + "/golden/filled_blocking_button_render.png",
-      __dirname + "/filled_blocking_button_enabled.png"
+      path.join(__dirname, "/filled_blocking_button_render.png"),
+      path.join(__dirname, "/golden/filled_blocking_button_render.png"),
+      path.join(__dirname, "/filled_blocking_button_render_diff.png"),
+      path.join(__dirname, "/filled_blocking_button_disabled.png"),
+      path.join(__dirname, "/golden/filled_blocking_button_disabled.png"),
+      path.join(__dirname, "/filled_blocking_button_disabled_diff.png"),
+      path.join(__dirname, "/filled_blocking_button_enabled.png"),
+      path.join(__dirname, "/golden/filled_blocking_button_render.png"),
+      path.join(__dirname, "/filled_blocking_button_enabled.png")
     ),
     new RenderCase(
       "RenderOutlineButton",
       OutlineBlockingButton.create,
-      __dirname + "/outline_blocking_button_render.png",
-      __dirname + "/golden/outline_blocking_button_render.png",
-      __dirname + "/outline_blocking_button_render_diff.png",
-      __dirname + "/outline_blocking_button_disabled.png",
-      __dirname + "/golden/outline_blocking_button_disabled.png",
-      __dirname + "/outline_blocking_button_disabled_diff.png",
-      __dirname + "/outline_blocking_button_enabled.png",
-      __dirname + "/golden/outline_blocking_button_render.png",
-      __dirname + "/outline_blocking_button_enabled.png"
+      path.join(__dirname, "/outline_blocking_button_render.png"),
+      path.join(__dirname, "/golden/outline_blocking_button_render.png"),
+      path.join(__dirname, "/outline_blocking_button_render_diff.png"),
+      path.join(__dirname, "/outline_blocking_button_disabled.png"),
+      path.join(__dirname, "/golden/outline_blocking_button_disabled.png"),
+      path.join(__dirname, "/outline_blocking_button_disabled_diff.png"),
+      path.join(__dirname, "/outline_blocking_button_enabled.png"),
+      path.join(__dirname, "/golden/outline_blocking_button_render.png"),
+      path.join(__dirname, "/outline_blocking_button_enabled.png")
     ),
     new RenderCase(
       "RenderTextButton",
       TextBlockingButton.create,
-      __dirname + "/text_blocking_button_render.png",
-      __dirname + "/golden/text_blocking_button_render.png",
-      __dirname + "/text_blocking_button_render_diff.png",
-      __dirname + "/text_blocking_button_disabled.png",
-      __dirname + "/golden/text_blocking_button_disabled.png",
-      __dirname + "/text_blocking_button_disabled_diff.png",
-      __dirname + "/text_blocking_button_enabled.png",
-      __dirname + "/golden/text_blocking_button_render.png",
-      __dirname + "/text_blocking_button_enabled.png"
+      path.join(__dirname, "/text_blocking_button_render.png"),
+      path.join(__dirname, "/golden/text_blocking_button_render.png"),
+      path.join(__dirname, "/text_blocking_button_render_diff.png"),
+      path.join(__dirname, "/text_blocking_button_disabled.png"),
+      path.join(__dirname, "/golden/text_blocking_button_disabled.png"),
+      path.join(__dirname, "/text_blocking_button_disabled_diff.png"),
+      path.join(__dirname, "/text_blocking_button_enabled.png"),
+      path.join(__dirname, "/golden/text_blocking_button_render.png"),
+      path.join(__dirname, "/text_blocking_button_enabled.png")
     ),
   ],
 });

@@ -6,6 +6,6 @@ export class QuickLayoutEditorMock extends QuickLayoutEditor {
   }
   public addImage(imagePath: string): void {
     this.addImageEditor(imagePath);
-    this.checkValidity();
+    this.checkImagesInputValidity();
   }
 }

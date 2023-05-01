@@ -3,7 +3,7 @@ import { SCHEME } from "../../../../common/color_scheme";
 import { createPlusIcon } from "../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { WEB_SERVICE_CLIENT } from "../../../../common/web_service_client";
-import { MARGIN } from "../constants";
+import { GAP } from "../constants";
 import { ImageEditor } from "./image_editor";
 import { uploadImageForTale } from "@phading/tale_service_interface/client_requests";
 import { UploadImageForTaleResponse } from "@phading/tale_service_interface/interface";
@@ -17,21 +17,25 @@ export interface QuickLayoutEditor {
   on(event: "invalid", listener: () => void): this;
 }
 
+enum InputField {
+  TEXT,
+  IMAGES,
+}
+
 export class QuickLayoutEditor extends EventEmitter {
   private static CHARACTER_LIMIT = 700;
   private static IMAGE_NUMBER_LIMIT = 9;
 
   public bodies: Array<HTMLDivElement>;
   public textInput: HTMLTextAreaElement;
-  public valid = false;
   public imageEditors = new Array<ImageEditor>();
   // Visible for testing
   public uploadImageButton: HTMLDivElement;
-
   private characterCountContainer: HTMLDivElement;
   private characterCount: HTMLDivElement;
   private uploadImagesContainer: HTMLDivElement;
   private uploadImageError: HTMLDivElement;
+  private validInputs = new Set<InputField>();
 
   public constructor(private webServiceClient: WebServiceClient) {
     super();
@@ -85,43 +89,41 @@ export class QuickLayoutEditor extends EventEmitter {
         },
         E.text(LOCALIZED_TEXT.quickLayoutUploadImagesLabel)
       ),
-      E.div(
+      E.divRef(
+        uploadImagesContainerRef,
         {
-          class: "quick-layout-upload-images-with-error",
-          style: `display: flex; flex-flow: column nowrap;`,
+          class: "quick-layout-upload-images",
+          style: `display: flex; flex-flow: row wrap; align-items: center; gap: ${GAP};`,
         },
         E.divRef(
-          uploadImagesContainerRef,
+          uploadImageButtonRef,
           {
-            class: "quick-layout-upload-images",
-            style: `display: flex; flex-flow: row wrap; align-items: center; gap: ${MARGIN};`,
+            class: "quick-layout-upload-image-button",
+            style: `display: flex; flex-flow: column nowrap; justify-content: center; align-items: center; box-sizing: border-box; width: 12rem; height: 18rem; border: .4rem dashed ${SCHEME.neutral2}; border-radius: 1rem; cursor: pointer;`,
           },
-          E.divRef(
-            uploadImageButtonRef,
+          E.div(
             {
-              class: "quick-layout-upload-image-button",
-              style: `display: flex; flex-flow: column nowrap; justify-content: center; align-items: center; box-sizing: border-box; width: 12rem; height: 18rem; border: .4rem dashed ${SCHEME.neutral2}; border-radius: 1rem; cursor: pointer;`,
+              class: "quick-layout-upload-image-icon",
+              style: `height: 4rem; padding: .5rem; box-sizing: border-box;`,
             },
-            E.div(
-              {
-                class: "quick-layout-upload-image-icon",
-                style: `height: 4rem; padding: .5rem; box-sizing: border-box;`,
-              },
-              createPlusIcon(SCHEME.neutral1)
-            ),
-            E.div(
-              {
-                class: "quick-layout-upload-image-label",
-                style: `margin: .5rem .5rem 0; font-size: 1.4rem; text-align: center; color: ${SCHEME.neutral0}; `,
-              },
-              E.text(LOCALIZED_TEXT.quickLayoutUploadImageButtonLabel)
-            )
+            createPlusIcon(SCHEME.neutral1)
+          ),
+          E.div(
+            {
+              class: "quick-layout-upload-image-label",
+              style: `margin: .5rem .5rem 0; font-size: 1.4rem; text-align: center; color: ${SCHEME.neutral0}; `,
+            },
+            E.text(LOCALIZED_TEXT.quickLayoutUploadImageButtonLabel)
           )
-        ),
-        E.divRef(uploadImageErrorRef, {
+        )
+      ),
+      E.divRef(
+        uploadImageErrorRef,
+        {
           class: "quick-layout-upload-image-error",
-          style: `align-self: center; margin-top: 1rem; font-size: 1.4rem; color: ${SCHEME.error0};`,
-        })
+          style: `visibility: hidden; align-self: center; font-size: 1.4rem; color: ${SCHEME.error0};`,
+        },
+        E.text("1")
       ),
     ];
     this.textInput = textInputRef.val;
@@ -144,10 +146,24 @@ export class QuickLayoutEditor extends EventEmitter {
     this.characterCount.textContent = `${this.textInput.textLength}/${QuickLayoutEditor.CHARACTER_LIMIT}`;
     if (this.textInput.textLength <= QuickLayoutEditor.CHARACTER_LIMIT) {
       this.characterCountContainer.style.color = SCHEME.neutral2;
+      if (this.textInput.textLength === 0) {
+        this.validInputs.delete(InputField.TEXT);
+      } else {
+        this.validInputs.add(InputField.TEXT);
+      }
     } else {
       this.characterCountContainer.style.color = SCHEME.error0;
+      this.validInputs.delete(InputField.TEXT);
     }
-    this.checkValidity();
+    this.emitValidity();
+  }
+
+  private emitValidity(): void {
+    if (this.validInputs.size > 0) {
+      this.emit('valid');
+    } else {
+      this.emit('invalid');
+    }
   }
 
   private chooseFile(): void {
@@ -160,7 +176,7 @@ export class QuickLayoutEditor extends EventEmitter {
   }
 
   private async loadImages(fileInput: HTMLInputElement): Promise<void> {
-    this.uploadImageError.style.display = "none";
+    this.uploadImageError.style.visibility = "hidden";
     let filesFailed = new Array<string>();
     let loading = new Array<Promise<void>>();
     for (let file of fileInput.files) {
@@ -172,28 +188,13 @@ export class QuickLayoutEditor extends EventEmitter {
       this.uploadImageError.textContent = `${
         LOCALIZED_TEXT.quickLayoutUploadImageFailure1
       }${filesFailed.join()}${LOCALIZED_TEXT.quickLayoutUploadImageFailure2}`;
-      this.uploadImageError.style.display = "block";
+      this.uploadImageError.style.visibility = "visible";
     }
     if (this.imageEditors.length >= QuickLayoutEditor.IMAGE_NUMBER_LIMIT) {
       this.uploadImageButton.style.display = "none";
     }
-    this.checkValidity();
+    this.checkImagesInputValidity();
     this.emit("imagesLoaded");
-  }
-
-  protected checkValidity(): void {
-    if (
-      (this.textInput.textLength > 0 &&
-        this.textInput.textLength <= QuickLayoutEditor.CHARACTER_LIMIT) ||
-      (this.imageEditors.length > 0 &&
-        this.imageEditors.length <= QuickLayoutEditor.IMAGE_NUMBER_LIMIT)
-    ) {
-      this.valid = true;
-      this.emit("valid");
-    } else {
-      this.valid = false;
-      this.emit("invalid");
-    }
   }
 
   private async uploadAndLoadImageOrCollectFailure(
@@ -266,7 +267,7 @@ export class QuickLayoutEditor extends EventEmitter {
   private removeImageEditorForSure(imageEditor: ImageEditor): void {
     this.removeImageEditor(imageEditor);
     this.uploadImageButton.style.display = "flex";
-    this.checkValidity();
+    this.checkImagesInputValidity();
   }
 
   private removeImageEditor(imageEditor: ImageEditor): void {
@@ -306,12 +307,22 @@ export class QuickLayoutEditor extends EventEmitter {
     this.insertImageEditor(this.imageEditors.length, imageEditor);
   }
 
+  protected checkImagesInputValidity(): void {
+    if (this.imageEditors.length === 0) {
+      this.validInputs.delete(InputField.IMAGES);
+    } else {
+      this.validInputs.add(InputField.IMAGES);
+    }
+    this.emitValidity();
+  }
+
   public clear(): void {
     this.textInput.value = "";
+    this.countCharacter();
     while (this.imageEditors.length > 0) {
       let imageEditor = this.imageEditors.pop();
       imageEditor.body.remove();
     }
-    this.checkValidity();
+    this.checkImagesInputValidity();
   }
 }

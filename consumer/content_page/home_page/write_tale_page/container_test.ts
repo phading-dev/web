@@ -10,9 +10,10 @@ import {
 import { WarningTagType } from "@phading/tale_service_interface/warning_tag_type";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
+import { setViewport } from "@selfage/puppeteer_test_executor_api";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat } from "@selfage/test_matcher";
-import { TEST_RUNNER, TestCase } from "@selfage/test_runner";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 normalizeBody();
@@ -25,7 +26,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(1300, 600);
+        await setViewport(1300, 600);
 
         // Execute
         let cut = new WriteTalePage(
@@ -62,7 +63,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(1000, 600);
+        await setViewport(1000, 600);
 
         // Execute
         let cut = new WriteTalePage(
@@ -118,7 +119,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(1000, 600);
+        await setViewport(1000, 600);
         let quickLayoutEditorMock = new QuickLayoutEditorMock();
         let requestCaptured: any;
         let serviceClientMock = new (class extends WebServiceClient {

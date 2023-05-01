@@ -12,7 +12,7 @@ export class MenuItem extends EventEmitter {
 
   public body: HTMLDivElement;
 
-  public constructor(svg: SVGSVGElement, padding: string, label: string) {
+  public constructor(icon: Element, padding: string, label: string) {
     super();
     this.body = E.div(
       {
@@ -24,7 +24,7 @@ export class MenuItem extends EventEmitter {
           class: "menu-item-icon",
           style: `height: 100%; padding: ${padding}; box-sizing: border-box;`,
         },
-        svg
+        icon
       ),
       E.div(
         {
@@ -45,11 +45,11 @@ export class MenuItem extends EventEmitter {
   }
 
   public static create(
-    svg: SVGSVGElement,
+    icon: Element,
     padding: string,
     label: string
   ): MenuItem {
-    return new MenuItem(svg, padding, label);
+    return new MenuItem(icon, padding, label);
   }
 
   private expand(): void {

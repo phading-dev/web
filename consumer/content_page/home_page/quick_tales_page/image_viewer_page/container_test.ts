@@ -1,13 +1,15 @@
 import sampleImage = require("./test_data/sample.jpg");
 import tallImage = require("./test_data/tall.webp");
 import wideImage = require("./test_data/wide.jpeg");
+import path = require("path");
 import { normalizeBody } from "../../../../common/normalize_body";
 import { ImagesViewerPage } from "./container";
 import { E } from "@selfage/element/factory";
+import { setViewport } from "@selfage/puppeteer_test_executor_api";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { Ref } from "@selfage/ref";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import { TEST_RUNNER, TestCase } from "@selfage/test_runner";
 
 normalizeBody();
 
@@ -19,7 +21,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(400, 400);
+        await setViewport(400, 400);
         let menuBodyContainerRef = new Ref<HTMLDivElement>();
         let controllerBodyContainerRef = new Ref<HTMLDivElement>();
         this.container = E.div(
@@ -44,9 +46,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/images_viewer_page_render.png",
-          __dirname + "/golden/images_viewer_page_render.png",
-          __dirname + "/images_viewer_page_render_diff.png"
+          path.join(__dirname, "/images_viewer_page_render.png"),
+          path.join(__dirname, "/golden/images_viewer_page_render.png"),
+          path.join(__dirname, "/images_viewer_page_render_diff.png")
         );
 
         // Execute
@@ -54,9 +56,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/images_viewer_page_next.png",
-          __dirname + "/golden/images_viewer_page_next.png",
-          __dirname + "/images_viewer_page_next_diff.png"
+          path.join(__dirname, "/images_viewer_page_next.png"),
+          path.join(__dirname, "/golden/images_viewer_page_next.png"),
+          path.join(__dirname, "/images_viewer_page_next_diff.png")
         );
 
         // Execute
@@ -64,9 +66,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/images_viewer_page_last.png",
-          __dirname + "/golden/images_viewer_page_last.png",
-          __dirname + "/images_viewer_page_last_diff.png"
+          path.join(__dirname, "/images_viewer_page_last.png"),
+          path.join(__dirname, "/golden/images_viewer_page_last.png"),
+          path.join(__dirname, "/images_viewer_page_last_diff.png")
         );
 
         // Execute
@@ -74,9 +76,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/images_viewer_page_previous.png",
-          __dirname + "/golden/images_viewer_page_previous.png",
-          __dirname + "/images_viewer_page_previous_diff.png"
+          path.join(__dirname, "/images_viewer_page_previous.png"),
+          path.join(__dirname, "/golden/images_viewer_page_previous.png"),
+          path.join(__dirname, "/images_viewer_page_previous_diff.png")
         );
       }
       public tearDown() {
@@ -88,7 +90,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(400, 400);
+        await setViewport(400, 400);
         let menuBodyContainerRef = new Ref<HTMLDivElement>();
         let controllerBodyContainerRef = new Ref<HTMLDivElement>();
         this.container = E.div(
@@ -113,9 +115,12 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/images_viewer_page_render_the_second.png",
-          __dirname + "/golden/images_viewer_page_render_the_second.png",
-          __dirname + "/images_viewer_page_render_the_second_diff.png"
+          path.join(__dirname, "/images_viewer_page_render_the_second.png"),
+          path.join(
+            __dirname,
+            "/golden/images_viewer_page_render_the_second.png"
+          ),
+          path.join(__dirname, "/images_viewer_page_render_the_second_diff.png")
         );
 
         // Execute
@@ -124,9 +129,12 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/images_viewer_page_show_after_hide.png",
-          __dirname + "/golden/images_viewer_page_show_after_hide.png",
-          __dirname + "/images_viewer_page_show_after_hide_diff.png"
+          path.join(__dirname, "/images_viewer_page_show_after_hide.png"),
+          path.join(
+            __dirname,
+            "/golden/images_viewer_page_show_after_hide.png"
+          ),
+          path.join(__dirname, "/images_viewer_page_show_after_hide_diff.png")
         );
       }
       public tearDown() {

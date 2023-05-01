@@ -1,4 +1,5 @@
 import userImage = require("./test_data/user_image.jpg");
+import path = require("path");
 import { normalizeBody } from "../../common/normalize_body";
 import { HomePage } from "./container";
 import {
@@ -10,11 +11,11 @@ import { WriteTalePageMock } from "./write_tale_page/container_mock";
 import { QuickTaleCard as QuickTaleCardData } from "@phading/tale_service_interface/tale_card";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
+import { setViewport } from "@selfage/puppeteer_test_executor_api";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { Ref } from "@selfage/ref";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat } from "@selfage/test_matcher";
-import { TEST_RUNNER, TestCase } from "@selfage/test_runner";
-import "@selfage/puppeteer_test_executor_api";
 
 normalizeBody();
 
@@ -26,7 +27,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(800, 800);
+        await setViewport(800, 800);
         let menuContainerRef = new Ref<HTMLDivElement>();
         let controllerContainerRef = new Ref<HTMLDivElement>();
         this.container = E.div(
@@ -70,9 +71,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/home_page_render.png",
-          __dirname + "/golden/home_page_render.png",
-          __dirname + "/home_page_render_diff.png"
+          path.join(__dirname, "/home_page_render.png"),
+          path.join(__dirname, "/golden/home_page_render.png"),
+          path.join(__dirname, "/home_page_render_diff.png")
         );
 
         // Prepare
@@ -96,9 +97,9 @@ TEST_RUNNER.run({
           "new state tale0"
         );
         await asyncAssertScreenshot(
-          __dirname + "/home_page_pinned_tale.png",
-          __dirname + "/golden/home_page_pinned_tale.png",
-          __dirname + "/home_page_pinned_tale_diff.png"
+          path.join(__dirname, "/home_page_pinned_tale.png"),
+          path.join(__dirname, "/golden/home_page_pinned_tale.png"),
+          path.join(__dirname, "/home_page_pinned_tale_diff.png")
         );
 
         // Prepare
@@ -123,9 +124,9 @@ TEST_RUNNER.run({
           "new state tale100"
         );
         await asyncAssertScreenshot(
-          __dirname + "/home_page_pinned_tale_2.png",
-          __dirname + "/golden/home_page_pinned_tale_2.png",
-          __dirname + "/home_page_pinned_tale_2_diff.png"
+          path.join(__dirname, "/home_page_pinned_tale_2.png"),
+          path.join(__dirname, "/golden/home_page_pinned_tale_2.png"),
+          path.join(__dirname, "/home_page_pinned_tale_2_diff.png")
         );
 
         // Prepare
@@ -164,9 +165,9 @@ TEST_RUNNER.run({
           "new state user1"
         );
         await asyncAssertScreenshot(
-          __dirname + "/home_page_pinned_user.png",
-          __dirname + "/golden/home_page_pinned_user.png",
-          __dirname + "/home_page_pinned_user_diff.png"
+          path.join(__dirname, "/home_page_pinned_user.png"),
+          path.join(__dirname, "/golden/home_page_pinned_user.png"),
+          path.join(__dirname, "/home_page_pinned_user_diff.png")
         );
 
         // Execute
@@ -190,9 +191,9 @@ TEST_RUNNER.run({
           "new state write"
         );
         await asyncAssertScreenshot(
-          __dirname + "/home_page_write.png",
-          __dirname + "/golden/home_page_write.png",
-          __dirname + "/home_page_write_diff.png"
+          path.join(__dirname, "/home_page_write.png"),
+          path.join(__dirname, "/golden/home_page_write.png"),
+          path.join(__dirname, "/home_page_write_diff.png")
         );
 
         // Execute
@@ -216,9 +217,12 @@ TEST_RUNNER.run({
           "new state user1 back from write"
         );
         await asyncAssertScreenshot(
-          __dirname + "/home_page_pinned_user_back_from_write.png",
-          __dirname + "/golden/home_page_pinned_user.png",
-          __dirname + "/home_page_pinned_user_back_from_write_diff.png"
+          path.join(__dirname, "/home_page_pinned_user_back_from_write.png"),
+          path.join(__dirname, "/golden/home_page_pinned_user.png"),
+          path.join(
+            __dirname,
+            "/home_page_pinned_user_back_from_write_diff.png"
+          )
         );
 
         // Execute
@@ -237,9 +241,9 @@ TEST_RUNNER.run({
           "new state tale100 back from user1"
         );
         await asyncAssertScreenshot(
-          __dirname + "/home_page_pinned_tale_2_back.png",
-          __dirname + "/golden/home_page_pinned_tale_2.png",
-          __dirname + "/home_page_pinned_tale_2_back_diff.png"
+          path.join(__dirname, "/home_page_pinned_tale_2_back.png"),
+          path.join(__dirname, "/golden/home_page_pinned_tale_2.png"),
+          path.join(__dirname, "/home_page_pinned_tale_2_back_diff.png")
         );
 
         // Prepare
@@ -272,9 +276,9 @@ TEST_RUNNER.run({
           "new state reply to tale100"
         );
         await asyncAssertScreenshot(
-          __dirname + "/home_page_reply.png",
-          __dirname + "/golden/home_page_reply.png",
-          __dirname + "/home_page_reply_diff.png"
+          path.join(__dirname, "/home_page_reply.png"),
+          path.join(__dirname, "/golden/home_page_reply.png"),
+          path.join(__dirname, "/home_page_reply_diff.png")
         );
 
         // Execute
@@ -294,9 +298,12 @@ TEST_RUNNER.run({
           "new state tale100 back from reply"
         );
         await asyncAssertScreenshot(
-          __dirname + "/home_page_pinned_tale_back_from_reply.png",
-          __dirname + "/golden/home_page_pinned_tale_2.png",
-          __dirname + "/home_page_pinned_tale_back_from_reply_diff.png"
+          path.join(__dirname, "/home_page_pinned_tale_back_from_reply.png"),
+          path.join(__dirname, "/golden/home_page_pinned_tale_2.png"),
+          path.join(
+            __dirname,
+            "/home_page_pinned_tale_back_from_reply_diff.png"
+          )
         );
 
         // Execute
@@ -317,9 +324,9 @@ TEST_RUNNER.run({
           "new state tale0 back from tale100"
         );
         await asyncAssertScreenshot(
-          __dirname + "/home_page_pinned_tale_back.png",
-          __dirname + "/golden/home_page_pinned_tale.png",
-          __dirname + "/home_page_pinned_tale_back_diff.png"
+          path.join(__dirname, "/home_page_pinned_tale_back.png"),
+          path.join(__dirname, "/golden/home_page_pinned_tale.png"),
+          path.join(__dirname, "/home_page_pinned_tale_back_diff.png")
         );
 
         // Execute
@@ -335,9 +342,9 @@ TEST_RUNNER.run({
           "new state home back from tale0"
         );
         await asyncAssertScreenshot(
-          __dirname + "/home_page_back_to_home.png",
-          __dirname + "/golden/home_page_render.png",
-          __dirname + "/home_page_back_to_home_diff.png"
+          path.join(__dirname, "/home_page_back_to_home.png"),
+          path.join(__dirname, "/golden/home_page_render.png"),
+          path.join(__dirname, "/home_page_back_to_home_diff.png")
         );
       }
       public tearDown() {
@@ -349,7 +356,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(800, 800);
+        await setViewport(800, 800);
         let menuContainerRef = new Ref<HTMLDivElement>();
         let controllerContainerRef = new Ref<HTMLDivElement>();
         this.container = E.div(
@@ -394,9 +401,12 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/home_page_render_state_pinned_tale.png",
-          __dirname + "/golden/home_page_render_state_pinned_tale.png",
-          __dirname + "/home_page_render_state_pinned_tale_diff.png"
+          path.join(__dirname, "/home_page_render_state_pinned_tale.png"),
+          path.join(
+            __dirname,
+            "/golden/home_page_render_state_pinned_tale.png"
+          ),
+          path.join(__dirname, "/home_page_render_state_pinned_tale_diff.png")
         );
 
         // Prepare
@@ -414,9 +424,9 @@ TEST_RUNNER.run({
           "new state home back from tale0"
         );
         await asyncAssertScreenshot(
-          __dirname + "/home_page_back_from_pinned_tale.png",
-          __dirname + "/golden/home_page_render_home_state.png",
-          __dirname + "/home_page_back_from_pinned_tale_diff.png"
+          path.join(__dirname, "/home_page_back_from_pinned_tale.png"),
+          path.join(__dirname, "/golden/home_page_render_home_state.png"),
+          path.join(__dirname, "/home_page_back_from_pinned_tale_diff.png")
         );
 
         // Execute
@@ -426,9 +436,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/home_page_invalid_pinned_tale.png",
-          __dirname + "/golden/home_page_render_home_state.png",
-          __dirname + "/home_page_invalid_pinned_tale_diff.png"
+          path.join(__dirname, "/home_page_invalid_pinned_tale.png"),
+          path.join(__dirname, "/golden/home_page_render_home_state.png"),
+          path.join(__dirname, "/home_page_invalid_pinned_tale_diff.png")
         );
 
         // Execute
@@ -438,9 +448,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/home_page_write_from_state.png",
-          __dirname + "/golden/home_page_write_from_state.png",
-          __dirname + "/home_page_write_from_state_diff.png"
+          path.join(__dirname, "/home_page_write_from_state.png"),
+          path.join(__dirname, "/golden/home_page_write_from_state.png"),
+          path.join(__dirname, "/home_page_write_from_state_diff.png")
         );
 
         // Execute
@@ -453,9 +463,9 @@ TEST_RUNNER.run({
           "new state home back from write"
         );
         await asyncAssertScreenshot(
-          __dirname + "/home_page_back_from_write_state.png",
-          __dirname + "/golden/home_page_render_home_state.png",
-          __dirname + "/home_page_back_from_write_state_diff.png"
+          path.join(__dirname, "/home_page_back_from_write_state.png"),
+          path.join(__dirname, "/golden/home_page_render_home_state.png"),
+          path.join(__dirname, "/home_page_back_from_write_state_diff.png")
         );
       }
       public tearDown() {

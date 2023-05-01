@@ -53,6 +53,9 @@ export default class Text {
   get homeLabel() {
     return `Home`;
   }
+  get selectPersonaLabel() {
+    return `Select persona`
+  }
   get changeAvatarLabel() {
     return `Update`;
   }
@@ -114,7 +117,7 @@ export default class Text {
     return `. Please only upload image files, and only up to 9 of them.`
   }
   get quickLayoutUploadImageButtonLabel() {
-    return `Choose a file`;
+    return `Choose one or more files`;
   }
   get tagsLabel() {
     return `Then add some tags to help people discover it`;
@@ -222,6 +225,24 @@ export default class Text {
     return `Recommending less`
   }
   get noUserDescription() {
-    return `They didn't say anything about theirselves.`;
+    return `They didn't say anything about themself.`;
+  }
+  get namePersonaLabel() {
+    return `Name your new persona`;
+  }
+  get namePersonaPlaceholder() {
+    return `What's the new name?`;
+  }
+  get personaNameTooLongError() {
+    return `The name is too long...`;
+  }
+  get choosePersonaImageFileLabel() {
+    return `Choose a an image file`;
+  }
+  get createPersonaLabel() {
+    return `Create`;
+  }
+  get createPersonaError() {
+    return `There is an issue when creating the new persona. Please try again later.`;
   }
 }

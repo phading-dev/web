@@ -14,6 +14,7 @@ export class ImageCropper extends EventEmitter {
   public sy: number;
   public sWidth: number;
   public sHeight: number;
+  public loaded: boolean;
   // Visible for testing
   public resizePointTopLeft: HTMLDivElement;
   public resizePointTopRight: HTMLDivElement;
@@ -72,7 +73,7 @@ export class ImageCropper extends EventEmitter {
             midMidBlockRef,
             {
               class: "avatar-canvas-mid-mid-block",
-              style: `width: 100%; position: relative; box-sizing: border-box; border: .1rem dashed ${SCHEME.primary1};`,
+              style: `width: 100%; position: relative; box-sizing: border-box; `,
             },
             E.div({
               class: "avatar-canvas-mid-mid-circle",
@@ -146,11 +147,12 @@ export class ImageCropper extends EventEmitter {
       .getContext("2d")
       .clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.leftColumn.style.flex = "1 0 0";
-    this.midColumn.style.flex = "0 0 20rem";
+    this.midColumn.style.flex = "2 0 0";
     this.midTopBlock.style.flex = "1 0 0";
-    this.midMidBlock.style.flex = "0 0 20rem";
+    this.midMidBlock.style.flex = "2 0 0";
     this.midBottmBlock.style.flex = "1 0 0";
     this.rightColumn.style.flex = "1 0 0";
+    this.loaded = false;
   }
 
   private startResizingTopLeft = (event: MouseEvent): void => {
@@ -306,6 +308,7 @@ export class ImageCropper extends EventEmitter {
       fileReader.onload = () => {
         let image = new Image();
         image.onload = () => {
+          this.loaded = true;
           let canvasWidth = this.canvas.offsetWidth;
           let canvasHeight = this.canvas.offsetHeight;
           let imageWidth = image.naturalWidth;

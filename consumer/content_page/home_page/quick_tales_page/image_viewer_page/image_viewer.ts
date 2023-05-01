@@ -26,7 +26,7 @@ export class ImageViewer extends EventEmitter {
 
   private image: HTMLImageElement;
 
-  public constructor(imageUrl: string) {
+  public constructor(imagePath: string) {
     super();
     let imageRef = new Ref<HTMLImageElement>();
     this.body = E.div(
@@ -37,7 +37,7 @@ export class ImageViewer extends EventEmitter {
       E.imageRef(imageRef, {
         class: "image-viewer-image",
         style: `flex: 0 0 auto; margin: auto;`,
-        src: imageUrl
+        src: imagePath
       })
     );
     this.image = imageRef.val;
@@ -72,8 +72,8 @@ export class ImageViewer extends EventEmitter {
     this.image.addEventListener("load", () => this.load());
   }
 
-  public static create(imageUrl: string): ImageViewer {
-    return new ImageViewer(imageUrl);
+  public static create(imagePath: string): ImageViewer {
+    return new ImageViewer(imagePath);
   }
 
   private zoomInImage(): void {

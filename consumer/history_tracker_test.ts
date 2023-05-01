@@ -5,8 +5,8 @@ import {
 } from "./content_page/state";
 import { HistoryTracker } from "./history_tracker";
 import { eqMessage } from "@selfage/message/test_matcher";
+import { TEST_RUNNER } from "@selfage/puppeteer_test_runner";
 import { assertThat, eq } from "@selfage/test_matcher";
-import { TEST_RUNNER } from "@selfage/test_runner";
 
 TEST_RUNNER.run({
   name: "HistoryTrackerTest",

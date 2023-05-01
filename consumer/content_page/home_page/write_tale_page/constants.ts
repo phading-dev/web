@@ -1,1 +1,1 @@
-export let MARGIN = "2rem";
+export let GAP = "2rem";

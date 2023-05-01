@@ -1,6 +1,7 @@
 import smallImage = require("./test_data/small.jpg");
 import userImage = require("./test_data/user_image.jpg");
 import wideImage = require("./test_data/wide.png");
+import path = require("path");
 import { normalizeBody } from "../../../common/normalize_body";
 import { QuickTalesPage } from "./container";
 import { QuickTaleCardMock } from "./quick_tale_card_mock";
@@ -30,6 +31,12 @@ import {
 import { Counter } from "@selfage/counter";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
+import {
+  deleteFile,
+  screenshot,
+  setViewport,
+} from "@selfage/puppeteer_test_executor_api";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { Ref } from "@selfage/ref";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import {
@@ -37,7 +44,6 @@ import {
   containUnorderedElements,
   eq,
 } from "@selfage/test_matcher";
-import { TEST_RUNNER, TestCase } from "@selfage/test_runner";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 normalizeBody();
@@ -64,7 +70,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(800, 800);
+        await setViewport(800, 800);
         this.container = E.div({});
         document.body.append(this.container);
         let webServiceClientMock = new (class extends WebServiceClient {
@@ -116,9 +122,9 @@ TEST_RUNNER.run({
           "get recommended tales"
         );
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_render.png",
-          __dirname + "/golden/quick_tales_page_render.png",
-          __dirname + "/quick_tales_page_render_diff.png"
+          path.join(__dirname, "/quick_tales_page_render.png"),
+          path.join(__dirname, "/golden/quick_tales_page_render.png"),
+          path.join(__dirname, "/quick_tales_page_render_diff.png")
         );
         // Needs to wait for a while before checking views.
         assertThat(
@@ -151,9 +157,9 @@ TEST_RUNNER.run({
           "get more recommended tales"
         );
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_load_more.png",
-          __dirname + "/golden/quick_tales_page_load_more.png",
-          __dirname + "/quick_tales_page_load_more_diff.png"
+          path.join(__dirname, "/quick_tales_page_load_more.png"),
+          path.join(__dirname, "/golden/quick_tales_page_load_more.png"),
+          path.join(__dirname, "/quick_tales_page_load_more_diff.png")
         );
         assertThat(
           webServiceClientMock.viewTalesRequests,
@@ -171,9 +177,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_loaded_again.png",
-          __dirname + "/golden/quick_tales_page_loaded_again.png",
-          __dirname + "/quick_tales_page_loaded_again_diff.png"
+          path.join(__dirname, "/quick_tales_page_loaded_again.png"),
+          path.join(__dirname, "/golden/quick_tales_page_loaded_again.png"),
+          path.join(__dirname, "/quick_tales_page_loaded_again_diff.png")
         );
 
         // Prepare
@@ -190,9 +196,9 @@ TEST_RUNNER.run({
           "no tales loaded"
         );
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_scroll_top.png",
-          __dirname + "/golden/quick_tales_page_scroll_top.png",
-          __dirname + "/quick_tales_page_scroll_top_diff.png"
+          path.join(__dirname, "/quick_tales_page_scroll_top.png"),
+          path.join(__dirname, "/golden/quick_tales_page_scroll_top.png"),
+          path.join(__dirname, "/quick_tales_page_scroll_top_diff.png")
         );
       }
       public tearDown() {
@@ -204,7 +210,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(800, 800);
+        await setViewport(800, 800);
         this.container = E.div({});
         document.body.append(this.container);
         let webServiceClientMock = new (class extends WebServiceClient {
@@ -245,9 +251,9 @@ TEST_RUNNER.run({
           "1st call"
         );
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_no_more_tales.png",
-          __dirname + "/golden/quick_tales_page_no_more_tales.png",
-          __dirname + "/quick_tales_page_no_more_tales_diff.png"
+          path.join(__dirname, "/quick_tales_page_no_more_tales.png"),
+          path.join(__dirname, "/golden/quick_tales_page_no_more_tales.png"),
+          path.join(__dirname, "/quick_tales_page_no_more_tales_diff.png")
         );
 
         // Execute
@@ -261,9 +267,15 @@ TEST_RUNNER.run({
           "2nd call"
         );
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_no_more_tales_after_retried.png",
-          __dirname + "/golden/quick_tales_page_no_more_tales.png",
-          __dirname + "/quick_tales_page_no_more_tales_after_retried_diff.png"
+          path.join(
+            __dirname,
+            "/quick_tales_page_no_more_tales_after_retried.png"
+          ),
+          path.join(__dirname, "/golden/quick_tales_page_no_more_tales.png"),
+          path.join(
+            __dirname,
+            "/quick_tales_page_no_more_tales_after_retried_diff.png"
+          )
         );
 
         // Prepare
@@ -284,9 +296,9 @@ TEST_RUNNER.run({
           "3rd call"
         );
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_reloaded.png",
-          __dirname + "/golden/quick_tales_page_reloaded.png",
-          __dirname + "/quick_tales_page_reloaded_diff.png"
+          path.join(__dirname, "/quick_tales_page_reloaded.png"),
+          path.join(__dirname, "/golden/quick_tales_page_reloaded.png"),
+          path.join(__dirname, "/quick_tales_page_reloaded_diff.png")
         );
 
         // Execute
@@ -309,7 +321,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(800, 800);
+        await setViewport(800, 800);
         let menuBodyContainerRef = new Ref<HTMLDivElement>();
         let controllerBodyContainerRef = new Ref<HTMLDivElement>();
         this.container = E.div(
@@ -355,9 +367,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_tale_context.png",
-          __dirname + "/golden/quick_tales_page_tale_context.png",
-          __dirname + "/quick_tales_page_tale_context_diff.png"
+          path.join(__dirname, "/quick_tales_page_tale_context.png"),
+          path.join(__dirname, "/golden/quick_tales_page_tale_context.png"),
+          path.join(__dirname, "/quick_tales_page_tale_context_diff.png")
         );
       }
       public tearDown() {
@@ -369,7 +381,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(800, 800);
+        await setViewport(800, 800);
         let menuBodyContainerRef = new Ref<HTMLDivElement>();
         let controllerBodyContainerRef = new Ref<HTMLDivElement>();
         this.container = E.div(
@@ -423,9 +435,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_user_context.png",
-          __dirname + "/golden/quick_tales_page_user_context.png",
-          __dirname + "/quick_tales_page_user_context_diff.png"
+          path.join(__dirname, "/quick_tales_page_user_context.png"),
+          path.join(__dirname, "/golden/quick_tales_page_user_context.png"),
+          path.join(__dirname, "/quick_tales_page_user_context_diff.png")
         );
       }
       public tearDown() {
@@ -437,7 +449,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(800, 800);
+        await setViewport(800, 800);
         let menuBodyContainerRef = new Ref<HTMLDivElement>();
         let controllerBodyContainerRef = new Ref<HTMLDivElement>();
         this.container = E.div(
@@ -469,7 +481,7 @@ TEST_RUNNER.run({
                         avatarSmallPath: userImage,
                       },
                       text: `some text 20`,
-                      images: [wideImage],
+                      imagePaths: [wideImage],
                     },
                   ],
                 } as GetRecommendedQuickTalesResponse;
@@ -493,8 +505,8 @@ TEST_RUNNER.run({
           webServiceClientMock
         ).show();
         await new Promise<void>((resolve) => cut.once("talesLoaded", resolve));
-        await puppeteerScreenshot(
-          __dirname + "/quick_tales_page_view_one_image_baseline.png"
+        await screenshot(
+          path.join(__dirname, "/quick_tales_page_view_one_image_baseline.png")
         );
 
         // Execute
@@ -505,9 +517,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_view_one_image.png",
-          __dirname + "/golden/quick_tales_page_view_one_image.png",
-          __dirname + "/quick_tales_page_view_one_image_diff.png"
+          path.join(__dirname, "/quick_tales_page_view_one_image.png"),
+          path.join(__dirname, "/golden/quick_tales_page_view_one_image.png"),
+          path.join(__dirname, "/quick_tales_page_view_one_image_diff.png")
         );
 
         // Execute
@@ -515,14 +527,20 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_back_from_viewing_one_image.png",
-          __dirname + "/quick_tales_page_view_one_image_baseline.png",
-          __dirname + "/quick_tales_page_back_from_viewing_one_image_diff.png"
+          path.join(
+            __dirname,
+            "/quick_tales_page_back_from_viewing_one_image.png"
+          ),
+          path.join(__dirname, "/quick_tales_page_view_one_image_baseline.png"),
+          path.join(
+            __dirname,
+            "/quick_tales_page_back_from_viewing_one_image_diff.png"
+          )
         );
 
         // Cleanup
-        await puppeteerDeleteFile(
-          __dirname + "/quick_tales_page_view_one_image_baseline.png"
+        await deleteFile(
+          path.join(__dirname, "/quick_tales_page_view_one_image_baseline.png")
         );
       }
       public tearDown() {
@@ -534,7 +552,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(800, 800);
+        await setViewport(800, 800);
         let menuBodyContainerRef = new Ref<HTMLDivElement>();
         let controllerBodyContainerRef = new Ref<HTMLDivElement>();
         this.container = E.div(
@@ -568,7 +586,7 @@ TEST_RUNNER.run({
                         avatarSmallPath: userImage,
                       },
                       text: `some text 22`,
-                      images: [wideImage, smallImage],
+                      imagePaths: [wideImage, smallImage],
                     },
                   ],
                 } as GetRecommendedQuickTalesResponse;
@@ -592,8 +610,8 @@ TEST_RUNNER.run({
           webServiceClientMock
         ).show();
         await new Promise<void>((resolve) => cut.once("talesLoaded", resolve));
-        await puppeteerScreenshot(
-          __dirname + "/quick_tales_page_view_images_baseline.png"
+        await screenshot(
+          path.join(__dirname, "/quick_tales_page_view_images_baseline.png")
         );
 
         // Execute
@@ -604,9 +622,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_view_images.png",
-          __dirname + "/golden/quick_tales_page_view_images.png",
-          __dirname + "/quick_tales_page_view_images_diff.png"
+          path.join(__dirname, "/quick_tales_page_view_images.png"),
+          path.join(__dirname, "/golden/quick_tales_page_view_images.png"),
+          path.join(__dirname, "/quick_tales_page_view_images_diff.png")
         );
 
         // Execute
@@ -614,14 +632,20 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/quick_tales_page_back_from_viewing_images.png",
-          __dirname + "/quick_tales_page_view_images_baseline.png",
-          __dirname + "/quick_tales_page_back_from_viewing_images_diff.png"
+          path.join(
+            __dirname,
+            "/quick_tales_page_back_from_viewing_images.png"
+          ),
+          path.join(__dirname, "/quick_tales_page_view_images_baseline.png"),
+          path.join(
+            __dirname,
+            "/quick_tales_page_back_from_viewing_images_diff.png"
+          )
         );
 
         // Cleanup
-        await puppeteerDeleteFile(
-          __dirname + "/quick_tales_page_view_images_baseline.png"
+        await deleteFile(
+          path.join(__dirname, "/quick_tales_page_view_images_baseline.png")
         );
       }
       public tearDown() {
@@ -633,7 +657,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(800, 800);
+        await setViewport(800, 800);
         this.container = E.div({});
         document.body.append(this.container);
         let webServiceClientMock = new (class extends WebServiceClient {
@@ -692,7 +716,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await puppeteerSetViewport(800, 800);
+        await setViewport(800, 800);
         this.container = E.div({});
         document.body.append(this.container);
         let webServiceClientMock = new (class extends WebServiceClient {

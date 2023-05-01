@@ -6,7 +6,7 @@ import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { WEB_SERVICE_CLIENT } from "../../../common/web_service_client";
 import { MenuItem } from "../../menu_item/container";
 import { createBackMenuItem } from "../../menu_item/factory";
-import { MARGIN } from "./constants";
+import { GAP } from "./constants";
 import { QuickLayoutEditor } from "./quick_layout_editor/container";
 import { NormalTag, WarningTag } from "./tags";
 import {
@@ -62,7 +62,7 @@ export class WriteTalePage extends EventEmitter {
         cardContainerRef,
         {
           class: "write-tale-card",
-          style: `display: flex; flex-flow: column nowrap; box-sizing: border-box; width: 100%; max-width: 100rem; gap: ${MARGIN}; padding: ${MARGIN} ${MARGIN} 10rem ${MARGIN}; background-color: ${SCHEME.neutral4};`,
+          style: `display: flex; flex-flow: column nowrap; box-sizing: border-box; width: 100%; max-width: 100rem; gap: ${GAP}; padding: 3rem; background-color: ${SCHEME.neutral4};`,
         },
         ...quickLayoutEditor.bodies,
         E.div(
@@ -76,7 +76,7 @@ export class WriteTalePage extends EventEmitter {
           tagsContainerRef,
           {
             class: "write-tale-tags",
-            style: `display: flex; flex-flow: row wrap; align-items: center; gap: ${MARGIN};`,
+            style: `display: flex; flex-flow: row wrap; align-items: center; gap: ${GAP};`,
           },
           E.div(
             {
@@ -107,7 +107,7 @@ export class WriteTalePage extends EventEmitter {
         E.div(
           {
             class: "write-tale-warning-tags",
-            style: `display: flex; flex-flow: row wrap; algin-items: center; gap: ${MARGIN};`,
+            style: `display: flex; flex-flow: row wrap; algin-items: center; gap: ${GAP};`,
           },
           assign(
             warningTagNudityRef,
@@ -139,15 +139,18 @@ export class WriteTalePage extends EventEmitter {
           assign(
             submitButtonRef,
             FilledBlockingButton.create(
-              false,
               E.text(LOCALIZED_TEXT.submitTaleButtonLabel)
-            )
+            ).disable()
           ).body
         ),
-        E.divRef(submitStatusRef, {
-          class: "write-tale-submit-status",
-          style: `display: none; align-self: center; font-size: 1.4rem; color: ${SCHEME.error0};`,
-        })
+        E.divRef(
+          submitStatusRef,
+          {
+            class: "write-tale-submit-status",
+            style: `visibility: hidden; align-self: center; font-size: 1.4rem; color: ${SCHEME.error0};`,
+          },
+          E.text("1")
+        )
       )
     );
     this.cardContainer = cardContainerRef.val;
@@ -268,7 +271,7 @@ export class WriteTalePage extends EventEmitter {
   }
 
   private async submitTale(): Promise<void> {
-    this.submitStatus.style.display = "none";
+    this.submitStatus.style.visibility = "hidden";
     let warningTags = new Array<WarningTagType>();
     if (this.warningTagNudity.selected) {
       warningTags.push(this.warningTagNudity.warningTagType);
@@ -294,15 +297,16 @@ export class WriteTalePage extends EventEmitter {
   private postSubmitTale(e?: Error): void {
     if (e) {
       this.submitStatus.textContent = LOCALIZED_TEXT.submitTaleFailed;
-      this.submitStatus.style.display = "block";
+      this.submitStatus.style.visibility = "visible";
       console.error(e);
       return;
     }
 
     this.quickLayoutEditor.clear();
-    while (this.tags.length > 0) {
-      this.removeTag(this.tags[this.tags.length - 1]);
+    for (let tag of this.tags) {
+      tag.body.remove();
     }
+    this.tags = new Array<NormalTag>();
     this.warningTagNudity.unselect();
     this.warningTagSpoiler.unselect();
     this.warningTagGross.unselect();

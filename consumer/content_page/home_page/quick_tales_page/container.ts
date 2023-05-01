@@ -86,7 +86,6 @@ export class QuickTalesPage extends EventEmitter {
         assign(
           tryLoadingButtonRef,
           FilledBlockingButton.create(
-            false,
             E.text(LOCALIZED_TEXT.tryLoadingTalesLabel)
           )
         ).body

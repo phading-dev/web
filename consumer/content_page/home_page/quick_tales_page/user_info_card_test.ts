@@ -1,4 +1,5 @@
 import userImage = require("./test_data/user_image.jpg");
+import path = require("path");
 import { normalizeBody } from "../../../common/normalize_body";
 import { UserInfoCard } from "./user_info_card";
 import { SET_USER_RELATIONSHIP_REQUEST_BODY } from "@phading/user_service_interface/interface";
@@ -6,9 +7,10 @@ import { UserInfoCard as UserInfoCardData } from "@phading/user_service_interfac
 import { UserRelationship } from "@phading/user_service_interface/user_relationship";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
+import { deleteFile, screenshot } from "@selfage/puppeteer_test_executor_api";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat } from "@selfage/test_matcher";
-import { TEST_RUNNER, TestCase } from "@selfage/test_runner";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 normalizeBody();
@@ -78,7 +80,7 @@ class UndoCase implements TestCase {
     );
     this.container = E.div({}, cut.body);
     document.body.appendChild(this.container);
-    await puppeteerScreenshot(this.screenshotBaselinePath, { fullPage: true });
+    await screenshot(this.screenshotBaselinePath, { fullPage: true });
     this.getActionButtonFn(cut).click();
 
     // Execute
@@ -96,7 +98,7 @@ class UndoCase implements TestCase {
       this.screenshotDiffPath,
       { fullPage: true }
     );
-    await puppeteerDeleteFile(this.screenshotBaselinePath);
+    await deleteFile(this.screenshotBaselinePath);
   }
   public tearDown() {
     this.container.remove();
@@ -114,9 +116,9 @@ TEST_RUNNER.run({
         naturalName: "First Second",
         avatarLargePath: userImage,
       },
-      __dirname + "/user_info_card_render.png",
-      __dirname + "/golden/user_info_card_render.png",
-      __dirname + "/user_info_card_render_diff.png"
+      path.join(__dirname, "/user_info_card_render.png"),
+      path.join(__dirname, "/golden/user_info_card_render.png"),
+      path.join(__dirname, "/user_info_card_render_diff.png")
     ),
     new RenderCase(
       "RenderDescription",
@@ -128,9 +130,9 @@ TEST_RUNNER.run({
         description:
           "some long long description some long long description some long long description some long long descriptionsome long long descriptionsome long long description some long long description some long long description some long long descriptionsome long long description some long long description",
       },
-      __dirname + "/user_info_card_render_description.png",
-      __dirname + "/golden/user_info_card_render_description.png",
-      __dirname + "/user_info_card_render_description_diff.png"
+      path.join(__dirname, "/user_info_card_render_description.png"),
+      path.join(__dirname, "/golden/user_info_card_render_description.png"),
+      path.join(__dirname, "/user_info_card_render_description_diff.png")
     ),
     new RenderCase(
       "RenderLiked",
@@ -141,9 +143,9 @@ TEST_RUNNER.run({
         avatarLargePath: userImage,
         relationship: UserRelationship.LIKE,
       },
-      __dirname + "/user_info_card_render_liked.png",
-      __dirname + "/golden/user_info_card_render_liked.png",
-      __dirname + "/user_info_card_render_liked_diff.png"
+      path.join(__dirname, "/user_info_card_render_liked.png"),
+      path.join(__dirname, "/golden/user_info_card_render_liked.png"),
+      path.join(__dirname, "/user_info_card_render_liked_diff.png")
     ),
     new RenderCase(
       "RenderDisliked",
@@ -154,9 +156,9 @@ TEST_RUNNER.run({
         avatarLargePath: userImage,
         relationship: UserRelationship.DISLIKE,
       },
-      __dirname + "/user_info_card_render_disliked.png",
-      __dirname + "/golden/user_info_card_render_disliked.png",
-      __dirname + "/user_info_card_render_disliked_diff.png"
+      path.join(__dirname, "/user_info_card_render_disliked.png"),
+      path.join(__dirname, "/golden/user_info_card_render_disliked.png"),
+      path.join(__dirname, "/user_info_card_render_disliked_diff.png")
     ),
     new (class implements TestCase {
       public name = "SwitchButtons";
@@ -199,9 +201,9 @@ TEST_RUNNER.run({
           "like request"
         );
         await asyncAssertScreenshot(
-          __dirname + "/user_info_card_liked.png",
-          __dirname + "/golden/user_info_card_liked.png",
-          __dirname + "/user_info_card_liked_diff.png",
+          path.join(__dirname, "/user_info_card_liked.png"),
+          path.join(__dirname, "/golden/user_info_card_liked.png"),
+          path.join(__dirname, "/user_info_card_liked_diff.png"),
           { fullPage: true }
         );
 
@@ -218,9 +220,9 @@ TEST_RUNNER.run({
           "dislike request"
         );
         await asyncAssertScreenshot(
-          __dirname + "/user_info_card_disliked.png",
-          __dirname + "/golden/user_info_card_disliked.png",
-          __dirname + "/user_info_card_disliked_diff.png",
+          path.join(__dirname, "/user_info_card_disliked.png"),
+          path.join(__dirname, "/golden/user_info_card_disliked.png"),
+          path.join(__dirname, "/user_info_card_disliked_diff.png"),
           { fullPage: true }
         );
 
@@ -237,9 +239,9 @@ TEST_RUNNER.run({
           "like request"
         );
         await asyncAssertScreenshot(
-          __dirname + "/user_info_card_liked.png",
-          __dirname + "/golden/user_info_card_liked.png",
-          __dirname + "/user_info_card_liked_diff.png",
+          path.join(__dirname, "/user_info_card_liked.png"),
+          path.join(__dirname, "/golden/user_info_card_liked.png"),
+          path.join(__dirname, "/user_info_card_liked_diff.png"),
           { fullPage: true }
         );
       }
@@ -251,17 +253,17 @@ TEST_RUNNER.run({
       "UndoLike",
       (cut) => cut.likeButton,
       (cut) => cut.likedButton,
-      __dirname + "/user_info_card_undo_like.png",
-      __dirname + "/user_info_card_undo_like_baseline.png",
-      __dirname + "/user_info_card_undo_like_diff.png"
+      path.join(__dirname, "/user_info_card_undo_like.png"),
+      path.join(__dirname, "/user_info_card_undo_like_baseline.png"),
+      path.join(__dirname, "/user_info_card_undo_like_diff.png")
     ),
     new UndoCase(
       "UndoDislike",
       (cut) => cut.dislikeButton,
       (cut) => cut.dislikedButton,
-      __dirname + "/user_info_card_undo_dislike.png",
-      __dirname + "/user_info_card_undo_dislike_baseline.png",
-      __dirname + "/user_info_card_undo_dislike_diff.png"
+      path.join(__dirname, "/user_info_card_undo_dislike.png"),
+      path.join(__dirname, "/user_info_card_undo_dislike_baseline.png"),
+      path.join(__dirname, "/user_info_card_undo_dislike_diff.png")
     ),
   ],
 });

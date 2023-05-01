@@ -64,7 +64,7 @@ export class ImagesViewerPage extends EventEmitter {
   }
 
   public async show(
-    imageUrls: Array<string>,
+    imagePaths: Array<string>,
     initialIndex: number
   ): Promise<void> {
     this.backMenuItem.show();
@@ -74,8 +74,8 @@ export class ImagesViewerPage extends EventEmitter {
     this.index = initialIndex;
     await new Promise<void>((resolve) => {
       let imagesLoaded = 0;
-      for (let i = 0; i < imageUrls.length; i++) {
-        let imageViewer = ImageViewer.create(imageUrls[i]);
+      for (let i = 0; i < imagePaths.length; i++) {
+        let imageViewer = ImageViewer.create(imagePaths[i]);
         if (i === initialIndex) {
           imageViewer.show();
         } else {
@@ -83,7 +83,7 @@ export class ImagesViewerPage extends EventEmitter {
         }
         imageViewer.once("loaded", () => {
           imagesLoaded++;
-          if (imagesLoaded >= imageUrls.length) {
+          if (imagesLoaded >= imagePaths.length) {
             resolve();
           }
         });

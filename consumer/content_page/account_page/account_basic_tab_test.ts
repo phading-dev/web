@@ -1,12 +1,12 @@
 import userImage = require("./test_data/user_image.jpg");
+import path = require("path");
 import { normalizeBody } from "../../common/normalize_body";
 import { AccountBasicTab } from "./account_basic_tab";
 import { E } from "@selfage/element/factory";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import { TEST_RUNNER, TestCase } from "@selfage/test_runner";
 import { WebServiceClient } from "@selfage/web_service_client";
-import "@selfage/puppeteer_test_executor_api";
 
 normalizeBody();
 
@@ -42,9 +42,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/account_basic_tab_render.png",
-          __dirname + "/golden/account_basic_tab_render.png",
-          __dirname + "/account_basic_tab_diff_render.png",
+          path.join(__dirname, "/account_basic_tab_render.png"),
+          path.join(__dirname, "/golden/account_basic_tab_render.png"),
+          path.join(__dirname, "/account_basic_tab_diff_render.png"),
           { fullPage: true }
         );
 
@@ -56,9 +56,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/account_basic_tab_hover_avatar.png",
-          __dirname + "/golden/account_basic_tab_hover_avatar.png",
-          __dirname + "/account_basic_tab_hover_avatar_diff.png",
+          path.join(__dirname, "/account_basic_tab_hover_avatar.png"),
+          path.join(__dirname, "/golden/account_basic_tab_hover_avatar.png"),
+          path.join(__dirname, "/account_basic_tab_hover_avatar_diff.png"),
           { fullPage: true }
         );
 
@@ -80,9 +80,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          __dirname + "/account_basic_tab_leave_avatar.png",
-          __dirname + "/golden/account_basic_tab_render.png",
-          __dirname + "/account_basic_tab_leave_avatar_diff.png",
+          path.join(__dirname, "/account_basic_tab_leave_avatar.png"),
+          path.join(__dirname, "/golden/account_basic_tab_render.png"),
+          path.join(__dirname, "/account_basic_tab_leave_avatar_diff.png"),
           { fullPage: true }
         );
       }

@@ -3,8 +3,8 @@ import wideImage = require("./test_data/wide.jpeg");
 import { normalizeBody } from "../../../../common/normalize_body";
 import { ImageEditor } from "./image_editor";
 import { E } from "@selfage/element/factory";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
-import { TEST_RUNNER, TestCase } from "@selfage/test_runner";
 
 normalizeBody();
 

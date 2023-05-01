@@ -29,7 +29,7 @@ export interface QuickTaleCard {
   on(event: "pin", listener: (context: TaleContext) => void): this;
   on(
     event: "viewImages",
-    listener: (imageUrls: Array<string>, index: number) => void
+    listener: (imagePaths: Array<string>, index: number) => void
   ): this;
   on(event: "actionsLineTranstionEnded", listener: () => void): this;
 }
@@ -92,7 +92,7 @@ export class QuickTaleCard extends EventEmitter {
         style: `display: flex; flex-flow: column nowrap; gap: 1rem; width: ${CARD_WIDTH}; padding: .6rem 1.2rem; border-bottom: .1rem solid ${SCHEME.neutral2}; box-sizing: border-box; overflow: hidden; background-color: ${SCHEME.neutral4};`,
       },
       ...this.createTextContent(cardData.text),
-      ...this.createPreviewImages(cardData.images),
+      ...this.createPreviewImages(cardData.imagePaths),
       E.div(
         {
           class: "quick-tale-card-meta-line",
@@ -390,12 +390,12 @@ export class QuickTaleCard extends EventEmitter {
     this.showLessButton.style.display = "none";
   }
 
-  private createPreviewImages(imageUrls?: Array<string>): Array<HTMLElement> {
-    if (!imageUrls || imageUrls.length === 0) {
+  private createPreviewImages(imagePaths?: Array<string>): Array<HTMLElement> {
+    if (!imagePaths || imagePaths.length === 0) {
       return [];
-    } else if (imageUrls.length === 1) {
+    } else if (imagePaths.length === 1) {
       return [
-        this.createSinglePreviewImage(imageUrls[0], () =>
+        this.createSinglePreviewImage(imagePaths[0], () =>
           this.emit("imagesLoaded")
         ),
       ];
@@ -407,10 +407,10 @@ export class QuickTaleCard extends EventEmitter {
             class: "quick-tale-card-images",
             style: `display: flex; flex-flow: row wrap; column-gap: 1.5rem; row-gap: 1rem; align-items: center;`,
           },
-          ...imageUrls.map((imageUrl, index, imageUrls) =>
-            this.createTilePreviewImage(imageUrl, index, imageUrls, () => {
+          ...imagePaths.map((imagePath, index, imagePaths) =>
+            this.createTilePreviewImage(imagePath, index, imagePaths, () => {
               loadedCount += 1;
-              if (loadedCount >= imageUrls.length) {
+              if (loadedCount >= imagePaths.length) {
                 this.emit("imagesLoaded");
               }
             })
@@ -421,13 +421,13 @@ export class QuickTaleCard extends EventEmitter {
   }
 
   private createSinglePreviewImage(
-    imageUrl: string,
+    imagePath: string,
     onload: () => void
   ): HTMLElement {
     let imageElement = E.image({
       class: "quick-tale-card-single-preview-image",
       style: `flex: 0 0 auto; align-self: center; cursor: pointer;`,
-      src: imageUrl,
+      src: imagePath,
     });
     this.previewImages.push(imageElement);
     imageElement.onload = () => {
@@ -439,15 +439,15 @@ export class QuickTaleCard extends EventEmitter {
       onload();
     };
     imageElement.addEventListener("click", () =>
-      this.emit("viewImages", [imageUrl], 0)
+      this.emit("viewImages", [imagePath], 0)
     );
     return imageElement;
   }
 
   private createTilePreviewImage(
-    imageUrl: string,
+    imagePath: string,
     index: number,
-    imageUrls: Array<string>,
+    imagePaths: Array<string>,
     onload: () => void
   ): HTMLElement {
     let imageElementRef = new Ref<HTMLImageElement>();
@@ -459,7 +459,7 @@ export class QuickTaleCard extends EventEmitter {
       E.imageRef(imageElementRef, {
         class: "quick-tale-card-tile-preview-image",
         style: `flex: 0 0 auto; cursor: pointer;`,
-        src: imageUrl,
+        src: imagePath,
       })
     );
     let imageElement = imageElementRef.val;
@@ -473,7 +473,7 @@ export class QuickTaleCard extends EventEmitter {
       onload();
     };
     imageElement.addEventListener("click", () =>
-      this.emit("viewImages", imageUrls, index)
+      this.emit("viewImages", imagePaths, index)
     );
     return container;
   }
