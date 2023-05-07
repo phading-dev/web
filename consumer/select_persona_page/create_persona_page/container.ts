@@ -32,7 +32,7 @@ export class CreatePersonaPage extends EventEmitter {
           this.createPersonaAction(nameInput, imageCropper),
         E.div(
           {
-            class: "edit-persona-name-label",
+            class: "create-persona-name-label",
             style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.namePersonaLabel)

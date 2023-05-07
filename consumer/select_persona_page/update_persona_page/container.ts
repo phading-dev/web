@@ -40,7 +40,7 @@ export class UpdatePersonaPage extends EventEmitter {
         assign(
           renamePersonalLabelRef,
           E.div({
-            class: "edit-persona-name-label",
+            class: "update-persona-name-label",
             style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
           })
         ),
@@ -48,7 +48,7 @@ export class UpdatePersonaPage extends EventEmitter {
         LOCALIZED_TEXT.updatePersonaLabel,
         E.div(
           {
-            class: "edit-persona-current-image-label",
+            class: "update-persona-current-image-label",
             style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.replacePersonaImageLabelPart1)
@@ -56,7 +56,7 @@ export class UpdatePersonaPage extends EventEmitter {
         assign(
           currentImageRef,
           E.image({
-            class: "edit-persona-current-image",
+            class: "update-persona-current-image",
             style: `width: 20rem; height: 20rem;`,
           })
         )

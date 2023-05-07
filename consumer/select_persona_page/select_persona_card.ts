@@ -1,0 +1,84 @@
+import EventEmitter = require("events");
+import { SCHEME } from "../common/color_scheme";
+import { PersonaCard } from "@phading/user_service_interface/persona_card";
+import { E } from "@selfage/element/factory";
+
+export interface SelectPersonaCard {
+  on(event: "select", listener: (personaId: string) => void): this;
+}
+
+export class SelectPersonaCard extends EventEmitter {
+  public body: HTMLDivElement;
+
+  public constructor(
+    private personaCard: PersonaCard,
+    public selected: boolean
+  ) {
+    super();
+    this.body = E.div(
+      {
+        class: "select-persona-card",
+        style: `display: flex; flex-flow: column nowrap; align-items: center; width: 21rem; gap: 3rem; padding: 0 2rem; box-sizing: border-box; border-radius: .5rem; background-color: ${SCHEME.neutral4}; cursor: pointer;`,
+      },
+      E.div(
+        {
+          class: "select-persona-card-name",
+          style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(this.personaCard.name)
+      ),
+      E.image({
+        class: "select-persona-card-image",
+        style: `width: 15rem; height: 15rem; border: .1rem solid ${SCHEME.neutral1}; border-radius: 20rem;`,
+        src: this.personaCard.imagePath,
+      })
+    );
+
+    if (this.selected) {
+      this.renderSelected();
+    } else {
+      this.renderUnselected();
+    }
+    this.body.addEventListener("click", () => this.select());
+  }
+
+  public static create(
+    personaCard: PersonaCard,
+    selected: boolean
+  ): SelectPersonaCard {
+    return new SelectPersonaCard(personaCard, selected);
+  }
+
+  private renderSelected(): void {
+    this.body.style.paddingTop = `2.8rem`;
+    this.body.style.paddingBottom = `2.8rem`;
+    this.body.style.border = `.2rem solid ${SCHEME.primary1}`;
+  }
+
+  private renderUnselected(): void {
+    this.body.style.paddingTop = `2.9rem`;
+    this.body.style.paddingBottom = `2.9rem`;
+    this.body.style.border = `.1rem solid ${SCHEME.neutral1}`;
+  }
+
+  private select(): void {
+    if (this.selected) {
+      return;
+    }
+    this.selected = true;
+    this.renderSelected();
+    this.emit("select", this.personaCard.id);
+  }
+
+  public unselect(): void {
+    if (!this.selected) {
+      return;
+    }
+    this.selected = false;
+    this.renderUnselected();
+  }
+
+  public delete(): void {
+    this.body.remove();
+  }
+}
