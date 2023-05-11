@@ -1,36 +1,37 @@
 import EventEmitter = require("events");
-import { SCHEME } from "../common/color_scheme";
-import { PersonaCard } from "@phading/user_service_interface/persona_card";
+import { SCHEME } from "../../common/color_scheme";
+import { CARD_WIDTH } from "./styles";
+import { PersonaCard as PersonaCardData } from "@phading/user_service_interface/persona_card";
 import { E } from "@selfage/element/factory";
 
 export interface SelectPersonaCard {
   on(event: "select", listener: (personaId: string) => void): this;
 }
 
-export class SelectPersonaCard extends EventEmitter {
+export class PersonaCard extends EventEmitter {
   public body: HTMLDivElement;
 
   public constructor(
-    private personaCard: PersonaCard,
+    private personaCardData: PersonaCardData,
     public selected: boolean
   ) {
     super();
     this.body = E.div(
       {
         class: "select-persona-card",
-        style: `display: flex; flex-flow: column nowrap; align-items: center; width: 21rem; gap: 3rem; padding: 0 2rem; box-sizing: border-box; border-radius: .5rem; background-color: ${SCHEME.neutral4}; cursor: pointer;`,
+        style: `display: flex; flex-flow: column nowrap; align-items: center; width: ${CARD_WIDTH}; gap: 3rem; padding: 0 2rem; box-sizing: border-box; border-radius: .5rem; background-color: ${SCHEME.neutral4}; cursor: pointer;`,
       },
       E.div(
         {
           class: "select-persona-card-name",
           style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
         },
-        E.text(this.personaCard.name)
+        E.text(this.personaCardData.name)
       ),
       E.image({
         class: "select-persona-card-image",
         style: `width: 15rem; height: 15rem; border: .1rem solid ${SCHEME.neutral1}; border-radius: 20rem;`,
-        src: this.personaCard.imagePath,
+        src: this.personaCardData.imagePath,
       })
     );
 
@@ -43,10 +44,10 @@ export class SelectPersonaCard extends EventEmitter {
   }
 
   public static create(
-    personaCard: PersonaCard,
+    personaCardData: PersonaCardData,
     selected: boolean
-  ): SelectPersonaCard {
-    return new SelectPersonaCard(personaCard, selected);
+  ): PersonaCard {
+    return new PersonaCard(personaCardData, selected);
   }
 
   private renderSelected(): void {
@@ -62,23 +63,10 @@ export class SelectPersonaCard extends EventEmitter {
   }
 
   private select(): void {
-    if (this.selected) {
-      return;
-    }
-    this.selected = true;
-    this.renderSelected();
-    this.emit("select", this.personaCard.id);
+    this.emit("select", this.personaCardData.id);
   }
 
-  public unselect(): void {
-    if (!this.selected) {
-      return;
-    }
-    this.selected = false;
-    this.renderUnselected();
-  }
-
-  public delete(): void {
+  public remove(): void {
     this.body.remove();
   }
 }

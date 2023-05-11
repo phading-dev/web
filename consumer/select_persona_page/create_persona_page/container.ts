@@ -13,13 +13,14 @@ import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface CreatePersonaPage {
-  on(event: "done", listener: () => void): this;
+  on(event: "done", listener: (personaId: string) => void): this;
 }
 
 export class CreatePersonaPage extends EventEmitter {
   public body: HTMLDivElement;
   // Visible for testing
   public editPersonaPage: EditPersonaPage;
+  private personaId: string;
 
   public constructor(private webServiceClient: WebServiceClient) {
     super();
@@ -43,7 +44,7 @@ export class CreatePersonaPage extends EventEmitter {
     ).body;
     this.editPersonaPage = editPersonaPageRef.val;
 
-    this.editPersonaPage.on("done", () => this.emit("done"));
+    this.editPersonaPage.on("done", () => this.emit("done", this.personaId));
   }
 
   public static create(): CreatePersonaPage {
@@ -65,10 +66,11 @@ export class CreatePersonaPage extends EventEmitter {
       this.webServiceClient,
       imageBlob
     );
-    await createPersona(this.webServiceClient, {
+    let response = await createPersona(this.webServiceClient, {
       name: nameInput.value,
       imagePath: uploadResponse.imagePath,
     });
+    this.personaId = response.id;
   }
 
   public show(): void {
