@@ -1,6 +1,6 @@
 import wideImage = require("./test_data/wide.jpeg");
 import path = require("path");
-import { normalizeBody } from "../../common/normalize_body";
+import { LOCAL_PERSONA_STORAGE } from "../../common/local_persona_storage";
 import { CreatePersonaPage } from "./container";
 import {
   CREATE_PERSONA,
@@ -11,23 +11,39 @@ import {
 } from "@phading/user_service_interface/interface";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
-import { supplyFiles, writeFile } from "@selfage/puppeteer_test_executor_api";
+import {
+  setViewport,
+  supplyFiles,
+  writeFile,
+} from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import {
   asyncAssertImage,
   asyncAssertScreenshot,
 } from "@selfage/screenshot_test_matcher";
-import { assertThat } from "@selfage/test_matcher";
+import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClient } from "@selfage/web_service_client";
+import "../../common/normalize_body";
 
-normalizeBody();
+let menuContainer: HTMLDivElement;
 
 TEST_RUNNER.run({
   name: "CreatePersonaPageTest",
+  environment: {
+    setUp: () => {
+      menuContainer = E.div({
+        style: `position: absolute; top: 0; left: 0;`,
+      });
+      document.body.append(menuContainer);
+    },
+    tearDown: () => {
+      menuContainer.remove();
+    },
+  },
   cases: [
     new (class implements TestCase {
       public name = "Render_InputName_ChooseFile_CreateSucceeded";
-      private container: HTMLDivElement;
+      private cut: CreatePersonaPage;
       public async execute() {
         // Prepare
         let mockWebServiceClient = new (class extends WebServiceClient {
@@ -35,12 +51,15 @@ TEST_RUNNER.run({
             super(undefined, undefined);
           }
         })();
-        let cut = new CreatePersonaPage(mockWebServiceClient);
-        this.container = E.div({}, cut.body);
-        document.body.append(this.container);
+        await setViewport(800, 800);
 
         // Execute
-        cut.show();
+        this.cut = new CreatePersonaPage(
+          mockWebServiceClient,
+          LOCAL_PERSONA_STORAGE
+        );
+        document.body.append(this.cut.body);
+        menuContainer.append(this.cut.menuBody);
 
         // Verify
         await asyncAssertScreenshot(
@@ -53,8 +72,10 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.editPersonaPage.nameInput.value = "Some name";
-        cut.editPersonaPage.nameInput.dispatchEvent(new KeyboardEvent("input"));
+        this.cut.editPersonaPage.nameInput.value = "Some name";
+        this.cut.editPersonaPage.nameInput.dispatchEvent(
+          new KeyboardEvent("input")
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -68,11 +89,11 @@ TEST_RUNNER.run({
 
         // Execute
         supplyFiles(
-          () => cut.editPersonaPage.chooseFileButton.click(),
+          () => this.cut.editPersonaPage.chooseFileButton.click(),
           wideImage
         );
         await new Promise<void>((resolve) =>
-          cut.editPersonaPage.once("imageLoaded", resolve)
+          this.cut.editPersonaPage.once("imageLoaded", resolve)
         );
 
         // Verify
@@ -122,10 +143,15 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        cut.editPersonaPage.submitButton.click();
-        await new Promise<void>((resolve) => cut.once("done", resolve));
+        this.cut.editPersonaPage.submitButton.click();
+        await new Promise<void>((resolve) => this.cut.once("created", resolve));
 
         // Verify
+        assertThat(
+          LOCAL_PERSONA_STORAGE.read(),
+          eq("new id"),
+          "created persona id"
+        );
         await asyncAssertImage(
           path.join(__dirname, "/create_persona_page_uploaded_image.png"),
           path.join(
@@ -134,20 +160,9 @@ TEST_RUNNER.run({
           ),
           path.join(__dirname, "/create_persona_page_uploaded_image_diff.png")
         );
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/create_persona_page_submit_success.png"),
-          path.join(
-            __dirname,
-            "/golden/create_persona_page_submit_success.png"
-          ),
-          path.join(__dirname, "/create_persona_page_submit_success_diff.png"),
-          {
-            fullPage: true,
-          }
-        );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
   ],

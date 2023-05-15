@@ -13,6 +13,7 @@ import { Ref } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface ListPersonaPage {
+  on(event: "loaded", listener: () => void): this;
   on(event: "selected", listener: () => void): this;
   on(event: "create", listener: () => void): this;
 }
@@ -34,7 +35,7 @@ export class ListPersonaPage extends EventEmitter {
     this.body = E.div(
       {
         class: "select-persona",
-        style: `flex-flow: row nowrap; width: 100vw; min-height: 100vh;`,
+        style: `display: flex; flex-flow: row nowrap; width: 100vw; min-height: 100vh;`,
       },
       E.divRef(
         cardContainerRef,
@@ -60,6 +61,7 @@ export class ListPersonaPage extends EventEmitter {
     );
     this.cardContainer = cardContainerRef.val;
     this.addPersonaCard = addPersonaCardRef.val;
+    this.loadCards();
 
     this.addPersonaCard.addEventListener("click", () => this.emit("create"));
   }
@@ -68,9 +70,7 @@ export class ListPersonaPage extends EventEmitter {
     return new ListPersonaPage(WEB_SERVICE_CLIENT, LOCAL_PERSONA_STORAGE);
   }
 
-  public async show(): Promise<void> {
-    this.body.style.display = "flex";
-
+  private async loadCards(): Promise<void> {
     let response = await listPersonas(this.webServiceClient, {});
     let selectedPersonaId = this.personaStorage.read();
     for (let cardData of response.cards) {
@@ -79,6 +79,7 @@ export class ListPersonaPage extends EventEmitter {
       this.cardContainer.insertBefore(card.body, this.addPersonaCard);
       this.personaCards.push(card);
     }
+    this.emit("loaded");
   }
 
   private updatePersonaSelection(personaId: string): void {
@@ -86,10 +87,7 @@ export class ListPersonaPage extends EventEmitter {
     this.emit("selected");
   }
 
-  public hide(): void {
-    this.body.style.display = "hide";
-    while (this.personaCards.length > 0) {
-      this.personaCards.pop().remove();
-    }
+  public remove(): void {
+    this.body.remove();
   }
 }

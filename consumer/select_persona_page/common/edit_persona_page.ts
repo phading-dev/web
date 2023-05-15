@@ -11,7 +11,6 @@ import { Ref, assign } from "@selfage/ref";
 
 export interface EditPersonaPage {
   on(event: "imageLoaded", listener: () => void): this;
-  on(event: "done", listener: () => void): this;
 }
 
 export enum InputField {
@@ -55,7 +54,7 @@ export class EditPersonaPage extends EventEmitter {
     this.body = E.div(
       {
         class: "edit-persona",
-        style: `flex-flow: row nowrap; justify-content: center; width: 100vw;`,
+        style: `display: flex; flex-flow: row nowrap; justify-content: center; width: 100vw;`,
       },
       E.div(
         {
@@ -117,6 +116,8 @@ export class EditPersonaPage extends EventEmitter {
     this.imageCropper = imageCropperRef.val;
     this.submitButton = submitButtonRef.val;
     this.submitError = submitErrorRef.val;
+    this.checkInput();
+    this.refreshSubmitButton();
 
     this.nameInput.addEventListener("input", () => this.checkInput());
     this.chooseFileButton.on("action", () => this.chooseFile());
@@ -156,14 +157,14 @@ export class EditPersonaPage extends EventEmitter {
     await new Promise<void>((resolve) => {
       let fileInput = E.input({ type: "file" });
       fileInput.addEventListener("input", async () => {
-        await this.load(fileInput.files);
+        await this.loadImage(fileInput.files);
         resolve();
       });
       fileInput.click();
     });
   }
 
-  private async load(files: FileList): Promise<void> {
+  private async loadImage(files: FileList): Promise<void> {
     this.loadErrorText.style.visibility = "hidden";
     try {
       await this.imageCropper.load(files[0]);
@@ -189,26 +190,10 @@ export class EditPersonaPage extends EventEmitter {
       this.submitError.style.visibility = "visible";
       this.submitError.textContent = LOCALIZED_TEXT.createPersonaError;
       console.error(error);
-    } else {
-      this.clear();
-      this.emit("done");
     }
   }
 
-  private clear(): void {
-    this.nameInput.value = "";
-    this.checkInput();
-    this.imageCropper.clear();
-    this.validInputs.delete(InputField.IMAGE);
-    this.refreshSubmitButton();
-  }
-
-  public show(): void {
-    this.body.style.display = "flex";
-    this.clear();
-  }
-
-  public hide(): void {
-    this.body.style.display = "none";
+  public remove(): void {
+    this.body.remove();
   }
 }

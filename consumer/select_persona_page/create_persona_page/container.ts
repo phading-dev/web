@@ -1,8 +1,14 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../common/color_scheme";
 import { ImageCropper } from "../../common/image_cropper/container";
+import {
+  LOCAL_PERSONA_STORAGE,
+  LocalPersonaStorage,
+} from "../../common/local_persona_storage";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
 import { WEB_SERVICE_CLIENT } from "../../common/web_service_client";
+import { MenuItem } from "../../content_page/menu_item/container";
+import { createBackMenuItem } from "../../content_page/menu_item/factory";
 import { EditPersonaPage, InputField } from "../common/edit_persona_page";
 import {
   createPersona,
@@ -13,16 +19,21 @@ import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface CreatePersonaPage {
-  on(event: "done", listener: (personaId: string) => void): this;
+  on(event: "created", listener: () => void): this;
+  on(event: "back", listener: () => void): this;
 }
 
 export class CreatePersonaPage extends EventEmitter {
   public body: HTMLDivElement;
+  public menuBody: HTMLDivElement;
   // Visible for testing
   public editPersonaPage: EditPersonaPage;
-  private personaId: string;
+  public backMenuItem: MenuItem;
 
-  public constructor(private webServiceClient: WebServiceClient) {
+  public constructor(
+    private webServiceClient: WebServiceClient,
+    private localPersonaStorage: LocalPersonaStorage
+  ) {
     super();
     let editPersonaPageRef = new Ref<EditPersonaPage>();
     this.body = assign(
@@ -44,11 +55,14 @@ export class CreatePersonaPage extends EventEmitter {
     ).body;
     this.editPersonaPage = editPersonaPageRef.val;
 
-    this.editPersonaPage.on("done", () => this.emit("done", this.personaId));
+    this.backMenuItem = createBackMenuItem();
+    this.menuBody = this.backMenuItem.body;
+
+    this.backMenuItem.on("action", () => this.emit("back"));
   }
 
   public static create(): CreatePersonaPage {
-    return new CreatePersonaPage(WEB_SERVICE_CLIENT);
+    return new CreatePersonaPage(WEB_SERVICE_CLIENT, LOCAL_PERSONA_STORAGE);
   }
 
   private refreshSubmitButton(validInputs: Set<InputField>): boolean {
@@ -70,14 +84,12 @@ export class CreatePersonaPage extends EventEmitter {
       name: nameInput.value,
       imagePath: uploadResponse.imagePath,
     });
-    this.personaId = response.id;
+    this.localPersonaStorage.save(response.id);
+    this.emit("created");
   }
 
-  public show(): void {
-    this.editPersonaPage.show();
-  }
-
-  public hide(): void {
-    this.editPersonaPage.hide();
+  public remove(): void {
+    this.editPersonaPage.remove();
+    this.backMenuItem.remove();
   }
 }

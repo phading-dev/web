@@ -1,6 +1,5 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../common/color_scheme";
-import { CARD_WIDTH } from "./styles";
 import { PersonaCard as PersonaCardData } from "@phading/user_service_interface/persona_card";
 import { E } from "@selfage/element/factory";
 
@@ -19,7 +18,7 @@ export class PersonaCard extends EventEmitter {
     this.body = E.div(
       {
         class: "select-persona-card",
-        style: `display: flex; flex-flow: column nowrap; align-items: center; width: ${CARD_WIDTH}; gap: 3rem; padding: 0 2rem; box-sizing: border-box; border-radius: .5rem; background-color: ${SCHEME.neutral4}; cursor: pointer;`,
+        style: `display: flex; flex-flow: column nowrap; align-items: center; width: 21rem; gap: 3rem; padding: 0 2rem; box-sizing: border-box; border-radius: .5rem; background-color: ${SCHEME.neutral4}; cursor: pointer;`,
       },
       E.div(
         {

@@ -2,18 +2,16 @@ import nonImageFile = require("./test_data/text.bin");
 import wideImage = require("./test_data/wide.jpeg");
 import path = require("path");
 import { ImageCropper } from "../../common/image_cropper/container";
-import { normalizeBody } from "../../common/normalize_body";
 import { EditPersonaPage } from "./edit_persona_page";
 import { E } from "@selfage/element/factory";
-import { supplyFiles, writeFile } from "@selfage/puppeteer_test_executor_api";
+import { supplyFiles, writeFile, setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import {
   asyncAssertImage,
   asyncAssertScreenshot,
 } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-
-normalizeBody();
+import "../../common/normalize_body";
 
 TEST_RUNNER.run({
   name: "EditPersonaPageTest",
@@ -21,29 +19,31 @@ TEST_RUNNER.run({
     new (class implements TestCase {
       public name =
         "Render_NameTooLong_ChooseFile_CreateFailed_CreateSucceeded";
-      private container: HTMLDivElement;
+      private cut: EditPersonaPage;
       public async execute() {
         // Prepare
         let submitActionFn: (
           nameInput: HTMLInputElement,
           imageCropper: ImageCropper
         ) => Promise<void>;
-        let cut = new EditPersonaPage(
+        await setViewport(800, 800);
+
+        // Execute
+        this.cut = new EditPersonaPage(
           (validInputs) => {
             return validInputs.size == 2;
           },
           (nameInput, imageCropper) => submitActionFn(nameInput, imageCropper),
-          E.div({
-            style: `font-size: 1.4rem;`
-          }, E.text("Name your persona")),
+          E.div(
+            {
+              style: `font-size: 1.4rem;`,
+            },
+            E.text("Name your persona")
+          ),
           "Choose an image",
           "Submit"
         );
-        this.container = E.div({}, cut.body);
-        document.body.append(this.container);
-
-        // Execute
-        cut.show();
+        document.body.append(this.cut.body);
 
         // Verify
         await asyncAssertScreenshot(
@@ -60,8 +60,8 @@ TEST_RUNNER.run({
         for (let i = 0; i < 81; i++) {
           str.push("0");
         }
-        cut.nameInput.value = str.join("");
-        cut.nameInput.dispatchEvent(new KeyboardEvent("input"));
+        this.cut.nameInput.value = str.join("");
+        this.cut.nameInput.dispatchEvent(new KeyboardEvent("input"));
 
         // Verify
         await asyncAssertScreenshot(
@@ -74,10 +74,12 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.nameInput.value = "shorter name";
-        cut.nameInput.dispatchEvent(new KeyboardEvent("input"));
-        supplyFiles(() => cut.chooseFileButton.click(), nonImageFile);
-        await new Promise<void>((resolve) => cut.once("imageLoaded", resolve));
+        this.cut.nameInput.value = "shorter name";
+        this.cut.nameInput.dispatchEvent(new KeyboardEvent("input"));
+        supplyFiles(() => this.cut.chooseFileButton.click(), nonImageFile);
+        await new Promise<void>((resolve) =>
+          this.cut.once("imageLoaded", resolve)
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -93,8 +95,10 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        supplyFiles(() => cut.chooseFileButton.click(), wideImage);
-        await new Promise<void>((resolve) => cut.once("imageLoaded", resolve));
+        supplyFiles(() => this.cut.chooseFileButton.click(), wideImage);
+        await new Promise<void>((resolve) =>
+          this.cut.once("imageLoaded", resolve)
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -112,7 +116,7 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        cut.submitButton.click();
+        await this.cut.submitButton.click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -146,8 +150,7 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        cut.submitButton.click();
-        await new Promise<void>((resolve) => cut.once("done", resolve));
+        await this.cut.submitButton.click();
 
         // Verify
         await asyncAssertImage(
@@ -155,17 +158,42 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/edit_persona_page_cropped_image.png"),
           path.join(__dirname, "/edit_persona_page_cropped_image_diff.png")
         );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "RenderWideScreen";
+      private cut: EditPersonaPage;
+      public async execute() {
+        // Execute
+        await setViewport(1200, 800);
+        this.cut = new EditPersonaPage(
+          () => {
+            return false;
+          },
+          async () => {},
+          E.div(
+            {
+              style: `font-size: 1.4rem;`,
+            },
+            E.text("Name your persona")
+          ),
+          "Choose an image",
+          "Submit"
+        );
+        document.body.append(this.cut.body);
+
+        // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/edit_persona_page_submit_success.png"),
-          path.join(__dirname, "/golden/edit_persona_page_submit_success.png"),
-          path.join(__dirname, "/edit_persona_page_submit_success_diff.png"),
-          {
-            fullPage: true,
-          }
+          path.join(__dirname, "/edit_persona_page_render_wide.png"),
+          path.join(__dirname, "/golden/edit_persona_page_render_wide.png"),
+          path.join(__dirname, "/edit_persona_page_render_wide_diff.png")
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
   ],
