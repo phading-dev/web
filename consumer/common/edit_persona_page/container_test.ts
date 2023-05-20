@@ -1,17 +1,21 @@
 import nonImageFile = require("./test_data/text.bin");
 import wideImage = require("./test_data/wide.jpeg");
 import path = require("path");
-import { ImageCropper } from "../../common/image_cropper/container";
-import { EditPersonaPage } from "./edit_persona_page";
+import { ImageCropper } from "../image_cropper/container";
+import { EditPersonaPage } from "./container";
 import { E } from "@selfage/element/factory";
-import { supplyFiles, writeFile, setViewport } from "@selfage/puppeteer_test_executor_api";
+import {
+  setViewport,
+  supplyFiles,
+  writeFile,
+} from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import {
   asyncAssertImage,
   asyncAssertScreenshot,
 } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import "../../common/normalize_body";
+import "../normalize_body";
 
 TEST_RUNNER.run({
   name: "EditPersonaPageTest",

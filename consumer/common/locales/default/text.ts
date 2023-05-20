@@ -2,11 +2,14 @@ export default class Text {
   get locale() {
     return 'en';
   }
-  get usernameLabel() {
-    return `Username`;
+  get signUpTitle() {
+    return `Create your new account`
   }
   get naturalNameLabel() {
     return `Name`;
+  }
+  get usernameLabel() {
+    return `Username`;
   }
   get emailLabel() {
     return `Email`;
@@ -14,20 +17,47 @@ export default class Text {
   get passwordLabel() {
     return `Password`;
   }
-  get passwordRepeatLabel() {
-    return `Repeat password`;
+  get repeatPasswordLabel() {
+    return `Confirm your password`;
   }
   get switchToSignUpLink() {
     return `Don't have an account?`;
   }
-  get signInButtonLabel() {
-    return `Sign in`;
+  get naturalNameTooLongError() {
+    return `Your name is too long`;
   }
-  get switchToSignInLink() {
-    return `Already have an account?`;
+  get naturalNameMissingError() {
+    return `A name is required`;
+  }
+  get usernameTooLongError() {
+    return `Your username is too long`;
+  }
+  get usernameMissingError() {
+    return `A username is required`;
+  }
+  get passwordTooLongError() {
+    return `Your password is too long`;
+  }
+  get passwordMissingError() {
+    return `Please enter a password`;
+  }
+  get repeatPasswordNotMatchError() {
+    return `The two passwords don't match`;
   }
   get signUpButtonLabel() {
     return `Sign up`;
+  }
+  get signInTitle() {
+    return `Sign in to your account`
+  }
+  get signInButtonLabel() {
+    return `Sign in`;
+  }
+  get signInError() {
+    return `Failed to sign in. Please check your username and password, and try again.`;
+  }
+  get switchToSignInLink() {
+    return `Already have an account?`;
   }
   get sendTaleEntryButtonLabel() {
     return `Send`;

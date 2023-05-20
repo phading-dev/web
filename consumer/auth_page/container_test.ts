@@ -1,0 +1,55 @@
+import path = require("path");
+import { AuthPage } from "./container";
+import { SignInPageMock } from "./sign_in_page_mock";
+import { SignUpPageMock } from "./sign_up_page_mock";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
+import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+import "../common/normalize_body";
+
+TEST_RUNNER.run({
+  name: "AuthPageTest",
+  cases: [
+    new (class implements TestCase {
+      public name = "Render";
+      private cut: AuthPage;
+      public async execute() {
+        // Execute
+        this.cut = new AuthPage(
+          () => new SignInPageMock(),
+          () => new SignUpPageMock(),
+          (...bodies) => document.body.append(...bodies)
+        );
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/auth_page_render.png"),
+          path.join(__dirname, "/golden/auth_page_render.png"),
+          path.join(__dirname, "/auth_page_render_diff.png")
+        );
+
+        // Execute
+        this.cut.signInPage.switchToSignUpButton.click();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/auth_page_switch_to_sign_up.png"),
+          path.join(__dirname, "/golden/auth_page_switch_to_sign_up.png"),
+          path.join(__dirname, "/auth_page_switch_to_sign_up_diff.png")
+        );
+
+        // Execute
+        this.cut.signUpPage.switchToSignInButton.click();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/auth_page_switch_to_sign_in.png"),
+          path.join(__dirname, "/golden/auth_page_render.png"),
+          path.join(__dirname, "/auth_page_switch_to_sign_in_diff.png")
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+  ],
+});

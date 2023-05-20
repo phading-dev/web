@@ -9,9 +9,7 @@ export class PageNavigator<Page> {
 
   public goTo(page: Page) {
     if (this.currentPage !== page) {
-      if (this.currentPage) {
-        this.removePage(this.currentPage);
-      }
+      this.removePage(this.currentPage);
       this.currentPage = page;
       this.addPage(this.currentPage);
     } else {

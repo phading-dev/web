@@ -2,10 +2,10 @@ import EventEmitter = require("events");
 import {
   FilledBlockingButton,
   OutlineBlockingButton,
-} from "../../common/blocking_button";
-import { SCHEME } from "../../common/color_scheme";
-import { ImageCropper } from "../../common/image_cropper/container";
-import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
+} from "../blocking_button";
+import { SCHEME } from "../color_scheme";
+import { ImageCropper } from "../image_cropper/container";
+import { LOCALIZED_TEXT } from "../locales/localized_text";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
