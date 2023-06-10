@@ -40,13 +40,35 @@ TEST_RUNNER.run({
           path.join(__dirname, "/sign_in_page_tall_render_diff.png")
         );
 
+        // Execute
+        this.cut.usernameInput.value = "my_username";
+        this.cut.usernameInput.emit("input");
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/sign_in_page_username_input.png"),
+          path.join(__dirname, "/golden/sign_in_page_username_input.png"),
+          path.join(__dirname, "/sign_in_page_username_input_diff.png")
+        );
+
+        // Execute
+        this.cut.passwordInput.value = "123";
+        this.cut.passwordInput.emit("input");
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/sign_in_page_password_input.png"),
+          path.join(__dirname, "/golden/sign_in_page_password_input.png"),
+          path.join(__dirname, "/sign_in_page_password_input_diff.png")
+        );
+
         // Prepare
         webServiceClientMock.send = async (request: any) => {
           throw new Error("fake error");
         };
 
         // Execute
-        await this.cut.submitButton.click();
+        this.cut.submitButton.click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -56,8 +78,6 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        this.cut.usernameInput.value = "my_username";
-        this.cut.passwordInput.value = "123";
         webServiceClientMock.send = async (request: any) => {
           assertThat(request.descriptor, eq(SIGN_IN), "request service");
           assertThat(

@@ -3,19 +3,28 @@ import { SCHEME } from "./color_scheme";
 import { E, ElementAttributeMap } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
-export declare interface VerticalTextInputWithErrorMsg {
-  on(event: "enter", listener: () => Promise<void> | void): this;
+export let NULLIFIED_INPUT_STYLE = `padding: 0; margin: 0; outline: none; border: 0; font-family: initial; background-color: initial;`;
+// Missing border-color.
+export let BASIC_INPUT_STYLE = `${NULLIFIED_INPUT_STYLE} font-size: 1.4rem; line-height: 2rem; color: ${SCHEME.neutral0}; border-bottom: .1rem solid;`;
+
+export declare interface VerticalTextInputWithErrorMsg<InputField> {
+  on(event: "enter", listener: () => void): this;
+  on(event: "input", listener: () => void): this;
+  on(event: "blur", listener: () => void): this;
 }
 
-export class VerticalTextInputWithErrorMsg extends EventEmitter {
+export class VerticalTextInputWithErrorMsg<InputField> extends EventEmitter {
   public body: HTMLDivElement;
-  private input: HTMLInputElement;
+  // Visible for testing
+  public input: HTMLInputElement;
   private errorMsg: HTMLDivElement;
 
   public constructor(
     label: string,
     customStyle: string,
-    otherInputAttributes: ElementAttributeMap
+    otherInputAttributes: ElementAttributeMap,
+    private validInputs: Set<InputField>,
+    private inputField: InputField
   ) {
     super();
     let inputRef = new Ref<HTMLInputElement>();
@@ -28,36 +37,52 @@ export class VerticalTextInputWithErrorMsg extends EventEmitter {
       E.div(
         {
           class: "text-input-label",
-          style: `font-size: 1.4rem; line-height: 2rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
         },
         E.text(label)
       ),
+      E.div({
+        style: `height: 1rem;`,
+      }),
       E.inputRef(inputRef, {
         class: "text-input-input",
-        style: `padding: 0; margin: 0; outline: none; border: 0; background-color: initial; width: 100%; font-size: 1.4rem; font-family: initial; line-height: 2rem; color: ${SCHEME.neutral0}; border-bottom: .1rem solid;`,
+        style: `${BASIC_INPUT_STYLE}`,
         ...otherInputAttributes,
       }),
-      E.divRef(errorMsgRef, {
-        class: "text-input-error-label",
-        style: `align-self: flex-end; font-size: 1.2rem; line-height: 1; height: 1.6rem; padding: .2rem 0; box-sizing: border-box; color: ${SCHEME.error0};`,
-      })
+      E.div({
+        style: `height: .5rem;`,
+      }),
+      E.divRef(
+        errorMsgRef,
+        {
+          class: "text-input-error-label",
+          style: `align-self: flex-end; font-size: 1.2rem; color: ${SCHEME.error0};`,
+        },
+        E.text("1")
+      )
     );
     this.input = inputRef.val;
     this.errorMsg = errorMsgRef.val;
-    this.hideError();
 
+    this.reset();
     this.input.addEventListener("keydown", (event) => this.keydown(event));
+    this.input.addEventListener("input", () => this.emit("input"));
+    this.input.addEventListener("blur", () => this.emit("blur"));
   }
 
-  public static create(
+  public static create<InputField>(
     label: string,
     customStyle: string,
-    otherInputAttributes: ElementAttributeMap = {}
-  ): VerticalTextInputWithErrorMsg {
-    return new VerticalTextInputWithErrorMsg(
+    otherInputAttributes: ElementAttributeMap = {},
+    validInputs: Set<InputField>,
+    inputField: InputField
+  ): VerticalTextInputWithErrorMsg<InputField> {
+    return new VerticalTextInputWithErrorMsg<InputField>(
       label,
       customStyle,
-      otherInputAttributes
+      otherInputAttributes,
+      validInputs,
+      inputField
     );
   }
 
@@ -68,25 +93,88 @@ export class VerticalTextInputWithErrorMsg extends EventEmitter {
     this.emit("enter");
   }
 
-  public async enter(): Promise<void> {
-    await Promise.all(this.listeners("enter").map((callback) => callback()));
-  }
-
-  public showError(desc: string): void {
-    this.errorMsg.textContent = desc;
-    this.input.style.borderColor = SCHEME.error0;
-  }
-
-  public hideError(): void {
-    this.errorMsg.textContent = "";
+  private reset(): void {
     this.input.style.borderColor = SCHEME.neutral1;
+    this.errorMsg.style.visibility = "hidden";
   }
 
-  public setValue(value: string): void {
+  public setAsValid(): void {
+    this.reset();
+    this.validInputs.add(this.inputField);
+  }
+
+  public setAsInvalid(errorStr?: string): void {
+    if (errorStr) {
+      this.input.style.borderColor = SCHEME.error0;
+      this.errorMsg.textContent = errorStr;
+      this.errorMsg.style.visibility = "visible";
+    } else {
+      this.reset();
+    }
+    this.validInputs.delete(this.inputField);
+  }
+
+  set value(value: string) {
     this.input.value = value;
   }
 
-  public getValue(): string {
+  get value(): string {
     return this.input.value;
+  }
+
+  public remove(): void {
+    this.body.remove();
+  }
+}
+
+export class VerticalTextInputValue {
+  public body: HTMLDivElement;
+
+  public constructor(label: string, value: string, customStyle: string) {
+    this.body = E.div(
+      {
+        class: "text-input-value",
+        style: `display: flex; flex-flow: column nowrap; ${customStyle}`,
+      },
+      E.div(
+        {
+          class: "text-input-value-label",
+          style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(label)
+      ),
+      E.div({
+        style: `height: 1rem;`,
+      }),
+      E.div(
+        {
+          class: "text-input-value-value",
+          style: `font-size: 1.4rem; line-height: 2rem; color: ${SCHEME.neutral0}; border-bottom: .1rem solid ${SCHEME.neutral1};`,
+        },
+        E.text(value)
+      ),
+      E.div({
+        style: `height: .5rem;`,
+      }),
+      E.div(
+        {
+          class: "text-input-value-error-holder",
+          style: `visibility: hidden; font-size: 1.2rem;`,
+        },
+        E.text("1")
+      )
+    );
+  }
+
+  public static create(
+    label: string,
+    value: string,
+    customStyle: string
+  ): VerticalTextInputValue {
+    return new VerticalTextInputValue(label, value, customStyle);
+  }
+
+  public remove(): void {
+    this.body.remove();
   }
 }

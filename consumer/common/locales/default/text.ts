@@ -35,6 +35,9 @@ export default class Text {
   get usernameMissingError() {
     return `A username is required`;
   }
+  get usernameIsUsedError() {
+    return `The username is already taken`
+  }
   get passwordTooLongError() {
     return `Your password is too long`;
   }
@@ -46,6 +49,9 @@ export default class Text {
   }
   get signUpButtonLabel() {
     return `Sign up`;
+  }
+  get signUpError() {
+    return `Failed to sign up. Please try again later.`;
   }
   get signInTitle() {
     return `Sign in to your account`
@@ -83,6 +89,9 @@ export default class Text {
   get homeLabel() {
     return `Home`;
   }
+  get backLabel() {
+    return `Back`;
+  }
   get selectPersonaLabel() {
     return `Select persona`
   }
@@ -104,11 +113,29 @@ export default class Text {
   get uploadAvatarError() {
     return `There is an issue when uploading your avatar. Please try again later.`;
   }
-  get uploadAvatarSuccess() {
-    return `Upload completed! You will see the updated avatar soon.`;
+  get updatePasswordTitle() {
+    return `Update password`
   }
-  get backLabel() {
-    return `Back`;
+  get currentPasswordLabel() {
+    return `Current password`;
+  }
+  get newPasswordLabel() {
+    return `New password`;
+  }
+  get newPasswordTooLongError() {
+    return `The new password is too long.`;
+  }
+  get repeatNewPasswordLabel() {
+    return `Confirm new password`;
+  }
+  get repeatNewPasswordNotMatchError() {
+    return `Please double check your new passwords. They don't match.`;
+  }
+  get updatePasswordError() {
+    return `Failed to update password. Please try again later.`
+  }
+  get updateButtonLabel() {
+    return `Update`;
   }
   get chooseLayoutLabel() {
     return `Choose a layout from below`;

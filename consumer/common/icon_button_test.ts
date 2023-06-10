@@ -2,12 +2,10 @@ import path = require("path");
 import { SCHEME } from "./color_scheme";
 import { IconButton, TooltipPosition } from "./icon_button";
 import { createCommentIcon } from "./icons";
-import { normalizeBody } from "./normalize_body";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
-
-normalizeBody();
+import "./normalize_body";
 
 class RenderOversizeCentering implements TestCase {
   private container: HTMLDivElement;

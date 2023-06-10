@@ -3,7 +3,6 @@ import tallerImage = require("./test_data/taller.jpg");
 import wideImage = require("./test_data/wide.jpeg");
 import widerImage = require("./test_data/wider.jpg");
 import path = require("path");
-import { normalizeBody } from "../../common/normalize_body";
 import { ImageCropper } from "./container";
 import { E } from "@selfage/element/factory";
 import { getFiles } from "@selfage/puppeteer_test_executor_api";
@@ -12,8 +11,7 @@ import {
   asyncAssertImage,
   asyncAssertScreenshot,
 } from "@selfage/screenshot_test_matcher";
-
-normalizeBody();
+import "../../common/normalize_body";
 
 let PADDING = 100;
 let LENGTH = 450;

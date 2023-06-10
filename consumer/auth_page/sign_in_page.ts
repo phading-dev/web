@@ -3,12 +3,10 @@ import { FilledBlockingButton } from "../common/blocking_button";
 import { SCHEME } from "../common/color_scheme";
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
-import { BASIC_INPUT_STYLE } from "../common/text_input_styles";
+import { VerticalTextInputWithErrorMsg } from "../common/text_input";
 import { WEB_SERVICE_CLIENT } from "../common/web_service_client";
 import {
   CARD_STYLE,
-  ERROR_LABEL_STYLE,
-  INPUT_LABEL_STYLE,
   PAGE_STYLE,
   SWITCH_TEXT_STYLE,
   TITLE_STYLE,
@@ -19,6 +17,11 @@ import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
 
+enum InputField {
+  USERNAME,
+  PASSWORD,
+}
+
 export interface SignInPage {
   on(event: "signUp", listener: () => void): this;
   on(event: "signedIn", listener: () => void): this;
@@ -27,22 +30,23 @@ export interface SignInPage {
 export class SignInPage extends EventEmitter {
   public body: HTMLDivElement;
   // Visible for testing
-  public usernameInput: HTMLInputElement;
-  public passwordInput: HTMLInputElement;
+  public usernameInput: VerticalTextInputWithErrorMsg<InputField>;
+  public passwordInput: VerticalTextInputWithErrorMsg<InputField>;
   public switchToSignUpButton: HTMLDivElement;
   public submitButton: FilledBlockingButton;
-  private signInError: HTMLDivElement;
+  private submitError: HTMLDivElement;
+  private validInputs = new Set<InputField>();
 
   public constructor(
     private localSessionStorage: LocalSessionStorage,
     private webServiceClient: WebServiceClient
   ) {
     super();
-    let usernameInputRef = new Ref<HTMLInputElement>();
-    let passwordInputRef = new Ref<HTMLInputElement>();
+    let usernameInputRef = new Ref<VerticalTextInputWithErrorMsg<InputField>>();
+    let passwordInputRef = new Ref<VerticalTextInputWithErrorMsg<InputField>>();
     let switchToSignUpButtonRef = new Ref<HTMLDivElement>();
     let submitButtonRef = new Ref<FilledBlockingButton>();
-    let signInErrorRef = new Ref<HTMLDivElement>();
+    let submitErrorRef = new Ref<HTMLDivElement>();
     this.body = E.div(
       {
         class: "sign-in",
@@ -60,32 +64,32 @@ export class SignInPage extends EventEmitter {
           },
           E.text(LOCALIZED_TEXT.signInTitle)
         ),
-        E.div(
-          {
-            class: "sign-in-username-label",
-            style: INPUT_LABEL_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.usernameLabel)
-        ),
-        E.inputRef(usernameInputRef, {
-          class: "sign-in-username-input",
-          style: `${BASIC_INPUT_STYLE} border-color: ${SCHEME.neutral1};`,
-          type: "text",
-          autocomplete: "username",
-        }),
-        E.div(
-          {
-            class: "sign-in-password-label",
-            style: INPUT_LABEL_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.passwordLabel)
-        ),
-        E.inputRef(passwordInputRef, {
-          class: "sign-in-password-input",
-          style: `${BASIC_INPUT_STYLE} border-color: ${SCHEME.neutral1};`,
-          type: "text",
-          autocomplete: "current-password",
-        }),
+        assign(
+          usernameInputRef,
+          VerticalTextInputWithErrorMsg.create(
+            LOCALIZED_TEXT.usernameLabel,
+            "",
+            {
+              type: "text",
+              autocomplete: "username",
+            },
+            this.validInputs,
+            InputField.USERNAME
+          )
+        ).body,
+        assign(
+          passwordInputRef,
+          VerticalTextInputWithErrorMsg.create(
+            LOCALIZED_TEXT.passwordLabel,
+            "",
+            {
+              type: "password",
+              autocomplete: "current-password",
+            },
+            this.validInputs,
+            InputField.PASSWORD
+          )
+        ).body,
         E.divRef(
           switchToSignUpButtonRef,
           {
@@ -94,23 +98,18 @@ export class SignInPage extends EventEmitter {
           },
           E.text(LOCALIZED_TEXT.switchToSignUpLink)
         ),
-        E.div(
-          {
-            class: "sign-in-submit-button-wrapper",
-            style: `align-self: flex-end;`,
-          },
-          assign(
-            submitButtonRef,
-            FilledBlockingButton.create(
-              E.text(LOCALIZED_TEXT.signInButtonLabel)
-            ).enable()
-          ).body
-        ),
+        assign(
+          submitButtonRef,
+          FilledBlockingButton.create(
+            `align-self: flex-end;`,
+            E.text(LOCALIZED_TEXT.signInButtonLabel)
+          )
+        ).body,
         E.divRef(
-          signInErrorRef,
+          submitErrorRef,
           {
             class: "sign-in-error",
-            style: `visibility: hidden; ${ERROR_LABEL_STYLE}`,
+            style: `visibility: hidden; align-self: flex-end; font-size: 1.2rem; color: ${SCHEME.error0};`,
           },
           E.text("1")
         )
@@ -120,8 +119,13 @@ export class SignInPage extends EventEmitter {
     this.passwordInput = passwordInputRef.val;
     this.switchToSignUpButton = switchToSignUpButtonRef.val;
     this.submitButton = submitButtonRef.val;
-    this.signInError = signInErrorRef.val;
+    this.submitError = submitErrorRef.val;
 
+    this.refreshSubmitButton();
+    this.usernameInput.on("input", () => this.checkUsernameInput());
+    this.usernameInput.on("enter", () => this.submitButton.click());
+    this.passwordInput.on("input", () => this.checkPasswordInput());
+    this.passwordInput.on("enter", () => this.submitButton.click());
     this.submitButton.on("action", () => this.signIn());
     this.submitButton.on("postAction", (error) => this.postSignIn(error));
     this.switchToSignUpButton.addEventListener("click", () =>
@@ -133,8 +137,37 @@ export class SignInPage extends EventEmitter {
     return new SignInPage(LOCAL_SESSION_STORAGE, WEB_SERVICE_CLIENT);
   }
 
+  private refreshSubmitButton(): void {
+    if (
+      this.validInputs.has(InputField.USERNAME) &&
+      this.validInputs.has(InputField.PASSWORD)
+    ) {
+      this.submitButton.enable();
+    } else {
+      this.submitButton.disable();
+    }
+  }
+
+  private checkUsernameInput(): void {
+    if (this.usernameInput.value.length > 0) {
+      this.usernameInput.setAsValid();
+    } else {
+      this.usernameInput.setAsInvalid();
+    }
+    this.refreshSubmitButton();
+  }
+
+  private checkPasswordInput(): void {
+    if (this.passwordInput.value.length > 0) {
+      this.passwordInput.setAsValid();
+    } else {
+      this.passwordInput.setAsInvalid();
+    }
+    this.refreshSubmitButton();
+  }
+
   private async signIn(): Promise<void> {
-    this.signInError.style.visibility = "hidden";
+    this.submitError.style.visibility = "hidden";
     let response = await signIn(this.webServiceClient, {
       username: this.usernameInput.value,
       password: this.passwordInput.value,
@@ -146,8 +179,8 @@ export class SignInPage extends EventEmitter {
   private postSignIn(error?: Error): void {
     if (error) {
       console.error(error);
-      this.signInError.style.visibility = "visible";
-      this.signInError.textContent = LOCALIZED_TEXT.signInError;
+      this.submitError.style.visibility = "visible";
+      this.submitError.textContent = LOCALIZED_TEXT.signInError;
     }
   }
 

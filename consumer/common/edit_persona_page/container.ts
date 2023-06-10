@@ -78,7 +78,10 @@ export class EditPersonaPage extends EventEmitter {
         ...currentImageAndLabel,
         assign(
           chooseFileButtonRef,
-          OutlineBlockingButton.create(E.text(chooseImageButtonLabel)).enable()
+          OutlineBlockingButton.create(
+            "",
+            E.text(chooseImageButtonLabel)
+          ).enable()
         ).body,
         E.divRef(
           loadErrorTextRef,
@@ -97,7 +100,7 @@ export class EditPersonaPage extends EventEmitter {
         ),
         assign(
           submitButtonRef,
-          FilledBlockingButton.create(E.text(submitButtonLabel))
+          FilledBlockingButton.create("", E.text(submitButtonLabel))
         ).body,
         E.divRef(
           submitErrorRef,

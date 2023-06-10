@@ -5,18 +5,20 @@ import {
   OutlineBlockingButton,
   TextBlockingButton,
 } from "./blocking_button";
-import { normalizeBody } from "./normalize_body";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
-
-normalizeBody();
+import { assertThat, eq } from "@selfage/test_matcher";
+import "./normalize_body";
 
 class RenderCase implements TestCase {
   private container: HTMLDivElement;
   public constructor(
     public name: string,
-    private buttonFactoryFn: (...childNodes: Array<Node>) => BlockingButton,
+    private buttonFactoryFn: (
+      customeStyle: string,
+      ...childNodes: Array<Node>
+    ) => BlockingButton,
     private renderScreenshotPath: string,
     private renderScreenshotGoldenPath: string,
     private renderScreenshotDiffPath: string,
@@ -29,7 +31,7 @@ class RenderCase implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    let cut = this.buttonFactoryFn(E.text("some button")).enable().show();
+    let cut = this.buttonFactoryFn("", E.text("some button")).enable().show();
     let resolveFn: Function;
     let resovablePromise = new Promise<void>((resolve) => {
       resolveFn = resolve;
@@ -86,7 +88,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/filled_blocking_button_disabled_diff.png"),
       path.join(__dirname, "/filled_blocking_button_enabled.png"),
       path.join(__dirname, "/golden/filled_blocking_button_render.png"),
-      path.join(__dirname, "/filled_blocking_button_enabled.png")
+      path.join(__dirname, "/filled_blocking_button_enabled_diff.png")
     ),
     new RenderCase(
       "RenderOutlineButton",
@@ -99,7 +101,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/outline_blocking_button_disabled_diff.png"),
       path.join(__dirname, "/outline_blocking_button_enabled.png"),
       path.join(__dirname, "/golden/outline_blocking_button_render.png"),
-      path.join(__dirname, "/outline_blocking_button_enabled.png")
+      path.join(__dirname, "/outline_blocking_button_enabled_diff.png")
     ),
     new RenderCase(
       "RenderTextButton",
@@ -112,7 +114,26 @@ TEST_RUNNER.run({
       path.join(__dirname, "/text_blocking_button_disabled_diff.png"),
       path.join(__dirname, "/text_blocking_button_enabled.png"),
       path.join(__dirname, "/golden/text_blocking_button_render.png"),
-      path.join(__dirname, "/text_blocking_button_enabled.png")
+      path.join(__dirname, "/text_blocking_button_enabled_diff.png")
     ),
+    {
+      name: "DisabledButtonNotClickable",
+      async execute() {
+        // Prepare
+        let actioned = false;
+        let cut = FilledBlockingButton.create("", E.text(""));
+        cut.on("action", async () => {
+          actioned = true;
+        });
+
+        // Execute
+        cut.disable();
+        cut.click();
+        await new Promise<void>((resolve) => setTimeout(resolve));
+
+        // Verify
+        assertThat(actioned, eq(false), "no action");
+      },
+    },
   ],
 });

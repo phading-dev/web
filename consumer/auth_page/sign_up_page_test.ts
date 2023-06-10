@@ -26,7 +26,8 @@ TEST_RUNNER.run({
   name: "SignUpPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "RenderLargeScreen_EnterAllFields_Submit";
+      public name =
+        "RenderLargeScreen_EnterAllFields_SignUpFailed_SignUpSuccess";
       private cut: SignUpPage;
       public async execute() {
         // Prepare
@@ -49,22 +50,14 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.naturalNameInputWithError.input.value = "First Second name";
-        this.cut.naturalNameInputWithError.input.dispatchEvent(
-          new KeyboardEvent("input")
-        );
-        this.cut.usernameInputWithError.input.value = "my_username";
-        this.cut.usernameInputWithError.input.dispatchEvent(
-          new KeyboardEvent("input")
-        );
-        this.cut.passwordInputWithError.input.value = "123123";
-        this.cut.passwordInputWithError.input.dispatchEvent(
-          new KeyboardEvent("input")
-        );
-        this.cut.repeatPasswordInputWithError.input.value = "123123";
-        this.cut.repeatPasswordInputWithError.input.dispatchEvent(
-          new KeyboardEvent("input")
-        );
+        this.cut.naturalNameInput.value = "First Second name";
+        this.cut.naturalNameInput.emit("input");
+        this.cut.usernameInput.value = "my_username";
+        this.cut.usernameInput.emit("input");
+        this.cut.passwordInput.value = "123123";
+        this.cut.passwordInput.emit("input");
+        this.cut.repeatPasswordInput.value = "123123";
+        this.cut.repeatPasswordInput.emit("input");
 
         // Verify
         await asyncAssertScreenshot(
@@ -91,10 +84,46 @@ TEST_RUNNER.run({
             ),
             "sign up request body"
           );
-          return { signedSession: "signed_session" } as SignUpResponse;
+          return { usernameIsUsed: true } as SignUpResponse;
         };
 
         // Execute
+        this.cut.submitButton.click();
+        await new Promise<void>((resolve) =>
+          this.cut.submitButton.once("postAction", () => resolve())
+        );
+
+        // Verify
+        assertThat(LOCAL_SESSION_STORAGE.read(), eq(null), "no session");
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/sign_up_page_username_is_used.png"),
+          path.join(__dirname, "/golden/sign_up_page_username_is_used.png"),
+          path.join(__dirname, "/sign_up_page_username_is_used_diff.png")
+        );
+
+        // Prepare
+        webServiceClientMock.send = async (request) => {
+          assertThat(request.descriptor, eq(SIGN_UP), "sign up service");
+          assertThat(
+            request.body,
+            eqMessage(
+              {
+                naturalName: "First Second name",
+                username: "my_new_username",
+                password: "123123",
+              },
+              SIGN_UP_REQUEST_BODY
+            ),
+            "sign up request body"
+          );
+          return {
+            signedSession: "signed_session",
+          } as SignUpResponse;
+        };
+
+        // Execute
+        this.cut.usernameInput.value = "my_new_username";
+        this.cut.usernameInput.emit("input");
         this.cut.submitButton.click();
         await new Promise<void>((resolve) =>
           this.cut.once("signedUp", resolve)
@@ -156,10 +185,8 @@ TEST_RUNNER.run({
         document.body.appendChild(this.cut.body);
 
         // Execute
-        this.cut.naturalNameInputWithError.input.value = createLongString(120);
-        this.cut.naturalNameInputWithError.input.dispatchEvent(
-          new KeyboardEvent("input")
-        );
+        this.cut.naturalNameInput.value = createLongString(120);
+        this.cut.naturalNameInput.emit("input");
 
         // Verify
         await asyncAssertScreenshot(
@@ -175,10 +202,8 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.naturalNameInputWithError.input.value = "";
-        this.cut.naturalNameInputWithError.input.dispatchEvent(
-          new KeyboardEvent("input")
-        );
+        this.cut.naturalNameInput.value = "";
+        this.cut.naturalNameInput.emit("input");
 
         // Verify
         await asyncAssertScreenshot(
@@ -207,10 +232,8 @@ TEST_RUNNER.run({
         document.body.appendChild(this.cut.body);
 
         // Execute
-        this.cut.usernameInputWithError.input.value = createLongString(120);
-        this.cut.usernameInputWithError.input.dispatchEvent(
-          new KeyboardEvent("input")
-        );
+        this.cut.usernameInput.value = createLongString(120);
+        this.cut.usernameInput.emit("input");
 
         // Verify
         await asyncAssertScreenshot(
@@ -223,10 +246,8 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.usernameInputWithError.input.value = "";
-        this.cut.usernameInputWithError.input.dispatchEvent(
-          new KeyboardEvent("input")
-        );
+        this.cut.usernameInput.value = "";
+        this.cut.usernameInput.emit("input");
 
         // Verify
         await asyncAssertScreenshot(
@@ -252,10 +273,8 @@ TEST_RUNNER.run({
         document.body.appendChild(this.cut.body);
 
         // Execute
-        this.cut.passwordInputWithError.input.value = createLongString(120);
-        this.cut.passwordInputWithError.input.dispatchEvent(
-          new KeyboardEvent("input")
-        );
+        this.cut.passwordInput.value = createLongString(120);
+        this.cut.passwordInput.emit("input");
 
         // Verify
         await asyncAssertScreenshot(
@@ -268,10 +287,8 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.passwordInputWithError.input.value = "";
-        this.cut.passwordInputWithError.input.dispatchEvent(
-          new KeyboardEvent("input")
-        );
+        this.cut.passwordInput.value = "";
+        this.cut.passwordInput.emit("input");
 
         // Verify
         await asyncAssertScreenshot(
@@ -295,13 +312,11 @@ TEST_RUNNER.run({
         await setViewport(1000, 1000);
         this.cut = new SignUpPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
-        this.cut.passwordInputWithError.input.value = "123123";
+        this.cut.passwordInput.value = "123123";
 
         // Execute
-        this.cut.repeatPasswordInputWithError.input.value = "1111";
-        this.cut.repeatPasswordInputWithError.input.dispatchEvent(
-          new KeyboardEvent("input")
-        );
+        this.cut.repeatPasswordInput.value = "1111";
+        this.cut.repeatPasswordInput.emit("input");
 
         // Verify
         await asyncAssertScreenshot(

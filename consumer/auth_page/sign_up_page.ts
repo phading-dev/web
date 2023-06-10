@@ -1,14 +1,12 @@
 import EventEmitter = require("events");
 import { FilledBlockingButton } from "../common/blocking_button";
-import { InputWithError } from "../common/input_with_error";
+import { SCHEME } from "../common/color_scheme";
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
-import { BASIC_INPUT_STYLE } from "../common/text_input_styles";
+import { VerticalTextInputWithErrorMsg } from "../common/text_input";
 import { WEB_SERVICE_CLIENT } from "../common/web_service_client";
 import {
   CARD_STYLE,
-  ERROR_LABEL_STYLE,
-  INPUT_LABEL_STYLE,
   PAGE_STYLE,
   SWITCH_TEXT_STYLE,
   TITLE_STYLE,
@@ -34,25 +32,31 @@ export interface SignUpPage {
 export class SignUpPage extends EventEmitter {
   public body: HTMLDivElement;
   // Visible for testing
-  public naturalNameInputWithError: InputWithError<InputField>;
-  public usernameInputWithError: InputWithError<InputField>;
-  public passwordInputWithError: InputWithError<InputField>;
-  public repeatPasswordInputWithError: InputWithError<InputField>;
+  public naturalNameInput: VerticalTextInputWithErrorMsg<InputField>;
+  public usernameInput: VerticalTextInputWithErrorMsg<InputField>;
+  public passwordInput: VerticalTextInputWithErrorMsg<InputField>;
+  public repeatPasswordInput: VerticalTextInputWithErrorMsg<InputField>;
   public switchToSignInButton: HTMLDivElement;
   public submitButton: FilledBlockingButton;
   private validInputs = new Set<InputField>();
+  private submitError: HTMLDivElement;
 
   public constructor(
     private localSessionStorage: LocalSessionStorage,
     private webServiceClient: WebServiceClient
   ) {
     super();
-    let naturalNameInputWithErrorRef = new Ref<InputWithError<InputField>>();
-    let usernameInputWithErrorRef = new Ref<InputWithError<InputField>>();
-    let passwordInputWithErrorRef = new Ref<InputWithError<InputField>>();
-    let repeatPasswordInputWithErrorRef = new Ref<InputWithError<InputField>>();
+    let naturalNameInputRef = new Ref<
+      VerticalTextInputWithErrorMsg<InputField>
+    >();
+    let usernameInputRef = new Ref<VerticalTextInputWithErrorMsg<InputField>>();
+    let passwordInputRef = new Ref<VerticalTextInputWithErrorMsg<InputField>>();
+    let repeatPasswordInputRef = new Ref<
+      VerticalTextInputWithErrorMsg<InputField>
+    >();
     let switchToSignInButtonRef = new Ref<HTMLDivElement>();
     let submitButtonRef = new Ref<FilledBlockingButton>();
+    let submitErrorRef = new Ref<HTMLDivElement>();
     this.body = E.div(
       {
         class: "sign-up",
@@ -70,114 +74,58 @@ export class SignUpPage extends EventEmitter {
           },
           E.text(LOCALIZED_TEXT.signUpTitle)
         ),
-        E.div(
-          {
-            class: "sign-up-natural-name-label",
-            style: INPUT_LABEL_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.naturalNameLabel)
-        ),
-        ...assign(
-          naturalNameInputWithErrorRef,
-          new InputWithError(
-            E.input({
-              class: "sign-up-natural-name-input",
-              style: `${BASIC_INPUT_STYLE}`,
+        assign(
+          naturalNameInputRef,
+          VerticalTextInputWithErrorMsg.create(
+            LOCALIZED_TEXT.naturalNameLabel,
+            "",
+            {
               type: "text",
               autocomplete: "name",
-            }),
-            E.div(
-              {
-                class: "sign-up-natural-name-error-label",
-                style: ERROR_LABEL_STYLE,
-              },
-              E.text("1")
-            ),
+            },
             this.validInputs,
             InputField.NATURAL_NAME
           )
-        ).bodies,
-        E.div(
-          {
-            class: "sign-up-username-label",
-            style: INPUT_LABEL_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.usernameLabel)
-        ),
-        ...assign(
-          usernameInputWithErrorRef,
-          new InputWithError(
-            E.input({
-              class: "sign-up-username-input",
-              style: `${BASIC_INPUT_STYLE}`,
+        ).body,
+        assign(
+          usernameInputRef,
+          VerticalTextInputWithErrorMsg.create(
+            LOCALIZED_TEXT.usernameLabel,
+            "",
+            {
               type: "text",
               autocomplete: "username",
-            }),
-            E.div(
-              {
-                class: "sign-up-username-error-label",
-                style: ERROR_LABEL_STYLE,
-              },
-              E.text("1")
-            ),
+            },
             this.validInputs,
             InputField.USERNAME
           )
-        ).bodies,
-        E.div(
-          {
-            class: "sign-up-password-label",
-            style: INPUT_LABEL_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.passwordLabel)
-        ),
-        ...assign(
-          passwordInputWithErrorRef,
-          new InputWithError(
-            E.input({
-              class: "sign-up-password-input",
-              style: `${BASIC_INPUT_STYLE}`,
+        ).body,
+        assign(
+          passwordInputRef,
+          VerticalTextInputWithErrorMsg.create(
+            LOCALIZED_TEXT.passwordLabel,
+            "",
+            {
               type: "password",
               autocomplete: "new-password",
-            }),
-            E.div(
-              {
-                class: "sign-up-password-error-label",
-                style: ERROR_LABEL_STYLE,
-              },
-              E.text("1")
-            ),
+            },
             this.validInputs,
             InputField.PASSWORD
           )
-        ).bodies,
-        E.div(
-          {
-            class: "sign-up-repeat-password-label",
-            style: INPUT_LABEL_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.repeatPasswordLabel)
-        ),
-        ...assign(
-          repeatPasswordInputWithErrorRef,
-          new InputWithError(
-            E.input({
-              class: "sign-up-repeat-password-input",
-              style: `${BASIC_INPUT_STYLE}`,
+        ).body,
+        assign(
+          repeatPasswordInputRef,
+          VerticalTextInputWithErrorMsg.create(
+            LOCALIZED_TEXT.repeatPasswordLabel,
+            "",
+            {
               type: "password",
               autocomplete: "new-password",
-            }),
-            E.div(
-              {
-                class: "sign-up-repeat-password-error-label",
-                style: ERROR_LABEL_STYLE,
-              },
-              E.text("1")
-            ),
+            },
             this.validInputs,
             InputField.REPEAT_PASSWORD
           )
-        ).bodies,
+        ).body,
         E.divRef(
           switchToSignInButtonRef,
           {
@@ -186,41 +134,42 @@ export class SignUpPage extends EventEmitter {
           },
           E.text(LOCALIZED_TEXT.switchToSignInLink)
         ),
-        E.div(
+        assign(
+          submitButtonRef,
+          FilledBlockingButton.create(
+            `align-self: flex-end;`,
+            E.text(LOCALIZED_TEXT.signUpButtonLabel)
+          )
+        ).body,
+        E.divRef(
+          submitErrorRef,
           {
-            class: "sign-up-submit-button-wrapper",
-            style: `align-self: flex-end;`,
+            class: "sign-up-error",
+            style: `visibility: hidden; align-self: flex-end; font-size: 1.2rem; color: ${SCHEME.error0};`,
           },
-          assign(
-            submitButtonRef,
-            FilledBlockingButton.create(
-              E.text(LOCALIZED_TEXT.signUpButtonLabel)
-            )
-          ).body
+          E.text("1")
         )
       )
     );
-    this.naturalNameInputWithError = naturalNameInputWithErrorRef.val;
-    this.usernameInputWithError = usernameInputWithErrorRef.val;
-    this.passwordInputWithError = passwordInputWithErrorRef.val;
-    this.repeatPasswordInputWithError = repeatPasswordInputWithErrorRef.val;
+    this.naturalNameInput = naturalNameInputRef.val;
+    this.usernameInput = usernameInputRef.val;
+    this.passwordInput = passwordInputRef.val;
+    this.repeatPasswordInput = repeatPasswordInputRef.val;
     this.switchToSignInButton = switchToSignInButtonRef.val;
     this.submitButton = submitButtonRef.val;
-    this.refreshSubmitButton();
+    this.submitError = submitErrorRef.val;
 
-    this.naturalNameInputWithError.input.addEventListener("input", () =>
-      this.checkNaturalNameInput()
-    );
-    this.usernameInputWithError.input.addEventListener("input", () =>
-      this.checkUsernameInput()
-    );
-    this.passwordInputWithError.input.addEventListener("input", () =>
-      this.checkPasswordInput()
-    );
-    this.repeatPasswordInputWithError.input.addEventListener("input", () =>
-      this.checkRepeatPasswordInput()
-    );
+    this.refreshSubmitButton();
+    this.naturalNameInput.on("input", () => this.checkNaturalNameInput());
+    this.naturalNameInput.on("enter", () => this.submitButton.click());
+    this.usernameInput.on("input", () => this.checkUsernameInput());
+    this.usernameInput.on("enter", () => this.submitButton.click());
+    this.passwordInput.on("input", () => this.checkPasswordInput());
+    this.passwordInput.on("enter", () => this.submitButton.click());
+    this.repeatPasswordInput.on("input", () => this.checkRepeatPasswordInput());
+    this.repeatPasswordInput.on("enter", () => this.submitButton.click());
     this.submitButton.on("action", () => this.signUp());
+    this.submitButton.on("postAction", (error) => this.postSignUp(error));
     this.switchToSignInButton.addEventListener("click", () =>
       this.emit("signIn")
     );
@@ -231,60 +180,49 @@ export class SignUpPage extends EventEmitter {
   }
 
   private checkNaturalNameInput(): void {
-    if (this.naturalNameInputWithError.input.value.length > 100) {
-      this.naturalNameInputWithError.setInvalidWithError(
+    if (this.naturalNameInput.value.length > 100) {
+      this.naturalNameInput.setAsInvalid(
         LOCALIZED_TEXT.naturalNameTooLongError
       );
-    } else if (this.naturalNameInputWithError.input.value.length === 0) {
-      this.naturalNameInputWithError.setInvalidWithError(
+    } else if (this.naturalNameInput.value.length === 0) {
+      this.naturalNameInput.setAsInvalid(
         LOCALIZED_TEXT.naturalNameMissingError
       );
     } else {
-      this.naturalNameInputWithError.setValid();
+      this.naturalNameInput.setAsValid();
     }
     this.refreshSubmitButton();
   }
 
   private checkUsernameInput(): void {
-    if (this.usernameInputWithError.input.value.length > 100) {
-      this.usernameInputWithError.setInvalidWithError(
-        LOCALIZED_TEXT.usernameTooLongError
-      );
-    } else if (this.usernameInputWithError.input.value.length === 0) {
-      this.usernameInputWithError.setInvalidWithError(
-        LOCALIZED_TEXT.usernameMissingError
-      );
+    if (this.usernameInput.value.length > 100) {
+      this.usernameInput.setAsInvalid(LOCALIZED_TEXT.usernameTooLongError);
+    } else if (this.usernameInput.value.length === 0) {
+      this.usernameInput.setAsInvalid(LOCALIZED_TEXT.usernameMissingError);
     } else {
-      this.usernameInputWithError.setValid();
+      this.usernameInput.setAsValid();
     }
     this.refreshSubmitButton();
   }
 
   private checkPasswordInput(): void {
-    if (this.passwordInputWithError.input.value.length > 100) {
-      this.passwordInputWithError.setInvalidWithError(
-        LOCALIZED_TEXT.passwordTooLongError
-      );
-    } else if (this.passwordInputWithError.input.value.length === 0) {
-      this.passwordInputWithError.setInvalidWithError(
-        LOCALIZED_TEXT.passwordMissingError
-      );
+    if (this.passwordInput.value.length > 100) {
+      this.passwordInput.setAsInvalid(LOCALIZED_TEXT.passwordTooLongError);
+    } else if (this.passwordInput.value.length === 0) {
+      this.passwordInput.setAsInvalid(LOCALIZED_TEXT.passwordMissingError);
     } else {
-      this.passwordInputWithError.setValid();
+      this.passwordInput.setAsValid();
     }
     this.refreshSubmitButton();
   }
 
   private checkRepeatPasswordInput(): void {
-    if (
-      this.repeatPasswordInputWithError.input.value !==
-      this.passwordInputWithError.input.value
-    ) {
-      this.repeatPasswordInputWithError.setInvalidWithError(
+    if (this.repeatPasswordInput.value !== this.passwordInput.value) {
+      this.repeatPasswordInput.setAsInvalid(
         LOCALIZED_TEXT.repeatPasswordNotMatchError
       );
     } else {
-      this.repeatPasswordInputWithError.setValid();
+      this.repeatPasswordInput.setAsValid();
     }
     this.refreshSubmitButton();
   }
@@ -303,13 +241,28 @@ export class SignUpPage extends EventEmitter {
   }
 
   private async signUp(): Promise<void> {
+    this.submitError.style.visibility = "hidden";
     let response = await signUp(this.webServiceClient, {
-      naturalName: this.naturalNameInputWithError.input.value,
-      username: this.usernameInputWithError.input.value,
-      password: this.passwordInputWithError.input.value,
+      naturalName: this.naturalNameInput.value,
+      username: this.usernameInput.value,
+      password: this.passwordInput.value,
     });
-    this.localSessionStorage.save(response.signedSession);
-    this.emit("signedUp");
+    if (response.usernameIsUsed) {
+      this.usernameInput.setAsInvalid(LOCALIZED_TEXT.usernameIsUsedError);
+    } else {
+      this.localSessionStorage.save(response.signedSession);
+      this.emit("signedUp");
+    }
+  }
+
+  private postSignUp(error?: Error): void {
+    if (error) {
+      console.error(error);
+      this.submitError.style.visibility = "visible";
+      this.submitError.textContent = LOCALIZED_TEXT.signUpError;
+    } else {
+      this.refreshSubmitButton();
+    }
   }
 
   public remove(): void {
