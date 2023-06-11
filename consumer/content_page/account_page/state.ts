@@ -1,20 +1,25 @@
 import { EnumDescriptor, MessageDescriptor } from '@selfage/message/descriptor';
 
 export enum Page {
-  Basic = 1,
-  ChangeAvatar = 2,
+  AccountInfo = 1,
+  UpdateAvatar = 2,
+  UpdatePassword = 3,
 }
 
 export let PAGE: EnumDescriptor<Page> = {
   name: 'Page',
   values: [
     {
-      name: 'Basic',
+      name: 'AccountInfo',
       value: 1,
     },
     {
-      name: 'ChangeAvatar',
+      name: 'UpdateAvatar',
       value: 2,
+    },
+    {
+      name: 'UpdatePassword',
+      value: 3,
     },
   ]
 }

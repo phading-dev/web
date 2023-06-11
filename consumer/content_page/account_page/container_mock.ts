@@ -1,6 +1,6 @@
 import userImage = require("./test_data/user_image.jpg");
-import { AccountBasicTabMock } from "./account_basic_tab_mock";
-import { ChangeAvatarTabMock } from "./change_avartar_tab_mock";
+import { AccountBasicTabMock } from "./account_info_page_mock";
+import { ChangeAvatarTabMock } from "./update_avartar_page_mock";
 import { AccountPage } from "./container";
 
 export class AccountPageMock extends AccountPage {

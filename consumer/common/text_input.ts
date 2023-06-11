@@ -10,7 +10,6 @@ export let BASIC_INPUT_STYLE = `${NULLIFIED_INPUT_STYLE} font-size: 1.4rem; line
 export declare interface VerticalTextInputWithErrorMsg<InputField> {
   on(event: "enter", listener: () => void): this;
   on(event: "input", listener: () => void): this;
-  on(event: "blur", listener: () => void): this;
 }
 
 export class VerticalTextInputWithErrorMsg<InputField> extends EventEmitter {
@@ -67,7 +66,6 @@ export class VerticalTextInputWithErrorMsg<InputField> extends EventEmitter {
     this.reset();
     this.input.addEventListener("keydown", (event) => this.keydown(event));
     this.input.addEventListener("input", () => this.emit("input"));
-    this.input.addEventListener("blur", () => this.emit("blur"));
   }
 
   public static create<InputField>(
@@ -122,15 +120,35 @@ export class VerticalTextInputWithErrorMsg<InputField> extends EventEmitter {
     return this.input.value;
   }
 
+  public dispatchInput(): void {
+    this.input.dispatchEvent(new Event("input"));
+  }
+
+  public dispatchEnter(): void {
+    this.input.dispatchEvent(new KeyboardEvent("keydown", { code: "Enter" }));
+  }
+
   public remove(): void {
     this.body.remove();
   }
 }
 
-export class VerticalTextInputValue {
-  public body: HTMLDivElement;
+export interface VerticalTextInputValue {
+  on(event: "click", listener: () => void): this;
+}
 
-  public constructor(label: string, value: string, customStyle: string) {
+export class VerticalTextInputValue extends EventEmitter {
+  public body: HTMLDivElement;
+  private inputValue: HTMLDivElement;
+
+  public constructor(
+    label: string,
+    value: string,
+    customStyle: string,
+    customValueStle: string
+  ) {
+    super();
+    let inputValueRef = new Ref<HTMLDivElement>();
     this.body = E.div(
       {
         class: "text-input-value",
@@ -146,10 +164,11 @@ export class VerticalTextInputValue {
       E.div({
         style: `height: 1rem;`,
       }),
-      E.div(
+      E.divRef(
+        inputValueRef,
         {
           class: "text-input-value-value",
-          style: `font-size: 1.4rem; line-height: 2rem; color: ${SCHEME.neutral0}; border-bottom: .1rem solid ${SCHEME.neutral1};`,
+          style: `font-size: 1.4rem; line-height: 2rem; color: ${SCHEME.neutral0}; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customValueStle}`,
         },
         E.text(value)
       ),
@@ -164,14 +183,31 @@ export class VerticalTextInputValue {
         E.text("1")
       )
     );
+    this.inputValue = inputValueRef.val;
+
+    this.inputValue.addEventListener("click", () => this.emit("click"));
   }
 
   public static create(
     label: string,
     value: string,
-    customStyle: string
+    customStyle: string,
+    customValueStle: string
   ): VerticalTextInputValue {
-    return new VerticalTextInputValue(label, value, customStyle);
+    return new VerticalTextInputValue(
+      label,
+      value,
+      customStyle,
+      customValueStle
+    );
+  }
+
+  public setValue(value: string): void {
+    this.inputValue.textContent = value;
+  }
+
+  public click(): void {
+    this.inputValue.click();
   }
 
   public remove(): void {

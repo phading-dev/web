@@ -1,127 +1,108 @@
 import EventEmitter = require("events");
-import { SCHEME } from "../../common/color_scheme";
-import { AccountBasicTab } from "./account_basic_tab";
-import { ChangeAvatarTab } from "./change_avatar_tab";
-import { ACCOUNT_PAGE_STATE, AccountPageState, Page } from "./state";
-import { E } from "@selfage/element/factory";
-import { copyMessage } from "@selfage/message/copier";
-import { LazyInstance } from "@selfage/once/lazy_instance";
-import { Ref } from "@selfage/ref";
+import { PageNavigator } from "../../common/page_navigator";
+import { AccountInfoPage } from "./account_info_page";
+import { AccountPageState, Page } from "./state";
+import { UpdateAvatarPage } from "./update_avatar_page";
+import { UpdatePasswordPage } from "./update_password_page";
 
 export interface AccountPage {
   on(event: "newState", listener: (newState: AccountPageState) => void): this;
 }
 
 export class AccountPage extends EventEmitter {
-  public body: HTMLDivElement;
-  private card: HTMLDivElement;
-  private lazyAccountBasicTab: LazyInstance<AccountBasicTab>;
-  private lazyChangeAvatarTab: LazyInstance<ChangeAvatarTab>;
-  private state: AccountPageState = {};
+  public accountInfoPage: AccountInfoPage;
+  public updateAvatarPage: UpdateAvatarPage;
+  public updatePasswordPage: UpdatePasswordPage;
+  private pageNavigator: PageNavigator<Page>;
 
   public constructor(
-    private prependMenuBodiesFn: (menuBodies: Array<HTMLElement>) => void,
-    private accountBasicTabFactoryFn: () => AccountBasicTab,
-    private changeAvatarTabFactoryFn: () => ChangeAvatarTab
+    private accountInfoPageFactoryFn: () => AccountInfoPage,
+    private updateAvatarPageFactoryFn: () => UpdateAvatarPage,
+    private updatePasswordPageFactoryFn: () => UpdatePasswordPage,
+    private appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    private prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void
   ) {
     super();
-    let cardRef = new Ref<HTMLDivElement>();
-    this.body = E.div(
-      {
-        class: "account",
-        style: `flex-flow: row nowrap; justify-content: center; width: 100vw;`,
-      },
-      E.divRef(cardRef, {
-        class: "account-card",
-        style: `background-color: ${SCHEME.neutral4}; width: 100%; max-width: 100rem;`,
-      })
+    this.pageNavigator = new PageNavigator(
+      (page) => this.addPage(page),
+      (page) => this.removePage(page)
     );
-    this.card = cardRef.val;
-
-    this.lazyAccountBasicTab = new LazyInstance(() => {
-      let tab = this.accountBasicTabFactoryFn();
-      this.card.append(tab.body);
-      tab.on("changeAvatar", () => this.goToChangeAvatar());
-      return tab;
-    });
-    this.lazyChangeAvatarTab = new LazyInstance(() => {
-      let tab = this.changeAvatarTabFactoryFn();
-      this.card.append(tab.body);
-      tab.on("back", () => this.goToAccountBasic());
-      this.prependMenuBodiesFn([tab.prependMenuBody]);
-      return tab;
-    });
   }
 
   public static create(
-    prependMenuBodiesFn: (menuBodies: Array<HTMLElement>) => void
+    appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void
   ): AccountPage {
     return new AccountPage(
-      prependMenuBodiesFn,
-      AccountBasicTab.create,
-      ChangeAvatarTab.create
+      AccountInfoPage.create,
+      UpdateAvatarPage.create,
+      UpdatePasswordPage.create,
+      appendBodiesFn,
+      prependMenuBodiesFn
     );
   }
 
-  private goToChangeAvatar(): void {
-    let newState = this.copyState();
-    newState.page = Page.ChangeAvatar;
-    this.showFromInternal(newState);
-  }
-
-  private goToAccountBasic(): void {
-    let newState = this.copyState();
-    newState.page = Page.Basic;
-    this.showFromInternal(newState);
-  }
-
-  private copyState(): AccountPageState {
-    return copyMessage(this.state, ACCOUNT_PAGE_STATE);
-  }
-
-  private showFromInternal(newState: AccountPageState): void {
-    this.show(newState);
-    this.emit("newState", this.state);
-  }
-
-  public show(newState?: AccountPageState): this {
-    this.body.style.display = "flex";
-
-    if (!newState) {
-      newState = {};
-    }
-    if (!newState.page) {
-      newState.page = Page.Basic;
-    }
-    if (newState.page !== this.state.page) {
-      this.hidePage();
-    }
-    switch (newState.page) {
-      case Page.Basic:
-        this.lazyAccountBasicTab.get().show();
+  private addPage(page: Page): void {
+    switch (page) {
+      case Page.AccountInfo:
+        this.accountInfoPage = this.accountInfoPageFactoryFn();
+        this.appendBodiesFn(this.accountInfoPage.body);
+        this.accountInfoPage.on("updateAvatar", () =>
+          this.updateStateAndBubbleUp(Page.UpdateAvatar)
+        );
+        this.accountInfoPage.on("updatePassword", () =>
+          this.updateStateAndBubbleUp(Page.UpdatePassword)
+        );
         break;
-      case Page.ChangeAvatar:
-        this.lazyChangeAvatarTab.get().show();
+      case Page.UpdateAvatar:
+        this.updateAvatarPage = this.updateAvatarPageFactoryFn();
+        this.appendBodiesFn(this.updateAvatarPage.body);
+        this.prependMenuBodiesFn(this.updateAvatarPage.backMenuBody);
+        this.updateAvatarPage.on("back", () =>
+          this.updateStateAndBubbleUp(Page.AccountInfo)
+        );
+        this.updateAvatarPage.on("updated", () =>
+          this.updateStateAndBubbleUp(Page.AccountInfo)
+        );
         break;
-    }
-    this.state = newState;
-    return this;
-  }
-
-  private async hidePage(): Promise<void> {
-    switch (this.state.page) {
-      case Page.Basic:
-        this.lazyAccountBasicTab.get().hide();
-        break;
-      case Page.ChangeAvatar:
-        this.lazyChangeAvatarTab.get().hide();
+      case Page.UpdatePassword:
+        this.updatePasswordPage = this.updatePasswordPageFactoryFn();
+        this.appendBodiesFn(this.updatePasswordPage.body);
+        this.prependMenuBodiesFn(this.updatePasswordPage.backMenuBody);
+        this.updatePasswordPage.on("back", () =>
+          this.updateStateAndBubbleUp(Page.AccountInfo)
+        );
+        this.updatePasswordPage.on("updated", () =>
+          this.updateStateAndBubbleUp(Page.AccountInfo)
+        );
         break;
     }
   }
 
-  public hide(): this {
-    this.body.style.display = "none";
-    this.hidePage();
-    return this;
+  private removePage(page: Page): void {
+    switch (page) {
+      case Page.AccountInfo:
+        this.accountInfoPage.remove();
+        break;
+      case Page.UpdateAvatar:
+        this.updateAvatarPage.remove();
+        break;
+      case Page.UpdatePassword:
+        this.updatePasswordPage.remove();
+        break;
+    }
+  }
+
+  private updateStateAndBubbleUp(page: Page): void {
+    this.updateState({ page });
+    this.emit("newState", { page });
+  }
+
+  public updateState(newState: AccountPageState): void {
+    this.pageNavigator.goTo(newState.page);
+  }
+
+  public remove(): void {
+    this.pageNavigator.remove();
   }
 }

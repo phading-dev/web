@@ -2,11 +2,14 @@
   "name": "Page",
   "enum": {
     "values": [{
-      "name": "Basic",
+      "name": "AccountInfo",
       "value": 1
     }, {
-      "name": "ChangeAvatar",
+      "name": "UpdateAvatar",
       "value": 2
+    }, {
+      "name": "UpdatePassword",
+      "value": 3
     }]
   }
 }, {

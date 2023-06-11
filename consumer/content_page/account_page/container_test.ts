@@ -1,105 +1,156 @@
 import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
-import { normalizeBody } from "../../common/normalize_body";
-import { AccountBasicTabMock } from "./account_basic_tab_mock";
-import { ChangeAvatarTabMock } from "./change_avartar_tab_mock";
+import { AccountInfoPageMock } from "./account_info_page_mock";
 import { AccountPage } from "./container";
+import { ACCOUNT_PAGE_STATE, AccountPageState, Page } from "./state";
+import { UpdateAvatarPageMock } from "./update_avartar_page_mock";
+import { UpdatePasswordPageMock } from "./update_password_page_mock";
 import { E } from "@selfage/element/factory";
+import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
-import { Ref } from "@selfage/ref";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+import { assertThat } from "@selfage/test_matcher";
+import "../../common/normalize_body";
 
-normalizeBody();
+let container: HTMLDivElement;
+let menuContainer: HTMLDivElement;
 
 TEST_RUNNER.run({
   name: "AccountPageTest",
+  environment: {
+    setUp() {
+      container = E.div({});
+      menuContainer = E.div({
+        style: `position: fixed; left: 0; top: 0;`,
+      });
+      document.body.append(container, menuContainer);
+    },
+    tearDown() {
+      container.remove();
+      menuContainer.remove();
+    },
+  },
   cases: [
     new (class implements TestCase {
       public name = "RenderAndSwitch";
-      private container: HTMLDivElement;
+      private cut: AccountPage;
       public async execute() {
         // Prepare
-        await setViewport(1600, 800);
-        let accountBasicTabMock = new AccountBasicTabMock({
+        await setViewport(1000, 800);
+        let state: AccountPageState;
+        let accountInfoPageMock = new AccountInfoPageMock({
           username: "some user name",
           naturalName: "Mr. Your Name",
           email: "xxxxx@gmail.com",
           avatarLargePath: userImage,
         });
-        let changeAvatarTabMock = new ChangeAvatarTabMock();
-        let menuBodyContainerRef = new Ref<HTMLDivElement>();
-        this.container = E.div(
-          {},
-          E.divRef(menuBodyContainerRef, {
-            style: `position: fixed;`,
-          })
+        let updateAvatarPageMock = new UpdateAvatarPageMock();
+        let updatePasswordPageMock = new UpdatePasswordPageMock();
+        this.cut = new AccountPage(
+          () => accountInfoPageMock,
+          () => updateAvatarPageMock,
+          () => updatePasswordPageMock,
+          (...bodies) => container.append(...bodies),
+          (...bodies) => menuContainer.append(...bodies)
         );
-        document.body.append(this.container);
-        let cut = new AccountPage(
-          (menuBodies) => menuBodyContainerRef.val.append(...menuBodies),
-          () => accountBasicTabMock,
-          () => changeAvatarTabMock
-        );
-        this.container.append(cut.body);
+        this.cut.on("newState", (newState) => (state = newState));
 
         // Execute
-        cut.show();
+        this.cut.updateState({ page: Page.AccountInfo });
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/account_page_render_wide.png"),
-          path.join(__dirname, "/golden/account_page_render_wide.png"),
-          path.join(__dirname, "/account_page_render_wide_diff.png"),
-          { fullPage: true }
+          path.join(__dirname, "/account_page_account_info.png"),
+          path.join(__dirname, "/golden/account_page_account_info.png"),
+          path.join(__dirname, "/account_page_account_info_diff.png")
         );
 
         // Execute
-        await setViewport(1000, 800);
+        accountInfoPageMock.avatarContainer.click();
 
         // Verify
+        assertThat(
+          state,
+          eqMessage(
+            {
+              page: Page.UpdateAvatar,
+            },
+            ACCOUNT_PAGE_STATE
+          ),
+          "go to update avatar page"
+        );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/account_page_render_narrow.png"),
-          path.join(__dirname, "/golden/account_page_render_narrow.png"),
-          path.join(__dirname, "/account_page_render_narrow_diff.png"),
-          { fullPage: true }
+          path.join(__dirname, "/account_page_update_avatar.png"),
+          path.join(__dirname, "/golden/account_page_update_avatar.png"),
+          path.join(__dirname, "/account_page_update_avatar_diff.png")
         );
 
         // Execute
-        accountBasicTabMock.emit("changeAvatar");
+        updateAvatarPageMock.backMenuItem.click();
 
         // Verify
+        assertThat(
+          state,
+          eqMessage(
+            {
+              page: Page.AccountInfo,
+            },
+            ACCOUNT_PAGE_STATE
+          ),
+          "back to account info page"
+        );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/account_page_change_avatar.png"),
-          path.join(__dirname, "/golden/account_page_change_avatar.png"),
-          path.join(__dirname, "/account_page_change_avatar_diff.png"),
-          { fullPage: true }
+          path.join(__dirname, "/account_page_back_to_account_info.png"),
+          path.join(__dirname, "/golden/account_page_account_info.png"),
+          path.join(__dirname, "/account_page_back_to_account_info.png")
         );
 
         // Execute
-        changeAvatarTabMock.emit("back");
+        accountInfoPageMock.passwordEditable.click();
 
         // Verify
+        assertThat(
+          state,
+          eqMessage(
+            {
+              page: Page.UpdatePassword,
+            },
+            ACCOUNT_PAGE_STATE
+          ),
+          "back to update password page"
+        );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/account_page_back_to_account_basic.png"),
-          path.join(__dirname, "/golden/account_page_render_narrow.png"),
-          path.join(__dirname, "/account_page_back_to_account_basic_diff.png"),
-          { fullPage: true }
+          path.join(__dirname, "/account_page_update_password.png"),
+          path.join(__dirname, "/golden/account_page_update_password.png"),
+          path.join(__dirname, "/account_page_update_password_diff.png")
         );
 
         // Execute
-        cut.show();
+        updatePasswordPageMock.backMenuItem.click();
 
         // Verify
+        assertThat(
+          state,
+          eqMessage(
+            {
+              page: Page.AccountInfo,
+            },
+            ACCOUNT_PAGE_STATE
+          ),
+          "back to account info page again"
+        );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/account_page_render_account_basic_again.png"),
-          path.join(__dirname, "/golden/account_page_render_narrow.png"),
-          path.join(__dirname, "/account_page_render_account_basic_again.png"),
-          { fullPage: true }
+          path.join(__dirname, "/account_page_back_to_account_info_again.png"),
+          path.join(__dirname, "/golden/account_page_account_info.png"),
+          path.join(
+            __dirname,
+            "/account_page_back_to_account_info_again_diff.png"
+          )
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
   ],

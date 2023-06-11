@@ -105,6 +105,48 @@ TEST_RUNNER.run({
         this.followingLine.remove();
       }
     })(),
+    {
+      name: "DispatchInputEvent",
+      execute() {
+        // Prepare
+        let cut = VerticalTextInputWithErrorMsg.create(
+          "Label",
+          "",
+          { type: "text" },
+          new Set(),
+          InputField.USERNAME
+        );
+        let triggered = false;
+        cut.on("input", () => (triggered = true));
+
+        // Execute
+        cut.dispatchInput();
+
+        // Verify
+        assertThat(triggered, eq(true), "triggered");
+      },
+    },
+    {
+      name: "DispatchEnterEvent",
+      execute() {
+        // Prepare
+        let cut = VerticalTextInputWithErrorMsg.create(
+          "Label",
+          "",
+          { type: "text" },
+          new Set(),
+          InputField.USERNAME
+        );
+        let triggered = false;
+        cut.on("enter", () => (triggered = true));
+
+        // Execute
+        cut.dispatchEnter();
+
+        // Verify
+        assertThat(triggered, eq(true), "triggered");
+      },
+    },
     new (class implements TestCase {
       public name = "RenderTextInputValue";
       private cut: VerticalTextInputValue;
@@ -114,7 +156,8 @@ TEST_RUNNER.run({
         this.cut = VerticalTextInputValue.create(
           "Input",
           "Value",
-          "width: 50rem;"
+          "width: 50rem;",
+          ""
         );
         this.followingLine = E.div(
           {

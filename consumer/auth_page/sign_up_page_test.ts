@@ -51,13 +51,13 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.value = "First Second name";
-        this.cut.naturalNameInput.emit("input");
+        this.cut.naturalNameInput.dispatchInput();
         this.cut.usernameInput.value = "my_username";
-        this.cut.usernameInput.emit("input");
+        this.cut.usernameInput.dispatchInput();
         this.cut.passwordInput.value = "123123";
-        this.cut.passwordInput.emit("input");
+        this.cut.passwordInput.dispatchInput();
         this.cut.repeatPasswordInput.value = "123123";
-        this.cut.repeatPasswordInput.emit("input");
+        this.cut.repeatPasswordInput.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -123,7 +123,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.usernameInput.value = "my_new_username";
-        this.cut.usernameInput.emit("input");
+        this.cut.usernameInput.dispatchInput();
         this.cut.submitButton.click();
         await new Promise<void>((resolve) =>
           this.cut.once("signedUp", resolve)
@@ -186,7 +186,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.value = createLongString(120);
-        this.cut.naturalNameInput.emit("input");
+        this.cut.naturalNameInput.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -203,7 +203,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.value = "";
-        this.cut.naturalNameInput.emit("input");
+        this.cut.naturalNameInput.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -233,7 +233,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.usernameInput.value = createLongString(120);
-        this.cut.usernameInput.emit("input");
+        this.cut.usernameInput.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -247,7 +247,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.usernameInput.value = "";
-        this.cut.usernameInput.emit("input");
+        this.cut.usernameInput.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -274,7 +274,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.passwordInput.value = createLongString(120);
-        this.cut.passwordInput.emit("input");
+        this.cut.passwordInput.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -288,7 +288,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.passwordInput.value = "";
-        this.cut.passwordInput.emit("input");
+        this.cut.passwordInput.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -316,7 +316,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.repeatPasswordInput.value = "1111";
-        this.cut.repeatPasswordInput.emit("input");
+        this.cut.repeatPasswordInput.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(

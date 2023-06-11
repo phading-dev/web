@@ -40,19 +40,21 @@ export class AuthPage extends EventEmitter {
   private addPage(page: Page): void {
     switch (page) {
       case Page.SIGN_IN: {
-        let page = this.signInPageFactoryFn();
-        this.appendBodiesFn(page.body);
-        this.signInPage = page;
-        page.on("signUp", () => this.pageNavigator.goTo(Page.SIGN_UP));
-        page.on("signedIn", () => this.emit("signedIn"));
+        this.signInPage = this.signInPageFactoryFn();
+        this.appendBodiesFn(this.signInPage.body);
+        this.signInPage.on("signUp", () =>
+          this.pageNavigator.goTo(Page.SIGN_UP)
+        );
+        this.signInPage.on("signedIn", () => this.emit("signedIn"));
         break;
       }
       case Page.SIGN_UP: {
-        let page = this.signUpPageFactoryFn();
-        this.appendBodiesFn(page.body);
-        this.signUpPage = page;
-        page.on("signIn", () => this.pageNavigator.goTo(Page.SIGN_IN));
-        page.on("signedUp", () => this.emit("signedIn"));
+        this.signUpPage = this.signUpPageFactoryFn();
+        this.appendBodiesFn(this.signUpPage.body);
+        this.signUpPage.on("signIn", () =>
+          this.pageNavigator.goTo(Page.SIGN_IN)
+        );
+        this.signUpPage.on("signedUp", () => this.emit("signedIn"));
         break;
       }
     }

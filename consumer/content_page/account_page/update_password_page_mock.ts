@@ -1,7 +1,7 @@
-import { ChangeAvatarTab } from "./change_avatar_tab";
+import { UpdatePasswordPage } from "./update_password_page";
 import { WebServiceClient } from "@selfage/web_service_client";
 
-export class ChangeAvatarTabMock extends ChangeAvatarTab {
+export class UpdatePasswordPageMock extends UpdatePasswordPage {
   public constructor() {
     super(
       new (class extends WebServiceClient {
@@ -10,6 +10,5 @@ export class ChangeAvatarTabMock extends ChangeAvatarTab {
         }
       })()
     );
-    this.serviceClient.send = (request: any): any => {};
   }
 }

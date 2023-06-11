@@ -26,23 +26,14 @@ export default class Text {
   get naturalNameTooLongError() {
     return `Your name is too long`;
   }
-  get naturalNameMissingError() {
-    return `A name is required`;
-  }
   get usernameTooLongError() {
     return `Your username is too long`;
-  }
-  get usernameMissingError() {
-    return `A username is required`;
   }
   get usernameIsUsedError() {
     return `The username is already taken`
   }
   get passwordTooLongError() {
     return `Your password is too long`;
-  }
-  get passwordMissingError() {
-    return `Please enter a password`;
   }
   get repeatPasswordNotMatchError() {
     return `The two passwords don't match`;

@@ -185,9 +185,7 @@ export class SignUpPage extends EventEmitter {
         LOCALIZED_TEXT.naturalNameTooLongError
       );
     } else if (this.naturalNameInput.value.length === 0) {
-      this.naturalNameInput.setAsInvalid(
-        LOCALIZED_TEXT.naturalNameMissingError
-      );
+      this.naturalNameInput.setAsInvalid();
     } else {
       this.naturalNameInput.setAsValid();
     }
@@ -198,7 +196,7 @@ export class SignUpPage extends EventEmitter {
     if (this.usernameInput.value.length > 100) {
       this.usernameInput.setAsInvalid(LOCALIZED_TEXT.usernameTooLongError);
     } else if (this.usernameInput.value.length === 0) {
-      this.usernameInput.setAsInvalid(LOCALIZED_TEXT.usernameMissingError);
+      this.usernameInput.setAsInvalid();
     } else {
       this.usernameInput.setAsValid();
     }
@@ -209,7 +207,7 @@ export class SignUpPage extends EventEmitter {
     if (this.passwordInput.value.length > 100) {
       this.passwordInput.setAsInvalid(LOCALIZED_TEXT.passwordTooLongError);
     } else if (this.passwordInput.value.length === 0) {
-      this.passwordInput.setAsInvalid(LOCALIZED_TEXT.passwordMissingError);
+      this.passwordInput.setAsInvalid();
     } else {
       this.passwordInput.setAsValid();
     }
