@@ -1,5 +1,6 @@
 import userImage = require("./test_data/user_image.jpg");
-import { QuickTalesPage } from "./container";
+import wideImage = require("./test_data/wide.png");
+import { QuickTalesListPage } from "./container";
 import { QuickTaleCardMock } from "./quick_tale_card_mock";
 import { UserInfoCardMock } from "./user_info_card_mock";
 import {
@@ -30,30 +31,22 @@ function createCardData(taleId: number): QuickTaleCardData {
       avatarSmallPath: userImage,
     },
     text: `some text ${taleId}`,
+    imagePaths: [wideImage],
   };
 }
 
-export interface QuickTalesPageMockData {
+export interface QuickTalesListPageMockData {
   startingTaleId: number;
   pinnedTaleId?: number;
   userInfoCardData?: UserInfoCardData;
 }
 
-export class QuickTalesPageMock extends QuickTalesPage {
+export class QuickTalesListPageMock extends QuickTalesListPage {
   public constructor(
     context: TaleContext,
-    appendBodiesFn: (bodies: Array<HTMLElement>) => void,
-    prependMenuBodiesFn: (menuBodies: Array<HTMLElement>) => void,
-    appendMenuBodiesFn: (menuBodies: Array<HTMLElement>) => void,
-    appendControllerBodiesFn: (controllerBodies: Array<HTMLElement>) => void,
-    mockData: QuickTalesPageMockData
+    mockData: QuickTalesListPageMockData
   ) {
     super(
-      context,
-      appendBodiesFn,
-      prependMenuBodiesFn,
-      appendMenuBodiesFn,
-      appendControllerBodiesFn,
       (cardData, pinned) => new QuickTaleCardMock(cardData, pinned),
       (cardData) => new UserInfoCardMock(cardData),
       new (class extends WebServiceClient {
@@ -82,7 +75,8 @@ export class QuickTalesPageMock extends QuickTalesPage {
             } as GetUserInfoCardResponse;
           }
         }
-      })()
+      })(),
+      context
     );
   }
 }

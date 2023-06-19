@@ -17,6 +17,10 @@ export class PageNavigator<Page> {
     }
   }
 
+  public add(): void {
+    this.addPage(this.currentPage);
+  }
+
   public remove(): void {
     this.removePage(this.currentPage);
   }

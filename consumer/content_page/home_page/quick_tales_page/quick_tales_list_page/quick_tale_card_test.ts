@@ -3,23 +3,24 @@ import tallImage = require("./test_data/tall.webp");
 import userImage = require("./test_data/user_image.jpg");
 import wideImage = require("./test_data/wide.png");
 import path = require("path");
-import { IconButton } from "../../../common/icon_button";
-import { normalizeBody } from "../../../common/normalize_body";
+import { IconButton } from "../../../../common/icon_button";
 import { QuickTaleCard } from "./quick_tale_card";
 import { REACT_TO_TALE_REQUEST_BODY } from "@phading/tale_service_interface/interface";
 import { TaleReaction } from "@phading/tale_service_interface/tale_reaction";
-import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
-import { deleteFile, screenshot } from "@selfage/puppeteer_test_executor_api";
+import {
+  deleteFile,
+  screenshot,
+  setViewport,
+} from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq, eqArray } from "@selfage/test_matcher";
 import { WebServiceClient } from "@selfage/web_service_client";
-
-normalizeBody();
+import "../../../../common/normalize_body";
 
 class RenderCase implements TestCase {
-  private container: HTMLDivElement;
+  private cut: QuickTaleCard;
   public constructor(
     public name: string,
     private option: {
@@ -33,7 +34,8 @@ class RenderCase implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    let cut = new QuickTaleCard(
+    await setViewport(800, 800);
+    this.cut = new QuickTaleCard(
       {
         metadata: {
           avatarSmallPath: userImage,
@@ -47,11 +49,9 @@ class RenderCase implements TestCase {
       this.option.pinned,
       undefined
     );
-    this.container = E.div({}, cut.body);
-    document.body.style.width = "800px";
 
     // Execute
-    document.body.appendChild(this.container);
+    document.body.appendChild(this.cut.body);
 
     // Verify
     await asyncAssertScreenshot(
@@ -62,12 +62,12 @@ class RenderCase implements TestCase {
     );
   }
   public tearDown() {
-    this.container.remove();
+    this.cut.remove();
   }
 }
 
 class UndoReactionCase implements TestCase {
-  private container: HTMLDivElement;
+  private cut: QuickTaleCard;
   public constructor(
     public name: string,
     private getReactionButtonFn: (cut: QuickTaleCard) => IconButton,
@@ -78,6 +78,7 @@ class UndoReactionCase implements TestCase {
   ) {}
   public async execute() {
     // Prepare
+    await setViewport(800, 800);
     let webServiceClientMock = new (class extends WebServiceClient {
       public requestCaptured: any;
       public constructor() {
@@ -88,7 +89,7 @@ class UndoReactionCase implements TestCase {
         return {} as any;
       }
     })();
-    let cut = new QuickTaleCard(
+    this.cut = new QuickTaleCard(
       {
         metadata: {
           taleId: "id1",
@@ -102,20 +103,18 @@ class UndoReactionCase implements TestCase {
       false,
       webServiceClientMock
     );
-    this.container = E.div({}, cut.body);
-    document.body.style.width = "800px";
-    document.body.appendChild(this.container);
+    document.body.appendChild(this.cut.body);
     document.body.clientHeight; // Force reflow
     // Expand actions
-    cut.actionsExpandButton.click();
+    this.cut.actionsExpandButton.click();
     await new Promise<void>((resolve) =>
-      cut.once("actionsLineTranstionEnded", resolve)
+      this.cut.once("actionsLineTranstionEnded", resolve)
     );
     await screenshot(this.screenshotBaselinePath, { fullPage: true });
-    this.getReactionButtonFn(cut).click();
+    this.getReactionButtonFn(this.cut).click();
 
     // Execute
-    this.getUndoReactionButtonFn(cut).click();
+    this.getUndoReactionButtonFn(this.cut).click();
 
     // Verify
     assertThat(
@@ -132,7 +131,7 @@ class UndoReactionCase implements TestCase {
     await deleteFile(this.screenshotBaselinePath);
   }
   public tearDown() {
-    this.container.remove();
+    this.cut.remove();
   }
 }
 
@@ -297,10 +296,11 @@ TEST_RUNNER.run({
     ),
     new (class implements TestCase {
       public name = "MultiLinesText";
-      private container: HTMLDivElement;
+      private cut: QuickTaleCard;
       public async execute() {
         // Prepare
-        let cut = new QuickTaleCard(
+        await setViewport(800, 800);
+        this.cut = new QuickTaleCard(
           {
             metadata: {
               avatarSmallPath: userImage,
@@ -313,11 +313,9 @@ TEST_RUNNER.run({
           false,
           undefined
         );
-        this.container = E.div({}, cut.body);
-        document.body.style.width = "800px";
 
         // Execute
-        document.body.appendChild(this.container);
+        document.body.appendChild(this.cut.body);
 
         // Verify
         await asyncAssertScreenshot(
@@ -328,7 +326,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.showMoreButton.click();
+        this.cut.showMoreButton.click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -339,7 +337,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.showLessButton.click();
+        this.cut.showLessButton.click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -350,15 +348,16 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
       public name = "RenderActionsLine";
-      private container: HTMLDivElement;
+      private cut: QuickTaleCard;
       public async execute() {
         // Prepare
-        let cut = new QuickTaleCard(
+        await setViewport(800, 800);
+        this.cut = new QuickTaleCard(
           {
             metadata: {
               avatarSmallPath: userImage,
@@ -371,9 +370,7 @@ TEST_RUNNER.run({
           false,
           undefined
         );
-        this.container = E.div({}, cut.body);
-        document.body.style.width = "800px";
-        document.body.appendChild(this.container);
+        document.body.appendChild(this.cut.body);
         await screenshot(
           path.join(
             __dirname,
@@ -383,9 +380,9 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.actionsExpandButton.click();
+        this.cut.actionsExpandButton.click();
         await new Promise<void>((resolve) => {
-          cut.once("actionsLineTranstionEnded", resolve);
+          this.cut.once("actionsLineTranstionEnded", resolve);
         });
 
         // Verify
@@ -397,9 +394,9 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.actionsCollapseButton.click();
+        this.cut.actionsCollapseButton.click();
         await new Promise<void>((resolve) => {
-          cut.once("actionsLineTranstionEnded", resolve);
+          this.cut.once("actionsLineTranstionEnded", resolve);
         });
 
         // Verify
@@ -420,14 +417,15 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
       public name = "SwitchReactions";
-      private container: HTMLDivElement;
+      private cut: QuickTaleCard;
       public async execute() {
         // Prepare
+        await setViewport(800, 800);
         let webServiceClientMock = new (class extends WebServiceClient {
           public requestCaptured: any;
           public constructor() {
@@ -438,7 +436,7 @@ TEST_RUNNER.run({
             return {} as any;
           }
         })();
-        let cut = new QuickTaleCard(
+        this.cut = new QuickTaleCard(
           {
             metadata: {
               taleId: "id1",
@@ -452,17 +450,15 @@ TEST_RUNNER.run({
           false,
           webServiceClientMock
         );
-        this.container = E.div({}, cut.body);
-        document.body.style.width = "800px";
-        document.body.appendChild(this.container);
+        document.body.appendChild(this.cut.body);
         document.body.clientHeight; // Force reflow.
-        cut.actionsExpandButton.click();
+        this.cut.actionsExpandButton.click();
         await new Promise<void>((resolve) =>
-          cut.once("actionsLineTranstionEnded", resolve)
+          this.cut.once("actionsLineTranstionEnded", resolve)
         );
 
         // Execute
-        cut.loveButton.click();
+        this.cut.loveButton.click();
 
         // Verify
         assertThat(
@@ -481,7 +477,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.likeButton.click();
+        this.cut.likeButton.click();
 
         // Verify
         assertThat(
@@ -500,7 +496,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.dislikeButton.click();
+        this.cut.dislikeButton.click();
 
         // Verify
         assertThat(
@@ -519,7 +515,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.hateButton.click();
+        this.cut.hateButton.click();
 
         // Verify
         assertThat(
@@ -538,7 +534,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.loveButton.click();
+        this.cut.loveButton.click();
 
         // Verify
 
@@ -558,7 +554,7 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
     new UndoReactionCase(

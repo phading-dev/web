@@ -3,8 +3,8 @@ import { SCHEME } from "../../../../common/color_scheme";
 import { IconButton, TooltipPosition } from "../../../../common/icon_button";
 import { createArrowIcon } from "../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
-import { MenuItem } from "../../../menu_item/container";
-import { createBackMenuItem } from "../../../menu_item/factory";
+import { MenuItem } from "../../../../common/menu_item/container";
+import { createBackMenuItem } from "../../../../common/menu_item/factory";
 import { ImageViewer } from "./image_viewer";
 
 export interface ImagesViewerPage {
@@ -17,141 +17,112 @@ export class ImagesViewerPage extends EventEmitter {
   public upButton: IconButton;
   public downButton: IconButton;
 
-  private index: number;
-  private imageViewers = new Array<ImageViewer>();
+  private imageViewers = new Map<number, ImageViewer>();
 
   public constructor(
-    private appendBodiesFn: (bodies: Array<HTMLElement>) => void,
-    private prependMenuBodiesFn: (menuBodies: Array<HTMLElement>) => void,
+    private appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    private prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
     private appendControllerBodiesFn: (
-      controllerBodies: Array<HTMLElement>
-    ) => void
+      ...bodies: Array<HTMLElement>
+    ) => void,
+    private imagePaths: Array<string>,
+    private index: number
   ) {
     super();
     this.backMenuItem = createBackMenuItem();
-    this.prependMenuBodiesFn([this.backMenuItem.body]);
+    this.prependMenuBodiesFn(this.backMenuItem.body);
 
     this.upButton = IconButton.create(
-      `width: 3rem; height: 3rem; padding: .7rem; box-sizing: border-box; rotate: 90deg;`,
+      `width: 3rem; height: 3rem; padding: .7rem; box-sizing: border-box; rotate: 90deg; color: ${SCHEME.neutral1}; cursor: pointer;`,
       createArrowIcon("currentColor"),
       TooltipPosition.LEFT,
       LOCALIZED_TEXT.prevImageLabel
     );
     this.downButton = IconButton.create(
-      `width: 3rem; height: 3rem; padding: .7rem; box-sizing: border-box; rotate: -90deg;`,
+      `width: 3rem; height: 3rem; padding: .7rem; box-sizing: border-box; rotate: -90deg; color: ${SCHEME.neutral1}; cursor: pointer;`,
       createArrowIcon("currentColor"),
       TooltipPosition.LEFT,
       LOCALIZED_TEXT.nextImageLabel
     );
-    this.appendControllerBodiesFn([this.downButton.body, this.upButton.body]);
+    this.appendControllerBodiesFn(this.downButton.body, this.upButton.body);
+    this.showCurrentImageViewer();
 
-    this.hide();
     this.backMenuItem.on("action", () => this.emit("back"));
     this.downButton.on("action", () => this.showNext());
     this.upButton.on("action", () => this.showPrev());
   }
 
   public static create(
-    appendBodiesFn: (bodies: Array<HTMLElement>) => void,
-    prependMenuBodiesFn: (menuBodies: Array<HTMLElement>) => void,
-    appendControllerBodiesFn: (controllerBodies: Array<HTMLElement>) => void
+    appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    imagePaths: Array<string>,
+    initialIndex: number
   ): ImagesViewerPage {
     return new ImagesViewerPage(
       appendBodiesFn,
       prependMenuBodiesFn,
-      appendControllerBodiesFn
+      appendControllerBodiesFn,
+      imagePaths,
+      initialIndex,
     );
   }
 
-  public async show(
-    imagePaths: Array<string>,
-    initialIndex: number
+  private async showCurrentImageViewer(
   ): Promise<void> {
-    this.backMenuItem.show();
-    this.upButton.show();
-    this.downButton.show();
-
-    this.index = initialIndex;
-    await new Promise<void>((resolve) => {
-      let imagesLoaded = 0;
-      for (let i = 0; i < imagePaths.length; i++) {
-        let imageViewer = ImageViewer.create(imagePaths[i]);
-        if (i === initialIndex) {
-          imageViewer.show();
-        } else {
-          imageViewer.hide();
-        }
-        imageViewer.once("loaded", () => {
-          imagesLoaded++;
-          if (imagesLoaded >= imagePaths.length) {
-            resolve();
-          }
-        });
-        this.imageViewers.push(imageViewer);
-        this.appendBodiesFn([imageViewer.body]);
-        this.appendControllerBodiesFn(imageViewer.controllerBodies);
-      }
-      this.setButtonState();
-    });
+    let imageViewer = this.getImageViewer();
+    this.appendBodiesFn(imageViewer.body);
+    this.appendControllerBodiesFn(...imageViewer.controllerBodies);
+    this.setButtonState();
   }
 
-  public hide(): void {
-    this.backMenuItem.hide();
-    this.upButton.hide();
-    this.downButton.hide();
-    for (let imageViewer of this.imageViewers) {
-      imageViewer.remove();
+  private getImageViewer(): ImageViewer {
+    if (this.imageViewers.has(this.index)) {
+      return this.imageViewers.get(this.index);
+    } else {
+      let imageViewer = ImageViewer.create(this.imagePaths[this.index]);
+      this.imageViewers.set(this.index, imageViewer);
+      return imageViewer;
     }
-    this.imageViewers = new Array<ImageViewer>();
   }
 
   private showNext(): void {
-    if (this.index >= this.imageViewers.length - 1) {
+    if (this.index >= this.imagePaths.length - 1) {
       return;
     }
-    this.imageViewers[this.index].hide();
+    this.removeCurrentImageViewer();
     this.index++;
-    this.imageViewers[this.index].show();
-    this.setButtonState();
+    this.showCurrentImageViewer();
   }
 
   private showPrev(): void {
     if (this.index <= 0) {
       return;
     }
-    this.imageViewers[this.index].hide();
+    this.removeCurrentImageViewer();
     this.index--;
-    this.imageViewers[this.index].show();
-    this.setButtonState();
+    this.showCurrentImageViewer();
   }
 
   private setButtonState(): void {
     if (this.index <= 0) {
-      this.fadeButton(this.upButton.body);
+      this.upButton.disable();
     } else {
-      this.restoreButton(this.upButton.body);
+      this.upButton.enable();
     }
-    if (this.index >= this.imageViewers.length - 1) {
-      this.fadeButton(this.downButton.body);
+    if (this.index >= this.imagePaths.length - 1) {
+      this.downButton.disable();
     } else {
-      this.restoreButton(this.downButton.body);
+      this.downButton.enable();
     }
   }
 
-  private restoreButton(button: HTMLButtonElement): void {
-    button.style.color = SCHEME.neutral1;
-    button.style.cursor = "pointer";
-  }
-
-  private fadeButton(button: HTMLButtonElement): void {
-    button.style.color = SCHEME.neutral3;
-    button.style.cursor = "not-allowed";
+  private removeCurrentImageViewer(): void {
+    this.imageViewers.get(this.index).remove();
   }
 
   public remove(): void {
-    for (let imageViewer of this.imageViewers) {
-      imageViewer.remove();
-    }
+    this.removeCurrentImageViewer();
     this.backMenuItem.remove();
     this.upButton.remove();
     this.downButton.remove();

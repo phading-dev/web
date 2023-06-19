@@ -1,22 +1,23 @@
 import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
-import { normalizeBody } from "../../../common/normalize_body";
 import { UserInfoCard } from "./user_info_card";
 import { SET_USER_RELATIONSHIP_REQUEST_BODY } from "@phading/user_service_interface/interface";
 import { UserInfoCard as UserInfoCardData } from "@phading/user_service_interface/user_info_card";
 import { UserRelationship } from "@phading/user_service_interface/user_relationship";
-import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
-import { deleteFile, screenshot } from "@selfage/puppeteer_test_executor_api";
+import {
+  deleteFile,
+  screenshot,
+  setViewport,
+} from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat } from "@selfage/test_matcher";
 import { WebServiceClient } from "@selfage/web_service_client";
-
-normalizeBody();
+import "../../../../common/normalize_body";
 
 class RenderCase implements TestCase {
-  private container: HTMLDivElement;
+  private cut: UserInfoCard;
   public constructor(
     public name: string,
     private data: UserInfoCardData,
@@ -26,12 +27,11 @@ class RenderCase implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    document.body.style.width = "800px";
-    let cut = new UserInfoCard(this.data, undefined);
-    this.container = E.div({}, cut.body);
+    await setViewport(800, 800);
+    this.cut = new UserInfoCard(this.data, undefined);
 
     // Execute
-    document.body.appendChild(this.container);
+    document.body.appendChild(this.cut.body);
 
     // Verify
     await asyncAssertScreenshot(
@@ -42,12 +42,12 @@ class RenderCase implements TestCase {
     );
   }
   public tearDown() {
-    this.container.remove();
+    this.cut.remove();
   }
 }
 
 class UndoCase implements TestCase {
-  private container: HTMLDivElement;
+  private cut: UserInfoCard;
   public constructor(
     public name: string,
     private getActionButtonFn: (cut: UserInfoCard) => HTMLButtonElement,
@@ -58,7 +58,7 @@ class UndoCase implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    document.body.style.width = "800px";
+    await setViewport(800, 800);
     let webServiceClientMock = new (class extends WebServiceClient {
       public requestCaptured: any;
       public constructor() {
@@ -69,7 +69,7 @@ class UndoCase implements TestCase {
         return {} as any;
       }
     })();
-    let cut = new UserInfoCard(
+    this.cut = new UserInfoCard(
       {
         userId: "id1",
         username: "someusername",
@@ -78,13 +78,12 @@ class UndoCase implements TestCase {
       },
       webServiceClientMock
     );
-    this.container = E.div({}, cut.body);
-    document.body.appendChild(this.container);
+    document.body.appendChild(this.cut.body);
     await screenshot(this.screenshotBaselinePath, { fullPage: true });
-    this.getActionButtonFn(cut).click();
+    this.getActionButtonFn(this.cut).click();
 
     // Execute
-    this.getUndoActionButtonFn(cut).click();
+    this.getUndoActionButtonFn(this.cut).click();
 
     // Verify
     assertThat(
@@ -101,7 +100,7 @@ class UndoCase implements TestCase {
     await deleteFile(this.screenshotBaselinePath);
   }
   public tearDown() {
-    this.container.remove();
+    this.cut.remove();
   }
 }
 
@@ -162,10 +161,10 @@ TEST_RUNNER.run({
     ),
     new (class implements TestCase {
       public name = "SwitchButtons";
-      private container: HTMLDivElement;
+      private cut: UserInfoCard;
       public async execute() {
         // Prepare
-        document.body.style.width = "800px";
+        await setViewport(800, 800);
         let webServiceClientMock = new (class extends WebServiceClient {
           public requestCaptured: any;
           public constructor() {
@@ -176,7 +175,7 @@ TEST_RUNNER.run({
             return {} as any;
           }
         })();
-        let cut = new UserInfoCard(
+        this.cut = new UserInfoCard(
           {
             userId: "id1",
             username: "someusername",
@@ -185,11 +184,10 @@ TEST_RUNNER.run({
           },
           webServiceClientMock
         );
-        this.container = E.div({}, cut.body);
-        document.body.appendChild(this.container);
+        document.body.appendChild(this.cut.body);
 
         // Execute
-        cut.likeButton.click();
+        this.cut.likeButton.click();
 
         // Verify
         assertThat(
@@ -208,7 +206,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.dislikeButton.click();
+        this.cut.dislikeButton.click();
 
         // Verify
         assertThat(
@@ -227,7 +225,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.likeButton.click();
+        this.cut.likeButton.click();
 
         // Verify
         assertThat(
@@ -246,7 +244,7 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
     new UndoCase(

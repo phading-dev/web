@@ -1,11 +1,11 @@
-import { AT_USER } from "../../../common/at_user";
+import { AT_USER } from "../../../../common/at_user";
 import {
   FILLED_BUTTON_STYLE,
   OUTLINE_BUTTON_STYLE,
-} from "../../../common/button_styles";
-import { SCHEME } from "../../../common/color_scheme";
-import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { WEB_SERVICE_CLIENT } from "../../../common/web_service_client";
+} from "../../../../common/button_styles";
+import { SCHEME } from "../../../../common/color_scheme";
+import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
+import { WEB_SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { CARD_WIDTH } from "./styles";
 import { setUserRelationship } from "@phading/user_service_interface/client_requests";
 import { UserInfoCard as UserInfoCardData } from "@phading/user_service_interface/user_info_card";

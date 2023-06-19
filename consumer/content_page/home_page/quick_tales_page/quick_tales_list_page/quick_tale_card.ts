@@ -1,7 +1,7 @@
 import EventEmitter = require("events");
-import { AT_USER } from "../../../common/at_user";
-import { SCHEME } from "../../../common/color_scheme";
-import { IconButton, TooltipPosition } from "../../../common/icon_button";
+import { AT_USER } from "../../../../common/at_user";
+import { SCHEME } from "../../../../common/color_scheme";
+import { IconButton, TooltipPosition } from "../../../../common/icon_button";
 import {
   createAngerIcon,
   createCommentIcon,
@@ -12,9 +12,9 @@ import {
   createHeartIcon,
   createPinIcon,
   createThumbUpIcon,
-} from "../../../common/icons";
-import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { WEB_SERVICE_CLIENT } from "../../../common/web_service_client";
+} from "../../../../common/icons";
+import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
+import { WEB_SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { CARD_WIDTH } from "./styles";
 import { reactToTale } from "@phading/tale_service_interface/client_requests";
 import { QuickTaleCard as QuickTaleCardData } from "@phading/tale_service_interface/tale_card";
@@ -162,7 +162,7 @@ export class QuickTaleCard extends EventEmitter {
               createDoubleArrowsIcon(SCHEME.neutral2),
               TooltipPosition.TOP,
               LOCALIZED_TEXT.actionsCollapseLabel
-            ).show()
+            )
           ).body,
           assign(
             loveButtonRef,
@@ -256,30 +256,22 @@ export class QuickTaleCard extends EventEmitter {
     this.hideActions();
     if (cardData.metadata.reaction === TaleReaction.LOVE) {
       this.loveButton.hide();
-      this.lovedButton.show();
     } else {
-      this.loveButton.show();
       this.lovedButton.hide();
     }
     if (cardData.metadata.reaction === TaleReaction.LIKE) {
       this.likeButton.hide();
-      this.likedButton.show();
     } else {
-      this.likeButton.show();
       this.likedButton.hide();
     }
     if (cardData.metadata.reaction === TaleReaction.DISLIKE) {
       this.dislikeButton.hide();
-      this.dislikedButton.show();
     } else {
-      this.dislikeButton.show();
       this.dislikedButton.hide();
     }
     if (cardData.metadata.reaction === TaleReaction.HATE) {
       this.hateButton.hide();
-      this.hatedButton.show();
     } else {
-      this.hateButton.show();
       this.hatedButton.hide();
     }
     this.userInfoChip.addEventListener("click", () =>

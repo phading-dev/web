@@ -32,7 +32,7 @@ export class ImageViewer extends EventEmitter {
     this.body = E.div(
       {
         class: "image-viewer-image-scroller",
-        style: `flex-flow: column nowrap; min-width: 100vw; min-height: 100vh;`,
+        style: `display: flex; flex-flow: column nowrap; min-width: 100vw; min-height: 100vh;`,
       },
       E.imageRef(imageRef, {
         class: "image-viewer-image",
@@ -69,7 +69,7 @@ export class ImageViewer extends EventEmitter {
     this.zoomInButton.on("action", () => this.zoomInImage());
     this.zoomOutButton.on("action", () => this.zoomOutImage());
     this.zoomFitButton.on("action", () => this.fitImage());
-    this.image.addEventListener("load", () => this.load());
+    this.image.addEventListener("load", () => this.loaded());
   }
 
   public static create(imagePath: string): ImageViewer {
@@ -111,31 +111,15 @@ export class ImageViewer extends EventEmitter {
     }
   }
 
-  private load(): void {
+  private loaded(): void {
     this.fitImage();
     this.emit("loaded");
   }
 
-  public show(): this {
-    this.body.style.display = "flex";
-    this.zoomInButton.show();
-    this.zoomOutButton.show();
-    this.zoomFitButton.show();
-    return this;
-  }
-
-  public hide(): this {
-    this.body.style.display = "none";
-    this.zoomInButton.hide();
-    this.zoomOutButton.hide();
-    this.zoomFitButton.hide();
-    return this;
-  }
-
   public remove(): void {
     this.body.remove();
-    this.zoomInButton.body.remove();
-    this.zoomOutButton.body.remove();
-    this.zoomFitButton.body.remove();
+    this.zoomInButton.remove();
+    this.zoomOutButton.remove();
+    this.zoomFitButton.remove();
   }
 }
