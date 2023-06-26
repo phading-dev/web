@@ -187,7 +187,10 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/quick_tales_list_page_loaded_again.png"),
-          path.join(__dirname, "/golden/quick_tales_list_page_loaded_again.png"),
+          path.join(
+            __dirname,
+            "/golden/quick_tales_list_page_loaded_again.png"
+          ),
           path.join(__dirname, "/quick_tales_list_page_loaded_again_diff.png")
         );
 
@@ -259,7 +262,10 @@ TEST_RUNNER.run({
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/quick_tales_list_page_no_more_tales.png"),
-          path.join(__dirname, "/golden/quick_tales_list_page_no_more_tales.png"),
+          path.join(
+            __dirname,
+            "/golden/quick_tales_list_page_no_more_tales.png"
+          ),
           path.join(__dirname, "/quick_tales_list_page_no_more_tales_diff.png")
         );
 
@@ -280,7 +286,10 @@ TEST_RUNNER.run({
             __dirname,
             "/quick_tales_list_page_no_more_tales_after_retried.png"
           ),
-          path.join(__dirname, "/golden/quick_tales_list_page_no_more_tales.png"),
+          path.join(
+            __dirname,
+            "/golden/quick_tales_list_page_no_more_tales.png"
+          ),
           path.join(
             __dirname,
             "/quick_tales_list_page_no_more_tales_after_retried_diff.png"
@@ -368,7 +377,10 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/quick_tales_list_page_tale_context.png"),
-          path.join(__dirname, "/golden/quick_tales_list_page_tale_context.png"),
+          path.join(
+            __dirname,
+            "/golden/quick_tales_list_page_tale_context.png"
+          ),
           path.join(__dirname, "/quick_tales_list_page_tale_context_diff.png")
         );
       }
@@ -423,7 +435,10 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/quick_tales_list_page_user_context.png"),
-          path.join(__dirname, "/golden/quick_tales_list_page_user_context.png"),
+          path.join(
+            __dirname,
+            "/golden/quick_tales_list_page_user_context.png"
+          ),
           path.join(__dirname, "/quick_tales_list_page_user_context_diff.png")
         );
       }

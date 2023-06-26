@@ -1,7 +1,6 @@
 import tallImage = require("./test_data/tall.webp");
 import wideImage = require("./test_data/wide.jpeg");
 import path = require("path");
-import { normalizeBody } from "../../../../common/normalize_body";
 import { QuickLayoutEditor } from "./container";
 import { UploadImageForTaleResponse } from "@phading/tale_service_interface/interface";
 import { E } from "@selfage/element/factory";
@@ -10,25 +9,33 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClient } from "@selfage/web_service_client";
+import "../../../../common/normalize_body";
 
-normalizeBody();
+let container: HTMLDivElement;
 
 TEST_RUNNER.run({
   name: "QuickLayoutEditorTest",
+  environment: {
+    setUp: () => {
+      container = E.div({
+        style: `display: flex; flex-flow: column nowrap; width: 800px;`,
+      });
+      document.body.append(container);
+    },
+    tearDown: () => {
+      container.remove();
+    },
+  },
   cases: [
     new (class implements TestCase {
       public name = "Render";
-      private container: HTMLDivElement;
+      private cut: QuickLayoutEditor;
       public async execute() {
         // Prepare
-        let cut = new QuickLayoutEditor(undefined);
-        this.container = E.div(
-          { style: `display: flex; flex-flow: column nowrap; width: 800px;` },
-          ...cut.bodies
-        );
+        this.cut = new QuickLayoutEditor(undefined);
 
         // Execute
-        document.body.append(this.container);
+        container.append(...this.cut.bodies);
 
         // Verify
         await asyncAssertScreenshot(
@@ -39,12 +46,12 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
       public name = "UploadAndMoveImages";
-      private container: HTMLDivElement;
+      private cut: QuickLayoutEditor;
       public async execute() {
         // Prepare
         let serviceClientMock = new (class extends WebServiceClient {
@@ -62,20 +69,18 @@ TEST_RUNNER.run({
             } as UploadImageForTaleResponse;
           }
         })();
-        let cut = new QuickLayoutEditor(serviceClientMock);
+        this.cut = new QuickLayoutEditor(serviceClientMock);
         let valid = false;
-        cut.on("valid", () => (valid = true));
-        cut.on("invalid", () => (valid = false));
-        this.container = E.div(
-          { style: `display: flex; flex-flow: column nowrap; width: 800px;` },
-          ...cut.bodies
-        );
-        document.body.append(this.container);
+        this.cut.on("valid", () => (valid = true));
+        this.cut.on("invalid", () => (valid = false));
+        container.append(...this.cut.bodies);
         serviceClientMock.errorToThrow = new Error("Some error");
 
         // Execute
-        supplyFiles(() => cut.uploadImageButton.click(), wideImage);
-        await new Promise<void>((resolve) => cut.once("imagesLoaded", resolve));
+        supplyFiles(() => this.cut.uploadImageButton.click(), wideImage);
+        await new Promise<void>((resolve) =>
+          this.cut.once("imagesLoaded", resolve)
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -96,8 +101,10 @@ TEST_RUNNER.run({
         serviceClientMock.imageToReturn = wideImage;
 
         // Execute
-        supplyFiles(() => cut.uploadImageButton.click(), wideImage);
-        await new Promise<void>((resolve) => cut.once("imagesLoaded", resolve));
+        supplyFiles(() => this.cut.uploadImageButton.click(), wideImage);
+        await new Promise<void>((resolve) =>
+          this.cut.once("imagesLoaded", resolve)
+        );
 
         // Verify
         assertThat(valid, eq(true), "valid");
@@ -118,8 +125,10 @@ TEST_RUNNER.run({
         serviceClientMock.imageToReturn = tallImage;
 
         // Execute
-        supplyFiles(() => cut.uploadImageButton.click(), tallImage);
-        await new Promise<void>((resolve) => cut.once("imagesLoaded", resolve));
+        supplyFiles(() => this.cut.uploadImageButton.click(), tallImage);
+        await new Promise<void>((resolve) =>
+          this.cut.once("imagesLoaded", resolve)
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -136,7 +145,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.imageEditors[1].moveUp();
+        this.cut.imagePreviewers[1].moveUp();
 
         // Verify
         await asyncAssertScreenshot(
@@ -150,8 +159,10 @@ TEST_RUNNER.run({
         serviceClientMock.imageToReturn = wideImage;
 
         // Execute
-        supplyFiles(() => cut.uploadImageButton.click(), wideImage);
-        await new Promise<void>((resolve) => cut.once("imagesLoaded", resolve));
+        supplyFiles(() => this.cut.uploadImageButton.click(), wideImage);
+        await new Promise<void>((resolve) =>
+          this.cut.once("imagesLoaded", resolve)
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -168,7 +179,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.imageEditors[0].moveDown();
+        this.cut.imagePreviewers[0].moveDown();
 
         // Verify
         await asyncAssertScreenshot(
@@ -188,7 +199,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.imageEditors[1].moveDown();
+        this.cut.imagePreviewers[1].moveDown();
 
         // Verify
         await asyncAssertScreenshot(
@@ -209,7 +220,7 @@ TEST_RUNNER.run({
 
         // Execute
         supplyFiles(
-          () => cut.uploadImageButton.click(),
+          () => this.cut.uploadImageButton.click(),
           wideImage,
           wideImage,
           wideImage,
@@ -217,7 +228,9 @@ TEST_RUNNER.run({
           wideImage,
           wideImage
         );
-        await new Promise<void>((resolve) => cut.once("imagesLoaded", resolve));
+        await new Promise<void>((resolve) =>
+          this.cut.once("imagesLoaded", resolve)
+        );
 
         // Verify
         assertThat(valid, eq(true), "valid 9");
@@ -232,7 +245,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.imageEditors[2].delete();
+        this.cut.imagePreviewers[2].delete();
 
         // Verify
         assertThat(valid, eq(true), "valid 8");
@@ -244,9 +257,9 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.imageEditors
-          .map((imageEditor) => imageEditor) // Make a copy
-          .forEach((imageEditor) => imageEditor.delete());
+        this.cut.imagePreviewers
+          .map((imagePreviewer) => imagePreviewer) // Make a copy
+          .forEach((imagePreviewer) => imagePreviewer.delete());
 
         // Verify
         assertThat(valid, eq(false), "invalid");
@@ -261,27 +274,23 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
       public name = "CountCharacter";
-      private container: HTMLDivElement;
+      private cut: QuickLayoutEditor;
       public async execute() {
         // Prepare
-        let cut = new QuickLayoutEditor(undefined);
+        this.cut = new QuickLayoutEditor(undefined);
         let valid = false;
-        cut.on("valid", () => (valid = true));
-        cut.on("invalid", () => (valid = false));
-        this.container = E.div(
-          { style: `display: flex; flex-flow: column nowrap; width: 800px;` },
-          ...cut.bodies
-        );
-        document.body.append(this.container);
+        this.cut.on("valid", () => (valid = true));
+        this.cut.on("invalid", () => (valid = false));
+        container.append(...this.cut.bodies);
 
         // Execute
-        cut.textInput.value = "some something";
-        cut.textInput.dispatchEvent(new KeyboardEvent("input"));
+        this.cut.textInput.value = "some something";
+        this.cut.textInput.dispatchEvent(new KeyboardEvent("input"));
 
         // Verify
         assertThat(valid, eq(true), "valid");
@@ -300,8 +309,8 @@ TEST_RUNNER.run({
         for (let i = 0; i < 701; i++) {
           characters.push("c");
         }
-        cut.textInput.value = characters.join("");
-        cut.textInput.dispatchEvent(new KeyboardEvent("input"));
+        this.cut.textInput.value = characters.join("");
+        this.cut.textInput.dispatchEvent(new KeyboardEvent("input"));
 
         // Verify
         assertThat(valid, eq(false), "invalid");
@@ -322,15 +331,15 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
       public name = "ValidAfterCleanText";
-      private container: HTMLDivElement;
+      private cut: QuickLayoutEditor;
       public async execute() {
         // Prepare
-        let cut = new QuickLayoutEditor(
+        this.cut = new QuickLayoutEditor(
           new (class extends WebServiceClient {
             public constructor() {
               super(undefined, undefined);
@@ -341,39 +350,40 @@ TEST_RUNNER.run({
           })()
         );
         let valid = false;
-        cut.on("valid", () => (valid = true));
-        cut.on("invalid", () => (valid = false));
-        this.container = E.div({}, ...cut.bodies);
-        document.body.append(this.container);
-        cut.textInput.value = "some something";
-        cut.textInput.dispatchEvent(new KeyboardEvent("input"));
-        supplyFiles(() => cut.uploadImageButton.click(), wideImage);
-        await new Promise<void>((resolve) => cut.once("imagesLoaded", resolve));
+        this.cut.on("valid", () => (valid = true));
+        this.cut.on("invalid", () => (valid = false));
+        container.append(...this.cut.bodies);
+        this.cut.textInput.value = "some something";
+        this.cut.textInput.dispatchEvent(new KeyboardEvent("input"));
+        supplyFiles(() => this.cut.uploadImageButton.click(), wideImage);
+        await new Promise<void>((resolve) =>
+          this.cut.once("imagesLoaded", resolve)
+        );
         assertThat(valid, eq(true), "precheck valid");
 
         // Execute
-        cut.textInput.value = "";
-        cut.textInput.dispatchEvent(new KeyboardEvent("input"));
+        this.cut.textInput.value = "";
+        this.cut.textInput.dispatchEvent(new KeyboardEvent("input"));
 
         // Verify
         assertThat(valid, eq(true), "valid");
 
         // Execute
-        cut.imageEditors[0].delete();
+        this.cut.imagePreviewers[0].delete();
 
         // Verify
         assertThat(valid, eq(false), "invalid");
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
       public name = "ValidAfterDeleteImages";
-      private container: HTMLDivElement;
+      private cut: QuickLayoutEditor;
       public async execute() {
         // Prepare
-        let cut = new QuickLayoutEditor(
+        this.cut = new QuickLayoutEditor(
           new (class extends WebServiceClient {
             public constructor() {
               super(undefined, undefined);
@@ -384,69 +394,32 @@ TEST_RUNNER.run({
           })()
         );
         let valid = false;
-        cut.on("valid", () => (valid = true));
-        cut.on("invalid", () => (valid = false));
-        this.container = E.div({}, ...cut.bodies);
-        document.body.append(this.container);
-        cut.textInput.value = "some something";
-        cut.textInput.dispatchEvent(new KeyboardEvent("input"));
-        supplyFiles(() => cut.uploadImageButton.click(), wideImage);
-        await new Promise<void>((resolve) => cut.once("imagesLoaded", resolve));
+        this.cut.on("valid", () => (valid = true));
+        this.cut.on("invalid", () => (valid = false));
+        container.append(...this.cut.bodies);
+        this.cut.textInput.value = "some something";
+        this.cut.textInput.dispatchEvent(new KeyboardEvent("input"));
+        supplyFiles(() => this.cut.uploadImageButton.click(), wideImage);
+        await new Promise<void>((resolve) =>
+          this.cut.once("imagesLoaded", resolve)
+        );
         assertThat(valid, eq(true), "precheck valid");
 
         // Execute
-        cut.imageEditors[0].delete();
+        this.cut.imagePreviewers[0].delete();
 
         // Verify
         assertThat(valid, eq(true), "valid");
 
         // Execute
-        cut.textInput.value = "";
-        cut.textInput.dispatchEvent(new KeyboardEvent("input"));
+        this.cut.textInput.value = "";
+        this.cut.textInput.dispatchEvent(new KeyboardEvent("input"));
 
         // Verify
         assertThat(valid, eq(false), "invalid");
       }
       public tearDown() {
-        this.container.remove();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "Clear";
-      private container: HTMLDivElement;
-      public async execute() {
-        // Prepare
-        let cut = new QuickLayoutEditor(
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(request: any): Promise<any> {
-              return { url: wideImage } as UploadImageForTaleResponse;
-            }
-          })()
-        );
-        let valid = false;
-        cut.on("valid", () => (valid = true));
-        cut.on("invalid", () => (valid = false));
-        this.container = E.div({}, ...cut.bodies);
-        document.body.append(this.container);
-        cut.textInput.value = "some something";
-        cut.textInput.dispatchEvent(new KeyboardEvent("input"));
-        supplyFiles(() => cut.uploadImageButton.click(), wideImage);
-        await new Promise<void>((resolve) => cut.once("imagesLoaded", resolve));
-        assertThat(valid, eq(true), "precheck valid");
-
-        // Execute
-        cut.clear();
-
-        // Verify
-        assertThat(cut.textInput.value, eq(""), "text");
-        assertThat(cut.imageEditors.length, eq(0), "images");
-        assertThat(valid, eq(false), "invalid");
-      }
-      public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
   ],

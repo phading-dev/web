@@ -5,7 +5,7 @@ import { ImagesViewerPage } from "./image_viewer_page/container";
 import { QuickTalesListPage } from "./quick_tales_list_page/container";
 import { TaleContext } from "@phading/tale_service_interface/tale_context";
 
-export function buildCacheKey(taleContext: TaleContext): string {
+export function buildTaleContextKey(taleContext: TaleContext): string {
   if (taleContext.taleId) {
     return `t:${taleContext.taleId}`;
   } else if (taleContext.userId) {
@@ -17,7 +17,6 @@ export function buildCacheKey(taleContext: TaleContext): string {
 
 export let QUICK_TALES_LIST_PAGE_CACHE = new LRU<string, QuickTalesListPage>({
   max: 30,
-  disposeAfter: (value) => value.remove(),
 });
 
 export interface QuickTalesPage {
@@ -40,6 +39,7 @@ export class QuickTalesPage extends EventEmitter {
   private pageNavigator: PageNavigator<Page>;
 
   public constructor(
+    private quickTalesListPageCache: LRU<string, QuickTalesListPage>,
     private quickTalesListPageFactoryFn: (
       context: TaleContext
     ) => QuickTalesListPage,
@@ -72,6 +72,7 @@ export class QuickTalesPage extends EventEmitter {
     context: TaleContext
   ): QuickTalesPage {
     return new QuickTalesPage(
+      QUICK_TALES_LIST_PAGE_CACHE,
       QuickTalesListPage.create,
       ImagesViewerPage.create,
       appendBodiesFn,
@@ -85,21 +86,22 @@ export class QuickTalesPage extends EventEmitter {
   private addPage(page: Page): void {
     switch (page) {
       case Page.LIST: {
-        let key = buildCacheKey(this.context);
-        if (QUICK_TALES_LIST_PAGE_CACHE.has(key)) {
-          this.listPage = QUICK_TALES_LIST_PAGE_CACHE.get(key);
+        let key = buildTaleContextKey(this.context);
+        if (this.quickTalesListPageCache.has(key)) {
+          this.listPage = this.quickTalesListPageCache.get(key);
         } else {
-          this.listPage = this.quickTalesListPageFactoryFn(this.context)
-            .on("back", () => this.emit("back"))
-            .on("pin", (context) => this.emit("pin", context))
-            .on("reply", (taleId) => this.emit("reply", taleId))
-            .on("viewImages", (imagePaths, initialIndex) => {
-              this.imagePaths = imagePaths;
-              this.initialIndex = initialIndex;
-              this.pageNavigator.goTo(Page.IMAGE_VIEWIER);
-            });
-          QUICK_TALES_LIST_PAGE_CACHE.set(key, this.listPage);
+          this.listPage = this.quickTalesListPageFactoryFn(this.context);
+          this.quickTalesListPageCache.set(key, this.listPage);
         }
+        this.listPage
+          .on("back", () => this.emit("back"))
+          .on("pin", (context) => this.emit("pin", context))
+          .on("reply", (taleId) => this.emit("reply", taleId))
+          .on("viewImages", (imagePaths, initialIndex) => {
+            this.imagePaths = imagePaths;
+            this.initialIndex = initialIndex;
+            this.pageNavigator.goTo(Page.IMAGE_VIEWIER);
+          });
         this.appendBodiesFn(this.listPage.body);
         this.prependMenuBodiesFn(this.listPage.backMenuBody);
         this.appendMenuBodiesFn(this.listPage.menuBody);
@@ -122,6 +124,7 @@ export class QuickTalesPage extends EventEmitter {
     switch (page) {
       case Page.LIST: {
         this.listPage.remove();
+        this.listPage.removeAllListeners();
         break;
       }
       case Page.IMAGE_VIEWIER: {

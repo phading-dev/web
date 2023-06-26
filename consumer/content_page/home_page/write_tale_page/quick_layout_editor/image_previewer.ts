@@ -8,7 +8,7 @@ import {
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
-export interface ImageEditor {
+export interface ImagePreviewer {
   on(event: "top", listener: () => void): this;
   on(event: "up", listener: () => void): this;
   on(event: "down", listener: () => void): this;
@@ -16,7 +16,7 @@ export interface ImageEditor {
   on(event: "delete", listener: () => void): this;
 }
 
-export class ImageEditor extends EventEmitter {
+export class ImagePreviewer extends EventEmitter {
   public body: HTMLDivElement;
   private moveToTopButton: HTMLDivElement;
   private moveUpButton: HTMLDivElement;
@@ -109,28 +109,28 @@ export class ImageEditor extends EventEmitter {
     this.deleteButton.addEventListener("click", () => this.emit("delete"));
   }
 
-  public static create(imagePath: string): ImageEditor {
-    return new ImageEditor(imagePath);
+  public static create(imagePath: string): ImagePreviewer {
+    return new ImagePreviewer(imagePath);
   }
 
   public showMoveUpButtons(): void {
-    this.moveToTopButton.style.display = "block";
-    this.moveUpButton.style.display = "block";
+    this.moveToTopButton.style.visibility = "visible";
+    this.moveUpButton.style.visibility = "visible";
   }
 
   public hideMoveUpButtons(): void {
-    this.moveToTopButton.style.display = "none";
-    this.moveUpButton.style.display = "none";
+    this.moveToTopButton.style.visibility = "hidden";
+    this.moveUpButton.style.visibility = "hidden";
   }
 
   public showMoveDownButtons(): void {
-    this.moveDownButton.style.display = "block";
-    this.moveToBottomButton.style.display = "block";
+    this.moveDownButton.style.visibility = "visible";
+    this.moveToBottomButton.style.visibility = "visible";
   }
 
   public hideMoveDownButtons(): void {
-    this.moveDownButton.style.display = "none";
-    this.moveToBottomButton.style.display = "none";
+    this.moveDownButton.style.visibility = "hidden";
+    this.moveToBottomButton.style.visibility = "hidden";
   }
 
   // Visible for testing
@@ -156,5 +156,9 @@ export class ImageEditor extends EventEmitter {
   // Visible for testing
   public delete(): void {
     this.deleteButton.click();
+  }
+
+  public remove(): void {
+    this.body.remove();
   }
 }

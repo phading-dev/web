@@ -1,56 +1,63 @@
 import userImage = require("./test_data/user_image.jpg");
+import LRU = require("lru-cache");
 import path = require("path");
-import { normalizeBody } from "../../common/normalize_body";
 import { HomePage } from "./container";
-import {
-  QuickTalesPageMock,
-  QuickTalesPageMockData,
-} from "./quick_tales_page/container_mock";
+import { QuickTalesPageMock } from "./quick_tales_page/container_mock";
+import { QuickTalesListPage } from "./quick_tales_page/quick_tales_list_page/container";
+import { QuickTalesListPageMockData } from "./quick_tales_page/quick_tales_list_page/container_mock";
 import { HOME_PAGE_STATE, HomePageState, Page } from "./state";
+import { WriteTalePage } from "./write_tale_page/container";
 import { WriteTalePageMock } from "./write_tale_page/container_mock";
 import { QuickTaleCard as QuickTaleCardData } from "@phading/tale_service_interface/tale_card";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
-import { Ref } from "@selfage/ref";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat } from "@selfage/test_matcher";
+import "../../common/normalize_body";
 
-normalizeBody();
+let menuContainer: HTMLDivElement;
+let controllerContainer: HTMLDivElement;
 
 TEST_RUNNER.run({
   name: "HomePageTest",
+  environment: {
+    setUp: () => {
+      menuContainer = E.div({
+        style: `position: fixed; left: 0; top: 0;`,
+      });
+      controllerContainer = E.div({
+        style: `position: fixed; right: 0; top: 0;`,
+      });
+      document.body.append(menuContainer, controllerContainer);
+    },
+    tearDown: () => {
+      menuContainer.remove();
+      controllerContainer.remove();
+    },
+  },
   cases: [
     new (class implements TestCase {
-      public name = "RenderAndNavigate";
-      private container: HTMLDivElement;
+      public name = "Render_Navigate";
+      private cut: HomePage;
       public async execute() {
         // Prepare
         await setViewport(800, 800);
-        let menuContainerRef = new Ref<HTMLDivElement>();
-        let controllerContainerRef = new Ref<HTMLDivElement>();
-        this.container = E.div(
-          {},
-          E.divRef(menuContainerRef, { style: `position: fixed;` }),
-          E.divRef(controllerContainerRef, {
-            style: `position: fixed; right: 0;`,
-          })
-        );
-        document.body.append(this.container);
-        let quickTalesPageMockData: QuickTalesPageMockData = {
+        let quickTalesListPageCache = new LRU<string, QuickTalesListPage>({
+          max: 10,
+        });
+        let writeTalePageCache = new LRU<string, WriteTalePage>({
+          max: 10,
+        });
+        let quickTalesListPageMockData: QuickTalesListPageMockData = {
           startingTaleId: 0,
         };
         let writeTalePageCardMockData: QuickTaleCardData;
 
         // Execute
-        let cut = new HomePage(
-          (bodies) => this.container.append(...bodies),
-          (menuBodies) => menuContainerRef.val.prepend(...menuBodies),
-          (menuBodies) => menuContainerRef.val.append(...menuBodies),
-          (controllerBodies) =>
-            controllerContainerRef.val.append(...controllerBodies),
-          (taleId) => new WriteTalePageMock(taleId, writeTalePageCardMockData),
+        this.cut = new HomePage(
+          writeTalePageCache,
           (
             context,
             appendBodiesFn,
@@ -59,15 +66,22 @@ TEST_RUNNER.run({
             appendControllerBodiesFn
           ) => {
             return new QuickTalesPageMock(
+              quickTalesListPageCache,
               context,
               appendBodiesFn,
               prependMenuBodiesFn,
               appendMenuBodiesFn,
               appendControllerBodiesFn,
-              quickTalesPageMockData
+              quickTalesListPageMockData
             );
-          }
-        ).show();
+          },
+          (taleId) => new WriteTalePageMock(taleId, writeTalePageCardMockData),
+          (...bodies) => document.body.append(...bodies),
+          (...bodies) => menuContainer.prepend(...bodies),
+          (...bodies) => menuContainer.append(...bodies),
+          (...bodies) => controllerContainer.append(...bodies)
+        );
+        this.cut.updateState({});
 
         // Verify
         await asyncAssertScreenshot(
@@ -78,11 +92,11 @@ TEST_RUNNER.run({
 
         // Prepare
         let state: HomePageState;
-        cut.on("newState", (newState) => (state = newState));
-        quickTalesPageMockData = { startingTaleId: 100, pinnedTaleId: 0 };
+        this.cut.on("newState", (newState) => (state = newState));
+        quickTalesListPageMockData = { startingTaleId: 100, pinnedTaleId: 0 };
 
         // Execute
-        for (let card of cut.talesListPages.get("").quickTaleCards) {
+        for (let card of this.cut.talesListPage.listPage.quickTaleCards) {
           card.showCommentsButton.click();
           break;
         }
@@ -103,10 +117,10 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        quickTalesPageMockData = { startingTaleId: 200, pinnedTaleId: 100 };
+        quickTalesListPageMockData = { startingTaleId: 200, pinnedTaleId: 100 };
 
         // Execute
-        for (let card of cut.talesListPages.get("t:tale0").quickTaleCards) {
+        for (let card of this.cut.talesListPage.listPage.quickTaleCards) {
           card.showCommentsButton.click();
           break;
         }
@@ -130,7 +144,7 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        quickTalesPageMockData = {
+        quickTalesListPageMockData = {
           startingTaleId: 300,
           userInfoCardData: {
             userId: "user1",
@@ -142,7 +156,7 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        for (let card of cut.talesListPages.get("t:tale100").quickTaleCards) {
+        for (let card of this.cut.talesListPage.listPage.quickTaleCards) {
           card.userInfoChip.click();
           break;
         }
@@ -171,7 +185,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.writeTaleMenuItem.click();
+        this.cut.writeTaleMenuItem.click();
 
         // Verify
         assertThat(
@@ -197,7 +211,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.writeTalePages.get("").backMenuItem.click();
+        this.cut.writeTalePage.backMenuItem.click();
 
         // Verify
         assertThat(
@@ -226,7 +240,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.talesListPages.get("u:user1").backMenuItem.click();
+        this.cut.talesListPage.listPage.backMenuItem.click();
 
         // Verify
         assertThat(
@@ -260,14 +274,14 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        cut.talesListPages.get("t:tale100").replyMenuItem.click();
+        this.cut.talesListPage.listPage.replyMenuItem.click();
 
         // Verify
         assertThat(
           state,
           eqMessage(
             {
-              page: Page.Reply,
+              page: Page.Write,
               list: [{}, { taleId: "tale0" }, { taleId: "tale100" }],
               reply: "tale100",
             },
@@ -282,7 +296,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.writeTalePages.get("tale100").backMenuItem.click();
+        this.cut.writeTalePage.backMenuItem.click();
 
         // Verify
         assertThat(
@@ -307,10 +321,9 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.talesListPages.get("t:tale100").backMenuItem.click();
+        this.cut.talesListPage.listPage.backMenuItem.click();
 
         // Verify
-
         assertThat(
           state,
           eqMessage(
@@ -330,7 +343,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.talesListPages.get("t:tale0").backMenuItem.click();
+        this.cut.talesListPage.listPage.backMenuItem.click();
 
         // Verify
         assertThat(
@@ -348,39 +361,30 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
       public name = "NavigateFromState";
-      private container: HTMLDivElement;
+      private cut: HomePage;
       public async execute() {
         // Prepare
         await setViewport(800, 800);
-        let menuContainerRef = new Ref<HTMLDivElement>();
-        let controllerContainerRef = new Ref<HTMLDivElement>();
-        this.container = E.div(
-          {},
-          E.divRef(menuContainerRef, { style: `position: fixed;` }),
-          E.divRef(controllerContainerRef, {
-            style: `position: fixed; right: 0;`,
-          })
-        );
-        document.body.append(this.container);
-        let quickTalesPageMockData: QuickTalesPageMockData = {
+        let quickTalesListPageCache = new LRU<string, QuickTalesListPage>({
+          max: 10,
+        });
+        let writeTalePageCache = new LRU<string, WriteTalePage>({
+          max: 10,
+        });
+        let quickTalesListPageMockData: QuickTalesListPageMockData = {
           startingTaleId: 100,
           pinnedTaleId: 0,
         };
         let writeTalePageCardMockData: QuickTaleCardData;
 
         // Execute
-        let cut = new HomePage(
-          (bodies) => this.container.append(...bodies),
-          (menuBodies) => menuContainerRef.val.prepend(...menuBodies),
-          (menuBodies) => menuContainerRef.val.append(...menuBodies),
-          (controllerBodies) =>
-            controllerContainerRef.val.append(...controllerBodies),
-          (taleId) => new WriteTalePageMock(taleId, writeTalePageCardMockData),
+        this.cut = new HomePage(
+          writeTalePageCache,
           (
             context,
             appendBodiesFn,
@@ -389,15 +393,25 @@ TEST_RUNNER.run({
             appendControllerBodiesFn
           ) => {
             return new QuickTalesPageMock(
+              quickTalesListPageCache,
               context,
               appendBodiesFn,
               prependMenuBodiesFn,
               appendMenuBodiesFn,
               appendControllerBodiesFn,
-              quickTalesPageMockData
+              quickTalesListPageMockData
             );
-          }
-        ).show({ page: Page.List, list: [{}, { taleId: "tale0" }] });
+          },
+          (taleId) => new WriteTalePageMock(taleId, writeTalePageCardMockData),
+          (...bodies) => document.body.append(...bodies),
+          (...bodies) => menuContainer.prepend(...bodies),
+          (...bodies) => menuContainer.append(...bodies),
+          (...bodies) => controllerContainer.append(...bodies)
+        );
+        this.cut.updateState({
+          page: Page.List,
+          list: [{}, { taleId: "tale0" }],
+        });
 
         // Verify
         await asyncAssertScreenshot(
@@ -411,11 +425,11 @@ TEST_RUNNER.run({
 
         // Prepare
         let state: HomePageState;
-        cut.on("newState", (newState) => (state = newState));
-        quickTalesPageMockData = { startingTaleId: 0 };
+        this.cut.on("newState", (newState) => (state = newState));
+        quickTalesListPageMockData = { startingTaleId: 0 };
 
         // Execute
-        cut.talesListPages.get("t:tale0").backMenuItem.click();
+        this.cut.talesListPage.listPage.backMenuItem.click();
 
         // Verify
         assertThat(
@@ -424,26 +438,26 @@ TEST_RUNNER.run({
           "new state home back from tale0"
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/home_page_back_from_pinned_tale.png"),
-          path.join(__dirname, "/golden/home_page_render_home_state.png"),
-          path.join(__dirname, "/home_page_back_from_pinned_tale_diff.png")
+          path.join(__dirname, "/home_page_back_to_home.png"),
+          path.join(__dirname, "/golden/home_page_back_to_home.png"),
+          path.join(__dirname, "/home_page_back_to_home_diff.png")
         );
 
         // Execute
-        cut.show({
+        this.cut.updateState({
           list: [{ taleId: "tale0" }],
         });
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/home_page_invalid_pinned_tale.png"),
-          path.join(__dirname, "/golden/home_page_render_home_state.png"),
+          path.join(__dirname, "/golden/home_page_back_to_home.png"),
           path.join(__dirname, "/home_page_invalid_pinned_tale_diff.png")
         );
 
         // Execute
-        cut.show({
-          page: Page.Reply,
+        this.cut.updateState({
+          page: Page.Write,
         });
 
         // Verify
@@ -454,7 +468,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.writeTalePages.get("").backMenuItem.click();
+        this.cut.writeTalePage.backMenuItem.click();
 
         // Verify
         assertThat(
@@ -464,12 +478,12 @@ TEST_RUNNER.run({
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/home_page_back_from_write_state.png"),
-          path.join(__dirname, "/golden/home_page_render_home_state.png"),
+          path.join(__dirname, "/golden/home_page_back_to_home.png"),
           path.join(__dirname, "/home_page_back_from_write_state_diff.png")
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
   ],

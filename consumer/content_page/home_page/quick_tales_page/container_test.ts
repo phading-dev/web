@@ -1,6 +1,8 @@
+import LRU = require("lru-cache");
 import path = require("path");
 import { QuickTalesPage } from "./container";
 import { ImagesViewerPage } from "./image_viewer_page/container";
+import { QuickTalesListPage } from "./quick_tales_list_page/container";
 import { QuickTalesListPageMock } from "./quick_tales_list_page/container_mock";
 import { E } from "@selfage/element/factory";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
@@ -35,9 +37,13 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(800, 800);
+        let cache = new LRU<string, QuickTalesListPage>({
+          max: 10,
+        });
 
         // Execute
         this.cut = new QuickTalesPage(
+          cache,
           (context) =>
             new QuickTalesListPageMock(context, {
               startingTaleId: 0,

@@ -3,10 +3,10 @@ import { FilledBlockingButton } from "../../../common/blocking_button";
 import { SCHEME } from "../../../common/color_scheme";
 import { createPlusIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import { MenuItem } from "../../../common/menu_item/container";
+import { createBackMenuItem } from "../../../common/menu_item/factory";
 import { WEB_SERVICE_CLIENT } from "../../../common/web_service_client";
-import { MenuItem } from "../../menu_item/container";
-import { createBackMenuItem } from "../../menu_item/factory";
-import { GAP } from "./constants";
+import { GAP } from "./common/styles";
 import { QuickLayoutEditor } from "./quick_layout_editor/container";
 import { NormalTag, WarningTag } from "./tags";
 import {
@@ -20,11 +20,12 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface WriteTalePage {
   on(event: "back", listener: () => void): this;
+  on(event: "done", listener: () => void): this;
 }
 
 export class WriteTalePage extends EventEmitter {
   public body: HTMLDivElement;
-  public prependMenuBody: HTMLDivElement;
+  public backMenuBody: HTMLDivElement;
   // Visible for testing
   public tagInput: HTMLInputElement;
   public addTagButton: HTMLDivElement;
@@ -56,13 +57,13 @@ export class WriteTalePage extends EventEmitter {
     this.body = E.div(
       {
         class: "write-tale",
-        style: `flex-flow: row nowrap; justify-content: center; width: 100vw;`,
+        style: `display: flex; flex-flow: row nowrap; width: 100vw; min-height: 100vh;`,
       },
       E.divRef(
         cardContainerRef,
         {
           class: "write-tale-card",
-          style: `display: flex; flex-flow: column nowrap; box-sizing: border-box; width: 100%; max-width: 100rem; gap: ${GAP}; padding: 3rem; background-color: ${SCHEME.neutral4};`,
+          style: `margin: auto; display: flex; flex-flow: column nowrap; box-sizing: border-box; width: 100%; max-width: 100rem; gap: ${GAP}; padding: 3rem; background-color: ${SCHEME.neutral4};`,
         },
         ...quickLayoutEditor.bodies,
         E.div(
@@ -131,18 +132,13 @@ export class WriteTalePage extends EventEmitter {
             )
           ).body
         ),
-        E.div(
-          {
-            class: "write-tale-finalizing-button",
-            style: `align-self: center;`,
-          },
-          assign(
-            submitButtonRef,
-            FilledBlockingButton.create(
-              E.text(LOCALIZED_TEXT.submitTaleButtonLabel)
-            ).disable()
-          ).body
-        ),
+        assign(
+          submitButtonRef,
+          FilledBlockingButton.create(
+            `align-self: center;`,
+            E.text(LOCALIZED_TEXT.submitTaleButtonLabel)
+          ).disable()
+        ).body,
         E.divRef(
           submitStatusRef,
           {
@@ -164,7 +160,7 @@ export class WriteTalePage extends EventEmitter {
     this.submitStatus = submitStatusRef.val;
 
     this.backMenuItem = createBackMenuItem();
-    this.prependMenuBody = this.backMenuItem.body;
+    this.backMenuBody = this.backMenuItem.body;
 
     this.tryLoadContext();
     this.quickLayoutEditor.on("valid", () => this.enableButtons());
@@ -285,8 +281,8 @@ export class WriteTalePage extends EventEmitter {
     await createTale(this.webServiceClient, {
       quickLayout: {
         text: this.quickLayoutEditor.textInput.value,
-        imagePaths: this.quickLayoutEditor.imageEditors.map(
-          (imageEditor) => imageEditor.imagePath
+        imagePaths: this.quickLayoutEditor.imagePreviewers.map(
+          (imagePreviewer) => imagePreviewer.imagePath
         ),
       },
       tags: this.tags.map((tag) => tag.text),
@@ -301,27 +297,7 @@ export class WriteTalePage extends EventEmitter {
       console.error(e);
       return;
     }
-
-    this.quickLayoutEditor.clear();
-    for (let tag of this.tags) {
-      tag.body.remove();
-    }
-    this.tags = new Array<NormalTag>();
-    this.warningTagNudity.unselect();
-    this.warningTagSpoiler.unselect();
-    this.warningTagGross.unselect();
-  }
-
-  public show(): this {
-    this.backMenuItem.show();
-    this.body.style.display = "flex";
-    return this;
-  }
-
-  public hide(): this {
-    this.backMenuItem.hide();
-    this.body.style.display = "none";
-    return this;
+    this.emit("done");
   }
 
   public remove(): void {

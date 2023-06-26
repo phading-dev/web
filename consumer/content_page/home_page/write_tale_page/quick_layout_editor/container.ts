@@ -3,8 +3,8 @@ import { SCHEME } from "../../../../common/color_scheme";
 import { createPlusIcon } from "../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { WEB_SERVICE_CLIENT } from "../../../../common/web_service_client";
-import { GAP } from "../constants";
-import { ImageEditor } from "./image_editor";
+import { GAP } from "../common/styles";
+import { ImagePreviewer } from "./image_previewer";
 import { uploadImageForTale } from "@phading/tale_service_interface/client_requests";
 import { UploadImageForTaleResponse } from "@phading/tale_service_interface/interface";
 import { E } from "@selfage/element/factory";
@@ -28,7 +28,7 @@ export class QuickLayoutEditor extends EventEmitter {
 
   public bodies: Array<HTMLDivElement>;
   public textInput: HTMLTextAreaElement;
-  public imageEditors = new Array<ImageEditor>();
+  public imagePreviewers = new Array<ImagePreviewer>();
   // Visible for testing
   public uploadImageButton: HTMLDivElement;
   private characterCountContainer: HTMLDivElement;
@@ -159,10 +159,13 @@ export class QuickLayoutEditor extends EventEmitter {
   }
 
   private emitValidity(): void {
-    if (this.validInputs.size > 0) {
-      this.emit('valid');
+    if (
+      this.validInputs.has(InputField.IMAGES) ||
+      this.validInputs.has(InputField.TEXT)
+    ) {
+      this.emit("valid");
     } else {
-      this.emit('invalid');
+      this.emit("invalid");
     }
   }
 
@@ -190,7 +193,7 @@ export class QuickLayoutEditor extends EventEmitter {
       }${filesFailed.join()}${LOCALIZED_TEXT.quickLayoutUploadImageFailure2}`;
       this.uploadImageError.style.visibility = "visible";
     }
-    if (this.imageEditors.length >= QuickLayoutEditor.IMAGE_NUMBER_LIMIT) {
+    if (this.imagePreviewers.length >= QuickLayoutEditor.IMAGE_NUMBER_LIMIT) {
       this.uploadImageButton.style.display = "none";
     }
     this.checkImagesInputValidity();
@@ -209,106 +212,121 @@ export class QuickLayoutEditor extends EventEmitter {
       filesFailed.push(imageFile.name);
       return;
     }
-    if (this.imageEditors.length >= QuickLayoutEditor.IMAGE_NUMBER_LIMIT) {
+    if (this.imagePreviewers.length >= QuickLayoutEditor.IMAGE_NUMBER_LIMIT) {
       filesFailed.push(imageFile.name);
       return;
     }
 
-    this.addImageEditor(response.imagePath);
+    this.addImagePreviewer(response.imagePath);
   }
 
-  protected addImageEditor(imagePath: string): void {
-    let imageEditor = ImageEditor.create(imagePath);
-    this.insertImageEditor(this.imageEditors.length, imageEditor);
-    imageEditor.on("top", () => this.moveImageEditorToTop(imageEditor));
-    imageEditor.on("up", () => this.moveImageEditorUp(imageEditor));
-    imageEditor.on("down", () => this.moveImageEditorDown(imageEditor));
-    imageEditor.on("bottom", () => this.moveImageEditorToBottom(imageEditor));
-    imageEditor.on("delete", () => this.removeImageEditorForSure(imageEditor));
+  protected addImagePreviewer(imagePath: string): void {
+    let imagePreviewer = ImagePreviewer.create(imagePath);
+    this.insertImagePreviewer(this.imagePreviewers.length, imagePreviewer);
+    imagePreviewer.on("top", () =>
+      this.moveImagePreviewerToTop(imagePreviewer)
+    );
+    imagePreviewer.on("up", () => this.moveImagePreviewerUp(imagePreviewer));
+    imagePreviewer.on("down", () =>
+      this.moveImagePreviewerDown(imagePreviewer)
+    );
+    imagePreviewer.on("bottom", () =>
+      this.moveImagePreviewerToBottom(imagePreviewer)
+    );
+    imagePreviewer.on("delete", () =>
+      this.removeImagePreviewerForSure(imagePreviewer)
+    );
   }
 
-  private insertImageEditor(position: number, imageEditor: ImageEditor) {
-    if (this.imageEditors.length === 0) {
-      imageEditor.hideMoveUpButtons();
-      imageEditor.hideMoveDownButtons();
+  private insertImagePreviewer(
+    position: number,
+    imagePreviewer: ImagePreviewer
+  ) {
+    if (this.imagePreviewers.length === 0) {
+      imagePreviewer.hideMoveUpButtons();
+      imagePreviewer.hideMoveDownButtons();
       this.uploadImagesContainer.insertBefore(
-        imageEditor.body,
+        imagePreviewer.body,
         this.uploadImageButton
       );
-      this.imageEditors.push(imageEditor);
+      this.imagePreviewers.push(imagePreviewer);
     } else {
       if (position === 0) {
-        imageEditor.hideMoveUpButtons();
-        imageEditor.showMoveDownButtons();
-        this.imageEditors[0].showMoveUpButtons();
-        this.uploadImagesContainer.prepend(imageEditor.body);
-        this.imageEditors.splice(0, 0, imageEditor);
-      } else if (position === this.imageEditors.length) {
-        imageEditor.showMoveUpButtons();
-        imageEditor.hideMoveDownButtons();
-        this.imageEditors[this.imageEditors.length - 1].showMoveDownButtons();
+        imagePreviewer.hideMoveUpButtons();
+        imagePreviewer.showMoveDownButtons();
+        this.imagePreviewers[0].showMoveUpButtons();
+        this.uploadImagesContainer.prepend(imagePreviewer.body);
+        this.imagePreviewers.splice(0, 0, imagePreviewer);
+      } else if (position === this.imagePreviewers.length) {
+        imagePreviewer.showMoveUpButtons();
+        imagePreviewer.hideMoveDownButtons();
+        this.imagePreviewers[
+          this.imagePreviewers.length - 1
+        ].showMoveDownButtons();
         this.uploadImagesContainer.insertBefore(
-          imageEditor.body,
+          imagePreviewer.body,
           this.uploadImageButton
         );
-        this.imageEditors.push(imageEditor);
+        this.imagePreviewers.push(imagePreviewer);
       } else {
-        imageEditor.showMoveUpButtons();
-        imageEditor.showMoveDownButtons();
+        imagePreviewer.showMoveUpButtons();
+        imagePreviewer.showMoveDownButtons();
         this.uploadImagesContainer.insertBefore(
-          imageEditor.body,
-          this.imageEditors[position].body
+          imagePreviewer.body,
+          this.imagePreviewers[position].body
         );
-        this.imageEditors.splice(position, 0, imageEditor);
+        this.imagePreviewers.splice(position, 0, imagePreviewer);
       }
     }
   }
 
-  private removeImageEditorForSure(imageEditor: ImageEditor): void {
-    this.removeImageEditor(imageEditor);
+  private removeImagePreviewerForSure(imagePreviewer: ImagePreviewer): void {
+    this.removeImagePreviewer(imagePreviewer);
     this.uploadImageButton.style.display = "flex";
     this.checkImagesInputValidity();
   }
 
-  private removeImageEditor(imageEditor: ImageEditor): void {
-    let position = this.imageEditors.indexOf(imageEditor);
-    if (this.imageEditors.length > 1) {
+  private removeImagePreviewer(imagePreviewer: ImagePreviewer): void {
+    let position = this.imagePreviewers.indexOf(imagePreviewer);
+    if (this.imagePreviewers.length > 1) {
       if (position === 0) {
-        this.imageEditors[1].hideMoveUpButtons();
-      } else if (position === this.imageEditors.length - 1) {
-        this.imageEditors[this.imageEditors.length - 2].hideMoveDownButtons();
+        this.imagePreviewers[1].hideMoveUpButtons();
+      } else if (position === this.imagePreviewers.length - 1) {
+        this.imagePreviewers[
+          this.imagePreviewers.length - 2
+        ].hideMoveDownButtons();
       }
     }
-    this.imageEditors.splice(position, 1);
-    imageEditor.body.remove();
+    this.imagePreviewers.splice(position, 1);
+    imagePreviewer.remove();
   }
 
-  private moveImageEditorToTop(imageEditor: ImageEditor): void {
-    this.removeImageEditor(imageEditor);
-    this.insertImageEditor(0, imageEditor);
+  private moveImagePreviewerToTop(imagePreviewer: ImagePreviewer): void {
+    this.removeImagePreviewer(imagePreviewer);
+    this.insertImagePreviewer(0, imagePreviewer);
   }
 
-  private moveImageEditorUp(imageEditor: ImageEditor): void {
-    let position = this.imageEditors.indexOf(imageEditor);
+  private moveImagePreviewerUp(imagePreviewer: ImagePreviewer): void {
+    let position = this.imagePreviewers.indexOf(imagePreviewer);
     let newPosition = Math.max(0, position - 1);
-    this.removeImageEditor(imageEditor);
-    this.insertImageEditor(newPosition, imageEditor);
+    this.removeImagePreviewer(imagePreviewer);
+    this.insertImagePreviewer(newPosition, imagePreviewer);
   }
 
-  private moveImageEditorDown(imageEditor: ImageEditor): void {
-    let position = this.imageEditors.indexOf(imageEditor);
-    let newPosition = Math.min(this.imageEditors.length - 1, position + 1);
-    this.removeImageEditor(imageEditor);
-    this.insertImageEditor(newPosition, imageEditor);
+  private moveImagePreviewerDown(imagePreviewer: ImagePreviewer): void {
+    let position = this.imagePreviewers.indexOf(imagePreviewer);
+    let newPosition = Math.min(this.imagePreviewers.length - 1, position + 1);
+    this.removeImagePreviewer(imagePreviewer);
+    this.insertImagePreviewer(newPosition, imagePreviewer);
   }
 
-  private moveImageEditorToBottom(imageEditor: ImageEditor): void {
-    this.removeImageEditor(imageEditor);
-    this.insertImageEditor(this.imageEditors.length, imageEditor);
+  private moveImagePreviewerToBottom(imagePreviewer: ImagePreviewer): void {
+    this.removeImagePreviewer(imagePreviewer);
+    this.insertImagePreviewer(this.imagePreviewers.length, imagePreviewer);
   }
 
   protected checkImagesInputValidity(): void {
-    if (this.imageEditors.length === 0) {
+    if (this.imagePreviewers.length === 0) {
       this.validInputs.delete(InputField.IMAGES);
     } else {
       this.validInputs.add(InputField.IMAGES);
@@ -316,13 +334,9 @@ export class QuickLayoutEditor extends EventEmitter {
     this.emitValidity();
   }
 
-  public clear(): void {
-    this.textInput.value = "";
-    this.countCharacter();
-    while (this.imageEditors.length > 0) {
-      let imageEditor = this.imageEditors.pop();
-      imageEditor.body.remove();
+  public remove(): void {
+    for (let body of this.bodies) {
+      body.remove();
     }
-    this.checkImagesInputValidity();
   }
 }

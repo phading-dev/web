@@ -1,5 +1,4 @@
 import wideImage = require("./test_data/wide.jpeg");
-import { normalizeBody } from "../../../common/normalize_body";
 import { WriteTalePage } from "./container";
 import { QuickLayoutEditorMock } from "./quick_layout_editor/container_mock";
 import {
@@ -15,58 +14,71 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat } from "@selfage/test_matcher";
 import { WebServiceClient } from "@selfage/web_service_client";
+import "../../../common/normalize_body";
 
-normalizeBody();
+let menuContainer: HTMLDivElement;
 
 TEST_RUNNER.run({
   name: "WriteTalePageTest",
+  environment: {
+    setUp: () => {
+      menuContainer = E.div({
+        style: `position: fixed; right: 0; top: 0;`,
+      });
+      document.body.append(menuContainer);
+    },
+    tearDown: () => {
+      menuContainer.remove();
+    },
+  },
   cases: [
     new (class implements TestCase {
-      public name = "RenderWide";
-      private container: HTMLDivElement;
+      public name = "RenderWide_Scroll";
+      private cut: WriteTalePage;
       public async execute() {
         // Prepare
         await setViewport(1300, 600);
 
         // Execute
-        let cut = new WriteTalePage(
+        this.cut = new WriteTalePage(
           "",
           new QuickLayoutEditorMock(),
           undefined
-        ).show();
-        this.container = E.div(
-          {},
-          cut.body,
-          E.div(
-            {
-              style: "position: fixed; right: 0; top: 0;",
-            },
-            cut.prependMenuBody
-          )
         );
-        document.body.append(this.container);
+        document.body.append(this.cut.body);
+        menuContainer.append(this.cut.backMenuBody);
 
         // Verify
         await asyncAssertScreenshot(
           __dirname + "/write_tale_page_render_wide.png",
           __dirname + "/golden/write_tale_page_render_wide.png",
-          __dirname + "/write_tale_page_render_wide_diff.png",
-          { fullPage: true }
+          __dirname + "/write_tale_page_render_wide_diff.png"
+        );
+
+        // Execute
+        window.scrollTo(0, document.body.scrollHeight);
+
+        // Verify
+        await asyncAssertScreenshot(
+          __dirname + "/write_tale_page_render_wide_scroll_to_bottom.png",
+          __dirname +
+            "/golden/write_tale_page_render_wide_scroll_to_bottom.png",
+          __dirname + "/write_tale_page_render_wide_scroll_to_bottom_diff.png"
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
       public name = "RenderReply";
-      private container: HTMLDivElement;
+      private cut: WriteTalePage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 600);
+        await setViewport(1000, 800);
 
         // Execute
-        let cut = new WriteTalePage(
+        this.cut = new WriteTalePage(
           "tale1",
           new QuickLayoutEditorMock(),
           new (class extends WebServiceClient {
@@ -89,37 +101,27 @@ TEST_RUNNER.run({
               } as GetQuickTaleResponse;
             }
           })()
-        ).show();
-        this.container = E.div(
-          {},
-          cut.body,
-          E.div(
-            {
-              style: "position: fixed; right: 0; top: 0;",
-            },
-            cut.prependMenuBody
-          )
         );
-        document.body.append(this.container);
+        document.body.append(this.cut.body);
+        menuContainer.append(this.cut.backMenuBody);
 
         // Verify
         await asyncAssertScreenshot(
           __dirname + "/write_tale_page_render_reply.png",
           __dirname + "/golden/write_tale_page_render_reply.png",
-          __dirname + "/write_tale_page_render_reply_diff.png",
-          { fullPage: true }
+          __dirname + "/write_tale_page_render_reply_diff.png"
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
       public name = "RenderAndSubmit";
-      private container: HTMLDivElement;
+      private cut: WriteTalePage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 600);
+        await setViewport(1000, 800);
         let quickLayoutEditorMock = new QuickLayoutEditorMock();
         let requestCaptured: any;
         let serviceClientMock = new (class extends WebServiceClient {
@@ -136,29 +138,19 @@ TEST_RUNNER.run({
         })();
 
         // Execute
-        let cut = new WriteTalePage(
+        this.cut = new WriteTalePage(
           "",
           quickLayoutEditorMock,
           serviceClientMock
-        ).show();
-        this.container = E.div(
-          {},
-          cut.body,
-          E.div(
-            {
-              style: "position: fixed; right: 0; top: 0;",
-            },
-            cut.prependMenuBody
-          )
         );
-        document.body.append(this.container);
+        document.body.append(this.cut.body);
+        menuContainer.append(this.cut.backMenuBody);
 
         // Verify
         await asyncAssertScreenshot(
           __dirname + "/write_tale_page_render.png",
           __dirname + "/golden/write_tale_page_render.png",
-          __dirname + "/write_tale_page_render_diff.png",
-          { fullPage: true }
+          __dirname + "/write_tale_page_render_diff.png"
         );
 
         // Execute
@@ -168,67 +160,63 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           __dirname + "/write_tale_page_upload_first_image.png",
           __dirname + "/golden/write_tale_page_upload_first_image.png",
-          __dirname + "/write_tale_page_upload_first_image_diff.png",
-          { fullPage: true }
+          __dirname + "/write_tale_page_upload_first_image_diff.png"
         );
 
         // Execute
-        cut.tagInput.value = "some tag";
-        cut.addTagButton.click();
-        cut.tagInput.value = "tag 2";
-        cut.addTagButton.click();
-        cut.tagInput.value = "tag 3";
-        cut.addTagButton.click();
+        this.cut.tagInput.value = "some tag";
+        this.cut.addTagButton.click();
+        this.cut.tagInput.value = "tag 2";
+        this.cut.addTagButton.click();
+        this.cut.tagInput.value = "tag 3";
+        this.cut.addTagButton.click();
 
         // Verify
         await asyncAssertScreenshot(
           __dirname + "/write_tale_page_add_tags.png",
           __dirname + "/golden/write_tale_page_add_tags.png",
-          __dirname + "/write_tale_page_add_tags_diff.png",
-          { fullPage: true }
+          __dirname + "/write_tale_page_add_tags_diff.png"
         );
 
         // Execute
-        cut.tags[0].deleteButton.click();
+        this.cut.tags[0].deleteButton.click();
 
         // Verify
         await asyncAssertScreenshot(
           __dirname + "/write_tale_page_remove_tag.png",
           __dirname + "/golden/write_tale_page_remove_tag.png",
-          __dirname + "/write_tale_page_remove_tag_diff.png",
-          { fullPage: true }
+          __dirname + "/write_tale_page_remove_tag_diff.png"
         );
 
         // Execute
-        cut.warningTagGross.body.click();
+        this.cut.warningTagGross.body.click();
 
         // Verify
         await asyncAssertScreenshot(
           __dirname + "/write_tale_page_add_warning_tag.png",
           __dirname + "/golden/write_tale_page_add_warning_tag.png",
-          __dirname + "/write_tale_page_add_warning_tag_diff.png",
-          { fullPage: true }
+          __dirname + "/write_tale_page_add_warning_tag_diff.png"
         );
 
         // Prepare
         serviceClientMock.errorToThrow = new Error("Some error");
 
         // Execute
-        await cut.submitButton.click();
+        this.cut.submitButton.click();
 
         // Verify
         await asyncAssertScreenshot(
           __dirname + "/write_tale_page_submit_failure.png",
           __dirname + "/golden/write_tale_page_submit_failure.png",
-          __dirname + "/write_tale_page_submit_failure_diff.png",
-          { fullPage: true }
+          __dirname + "/write_tale_page_submit_failure_diff.png"
         );
 
         // Prepare
         serviceClientMock.errorToThrow = undefined;
 
         // Execute
-        await cut.submitButton.click();
+        this.cut.submitButton.click();
+        await new Promise<void>((resolve) => this.cut.once("done", resolve));
 
         // Verify
         assertThat(
@@ -246,15 +234,9 @@ TEST_RUNNER.run({
           ),
           "submitTale request"
         );
-        await asyncAssertScreenshot(
-          __dirname + "/write_tale_page_after_submit.png",
-          __dirname + "/golden/write_tale_page_after_submit.png",
-          __dirname + "/write_tale_page_after_submit_diff.png",
-          { fullPage: true }
-        );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
   ],

@@ -4,7 +4,6 @@ import { TaleContext, TALE_CONTEXT } from '@phading/tale_service_interface/tale_
 export enum Page {
   List = 1,
   Write = 2,
-  Reply = 3,
 }
 
 export let PAGE: EnumDescriptor<Page> = {
@@ -17,10 +16,6 @@ export let PAGE: EnumDescriptor<Page> = {
     {
       name: 'Write',
       value: 2,
-    },
-    {
-      name: 'Reply',
-      value: 3,
     },
   ]
 }
