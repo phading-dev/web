@@ -83,9 +83,6 @@ export default class Text {
   get backLabel() {
     return `Back`;
   }
-  get selectPersonaLabel() {
-    return `Select persona`
-  }
   get changeAvatarLabel() {
     return `Update`;
   }
@@ -274,38 +271,5 @@ export default class Text {
   }
   get noUserDescription() {
     return `They didn't say anything about themself.`;
-  }
-  get namePersonaLabel() {
-    return `Name your new persona as`;
-  }
-  get renamePersonaLabelPart1() {
-    return `You can rename your persona from`;
-  }
-  get renamePersonaLabelPart2() {
-    return `to`
-  }
-  get namePersonaPlaceholder() {
-    return `Fancy bob`;
-  }
-  get personaNameTooLongError() {
-    return `The name is too long...`;
-  }
-  get choosePersonaImageLabel() {
-    return `Choose an image`;
-  }
-  get replacePersonaImageLabelPart1() {
-    return `or replace your current image`;
-  }
-  get replacePersonaImageLabelPart2() {
-    return `with a new image`
-  }
-  get createPersonaLabel() {
-    return `Create`;
-  }
-  get updatePersonaLabel() {
-    return `Update`;
-  }
-  get createPersonaError() {
-    return `There is an issue when creating the new persona. Please try again later.`;
   }
 }

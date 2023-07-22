@@ -98,7 +98,13 @@ export class AccountPage extends EventEmitter {
     this.emit("newState", { page });
   }
 
-  public updateState(newState: AccountPageState): void {
+  public updateState(newState?: AccountPageState): void {
+    if (!newState) {
+      newState = {};
+    }
+    if (!newState.page) {
+      newState.page = Page.AccountInfo;
+    }
     this.pageNavigator.goTo(newState.page);
   }
 

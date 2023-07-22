@@ -68,6 +68,7 @@ export class HomePage extends EventEmitter {
   private goToWriteTalePage(): void {
     let newState = this.copyToNewState();
     newState.page = Page.Write;
+    newState.reply = "";
     this.updateStateAndBubbleUp(newState);
   }
 
@@ -197,6 +198,7 @@ export class HomePage extends EventEmitter {
   private goToCurrentTalesListPage(): void {
     let newState = this.copyToNewState();
     newState.page = Page.List;
+    newState.reply = undefined;
     this.updateStateAndBubbleUp(newState);
   }
 

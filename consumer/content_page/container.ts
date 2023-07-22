@@ -1,13 +1,13 @@
 import EventEmitter = require("events");
+import { MenuItem } from "../common/menu_item/container";
+import {
+  createAccountMenuItem,
+  createHomeMenuItem,
+} from "../common/menu_item/factory";
+import { PageNavigator } from "../common/page_navigator";
 import { AccountPage } from "./account_page/container";
 import { HomePage } from "./home_page/container";
-import { MenuItem } from "./menu_item/container";
-import { createAccountMenuItem, createHomeMenuItem } from "./menu_item/factory";
-import { CONTENT_PAGE_STATE, ContentPageState, Page } from "./state";
-import { E } from "@selfage/element/factory";
-import { copyMessage } from "@selfage/message/copier";
-import { LazyInstance } from "@selfage/once/lazy_instance";
-import { Ref, assign } from "@selfage/ref";
+import { ContentPageState, Page } from "./state";
 
 export interface ContentPage {
   on(event: "signOut", listener: () => void): this;
@@ -15,162 +15,164 @@ export interface ContentPage {
 }
 
 export class ContentPage extends EventEmitter {
-  public menuItemsBody: HTMLDivElement;
-  public controllerItemsBody: HTMLDivElement;
   // Visible for testing
   public homeMenuItem: MenuItem;
   public accountMenuItem: MenuItem;
-  private lazyHomePage: LazyInstance<HomePage>;
-  private lazyAccountPage: LazyInstance<AccountPage>;
+  public homePage: HomePage;
+  public accountPage: AccountPage;
+  private pageNavigator: PageNavigator<Page>;
   private state: ContentPageState = {};
 
   public constructor(
     private homePageFactoryFn: (
-      appendBodiesFn: (bodies: Array<HTMLElement>) => void,
-      prependMenuBodiesFn: (menuBodies: Array<HTMLElement>) => void,
-      appendMenuBodiesFn: (menuBodies: Array<HTMLElement>) => void,
-      appendControllerBodiesFn: (controllerBodies: Array<HTMLElement>) => void
+      appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
+      prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
+      appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
+      appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void
     ) => HomePage,
     private accountPageFactoryFn: (
-      prependMenuBodiesFn: (menuBodies: Array<HTMLElement>) => void
+      appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
+      prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void
     ) => AccountPage,
-    private appendBodiesFn: (bodies: Array<HTMLElement>) => void
+    private appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    private prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    private appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    private appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void
   ) {
     super();
-    let homeMenuItemRef = new Ref<MenuItem>();
-    let accountMenuItemRef = new Ref<MenuItem>();
-    this.menuItemsBody = E.div(
-      {
-        class: "content-menu-items",
-        style: `position: fixed; flex-flow: column nowrap; gap: 1rem;`,
-      },
-      // E.div(
-      //   {
-      //     class: "content-menu-logo",
-      //     style: `width: 5rem; height: 5rem; border-radius: 5rem; transition: background-color .3s linear;`,
-      //   },
-      //   E.svg(
-      //     {
-      //       class: "content-menu-logo-svg",
-      //       style: `height: 100%;`,
-      //       viewBox: "-10 -10 220 220",
-      //     },
-      //     E.path({
-      //       fill: SCHEME.logoOrange,
-      //       d: `M 111.6 20.8 A 30 30 0 0 0 162.7 50.3 A 80 80 0 0 1 174.3 70.5 A 30 30 0 0 0 174.3 129.5 A 80 80 0 0 1 162.7 149.7 A 30 30 0 0 0 111.6 179.2 A 80 80 0 0 1 88.4 179.2 A 30 30 0 0 0 37.3 149.7 A 80 80 0 0 1 25.7 129.5 A 30 30 0 0 0 25.7 70.5 A 80 80 0 0 1 37.3 50.3 A 30 30 0 0 0 88.4 20.8 A 80 80 0 0 1 111.6 20.801 z  M 70 100 A 30 30 0 1 0 70 99.9 z`,
-      //     }),
-      //     E.path({
-      //       fill: SCHEME.logoBlue,
-      //       d: `M 80 100 A 20 20 0 1 1 80 100.01 z  M 160 100 A 20 20 0 1 1 160 100.01 z  M 120 169.3 A 20 20 0 1 1 120 169.31 z  M 40 169.3 A 20 20 0 1 1 40 169.31 z  M 0 100 A 20 20 0 1 1 0 100.01 z  M 40 30.7 A 20 20 0 1 1 40 30.71 z`,
-      //     })
-      //   )
-      // ),
-      assign(homeMenuItemRef, createHomeMenuItem().show()).body,
-      assign(accountMenuItemRef, createAccountMenuItem().show()).body
+    // Logo SVG
+    // E.div(
+    //   {
+    //     class: "content-menu-logo",
+    //     style: `width: 5rem; height: 5rem; border-radius: 5rem; transition: background-color .3s linear;`,
+    //   },
+    //   E.svg(
+    //     {
+    //       class: "content-menu-logo-svg",
+    //       style: `height: 100%;`,
+    //       viewBox: "-10 -10 220 220",
+    //     },
+    //     E.path({
+    //       fill: SCHEME.logoOrange,
+    //       d: `M 111.6 20.8 A 30 30 0 0 0 162.7 50.3 A 80 80 0 0 1 174.3 70.5 A 30 30 0 0 0 174.3 129.5 A 80 80 0 0 1 162.7 149.7 A 30 30 0 0 0 111.6 179.2 A 80 80 0 0 1 88.4 179.2 A 30 30 0 0 0 37.3 149.7 A 80 80 0 0 1 25.7 129.5 A 30 30 0 0 0 25.7 70.5 A 80 80 0 0 1 37.3 50.3 A 30 30 0 0 0 88.4 20.8 A 80 80 0 0 1 111.6 20.801 z  M 70 100 A 30 30 0 1 0 70 99.9 z`,
+    //     }),
+    //     E.path({
+    //       fill: SCHEME.logoBlue,
+    //       d: `M 80 100 A 20 20 0 1 1 80 100.01 z  M 160 100 A 20 20 0 1 1 160 100.01 z  M 120 169.3 A 20 20 0 1 1 120 169.31 z  M 40 169.3 A 20 20 0 1 1 40 169.31 z  M 0 100 A 20 20 0 1 1 0 100.01 z  M 40 30.7 A 20 20 0 1 1 40 30.71 z`,
+    //     })
+    //   )
+    // ),
+
+    this.homeMenuItem = createHomeMenuItem();
+    this.accountMenuItem = createAccountMenuItem();
+    this.appendMenuBodiesFn(this.homeMenuItem.body, this.accountMenuItem.body);
+
+    this.pageNavigator = new PageNavigator(
+      (page) => this.showPage(page),
+      (page) => this.removePage(page),
+      (page) => this.updatePage(page)
     );
-    this.homeMenuItem = homeMenuItemRef.val;
-    this.accountMenuItem = accountMenuItemRef.val;
 
-    this.controllerItemsBody = E.div({
-      class: "content-controller-items",
-      style: `position: fixed; right: 0; bottom: 0; flex-flow: column-reverse nowrap;`,
-    });
-
-    this.lazyHomePage = new LazyInstance(() => {
-      let page = this.homePageFactoryFn(
-        this.appendBodiesFn,
-        (menuBodies) => this.menuItemsBody.prepend(...menuBodies),
-        (menuBodies) => this.menuItemsBody.append(...menuBodies),
-        (controllerBodies) =>
-          this.controllerItemsBody.append(...controllerBodies)
-      );
-      page.on("newState", (newState) => {
-        this.state.home = newState;
-        this.emit("newState", this.state);
-      });
-      return page;
-    });
-    this.lazyAccountPage = new LazyInstance(() => {
-      let page = this.accountPageFactoryFn((menuBodies) =>
-        this.menuItemsBody.prepend(...menuBodies)
-      );
-      this.appendBodiesFn([page.body]);
-      page.on("newState", (newState) => {
-        this.state.account = newState;
-        this.emit("newState", this.state);
-      });
-      return page;
-    });
-
-    this.homeMenuItem.on("action", () => this.goToHomePage());
-    this.accountMenuItem.on("action", () => this.goToAccountPage());
+    this.homeMenuItem.on("action", () =>
+      this.updateStateAndBubbleUp({
+        page: Page.Home,
+      })
+    );
+    this.accountMenuItem.on("action", () =>
+      this.updateStateAndBubbleUp({
+        page: Page.Account,
+      })
+    );
   }
 
   public static create(
-    appendBodiesFn: (bodies: Array<HTMLElement>) => void
+    appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void
   ): ContentPage {
-    return new ContentPage(HomePage.create, AccountPage.create, appendBodiesFn);
+    return new ContentPage(
+      HomePage.create,
+      AccountPage.create,
+      appendBodiesFn,
+      prependMenuBodiesFn,
+      appendMenuBodiesFn,
+      appendControllerBodiesFn
+    );
   }
 
-  private goToHomePage(): void {
-    let newState = copyMessage(this.state, CONTENT_PAGE_STATE);
-    newState.page = Page.Home;
-    newState.home = undefined;
-    this.showFromInternal(newState);
+  private showPage(page: Page): void {
+    switch (page) {
+      case Page.Home: {
+        this.homePage = this.homePageFactoryFn(
+          this.appendBodiesFn,
+          this.prependMenuBodiesFn,
+          this.appendMenuBodiesFn,
+          this.appendControllerBodiesFn
+        );
+        this.homePage.on("newState", (newState) => {
+          this.state.home = newState;
+          this.emit("newState", this.state);
+        });
+        this.homePage.updateState(this.state.home);
+        break;
+      }
+      case Page.Account: {
+        this.accountPage = this.accountPageFactoryFn(
+          this.appendBodiesFn,
+          this.prependMenuBodiesFn
+        );
+        this.accountPage.on("newState", (newState) => {
+          this.state.account = newState;
+          this.emit("newState", this.state);
+        });
+        this.accountPage.updateState(this.state.account);
+        break;
+      }
+    }
   }
 
-  private goToAccountPage(): void {
-    let newState = copyMessage(this.state, CONTENT_PAGE_STATE);
-    newState.page = Page.Account;
-    newState.account = undefined;
-    this.showFromInternal(newState);
+  private removePage(page: Page): void {
+    switch (page) {
+      case Page.Home:
+        this.homePage.remove();
+        break;
+      case Page.Account:
+        this.accountPage.remove();
+        break;
+    }
   }
 
-  private showFromInternal(newState: ContentPageState): void {
-    this.show(newState);
+  private updatePage(page: Page): void {
+    switch (page) {
+      case Page.Home:
+        this.homePage.updateState(this.state.home);
+        break;
+      case Page.Account:
+        this.accountPage.updateState(this.state.account);
+        break;
+    }
+  }
+
+  private updateStateAndBubbleUp(newState: ContentPageState): void {
+    this.updateState(newState);
     this.emit("newState", this.state);
   }
 
-  public show(newState?: ContentPageState): this {
-    this.menuItemsBody.style.display = "flex";
-    this.controllerItemsBody.style.display = "flex";
-
+  public updateState(newState?: ContentPageState): void {
     if (!newState) {
       newState = {};
     }
     if (!newState.page) {
       newState.page = Page.Home;
     }
-    if (newState.page !== this.state.page) {
-      this.hidePage();
-    }
-    switch (newState.page) {
-      case Page.Home:
-        this.lazyHomePage.get().show(newState.home);
-        break;
-      case Page.Account:
-        this.lazyAccountPage.get().show(newState.account);
-        break;
-    }
     this.state = newState;
-    return this;
+    this.pageNavigator.goTo(this.state.page);
   }
 
-  private hidePage(): void {
-    switch (this.state.page) {
-      case Page.Home:
-        this.lazyHomePage.get().hide();
-        break;
-      case Page.Account:
-        this.lazyAccountPage.get().hide();
-        break;
-    }
-  }
-
-  public hide(): this {
-    this.hidePage();
-    this.menuItemsBody.style.display = "none";
-    this.controllerItemsBody.style.display = "none";
-    return this;
+  public remove(): void {
+    this.pageNavigator.remove();
+    this.homeMenuItem.remove();
+    this.accountMenuItem.remove();
   }
 }

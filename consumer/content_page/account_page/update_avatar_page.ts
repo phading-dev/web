@@ -6,9 +6,9 @@ import {
 import { SCHEME } from "../../common/color_scheme";
 import { ImageCropper } from "../../common/image_cropper/container";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
+import { MenuItem } from "../../common/menu_item/container";
+import { createBackMenuItem } from "../../common/menu_item/factory";
 import { WEB_SERVICE_CLIENT } from "../../common/web_service_client";
-import { MenuItem } from "../menu_item/container";
-import { createBackMenuItem } from "../menu_item/factory";
 import { CARD_STYLE, PAGE_STYLE } from "./styles";
 import { uploadAvatar } from "@phading/user_service_interface/client_requests";
 import { E } from "@selfage/element/factory";

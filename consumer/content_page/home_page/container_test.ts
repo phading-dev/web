@@ -81,7 +81,7 @@ TEST_RUNNER.run({
           (...bodies) => menuContainer.append(...bodies),
           (...bodies) => controllerContainer.append(...bodies)
         );
-        this.cut.updateState({});
+        this.cut.updateState();
 
         // Verify
         await asyncAssertScreenshot(
@@ -199,6 +199,7 @@ TEST_RUNNER.run({
                 { taleId: "tale100" },
                 { userId: "user1" },
               ],
+              reply: "",
             },
             HOME_PAGE_STATE
           ),
@@ -305,7 +306,6 @@ TEST_RUNNER.run({
             {
               page: Page.List,
               list: [{}, { taleId: "tale0" }, { taleId: "tale100" }],
-              reply: "tale100",
             },
             HOME_PAGE_STATE
           ),
@@ -330,7 +330,6 @@ TEST_RUNNER.run({
             {
               page: Page.List,
               list: [{}, { taleId: "tale0" }],
-              reply: "tale100",
             },
             HOME_PAGE_STATE
           ),
@@ -348,10 +347,7 @@ TEST_RUNNER.run({
         // Verify
         assertThat(
           state,
-          eqMessage(
-            { page: Page.List, list: [{}], reply: "tale100" },
-            HOME_PAGE_STATE
-          ),
+          eqMessage({ page: Page.List, list: [{}] }, HOME_PAGE_STATE),
           "new state home back from tale0"
         );
         await asyncAssertScreenshot(

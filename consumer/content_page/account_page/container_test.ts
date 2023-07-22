@@ -57,7 +57,7 @@ TEST_RUNNER.run({
         this.cut.on("newState", (newState) => (state = newState));
 
         // Execute
-        this.cut.updateState({ page: Page.AccountInfo });
+        this.cut.updateState();
 
         // Verify
         await asyncAssertScreenshot(

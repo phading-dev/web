@@ -45,7 +45,7 @@ export class VerticalTextInputWithErrorMsg<InputField> extends EventEmitter {
       }),
       E.inputRef(inputRef, {
         class: "text-input-input",
-        style: `${BASIC_INPUT_STYLE}`,
+        style: `${BASIC_INPUT_STYLE} width: 100%;`,
         ...otherInputAttributes,
       }),
       E.div({
