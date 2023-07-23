@@ -52,6 +52,7 @@ TEST_RUNNER.run({
           () => updateAvatarPageMock,
           () => updatePasswordPageMock,
           (...bodies) => container.append(...bodies),
+          (...bodies) => menuContainer.prepend(...bodies),
           (...bodies) => menuContainer.append(...bodies)
         );
         this.cut.on("newState", (newState) => (state = newState));

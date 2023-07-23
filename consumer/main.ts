@@ -1,13 +1,12 @@
 import { BodyContainer } from "./body_container";
-import { normalizeBody } from "./common/normalize_body";
 import { WEB_SERVICE_CLIENT } from "./common/web_service_client";
 import { CONTENT_PAGE_STATE } from "./content_page/state";
 import { HistoryTracker } from "./history_tracker";
 import { ORIGIN_DEV, ORIGIN_PROD } from "@phading/constants/origin";
 import "../environment";
+import "./common/normalize_body";
 
 async function main(): Promise<void> {
-  normalizeBody();
   let viewPortMeta = document.createElement("meta");
   viewPortMeta.name = "viewport";
   viewPortMeta.content = "width=device-width, initial-scale=1";
@@ -29,9 +28,8 @@ async function main(): Promise<void> {
   historyTracker.on("update", (newState) =>
     bodyContainer.updateState(newState)
   );
-  historyTracker.parse();
   bodyContainer.on("newState", (newState) => historyTracker.push(newState));
-  bodyContainer.show();
+  historyTracker.parse();
 }
 
 main();

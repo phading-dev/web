@@ -53,24 +53,25 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new ContentPage(
           (
-            appendBodiesFn,
-            prependMenuBodiesFn,
-            appendMenuBodiesFn,
-            appendControllerBodiesFn
+            appendBodies,
+            prependMenuBodies,
+            appendMenuBodies,
+            appendControllerBodies
           ) =>
             new HomePageMock(
               quickTalesListPageCache,
               writeTalePageCache,
-              appendBodiesFn,
-              prependMenuBodiesFn,
-              appendMenuBodiesFn,
-              appendControllerBodiesFn,
-              {
-                startingTaleId: 1,
-              }
+              appendBodies,
+              prependMenuBodies,
+              appendMenuBodies,
+              appendControllerBodies
             ),
-          (appendBodiesFn, prependMenuBodiesFn) =>
-            new AccountPageMock(appendBodiesFn, prependMenuBodiesFn),
+          (appendBodies, prependMenuBodies, appendMenuBodies) =>
+            new AccountPageMock(
+              appendBodies,
+              prependMenuBodies,
+              appendMenuBodies
+            ),
           (...bodies) => {
             document.body.append(...bodies);
           },
@@ -198,24 +199,25 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new ContentPage(
           (
-            appendBodiesFn,
-            prependMenuBodiesFn,
-            appendMenuBodiesFn,
-            appendControllerBodiesFn
+            appendBodies,
+            prependMenuBodies,
+            appendMenuBodies,
+            appendControllerBodies
           ) =>
             new HomePageMock(
               quickTalesListPageCache,
               writeTalePageCache,
-              appendBodiesFn,
-              prependMenuBodiesFn,
-              appendMenuBodiesFn,
-              appendControllerBodiesFn,
-              {
-                startingTaleId: 1,
-              }
+              appendBodies,
+              prependMenuBodies,
+              appendMenuBodies,
+              appendControllerBodies
             ),
-          (appendBodiesFn, prependMenuBodiesFn) =>
-            new AccountPageMock(appendBodiesFn, prependMenuBodiesFn),
+          (appendBodies, prependMenuBodies, appendMenuBodies) =>
+            new AccountPageMock(
+              appendBodies,
+              prependMenuBodies,
+              appendMenuBodies
+            ),
           (...bodies) => {
             document.body.append(...bodies);
           },

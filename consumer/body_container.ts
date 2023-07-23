@@ -1,18 +1,23 @@
 import EventEmitter = require("events");
+import LRU = require("lru-cache");
+import { AuthPage } from "./auth_page/container";
+import { AddBodiesFn } from "./common/add_bodies_fn";
 import { LOCAL_SESSION_STORAGE } from "./common/local_session_storage";
+import { PageNavigator } from "./common/page_navigator";
 import { WEB_SERVICE_CLIENT } from "./common/web_service_client";
 import { ContentPage } from "./content_page/container";
+import { WRITE_TALE_PAGE_CACHE } from "./content_page/home_page/container";
+import { QUICK_TALES_LIST_PAGE_CACHE } from "./content_page/home_page/quick_tales_page/container";
+import { QuickTalesListPage } from "./content_page/home_page/quick_tales_page/quick_tales_list_page/container";
+import { WriteTalePage } from "./content_page/home_page/write_tale_page/container";
 import { ContentPageState } from "./content_page/state";
-import { SignInPage } from "./sign_in_page";
-import { SignUpPage } from "./sign_up_page";
-import { LazyInstance } from "@selfage/once/lazy_instance";
+import { E } from "@selfage/element/factory";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
 
 export enum Page {
-  SIGN_IN = 1,
-  SIGN_UP = 2,
-  CONTENT = 3,
+  CONTENT = 1,
+  AUTH = 2,
 }
 
 export interface BodyContainer {
@@ -20,107 +25,124 @@ export interface BodyContainer {
 }
 
 export class BodyContainer extends EventEmitter {
-  private lazySignInPage: LazyInstance<SignInPage>;
-  private lazySignUpPage: LazyInstance<SignUpPage>;
-  private lazyContentPage: LazyInstance<ContentPage>;
-  private lastShownPage: Page;
+  // Visible for testing
+  public authPage: AuthPage;
+  public contentPage: ContentPage;
+  private menuContainer: HTMLDivElement;
+  private controllerContainer: HTMLDivElement;
+  private pageNavigator: PageNavigator<Page>;
   private state: ContentPageState;
 
   public constructor(
-    private body: HTMLElement,
-    private signInPageFactoryFn: () => SignInPage,
-    private signUpPageFactoryFn: () => SignUpPage,
-    private contentPageFactoryFn: (
-      appendBodiesFn: (bodies: Array<HTMLElement>) => void
+    private createAuthPage: (appendBodies: AddBodiesFn) => AuthPage,
+    private createContentPage: (
+      appendBodies: AddBodiesFn,
+      prependMenuBodies: AddBodiesFn,
+      appendMenuBodies: AddBodiesFn,
+      appendControllerBodies: AddBodiesFn
     ) => ContentPage,
+    private quickTalesListPageCache: LRU<string, QuickTalesListPage>,
+    private writeTalePageCache: LRU<string, WriteTalePage>,
     private localSessionStorage: LocalSessionStorage,
-    private webServiceClient: WebServiceClient
+    private webServiceClient: WebServiceClient,
+    private body: HTMLElement
   ) {
     super();
-    this.lazySignInPage = new LazyInstance(() => {
-      let page = this.signInPageFactoryFn();
-      this.body.append(page.body);
-      page.on("signUp", () => this.showSignUp());
-      page.on("signedIn", () => this.showContent());
-      return page;
+    this.menuContainer = E.div({
+      class: "menu-items-container",
+      style: `position: fixed; top: 0; left: 0; display: flex; flex-flow: column nowrap; gap: 1rem;`,
     });
-    this.lazySignUpPage = new LazyInstance(() => {
-      let page = this.signUpPageFactoryFn();
-      this.body.append(page.body);
-      page.on("signIn", () => this.showSignIn());
-      page.on("signedUp", () => this.showContent());
-      return page;
+    this.controllerContainer = E.div({
+      class: "controller-items-container",
+      style: `position: fixed; bottom: 0; right: 0; display: flex; flex-flow: column-reverse nowrap; gap: 1rem;`,
     });
-    this.lazyContentPage = new LazyInstance(() => {
-      let page = this.contentPageFactoryFn((bodies) => {
-        this.body.append(...bodies);
-      });
-      page.on("signOut", () => this.showSignIn());
-      page.on("newState", (state) => this.emit("newState", state));
-      return page;
-    });
+    this.body.append(this.menuContainer, this.controllerContainer);
+
+    this.pageNavigator = new PageNavigator(
+      (page) => this.addPage(page),
+      (page) => this.removePage(page),
+      (page) => this.updatePage(page)
+    );
+
+    this.webServiceClient.on("unauthenticated", () => this.signOut());
   }
 
-  public static create(
-    body: HTMLElement
-  ): BodyContainer {
+  public static create(body: HTMLElement): BodyContainer {
     return new BodyContainer(
-      body,
-      SignInPage.create,
-      SignUpPage.create,
+      AuthPage.create,
       ContentPage.create,
+      QUICK_TALES_LIST_PAGE_CACHE,
+      WRITE_TALE_PAGE_CACHE,
       LOCAL_SESSION_STORAGE,
-      WEB_SERVICE_CLIENT
+      WEB_SERVICE_CLIENT,
+      body
     );
   }
 
-  public show(): void {
-    if (this.localSessionStorage.read()) {
-      this.showContent();
-    } else {
-      this.showSignIn();
-    }
-    this.webServiceClient.on("unauthenticated", () => {
-      this.showSignIn();
-    });
-  }
-
-  private showSignUp() {
-    this.hidePage();
-    this.lazySignUpPage.get().show();
-    this.lastShownPage = Page.SIGN_UP;
-  }
-
-  private showSignIn() {
-    this.hidePage();
-    this.lazySignInPage.get().show();
-    this.lastShownPage = Page.SIGN_IN;
-  }
-
-  private showContent() {
-    this.hidePage();
-    this.lazyContentPage.get().show(this.state);
-    this.lastShownPage = Page.CONTENT;
-  }
-
-  private hidePage(): void {
-    switch (this.lastShownPage) {
-      case Page.SIGN_IN:
-        this.lazySignInPage.get().hide();
+  private addPage(page: Page): void {
+    switch (page) {
+      case Page.AUTH: {
+        this.authPage = this.createAuthPage((...bodies) =>
+          this.body.append(...bodies)
+        );
+        this.authPage.on("signedIn", () => this.refresh());
         break;
-      case Page.SIGN_UP:
-        this.lazySignUpPage.get().hide();
+      }
+      case Page.CONTENT: {
+        this.contentPage = this.createContentPage(
+          (...bodies) => this.body.append(...bodies),
+          (...bodies) => this.menuContainer.prepend(...bodies),
+          (...bodies) => this.menuContainer.append(...bodies),
+          (...bodies) => this.controllerContainer.append(...bodies)
+        );
+        this.contentPage.on("signOut", () => this.signOut());
+        this.contentPage.on("newState", (state) =>
+          this.emit("newState", state)
+        );
+        this.contentPage.updateState(this.state);
+        break;
+      }
+    }
+  }
+
+  private removePage(page: Page): void {
+    switch (page) {
+      case Page.AUTH:
+        this.authPage.remove();
         break;
       case Page.CONTENT:
-        this.lazyContentPage.get().hide();
+        this.contentPage.remove();
         break;
     }
   }
 
-  public updateState(newState: ContentPageState): void {
-    this.state = newState;
-    if (this.lastShownPage === Page.CONTENT) {
-      this.lazyContentPage.get().show(this.state);
+  private signOut(): void {
+    this.quickTalesListPageCache.clear();
+    this.writeTalePageCache.clear();
+    this.localSessionStorage.clear();
+    this.refresh();
+  }
+
+  private refresh(): void {
+    if (this.localSessionStorage.read()) {
+      this.pageNavigator.goTo(Page.CONTENT);
+    } else {
+      this.pageNavigator.goTo(Page.AUTH);
     }
+  }
+
+  private updatePage(page: Page): void {
+    if (page === Page.CONTENT) {
+      this.contentPage.updateState(this.state);
+    }
+  }
+
+  public updateState(newState?: ContentPageState): void {
+    this.state = newState;
+    this.refresh();
+  }
+
+  public remove(): void {
+    this.pageNavigator.remove();
   }
 }

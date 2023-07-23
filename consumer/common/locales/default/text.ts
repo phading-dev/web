@@ -83,6 +83,9 @@ export default class Text {
   get backLabel() {
     return `Back`;
   }
+  get signOutLabel() {
+    return `Sign out`;
+  }
   get changeAvatarLabel() {
     return `Update`;
   }

@@ -1,4 +1,7 @@
 import EventEmitter = require("events");
+import { AddBodiesFn } from "../../common/add_bodies_fn";
+import { MenuItem } from "../../common/menu_item/container";
+import { createSignOutMenuItem } from "../../common/menu_item/factory";
 import { PageNavigator } from "../../common/page_navigator";
 import { AccountInfoPage } from "./account_info_page";
 import { AccountPageState, Page } from "./state";
@@ -6,47 +9,57 @@ import { UpdateAvatarPage } from "./update_avatar_page";
 import { UpdatePasswordPage } from "./update_password_page";
 
 export interface AccountPage {
+  on(event: "signOut", listener: () => void): this;
   on(event: "newState", listener: (newState: AccountPageState) => void): this;
 }
 
 export class AccountPage extends EventEmitter {
+  public signOutMenuItem: MenuItem;
   public accountInfoPage: AccountInfoPage;
   public updateAvatarPage: UpdateAvatarPage;
   public updatePasswordPage: UpdatePasswordPage;
   private pageNavigator: PageNavigator<Page>;
 
   public constructor(
-    private accountInfoPageFactoryFn: () => AccountInfoPage,
-    private updateAvatarPageFactoryFn: () => UpdateAvatarPage,
-    private updatePasswordPageFactoryFn: () => UpdatePasswordPage,
-    private appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    private prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void
+    private createAccountInfoPage: () => AccountInfoPage,
+    private createUpdateAvatarPage: () => UpdateAvatarPage,
+    private createUpdatePasswordPage: () => UpdatePasswordPage,
+    private appendBodies: AddBodiesFn,
+    private prependMenuBodies: AddBodiesFn,
+    private appendMenuBodies: AddBodiesFn
   ) {
     super();
+    this.signOutMenuItem = createSignOutMenuItem();
+    this.appendMenuBodies(this.signOutMenuItem.body);
+
     this.pageNavigator = new PageNavigator(
       (page) => this.addPage(page),
       (page) => this.removePage(page)
     );
+
+    this.signOutMenuItem.on("action", () => this.emit("signOut"));
   }
 
   public static create(
-    appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void
+    appendBodies: AddBodiesFn,
+    prependMenuBodies: AddBodiesFn,
+    appendMenuBodies: AddBodiesFn
   ): AccountPage {
     return new AccountPage(
       AccountInfoPage.create,
       UpdateAvatarPage.create,
       UpdatePasswordPage.create,
-      appendBodiesFn,
-      prependMenuBodiesFn
+      appendBodies,
+      prependMenuBodies,
+      appendMenuBodies
     );
   }
 
   private addPage(page: Page): void {
     switch (page) {
       case Page.AccountInfo:
-        this.accountInfoPage = this.accountInfoPageFactoryFn();
-        this.appendBodiesFn(this.accountInfoPage.body);
+        this.accountInfoPage = this.createAccountInfoPage();
+        this.appendBodies(this.accountInfoPage.body);
         this.accountInfoPage.on("updateAvatar", () =>
           this.updateStateAndBubbleUp(Page.UpdateAvatar)
         );
@@ -55,9 +68,9 @@ export class AccountPage extends EventEmitter {
         );
         break;
       case Page.UpdateAvatar:
-        this.updateAvatarPage = this.updateAvatarPageFactoryFn();
-        this.appendBodiesFn(this.updateAvatarPage.body);
-        this.prependMenuBodiesFn(this.updateAvatarPage.backMenuBody);
+        this.updateAvatarPage = this.createUpdateAvatarPage();
+        this.appendBodies(this.updateAvatarPage.body);
+        this.prependMenuBodies(this.updateAvatarPage.backMenuBody);
         this.updateAvatarPage.on("back", () =>
           this.updateStateAndBubbleUp(Page.AccountInfo)
         );
@@ -66,9 +79,9 @@ export class AccountPage extends EventEmitter {
         );
         break;
       case Page.UpdatePassword:
-        this.updatePasswordPage = this.updatePasswordPageFactoryFn();
-        this.appendBodiesFn(this.updatePasswordPage.body);
-        this.prependMenuBodiesFn(this.updatePasswordPage.backMenuBody);
+        this.updatePasswordPage = this.createUpdatePasswordPage();
+        this.appendBodies(this.updatePasswordPage.body);
+        this.prependMenuBodies(this.updatePasswordPage.backMenuBody);
         this.updatePasswordPage.on("back", () =>
           this.updateStateAndBubbleUp(Page.AccountInfo)
         );
@@ -110,5 +123,6 @@ export class AccountPage extends EventEmitter {
 
   public remove(): void {
     this.pageNavigator.remove();
+    this.signOutMenuItem.remove();
   }
 }

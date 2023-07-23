@@ -1,4 +1,5 @@
 import EventEmitter = require("events");
+import { AddBodiesFn } from "../common/add_bodies_fn";
 import { MenuItem } from "../common/menu_item/container";
 import {
   createAccountMenuItem,
@@ -24,20 +25,21 @@ export class ContentPage extends EventEmitter {
   private state: ContentPageState = {};
 
   public constructor(
-    private homePageFactoryFn: (
-      appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-      prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-      appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-      appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void
+    private createHomePage: (
+      appendBodies: AddBodiesFn,
+      prependMenuBodies: AddBodiesFn,
+      appendMenuBodies: AddBodiesFn,
+      appendControllerBodies: AddBodiesFn
     ) => HomePage,
-    private accountPageFactoryFn: (
-      appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-      prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void
+    private createAccountPage: (
+      appendBodies: AddBodiesFn,
+      prependMenuBodies: AddBodiesFn,
+      appendMenuBodies: AddBodiesFn
     ) => AccountPage,
-    private appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    private prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    private appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    private appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void
+    private appendBodies: AddBodiesFn,
+    private prependMenuBodies: AddBodiesFn,
+    private appendMenuBodies: AddBodiesFn,
+    private appendControllerBodies: AddBodiesFn
   ) {
     super();
     // Logo SVG
@@ -65,7 +67,7 @@ export class ContentPage extends EventEmitter {
 
     this.homeMenuItem = createHomeMenuItem();
     this.accountMenuItem = createAccountMenuItem();
-    this.appendMenuBodiesFn(this.homeMenuItem.body, this.accountMenuItem.body);
+    this.appendMenuBodies(this.homeMenuItem.body, this.accountMenuItem.body);
 
     this.pageNavigator = new PageNavigator(
       (page) => this.showPage(page),
@@ -86,29 +88,29 @@ export class ContentPage extends EventEmitter {
   }
 
   public static create(
-    appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void
+    appendBodies: AddBodiesFn,
+    prependMenuBodies: AddBodiesFn,
+    appendMenuBodies: AddBodiesFn,
+    appendControllerBodies: AddBodiesFn
   ): ContentPage {
     return new ContentPage(
       HomePage.create,
       AccountPage.create,
-      appendBodiesFn,
-      prependMenuBodiesFn,
-      appendMenuBodiesFn,
-      appendControllerBodiesFn
+      appendBodies,
+      prependMenuBodies,
+      appendMenuBodies,
+      appendControllerBodies
     );
   }
 
   private showPage(page: Page): void {
     switch (page) {
       case Page.Home: {
-        this.homePage = this.homePageFactoryFn(
-          this.appendBodiesFn,
-          this.prependMenuBodiesFn,
-          this.appendMenuBodiesFn,
-          this.appendControllerBodiesFn
+        this.homePage = this.createHomePage(
+          this.appendBodies,
+          this.prependMenuBodies,
+          this.appendMenuBodies,
+          this.appendControllerBodies
         );
         this.homePage.on("newState", (newState) => {
           this.state.home = newState;
@@ -118,10 +120,12 @@ export class ContentPage extends EventEmitter {
         break;
       }
       case Page.Account: {
-        this.accountPage = this.accountPageFactoryFn(
-          this.appendBodiesFn,
-          this.prependMenuBodiesFn
+        this.accountPage = this.createAccountPage(
+          this.appendBodies,
+          this.prependMenuBodies,
+          this.appendMenuBodies
         );
+        this.accountPage.on("signOut", () => this.emit("signOut"));
         this.accountPage.on("newState", (newState) => {
           this.state.account = newState;
           this.emit("newState", this.state);
