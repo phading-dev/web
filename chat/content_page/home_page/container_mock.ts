@@ -1,4 +1,5 @@
 import LRU = require("lru-cache");
+import { AddBodiesFn } from "../../common/add_bodies_fn";
 import { HomePage } from "./container";
 import { QuickTalesPageMock } from "./quick_tales_page/container_mock";
 import { QuickTalesListPage } from "./quick_tales_page/quick_tales_list_page/container";
@@ -9,36 +10,36 @@ export class HomePageMock extends HomePage {
   public constructor(
     quickTalesListPageCache: LRU<string, QuickTalesListPage>,
     writeTalePageCache: LRU<string, WriteTalePage>,
-    appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void
+    appendBodies: AddBodiesFn,
+    prependMenuBodies: AddBodiesFn,
+    appendMenuBodies: AddBodiesFn,
+    appendControllerBodies: AddBodiesFn
   ) {
     super(
       writeTalePageCache,
       (
-        appendBodiesFn,
-        prependMenuBodiesFn,
-        appendMenuBodiesFn,
-        appendControllerBodiesFn,
+        appendBodies,
+        prependMenuBodies,
+        appendMenuBodies,
+        appendControllerBodies,
         context
       ) =>
         new QuickTalesPageMock(
           quickTalesListPageCache,
-          appendBodiesFn,
-          prependMenuBodiesFn,
-          appendMenuBodiesFn,
-          appendControllerBodiesFn,
+          appendBodies,
+          prependMenuBodies,
+          appendMenuBodies,
+          appendControllerBodies,
           context,
           {
             startingTaleId: 1,
           }
         ),
       (taleId) => new WriteTalePageMock(taleId),
-      appendBodiesFn,
-      prependMenuBodiesFn,
-      appendMenuBodiesFn,
-      appendControllerBodiesFn
+      appendBodies,
+      prependMenuBodies,
+      appendMenuBodies,
+      appendControllerBodies
     );
   }
 }

@@ -1,5 +1,6 @@
 import EventEmitter = require("events");
 import LRU = require("lru-cache");
+import { AddBodiesFn } from "../../common/add_bodies_fn";
 import { MenuItem } from "../../common/menu_item/container";
 import { createWritePostMenuItem } from "../../common/menu_item/factory";
 import {
@@ -29,39 +30,39 @@ export class HomePage extends EventEmitter {
 
   public constructor(
     private writeTalePageCache: LRU<string, WriteTalePage>,
-    private talesListPageFactoryFn: (
-      appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-      prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-      appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-      appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    private createTalesListPage: (
+      appendBodiesFn: AddBodiesFn,
+      prependMenuBodiesFn: AddBodiesFn,
+      appendMenuBodiesFn: AddBodiesFn,
+      appendControllerBodiesFn: AddBodiesFn,
       context: TaleContext
     ) => QuickTalesPage,
-    private writeTalePageFactoryFn: (taleId: string) => WriteTalePage,
-    private appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    private prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    private appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    private appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void
+    private createWriteTalePage: (taleId: string) => WriteTalePage,
+    private appendBodies: AddBodiesFn,
+    private prependMenuBodies: AddBodiesFn,
+    private appendMenuBodies: AddBodiesFn,
+    private appendControllerBodies: AddBodiesFn
   ) {
     super();
     this.writeTaleMenuItem = createWritePostMenuItem();
-    this.appendMenuBodiesFn(this.writeTaleMenuItem.body);
+    this.appendMenuBodies(this.writeTaleMenuItem.body);
     this.writeTaleMenuItem.on("action", () => this.goToWriteTalePage());
   }
 
   public static create(
-    appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void
+    appendBodies: AddBodiesFn,
+    prependMenuBodies: AddBodiesFn,
+    appendMenuBodies: (...bodies: Array<HTMLElement>) => void,
+    appendControllerBodies: (...bodies: Array<HTMLElement>) => void
   ): HomePage {
     return new HomePage(
       WRITE_TALE_PAGE_CACHE,
       QuickTalesPage.create,
       WriteTalePage.create,
-      appendBodiesFn,
-      prependMenuBodiesFn,
-      appendMenuBodiesFn,
-      appendControllerBodiesFn
+      appendBodies,
+      prependMenuBodies,
+      appendMenuBodies,
+      appendControllerBodies
     );
   }
 
@@ -147,11 +148,11 @@ export class HomePage extends EventEmitter {
   private addPage(): void {
     switch (this.state.page) {
       case Page.List:
-        this.talesListPage = this.talesListPageFactoryFn(
-          this.appendBodiesFn,
-          this.prependMenuBodiesFn,
-          this.appendMenuBodiesFn,
-          this.appendControllerBodiesFn,
+        this.talesListPage = this.createTalesListPage(
+          this.appendBodies,
+          this.prependMenuBodies,
+          this.appendMenuBodies,
+          this.appendControllerBodies,
           this.state.list[this.state.list.length - 1]
         );
         this.talesListPage.on("back", () => this.goToPreviousTalesListPage());
@@ -166,11 +167,11 @@ export class HomePage extends EventEmitter {
         if (this.writeTalePageCache.has(this.state.reply)) {
           this.writeTalePage = this.writeTalePageCache.get(this.state.reply);
         } else {
-          this.writeTalePage = this.writeTalePageFactoryFn(this.state.reply);
+          this.writeTalePage = this.createWriteTalePage(this.state.reply);
           this.writeTalePageCache.set(this.state.reply, this.writeTalePage);
         }
-        this.appendBodiesFn(this.writeTalePage.body);
-        this.prependMenuBodiesFn(this.writeTalePage.backMenuBody);
+        this.appendBodies(this.writeTalePage.body);
+        this.prependMenuBodies(this.writeTalePage.backMenuBody);
         this.writeTalePage.on("back", () => this.goToCurrentTalesListPage());
         break;
     }

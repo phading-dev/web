@@ -1,4 +1,5 @@
 import EventEmitter = require("events");
+import { AddBodiesFn } from "../../../../common/add_bodies_fn";
 import { SCHEME } from "../../../../common/color_scheme";
 import { IconButton, TooltipPosition } from "../../../../common/icon_button";
 import { createArrowIcon } from "../../../../common/icons";
@@ -20,17 +21,15 @@ export class ImagesViewerPage extends EventEmitter {
   private imageViewers = new Map<number, ImageViewer>();
 
   public constructor(
-    private appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    private prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    private appendControllerBodiesFn: (
-      ...bodies: Array<HTMLElement>
-    ) => void,
+    private appendBodies: AddBodiesFn,
+    private prependMenuBodies: AddBodiesFn,
+    private appendControllerBodies: AddBodiesFn,
     private imagePaths: Array<string>,
     private index: number
   ) {
     super();
     this.backMenuItem = createBackMenuItem();
-    this.prependMenuBodiesFn(this.backMenuItem.body);
+    this.prependMenuBodies(this.backMenuItem.body);
 
     this.upButton = IconButton.create(
       `width: 3rem; height: 3rem; padding: .7rem; box-sizing: border-box; rotate: 90deg; color: ${SCHEME.neutral1}; cursor: pointer;`,
@@ -44,7 +43,7 @@ export class ImagesViewerPage extends EventEmitter {
       TooltipPosition.LEFT,
       LOCALIZED_TEXT.nextImageLabel
     );
-    this.appendControllerBodiesFn(this.downButton.body, this.upButton.body);
+    this.appendControllerBodies(this.downButton.body, this.upButton.body);
     this.showCurrentImageViewer();
 
     this.backMenuItem.on("action", () => this.emit("back"));
@@ -64,15 +63,14 @@ export class ImagesViewerPage extends EventEmitter {
       prependMenuBodiesFn,
       appendControllerBodiesFn,
       imagePaths,
-      initialIndex,
+      initialIndex
     );
   }
 
-  private async showCurrentImageViewer(
-  ): Promise<void> {
+  private async showCurrentImageViewer(): Promise<void> {
     let imageViewer = this.getImageViewer();
-    this.appendBodiesFn(imageViewer.body);
-    this.appendControllerBodiesFn(...imageViewer.controllerBodies);
+    this.appendBodies(imageViewer.body);
+    this.appendControllerBodies(...imageViewer.controllerBodies);
     this.setButtonState();
   }
 

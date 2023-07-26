@@ -1,4 +1,5 @@
 import EventEmitter = require("events");
+import { AddBodiesFn } from "../common/add_bodies_fn";
 import { PageNavigator } from "../common/page_navigator";
 import { SignInPage } from "./sign_in_page";
 import { SignUpPage } from "./sign_up_page";
@@ -19,9 +20,9 @@ export class AuthPage extends EventEmitter {
   private pageNavigator: PageNavigator<Page>;
 
   public constructor(
-    private signInPageFactoryFn: () => SignInPage,
-    private signUpPageFactoryFn: () => SignUpPage,
-    private appendBodiesFn: (...bodies: Array<HTMLElement>) => void
+    private createSignInPage: () => SignInPage,
+    private createSignUpPage: () => SignUpPage,
+    private appendBodiesFn: AddBodiesFn
   ) {
     super();
     this.pageNavigator = new PageNavigator(
@@ -31,16 +32,14 @@ export class AuthPage extends EventEmitter {
     this.pageNavigator.goTo(Page.SIGN_IN);
   }
 
-  public static create(
-    appendBodiesFn: (...bodies: Array<HTMLElement>) => void
-  ): AuthPage {
+  public static create(appendBodiesFn: AddBodiesFn): AuthPage {
     return new AuthPage(SignInPage.create, SignUpPage.create, appendBodiesFn);
   }
 
   private addPage(page: Page): void {
     switch (page) {
       case Page.SIGN_IN: {
-        this.signInPage = this.signInPageFactoryFn();
+        this.signInPage = this.createSignInPage();
         this.appendBodiesFn(this.signInPage.body);
         this.signInPage.on("signUp", () =>
           this.pageNavigator.goTo(Page.SIGN_UP)
@@ -49,7 +48,7 @@ export class AuthPage extends EventEmitter {
         break;
       }
       case Page.SIGN_UP: {
-        this.signUpPage = this.signUpPageFactoryFn();
+        this.signUpPage = this.createSignUpPage();
         this.appendBodiesFn(this.signUpPage.body);
         this.signUpPage.on("signIn", () =>
           this.pageNavigator.goTo(Page.SIGN_IN)

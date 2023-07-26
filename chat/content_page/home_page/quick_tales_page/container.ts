@@ -1,5 +1,6 @@
 import EventEmitter = require("events");
 import LRU = require("lru-cache");
+import { AddBodiesFn } from "../../../common/add_bodies_fn";
 import { PageNavigator } from "../../../common/page_navigator";
 import { ImagesViewerPage } from "./image_viewer_page/container";
 import { QuickTalesListPage } from "./quick_tales_list_page/container";
@@ -40,20 +41,20 @@ export class QuickTalesPage extends EventEmitter {
 
   public constructor(
     private quickTalesListPageCache: LRU<string, QuickTalesListPage>,
-    private quickTalesListPageFactoryFn: (
+    private createQuickTalesListPage: (
       context: TaleContext
     ) => QuickTalesListPage,
-    private imageViewerPageFactoryFn: (
-      appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-      prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-      appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    private createImageViewerPage: (
+      appendBodies: AddBodiesFn,
+      prependMenuBodies: AddBodiesFn,
+      appendControllerBodies: AddBodiesFn,
       imagePaths: Array<string>,
       initialIndex: number
     ) => ImagesViewerPage,
-    private appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    private prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    private appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    private appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    private appendBodies: AddBodiesFn,
+    private prependMenuBodies: AddBodiesFn,
+    private appendMenuBodies: AddBodiesFn,
+    private appendControllerBodies: AddBodiesFn,
     private context: TaleContext
   ) {
     super();
@@ -65,20 +66,20 @@ export class QuickTalesPage extends EventEmitter {
   }
 
   public static create(
-    appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    appendBodies: AddBodiesFn,
+    prependMenuBodies: AddBodiesFn,
+    appendMenuBodies: AddBodiesFn,
+    appendControllerBodies: AddBodiesFn,
     context: TaleContext
   ): QuickTalesPage {
     return new QuickTalesPage(
       QUICK_TALES_LIST_PAGE_CACHE,
       QuickTalesListPage.create,
       ImagesViewerPage.create,
-      appendBodiesFn,
-      prependMenuBodiesFn,
-      appendMenuBodiesFn,
-      appendControllerBodiesFn,
+      appendBodies,
+      prependMenuBodies,
+      appendMenuBodies,
+      appendControllerBodies,
       context
     );
   }
@@ -90,7 +91,7 @@ export class QuickTalesPage extends EventEmitter {
         if (this.quickTalesListPageCache.has(key)) {
           this.listPage = this.quickTalesListPageCache.get(key);
         } else {
-          this.listPage = this.quickTalesListPageFactoryFn(this.context);
+          this.listPage = this.createQuickTalesListPage(this.context);
           this.quickTalesListPageCache.set(key, this.listPage);
         }
         this.listPage
@@ -102,16 +103,16 @@ export class QuickTalesPage extends EventEmitter {
             this.initialIndex = initialIndex;
             this.pageNavigator.goTo(Page.IMAGE_VIEWIER);
           });
-        this.appendBodiesFn(this.listPage.body);
-        this.prependMenuBodiesFn(this.listPage.backMenuBody);
-        this.appendMenuBodiesFn(this.listPage.menuBody);
+        this.appendBodies(this.listPage.body);
+        this.prependMenuBodies(this.listPage.backMenuBody);
+        this.appendMenuBodies(this.listPage.menuBody);
         break;
       }
       case Page.IMAGE_VIEWIER: {
-        this.imageViewerPage = this.imageViewerPageFactoryFn(
-          this.appendBodiesFn,
-          this.prependMenuBodiesFn,
-          this.appendControllerBodiesFn,
+        this.imageViewerPage = this.createImageViewerPage(
+          this.appendBodies,
+          this.prependMenuBodies,
+          this.appendControllerBodies,
           this.imagePaths,
           this.initialIndex
         ).on("back", () => this.pageNavigator.goTo(Page.LIST));

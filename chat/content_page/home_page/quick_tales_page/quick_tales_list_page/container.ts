@@ -52,11 +52,11 @@ export class QuickTalesListPage extends EventEmitter {
   private moreTalesLoaded: boolean;
 
   public constructor(
-    private quickTaleCardFactoryFn: (
+    private createQuickTaleCard: (
       cardData: QuickTaleCardData,
       pinned: boolean
     ) => QuickTaleCard,
-    private userInfoCardFactoryFn: (cardData: UserInfoCardData) => UserInfoCard,
+    private createUserInfoCard: (cardData: UserInfoCardData) => UserInfoCard,
     protected webServiceClient: WebServiceClient,
     private context: TaleContext
   ) {
@@ -137,7 +137,7 @@ export class QuickTalesListPage extends EventEmitter {
       let response = await getQuickTale(this.webServiceClient, {
         taleId: this.context.taleId,
       });
-      let quickTaleCard = this.quickTaleCardFactoryFn(response.card, true);
+      let quickTaleCard = this.createQuickTaleCard(response.card, true);
       this.body.prepend(quickTaleCard.body);
       quickTaleCard.on("viewImages", (imagePaths, index) =>
         this.emit("viewImages", imagePaths, index)
@@ -146,7 +146,7 @@ export class QuickTalesListPage extends EventEmitter {
       let response = await getUserInfoCard(this.webServiceClient, {
         userId: this.context.userId,
       });
-      let userInfoCard = this.userInfoCardFactoryFn(response.card);
+      let userInfoCard = this.createUserInfoCard(response.card);
       this.body.prepend(userInfoCard.body);
     }
     this.emit("contextLoaded");
@@ -199,7 +199,7 @@ export class QuickTalesListPage extends EventEmitter {
     this.body.scrollBy(-accumulatedHeights, 0);
 
     for (let cardData of response.cards) {
-      let quickTaleCard = this.quickTaleCardFactoryFn(cardData, false);
+      let quickTaleCard = this.createQuickTaleCard(cardData, false);
       this.body.insertBefore(quickTaleCard.body, this.loadingSection);
       this.quickTaleCards.add(quickTaleCard);
       quickTaleCard.on("pin", (context) => this.emit("pin", context));

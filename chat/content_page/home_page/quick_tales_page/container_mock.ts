@@ -1,4 +1,5 @@
 import LRU = require("lru-cache");
+import { AddBodiesFn } from "../../../common/add_bodies_fn";
 import { QuickTalesPage } from "./container";
 import { ImagesViewerPage } from "./image_viewer_page/container";
 import { QuickTalesListPage } from "./quick_tales_list_page/container";
@@ -11,10 +12,10 @@ import { TaleContext } from "@phading/tale_service_interface/tale_context";
 export class QuickTalesPageMock extends QuickTalesPage {
   public constructor(
     quickTalesListPageCache: LRU<string, QuickTalesListPage>,
-    appendBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    prependMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    appendMenuBodiesFn: (...bodies: Array<HTMLElement>) => void,
-    appendControllerBodiesFn: (...bodies: Array<HTMLElement>) => void,
+    appendBodies: AddBodiesFn,
+    prependMenuBodies: AddBodiesFn,
+    appendMenuBodies: AddBodiesFn,
+    appendControllerBodies: AddBodiesFn,
     context: TaleContext,
     quickTalesPageMockData: QuickTalesListPageMockData
   ) {
@@ -22,23 +23,23 @@ export class QuickTalesPageMock extends QuickTalesPage {
       quickTalesListPageCache,
       (context) => new QuickTalesListPageMock(context, quickTalesPageMockData),
       (
-        appendBodiesFn,
-        prependMenuBodiesFn,
-        appendControllerBodiesFn,
+        appendBodies,
+        prependMenuBodies,
+        appendControllerBodies,
         imagePaths,
         initialIndex
       ) =>
         new ImagesViewerPage(
-          appendBodiesFn,
-          prependMenuBodiesFn,
-          appendControllerBodiesFn,
+          appendBodies,
+          prependMenuBodies,
+          appendControllerBodies,
           imagePaths,
           initialIndex
         ),
-      appendBodiesFn,
-      prependMenuBodiesFn,
-      appendMenuBodiesFn,
-      appendControllerBodiesFn,
+      appendBodies,
+      prependMenuBodies,
+      appendMenuBodies,
+      appendControllerBodies,
       context
     );
   }
