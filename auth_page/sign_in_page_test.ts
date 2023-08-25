@@ -1,13 +1,12 @@
 import path = require("path");
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
-import { LOCAL_USER_SESSION_STORAGE } from "../common/local_user_session_storage";
 import { SignInPage } from "./sign_in_page";
 import {
   SIGN_IN,
   SIGN_IN_REQUEST_BODY,
   SignInResponse,
 } from "@phading/user_service_interface/interface";
-import { USER_SESSION } from "@phading/user_service_interface/user_session";
+import { ProductType } from "@phading/user_service_interface/product_type";
 import { UserType } from "@phading/user_service_interface/user_type";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
@@ -33,11 +32,7 @@ TEST_RUNNER.run({
         })();
 
         // Execute
-        this.cut = new SignInPage(
-          LOCAL_SESSION_STORAGE,
-          LOCAL_USER_SESSION_STORAGE,
-          webServiceClientMock
-        );
+        this.cut = new SignInPage(LOCAL_SESSION_STORAGE, webServiceClientMock);
         document.body.appendChild(this.cut.body);
 
         // Verify
@@ -97,18 +92,23 @@ TEST_RUNNER.run({
           );
           return {
             signedSession: "signed_session",
-            userSession: {
-              authId: "auth1",
-              userId: "user1",
-              userType: UserType.CONSUMER,
-            },
+            userType: UserType.CONSUMER,
+            productType: ProductType.Video,
           } as SignInResponse;
         };
+
+        // Prepare
+        let userTypeCaptured: UserType;
+        let productTypeCaptured: ProductType;
 
         // Execute
         this.cut.submitButton.click();
         await new Promise<void>((resolve) =>
-          this.cut.once("signedIn", resolve)
+          this.cut.once("signedIn", (userType, productType) => {
+            userTypeCaptured = userType;
+            productTypeCaptured = productType;
+            resolve();
+          })
         );
 
         // Verify
@@ -117,18 +117,8 @@ TEST_RUNNER.run({
           eq("signed_session"),
           "stored session"
         );
-        assertThat(
-          LOCAL_USER_SESSION_STORAGE.read(),
-          eqMessage(
-            {
-              authId: "auth1",
-              userId: "user1",
-              userType: UserType.CONSUMER,
-            },
-            USER_SESSION
-          ),
-          "stored user session"
-        );
+        assertThat(userTypeCaptured, eq(UserType.CONSUMER), "consumer user");
+        assertThat(productTypeCaptured, eq(ProductType.Video), "video product");
       }
       public tearDown() {
         this.cut.remove();
@@ -142,7 +132,7 @@ TEST_RUNNER.run({
         await setViewport(500, 200);
 
         // Execute
-        this.cut = new SignInPage(undefined, undefined, undefined);
+        this.cut = new SignInPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
 
         // Verify

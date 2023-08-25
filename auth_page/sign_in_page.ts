@@ -2,10 +2,6 @@ import EventEmitter = require("events");
 import { FilledBlockingButton } from "../common/blocking_button";
 import { SCHEME } from "../common/color_scheme";
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
-import {
-  LOCAL_USER_SESSION_STORAGE,
-  LocalUserSessionStorage,
-} from "../common/local_user_session_storage";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
 import { VerticalTextInputWithErrorMsg } from "../common/text_input";
 import { USER_SERVICE_CLIENT } from "../common/user_service_client";
@@ -16,6 +12,8 @@ import {
   TITLE_STYLE,
 } from "./styles";
 import { signIn } from "@phading/user_service_interface/client_requests";
+import { ProductType } from "@phading/user_service_interface/product_type";
+import { UserType } from "@phading/user_service_interface/user_type";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -28,7 +26,10 @@ enum InputField {
 
 export interface SignInPage {
   on(event: "signUp", listener: () => void): this;
-  on(event: "signedIn", listener: () => void): this;
+  on(
+    event: "signedIn",
+    listener: (userType: UserType, productType: ProductType) => void
+  ): this;
 }
 
 export class SignInPage extends EventEmitter {
@@ -43,7 +44,6 @@ export class SignInPage extends EventEmitter {
 
   public constructor(
     private localSessionStorage: LocalSessionStorage,
-    private localUserSessionStorage: LocalUserSessionStorage,
     private webServiceClient: WebServiceClient
   ) {
     super();
@@ -139,11 +139,7 @@ export class SignInPage extends EventEmitter {
   }
 
   public static create(): SignInPage {
-    return new SignInPage(
-      LOCAL_SESSION_STORAGE,
-      LOCAL_USER_SESSION_STORAGE,
-      USER_SERVICE_CLIENT
-    );
+    return new SignInPage(LOCAL_SESSION_STORAGE, USER_SERVICE_CLIENT);
   }
 
   private refreshSubmitButton(): void {
@@ -182,8 +178,7 @@ export class SignInPage extends EventEmitter {
       password: this.passwordInput.value,
     });
     this.localSessionStorage.save(response.signedSession);
-    this.localUserSessionStorage.save(response.userSession);
-    this.emit("signedIn");
+    this.emit("signedIn", response.userType, response.productType);
   }
 
   private postSignIn(error?: Error): void {

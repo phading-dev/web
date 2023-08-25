@@ -3,6 +3,8 @@ import { AddBodiesFn } from "../common/add_bodies_fn";
 import { PageNavigator } from "../common/page_navigator";
 import { SignInPage } from "./sign_in_page";
 import { SignUpPage } from "./sign_up_page";
+import { ProductType } from "@phading/user_service_interface/product_type";
+import { UserType } from "@phading/user_service_interface/user_type";
 
 enum Page {
   SIGN_IN,
@@ -10,7 +12,10 @@ enum Page {
 }
 
 export interface AuthPage {
-  on(event: "signedIn", listener: () => void): this;
+  on(
+    event: "signedIn",
+    listener: (userType: UserType, productType: ProductType) => void
+  ): this;
 }
 
 export class AuthPage extends EventEmitter {
@@ -44,7 +49,9 @@ export class AuthPage extends EventEmitter {
         this.signInPage.on("signUp", () =>
           this.pageNavigator.goTo(Page.SIGN_UP)
         );
-        this.signInPage.on("signedIn", () => this.emit("signedIn"));
+        this.signInPage.on("signedIn", (userType, productType) =>
+          this.emit("signedIn", userType, productType)
+        );
         break;
       }
       case Page.SIGN_UP: {
@@ -53,7 +60,9 @@ export class AuthPage extends EventEmitter {
         this.signUpPage.on("signIn", () =>
           this.pageNavigator.goTo(Page.SIGN_IN)
         );
-        this.signUpPage.on("signedUp", () => this.emit("signedIn"));
+        this.signUpPage.on("signedUp", (userType, productType) =>
+          this.emit("signedIn", userType, productType)
+        );
         break;
       }
     }

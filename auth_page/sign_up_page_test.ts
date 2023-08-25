@@ -1,13 +1,12 @@
 import path = require("path");
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
-import { LOCAL_USER_SESSION_STORAGE } from "../common/local_user_session_storage";
 import { SignUpPage } from "./sign_up_page";
 import {
   SIGN_UP,
   SIGN_UP_REQUEST_BODY,
   SignUpResponse,
 } from "@phading/user_service_interface/interface";
-import { USER_SESSION } from "@phading/user_service_interface/user_session";
+import { ProductType } from "@phading/user_service_interface/product_type";
 import { UserType } from "@phading/user_service_interface/user_type";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
@@ -42,11 +41,7 @@ TEST_RUNNER.run({
         })();
 
         // Execute
-        this.cut = new SignUpPage(
-          LOCAL_SESSION_STORAGE,
-          LOCAL_USER_SESSION_STORAGE,
-          webServiceClientMock
-        );
+        this.cut = new SignUpPage(LOCAL_SESSION_STORAGE, webServiceClientMock);
         document.body.appendChild(this.cut.body);
 
         // Verify
@@ -128,20 +123,25 @@ TEST_RUNNER.run({
           );
           return {
             signedSession: "signed_session",
-            userSession: {
-              authId: "auth1",
-              userId: "user1",
-              userType: UserType.PUBLISHER,
-            },
+            productType: ProductType.Video,
+            userType: UserType.PUBLISHER,
           } as SignUpResponse;
         };
+
+        // Prepare
+        let userTypeCaptured: UserType;
+        let productTypeCaptured: ProductType;
 
         // Execute
         this.cut.usernameInput.value = "my_new_username";
         this.cut.usernameInput.dispatchInput();
         this.cut.submitButton.click();
         await new Promise<void>((resolve) =>
-          this.cut.once("signedUp", resolve)
+          this.cut.once("signedUp", (userType, productType) => {
+            userTypeCaptured = userType;
+            productTypeCaptured = productType;
+            resolve();
+          })
         );
 
         // Verify
@@ -150,18 +150,8 @@ TEST_RUNNER.run({
           eq("signed_session"),
           "stored session"
         );
-        assertThat(
-          LOCAL_USER_SESSION_STORAGE.read(),
-          eqMessage(
-            {
-              authId: "auth1",
-              userId: "user1",
-              userType: UserType.PUBLISHER,
-            },
-            USER_SESSION
-          ),
-          "stored user session"
-        );
+        assertThat(userTypeCaptured, eq(UserType.PUBLISHER), "publisher user");
+        assertThat(productTypeCaptured, eq(ProductType.Video), "Video product");
       }
       public tearDown() {
         this.cut.remove();
@@ -175,7 +165,7 @@ TEST_RUNNER.run({
         await setViewport(500, 400);
 
         // Execute
-        this.cut = new SignUpPage(undefined, undefined, undefined);
+        this.cut = new SignUpPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
 
         // Verify
@@ -208,7 +198,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(1000, 1000);
-        this.cut = new SignUpPage(undefined, undefined, undefined);
+        this.cut = new SignUpPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
 
         // Execute
@@ -255,7 +245,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(1000, 1000);
-        this.cut = new SignUpPage(undefined, undefined, undefined);
+        this.cut = new SignUpPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
 
         // Execute
@@ -296,7 +286,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(1000, 1000);
-        this.cut = new SignUpPage(undefined, undefined, undefined);
+        this.cut = new SignUpPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
 
         // Execute
@@ -337,7 +327,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(1000, 1000);
-        this.cut = new SignUpPage(undefined, undefined, undefined);
+        this.cut = new SignUpPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
         this.cut.passwordInput.value = "123123";
 

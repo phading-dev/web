@@ -2,10 +2,6 @@ import EventEmitter = require("events");
 import { FilledBlockingButton } from "../common/blocking_button";
 import { SCHEME } from "../common/color_scheme";
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
-import {
-  LOCAL_USER_SESSION_STORAGE,
-  LocalUserSessionStorage,
-} from "../common/local_user_session_storage";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
 import { OptionButton, OptionInput } from "../common/option_input";
 import { VerticalTextInputWithErrorMsg } from "../common/text_input";
@@ -17,6 +13,7 @@ import {
   TITLE_STYLE,
 } from "./styles";
 import { signUp } from "@phading/user_service_interface/client_requests";
+import { ProductType } from "@phading/user_service_interface/product_type";
 import { UserType } from "@phading/user_service_interface/user_type";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -32,7 +29,10 @@ export enum InputField {
 
 export interface SignUpPage {
   on(event: "signIn", listener: () => void): this;
-  on(event: "signedUp", listener: () => void): this;
+  on(
+    event: "signedUp",
+    listener: (userType: UserType, productType: ProductType) => void
+  ): this;
 }
 
 export class SignUpPage extends EventEmitter {
@@ -50,7 +50,6 @@ export class SignUpPage extends EventEmitter {
 
   public constructor(
     private localSessionStorage: LocalSessionStorage,
-    private localUserSessionStorage: LocalUserSessionStorage,
     private webServiceClient: WebServiceClient
   ) {
     super();
@@ -206,11 +205,7 @@ export class SignUpPage extends EventEmitter {
   }
 
   public static create(): SignUpPage {
-    return new SignUpPage(
-      LOCAL_SESSION_STORAGE,
-      LOCAL_USER_SESSION_STORAGE,
-      USER_SERVICE_CLIENT
-    );
+    return new SignUpPage(LOCAL_SESSION_STORAGE, USER_SERVICE_CLIENT);
   }
 
   private checkNaturalNameInput(): void {
@@ -284,8 +279,7 @@ export class SignUpPage extends EventEmitter {
       this.usernameInput.setAsInvalid(LOCALIZED_TEXT.usernameIsUsedError);
     } else {
       this.localSessionStorage.save(response.signedSession);
-      this.localUserSessionStorage.save(response.userSession);
-      this.emit("signedUp");
+      this.emit("signedUp", response.userType, response.productType);
     }
   }
 
