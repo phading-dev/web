@@ -12,12 +12,11 @@ import {
   TITLE_STYLE,
 } from "./styles";
 import { signIn } from "@phading/user_service_interface/client_requests";
-import { ProductType } from "@phading/user_service_interface/product_type";
-import { UserType } from "@phading/user_service_interface/user_type";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
+import { AppType } from "@phading/user_service_interface/app_type";
 
 enum InputField {
   USERNAME,
@@ -28,7 +27,7 @@ export interface SignInPage {
   on(event: "signUp", listener: () => void): this;
   on(
     event: "signedIn",
-    listener: (userType: UserType, productType: ProductType) => void
+    listener: (appType: AppType) => void
   ): this;
 }
 
@@ -178,7 +177,7 @@ export class SignInPage extends EventEmitter {
       password: this.passwordInput.value,
     });
     this.localSessionStorage.save(response.signedSession);
-    this.emit("signedIn", response.userType, response.productType);
+    this.emit("signedIn", response.appType);
   }
 
   private postSignIn(error?: Error): void {

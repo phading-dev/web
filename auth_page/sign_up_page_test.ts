@@ -1,12 +1,12 @@
 import path = require("path");
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { SignUpPage } from "./sign_up_page";
+import { AppType } from "@phading/user_service_interface/app_type";
 import {
   SIGN_UP,
   SIGN_UP_REQUEST_BODY,
   SignUpResponse,
 } from "@phading/user_service_interface/interface";
-import { ProductType } from "@phading/user_service_interface/product_type";
 import { UserType } from "@phading/user_service_interface/user_type";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
@@ -123,23 +123,20 @@ TEST_RUNNER.run({
           );
           return {
             signedSession: "signed_session",
-            productType: ProductType.Video,
-            userType: UserType.PUBLISHER,
+            appType: AppType.Music,
           } as SignUpResponse;
         };
 
         // Prepare
-        let userTypeCaptured: UserType;
-        let productTypeCaptured: ProductType;
+        let appTypeCaptured: AppType;
 
         // Execute
         this.cut.usernameInput.value = "my_new_username";
         this.cut.usernameInput.dispatchInput();
         this.cut.submitButton.click();
         await new Promise<void>((resolve) =>
-          this.cut.once("signedUp", (userType, productType) => {
-            userTypeCaptured = userType;
-            productTypeCaptured = productType;
+          this.cut.once("signedUp", (appType) => {
+            appTypeCaptured = appType;
             resolve();
           })
         );
@@ -150,8 +147,7 @@ TEST_RUNNER.run({
           eq("signed_session"),
           "stored session"
         );
-        assertThat(userTypeCaptured, eq(UserType.PUBLISHER), "publisher user");
-        assertThat(productTypeCaptured, eq(ProductType.Video), "Video product");
+        assertThat(appTypeCaptured, eq(AppType.Music), "Music app");
       }
       public tearDown() {
         this.cut.remove();

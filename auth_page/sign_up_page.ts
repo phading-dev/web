@@ -12,8 +12,8 @@ import {
   SWITCH_TEXT_STYLE,
   TITLE_STYLE,
 } from "./styles";
+import { AppType } from "@phading/user_service_interface/app_type";
 import { signUp } from "@phading/user_service_interface/client_requests";
-import { ProductType } from "@phading/user_service_interface/product_type";
 import { UserType } from "@phading/user_service_interface/user_type";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -29,10 +29,7 @@ export enum InputField {
 
 export interface SignUpPage {
   on(event: "signIn", listener: () => void): this;
-  on(
-    event: "signedUp",
-    listener: (userType: UserType, productType: ProductType) => void
-  ): this;
+  on(event: "signedUp", listener: (appType: AppType) => void): this;
 }
 
 export class SignUpPage extends EventEmitter {
@@ -279,7 +276,7 @@ export class SignUpPage extends EventEmitter {
       this.usernameInput.setAsInvalid(LOCALIZED_TEXT.usernameIsUsedError);
     } else {
       this.localSessionStorage.save(response.signedSession);
-      this.emit("signedUp", response.userType, response.productType);
+      this.emit("signedUp", response.appType);
     }
   }
 
