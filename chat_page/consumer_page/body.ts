@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { AddBodiesFn } from "../../common/add_bodies_fn";
-import { ConsumerState } from "./state";
+import { ConsumerPageState } from "./state";
 
 export interface ConsumerPage {
   on(event: "toPublish", listener: () => void): this;
@@ -16,7 +16,7 @@ export class ConsumerPage extends EventEmitter {
     return new ConsumerPage();
   }
 
-  public updateState(newState?: ConsumerState): void {}
+  public updateState(newState?: ConsumerPageState): void {}
 
   public remove(): void {}
 }

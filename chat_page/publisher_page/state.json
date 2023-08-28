@@ -1,5 +1,5 @@
 [{
-  "name": "ConsumerState",
+  "name": "PublisherPageState",
   "message": {
     "fields": []
   }

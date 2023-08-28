@@ -1,6 +1,6 @@
 import { EnumDescriptor, MessageDescriptor } from '@selfage/message/descriptor';
-import { ConsumerState, CONSUMER_STATE } from './consumer/state';
-import { PublisherState, PUBLISHER_STATE } from './publisher/state';
+import { ConsumerPageState, CONSUMER_PAGE_STATE } from './consumer_page/state';
+import { PublisherPageState, PUBLISHER_PAGE_STATE } from './publisher_page/state';
 
 export enum Page {
   Unknown = 0,
@@ -36,14 +36,14 @@ export let PAGE: EnumDescriptor<Page> = {
   ]
 }
 
-export interface ShowAppState {
+export interface ShowPageState {
   page?: Page,
-  consumer?: ConsumerState,
-  publisher?: PublisherState,
+  consumer?: ConsumerPageState,
+  publisher?: PublisherPageState,
 }
 
-export let SHOW_APP_STATE: MessageDescriptor<ShowAppState> = {
-  name: 'ShowAppState',
+export let SHOW_PAGE_STATE: MessageDescriptor<ShowPageState> = {
+  name: 'ShowPageState',
   fields: [
     {
       name: 'page',
@@ -51,11 +51,11 @@ export let SHOW_APP_STATE: MessageDescriptor<ShowAppState> = {
     },
     {
       name: 'consumer',
-      messageType: CONSUMER_STATE,
+      messageType: CONSUMER_PAGE_STATE,
     },
     {
       name: 'publisher',
-      messageType: PUBLISHER_STATE,
+      messageType: PUBLISHER_PAGE_STATE,
     },
   ]
 };

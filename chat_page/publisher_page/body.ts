@@ -1,5 +1,5 @@
 import { AddBodiesFn } from "../../common/add_bodies_fn";
-import { PublisherState } from "./state";
+import { PublisherPageState } from "./state";
 
 export interface PublisherPage {
   on(event: "toConsume", listener: () => void): this;
@@ -14,7 +14,7 @@ export class PublisherPage {
     return new PublisherPage();
   }
 
-  public updateState(newState?: PublisherState): void {}
+  public updateState(newState?: PublisherPageState): void {}
 
   public remove(): void {}
 }

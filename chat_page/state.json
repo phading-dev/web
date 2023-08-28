@@ -1,0 +1,37 @@
+[{
+  "name": "Page",
+  "enum": {
+    "values": [{
+      "name": "Unknown",
+      "value": 0
+    }, {
+      "name": "Consumer",
+      "value": 1
+    }, {
+      "name": "Publisher",
+      "value": 2
+    }, {
+      "name": "ConsumerSelection",
+      "value": 3
+    }, {
+      "name": "PublisherSelection",
+      "value": 4
+    }]
+  }
+}, {
+  "name": "ChatPageState",
+  "message": {
+    "fields": [{
+      "name": "page",
+      "type": "Page"
+    }, {
+      "name": "consumer",
+      "type": "ConsumerPageState",
+      "import": "./consumer_page/state"
+    }, {
+      "name": "publisher",
+      "type": "PublisherPageState",
+      "import": "./publisher_page/state"
+    }]
+  }
+}]

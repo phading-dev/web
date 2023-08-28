@@ -19,19 +19,19 @@
     }]
   }
 }, {
-  "name": "ShowAppState",
+  "name": "ShowPageState",
   "message": {
     "fields": [{
       "name": "page",
       "type": "Page"
     }, {
       "name": "consumer",
-      "type": "ConsumerState",
-      "import": "./consumer/state"
+      "type": "ConsumerPageState",
+      "import": "./consumer_page/state"
     }, {
       "name": "publisher",
-      "type": "PublisherState",
-      "import": "./publisher/state"
+      "type": "PublisherPageState",
+      "import": "./publisher_page/state"
     }]
   }
 }]
