@@ -16,7 +16,6 @@ import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
-import { AppType } from "@phading/user_service_interface/app_type";
 
 enum InputField {
   USERNAME,
@@ -25,10 +24,7 @@ enum InputField {
 
 export interface SignInPage {
   on(event: "signUp", listener: () => void): this;
-  on(
-    event: "signedIn",
-    listener: (appType: AppType) => void
-  ): this;
+  on(event: "signedIn", listener: () => void): this;
 }
 
 export class SignInPage extends EventEmitter {
@@ -177,7 +173,7 @@ export class SignInPage extends EventEmitter {
       password: this.passwordInput.value,
     });
     this.localSessionStorage.save(response.signedSession);
-    this.emit("signedIn", response.appType);
+    this.emit("signedIn");
   }
 
   private postSignIn(error?: Error): void {

@@ -10,12 +10,6 @@
     }, {
       "name": "Publisher",
       "value": 2
-    }, {
-      "name": "ConsumerSelection",
-      "value": 3
-    }, {
-      "name": "PublisherSelection",
-      "value": 4
     }]
   }
 }, {

@@ -6,8 +6,6 @@ export enum Page {
   Unknown = 0,
   Consumer = 1,
   Publisher = 2,
-  ConsumerSelection = 3,
-  PublisherSelection = 4,
 }
 
 export let PAGE: EnumDescriptor<Page> = {
@@ -24,14 +22,6 @@ export let PAGE: EnumDescriptor<Page> = {
     {
       name: 'Publisher',
       value: 2,
-    },
-    {
-      name: 'ConsumerSelection',
-      value: 3,
-    },
-    {
-      name: 'PublisherSelection',
-      value: 4,
     },
   ]
 }

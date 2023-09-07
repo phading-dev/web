@@ -74,6 +74,12 @@ export default class Text {
   get cancelButtonLabel() {
     return `Cancel`;
   }
+  get chooseAppLabel() {
+    return `Switch app`;
+  }
+  get signOutLabel() {
+    return `Sign out`;
+  }
   get writeTaleLabel() {
     return `Compose`;
   }
@@ -91,9 +97,6 @@ export default class Text {
   }
   get backLabel() {
     return `Back`;
-  }
-  get signOutLabel() {
-    return `Sign out`;
   }
   get changeAvatarLabel() {
     return `Update`;

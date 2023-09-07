@@ -259,3 +259,16 @@ export function createSignOutIcon(color: string): SVGSVGElement {
     })
   );
 }
+
+export function createDotGridIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "dot-grid-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 0 16 16",
+    },
+    E.path({
+      d: `M12 14 a2 2 0 1 0 4 0 a2 2 0 0 0 -4 0Z  M6 14 a2 2 0 1 0 4 0 a2 2 0 0 0 -4 0Z  M0 14 a2 2 0 1 0 4 0 a2 2 0 0 0 -4 0Z  M12 8 a2 2 0 1 0 4 0 a2 2 0 0 0 -4 0Z  M6 8 a2 2 0 1 0 4 0 a2 2 0 0 0 -4 0Z  M0 8 a2 2 0 1 0 4 0 a2 2 0 0 0 -4 0Z  M12 2 a2 2 0 1 0 4 0 a2 2 0 0 0 -4 0Z  M6 2 a2 2 0 1 0 4 0 a2 2 0 0 0 -4 0Z  M0 2 a2 2 0 1 0 4 0 a2 2 0 0 0 -4 0Z`,
+    })
+  );
+}

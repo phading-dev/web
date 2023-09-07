@@ -1,7 +1,6 @@
 import path = require("path");
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { SignUpPage } from "./sign_up_page";
-import { AppType } from "@phading/user_service_interface/app_type";
 import {
   SIGN_UP,
   SIGN_UP_REQUEST_BODY,
@@ -123,22 +122,15 @@ TEST_RUNNER.run({
           );
           return {
             signedSession: "signed_session",
-            appType: AppType.Music,
           } as SignUpResponse;
         };
-
-        // Prepare
-        let appTypeCaptured: AppType;
 
         // Execute
         this.cut.usernameInput.value = "my_new_username";
         this.cut.usernameInput.dispatchInput();
         this.cut.submitButton.click();
         await new Promise<void>((resolve) =>
-          this.cut.once("signedUp", (appType) => {
-            appTypeCaptured = appType;
-            resolve();
-          })
+          this.cut.once("signedUp", resolve)
         );
 
         // Verify
@@ -147,7 +139,6 @@ TEST_RUNNER.run({
           eq("signed_session"),
           "stored session"
         );
-        assertThat(appTypeCaptured, eq(AppType.Music), "Music app");
       }
       public tearDown() {
         this.cut.remove();

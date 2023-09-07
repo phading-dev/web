@@ -1,0 +1,12 @@
+[{
+  "name": "AppType",
+  "enum": {
+    "values": [{
+      "name": "Chat",
+      "value": 1
+    }, {
+      "name": "Show",
+      "value": 2
+    }]
+  }
+}]
