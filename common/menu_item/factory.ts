@@ -9,7 +9,7 @@ import {
   createSignOutIcon,
 } from "../../common/icons";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
-import { MenuItem } from "./container";
+import { MenuItem } from "./body";
 
 export function createHomeMenuItem(): MenuItem {
   return MenuItem.create(

@@ -28,7 +28,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "RenderLargeScreen_EnterAllFields_SignUpFailed_SignUpSuccess";
+        "LargeScreen_EnterAllFields_SignUpFailed_SignUpSuccess";
       private cut: SignUpPage;
       public async execute() {
         // Prepare
@@ -45,9 +45,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/sign_up_page_tall_render.png"),
-          path.join(__dirname, "/golden/sign_up_page_tall_render.png"),
-          path.join(__dirname, "/sign_up_page_tall_render_diff.png")
+          path.join(__dirname, "/sign_up_page_tall.png"),
+          path.join(__dirname, "/golden/sign_up_page_tall.png"),
+          path.join(__dirname, "/sign_up_page_tall_diff.png")
         );
 
         // Execute
@@ -145,7 +145,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "RenderSmallScreen";
+      public name = "SmallScreen";
       private cut: SignUpPage;
       public async execute() {
         // Prepare
@@ -157,9 +157,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/sign_up_page_short_render.png"),
-          path.join(__dirname, "/golden/sign_up_page_short_render.png"),
-          path.join(__dirname, "/sign_up_page_short_render_diff.png")
+          path.join(__dirname, "/sign_up_page_short.png"),
+          path.join(__dirname, "/golden/sign_up_page_short.png"),
+          path.join(__dirname, "/sign_up_page_short_diff.png")
         );
 
         // Execute
@@ -180,7 +180,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "RenderNaturalNameInputAndError";
+      public name = "NaturalNameInputAndError";
       private cut: SignUpPage;
       public async execute() {
         // Prepare
@@ -227,7 +227,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "RenderUsernameInputAndError";
+      public name = "UsernameInputAndError";
       private cut: SignUpPage;
       public async execute() {
         // Prepare
@@ -268,7 +268,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "RenderPasswordInputAndError";
+      public name = "PasswordInputAndError";
       private cut: SignUpPage;
       public async execute() {
         // Prepare
@@ -309,7 +309,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "RenderRepeatPasswordInputAndError";
+      public name = "RepeatPasswordInputAndError";
       private cut: SignUpPage;
       public async execute() {
         // Prepare
@@ -342,5 +342,20 @@ TEST_RUNNER.run({
         this.cut.remove();
       }
     })(),
+    {
+      name: "GoToSignUp",
+      execute: async () => {
+        // Prepare
+        let cut = new SignUpPage(undefined, undefined);
+        let goToSignIn = false;
+        cut.on("signIn", () => (goToSignIn = true));
+
+        // Execute
+        cut.switchToSignInButton.click();
+
+        // Verify
+        assertThat(goToSignIn, eq(true), "go to sign in");
+      },
+    },
   ],
 });

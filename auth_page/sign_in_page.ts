@@ -3,14 +3,10 @@ import { FilledBlockingButton } from "../common/blocking_button";
 import { SCHEME } from "../common/color_scheme";
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
+import { MEDIUM_CARD_STYLE, PAGE_STYLE } from "../common/page_style";
 import { VerticalTextInputWithErrorMsg } from "../common/text_input";
 import { USER_SERVICE_CLIENT } from "../common/user_service_client";
-import {
-  CARD_STYLE,
-  PAGE_STYLE,
-  SWITCH_TEXT_STYLE,
-  TITLE_STYLE,
-} from "./styles";
+import { SWITCH_TEXT_STYLE, TITLE_STYLE } from "./styles";
 import { signIn } from "@phading/user_service_interface/client_requests";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -55,7 +51,7 @@ export class SignInPage extends EventEmitter {
       E.div(
         {
           class: "sign-in-box",
-          style: `${CARD_STYLE} gap: 2rem;`,
+          style: `${MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
         },
         E.div(
           {

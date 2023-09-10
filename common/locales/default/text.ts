@@ -98,6 +98,12 @@ export default class Text {
   get backLabel() {
     return `Back`;
   }
+  get chatAppName() {
+    return `Chat`;
+  }
+  get ShowAppName() {
+    return `Show`;
+  }
   get changeAvatarLabel() {
     return `Update`;
   }

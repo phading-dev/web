@@ -4,14 +4,10 @@ import { SCHEME } from "../common/color_scheme";
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
 import { OptionButton, OptionInput } from "../common/option_input";
+import { MEDIUM_CARD_STYLE, PAGE_STYLE } from "../common/page_style";
 import { VerticalTextInputWithErrorMsg } from "../common/text_input";
 import { USER_SERVICE_CLIENT } from "../common/user_service_client";
-import {
-  CARD_STYLE,
-  PAGE_STYLE,
-  SWITCH_TEXT_STYLE,
-  TITLE_STYLE,
-} from "./styles";
+import { SWITCH_TEXT_STYLE, TITLE_STYLE } from "./styles";
 import { signUp } from "@phading/user_service_interface/client_requests";
 import { UserType } from "@phading/user_service_interface/user_type";
 import { E } from "@selfage/element/factory";
@@ -69,7 +65,7 @@ export class SignUpPage extends EventEmitter {
       E.div(
         {
           class: "sign-up-card",
-          style: `${CARD_STYLE} gap: 1.5rem;`,
+          style: `${MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 1.5rem;`,
         },
         E.div(
           {

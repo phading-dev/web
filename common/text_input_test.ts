@@ -17,7 +17,8 @@ TEST_RUNNER.run({
   name: "TextInputTest",
   cases: [
     new (class implements TestCase {
-      public name = "RenderVerticalTextInput";
+      public name =
+        "DefaultVerticalTextInput_InvalidWithErrors_Valid_InvalidWithoutErrors";
       private cut: VerticalTextInputWithErrorMsg<InputField>;
       private followingLine: HTMLDivElement;
       public async execute() {
@@ -45,9 +46,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/vertical_text_input_render.png"),
-          path.join(__dirname, "/golden/vertical_text_input_render.png"),
-          path.join(__dirname, "/vertical_text_input_render_diff.png"),
+          path.join(__dirname, "/vertical_text_input_default.png"),
+          path.join(__dirname, "/golden/vertical_text_input_default.png"),
+          path.join(__dirname, "/vertical_text_input_default_diff.png"),
           { fullPage: true }
         );
 
@@ -73,7 +74,7 @@ TEST_RUNNER.run({
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/vertical_text_input_valid.png"),
-          path.join(__dirname, "/golden/vertical_text_input_render.png"),
+          path.join(__dirname, "/golden/vertical_text_input_default.png"),
           path.join(__dirname, "/vertical_text_input_valid_diff.png"),
           { fullPage: true }
         );
@@ -92,7 +93,7 @@ TEST_RUNNER.run({
             __dirname,
             "/vertical_text_input_invalid_without_error.png"
           ),
-          path.join(__dirname, "/golden/vertical_text_input_render.png"),
+          path.join(__dirname, "/golden/vertical_text_input_default.png"),
           path.join(
             __dirname,
             "/vertical_text_input_invalid_without_error_diff.png"
@@ -148,7 +149,7 @@ TEST_RUNNER.run({
       },
     },
     new (class implements TestCase {
-      public name = "RenderTextInputValue";
+      public name = "DefaultVerticalTextInputValue";
       private cut: VerticalTextInputValue;
       private followingLine: HTMLDivElement;
       public async execute() {
@@ -169,9 +170,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/vertical_text_input_value_render.png"),
-          path.join(__dirname, "/golden/vertical_text_input_value_render.png"),
-          path.join(__dirname, "/vertical_text_input_value_render_diff.png"),
+          path.join(__dirname, "/vertical_text_input_value_default.png"),
+          path.join(__dirname, "/golden/vertical_text_input_value_default.png"),
+          path.join(__dirname, "/vertical_text_input_value_default_diff.png"),
           { fullPage: true }
         );
       }

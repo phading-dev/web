@@ -18,7 +18,7 @@ TEST_RUNNER.run({
   name: "SignInPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "RenderLargeScreen_SubmitFailure_SubmitSuccess";
+      public name = "LargeScreen_SubmitFailure_SubmitSuccess";
       private cut: SignInPage;
       public async execute() {
         // Prepare
@@ -35,9 +35,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/sign_in_page_tall_render.png"),
-          path.join(__dirname, "/golden/sign_in_page_tall_render.png"),
-          path.join(__dirname, "/sign_in_page_tall_render_diff.png")
+          path.join(__dirname, "/sign_in_page_tall.png"),
+          path.join(__dirname, "/golden/sign_in_page_tall.png"),
+          path.join(__dirname, "/sign_in_page_tall_diff.png")
         );
 
         // Execute
@@ -111,7 +111,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "RenderSmallScreen";
+      public name = "SmallScreen";
       private cut: SignInPage;
       public async execute() {
         // Prepare
@@ -123,9 +123,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/sign_in_page_short_render.png"),
-          path.join(__dirname, "/golden/sign_in_page_short_render.png"),
-          path.join(__dirname, "/sign_in_page_short_render_diff.png")
+          path.join(__dirname, "/sign_in_page_short.png"),
+          path.join(__dirname, "/golden/sign_in_page_short.png"),
+          path.join(__dirname, "/sign_in_page_short_diff.png")
         );
 
         // Execute
@@ -145,5 +145,20 @@ TEST_RUNNER.run({
         this.cut.remove();
       }
     })(),
+    {
+      name: "GoToSignUp",
+      execute: async () => {
+        // Prepare
+        let cut = new SignInPage(undefined, undefined);
+        let goToSignUp = false;
+        cut.on("signUp", () => (goToSignUp = true));
+
+        // Execute
+        cut.switchToSignUpButton.click();
+
+        // Verify
+        assertThat(goToSignUp, eq(true), "go to sign up");
+      },
+    },
   ],
 });

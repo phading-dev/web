@@ -14,7 +14,7 @@ TEST_RUNNER.run({
   name: "OptionInputTest",
   cases: [
     new (class implements TestCase {
-      public name = "Render_ChooseSecondOption";
+      public name = "Default_ChooseSecondOption";
       private cut: OptionInput<ValueType>;
       public async execute() {
         // Execute
@@ -32,9 +32,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(this.cut.value, eq(ValueType.WALK), "value is walk");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/option_input_render.png"),
-          path.join(__dirname, "/golden/option_input_render.png"),
-          path.join(__dirname, "/option_input_render_diff.png"),
+          path.join(__dirname, "/option_input_default.png"),
+          path.join(__dirname, "/golden/option_input_default.png"),
+          path.join(__dirname, "/option_input_default_diff.png"),
           { fullPage: true }
         );
 

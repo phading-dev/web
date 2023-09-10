@@ -31,7 +31,7 @@ export class IconButton extends EventEmitter {
     this.body = E.button(
       {
         class: "icon-button",
-        style: `${NULLIFIED_BUTTON_STYLE} position: relative; ${customButtonStyle}`,
+        style: `${NULLIFIED_BUTTON_STYLE} position: relative; cursor: pointer; ${customButtonStyle}`,
       },
       svgElement,
       E.divRef(
@@ -79,7 +79,6 @@ export class IconButton extends EventEmitter {
         break;
     }
     this.hideTooltip();
-    this.enable();
 
     this.tooltip.addEventListener("transitionend", () =>
       this.emit("tooltipShowed")
@@ -96,18 +95,6 @@ export class IconButton extends EventEmitter {
     text: string
   ): IconButton {
     return new IconButton(customButtonStyle, svgElement, position, text);
-  }
-
-  public enable(): void {
-    this.body.style.color = SCHEME.neutral1;
-    this.body.style.cursor = "pointer";
-    this.body.style.pointerEvents = "auto";
-  }
-
-  public disable(): void {
-    this.body.style.color = SCHEME.neutral3;
-    this.body.style.cursor = "not-allowed";
-    this.body.style.pointerEvents = "none";
   }
 
   private showTootlip(): void {

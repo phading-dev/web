@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { AppType } from "./app_type";
-import { AuthPage } from "./auth_page/container";
+import { AuthPage } from "./auth_page/body";
 import { BodyState } from "./body_state";
 import { ChatPage } from "./chat_page/body";
 import { ChooseAppPage } from "./choose_app_page/body";
@@ -12,13 +12,16 @@ import { createDotGridIcon, createSignOutIcon } from "./common/icons";
 import { LOCAL_SESSION_STORAGE } from "./common/local_session_storage";
 import { LOCALIZED_TEXT } from "./common/locales/localized_text";
 import { PageNavigator } from "./common/page_navigator";
+import {
+  RANDOM_INTEGER_GENERATOR,
+  RandomIntegerGenerator,
+} from "./common/random_integer_generator";
 import { USER_SERVICE_CLIENT } from "./common/user_service_client";
 import { ShowPage } from "./show_page/body";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
-import { RandomIntegerGenerator, RANDOM_INTEGER_GENERATOR } from "./common/random_integer_generator";
 
 export enum Page {
   AUTH = 1,
@@ -46,10 +49,7 @@ export class BodyContainer extends EventEmitter {
 
   public constructor(
     private createAuthPage: (appendBodies: AddBodiesFn) => AuthPage,
-    private createChooseAppPage: (
-      currentApp: AppType,
-      appendBodies: AddBodiesFn
-    ) => ChooseAppPage,
+    private createChooseAppPage: () => ChooseAppPage,
     private createChatPage: (
       appendBodies: AddBodiesFn,
       prependMenuBodies: AddBodiesFn,
@@ -66,12 +66,15 @@ export class BodyContainer extends EventEmitter {
     private body: HTMLElement
   ) {
     super();
+    this.body.style.backgroundColor = SCHEME.neutral3;
+
     let topMenuContainerRef = new Ref<HTMLDivElement>();
     let chooseAppButtonRef = new Ref<IconButton>();
     let signOutButtonRef = new Ref<IconButton>();
     let leftMenuContainerRef = new Ref<HTMLDivElement>();
     this.body.append(
-      E.divRef(topMenuContainerRef,
+      E.divRef(
+        topMenuContainerRef,
         {
           class: "top-menu",
           style: `position: fixed; top: 0; right: 0; display: flex; flex-flow: row nowrap; gap: 1rem;`,
@@ -139,10 +142,7 @@ export class BodyContainer extends EventEmitter {
         ).on("signedIn", () => this.goToStateAppOrAuth());
         break;
       case Page.CHOOSE_APP:
-        this.chooseAppPage = this.createChooseAppPage(
-          this.state.app,
-          (...bodies) => this.body.append(...bodies)
-        )
+        this.chooseAppPage = this.createChooseAppPage()
           .on("back", () => this.goToStateAppOrAuth())
           .on("chosen", (chosenApp) => {
             this.updateState({
@@ -150,6 +150,8 @@ export class BodyContainer extends EventEmitter {
             });
             this.emit("newState", this.state);
           });
+        this.body.append(this.chooseAppPage.body);
+        this.leftMenuContainer.append(this.chooseAppPage.menuBody);
         break;
       case Page.CHAT:
         this.chatPage = this.createChatPage(

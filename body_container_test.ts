@@ -1,6 +1,6 @@
 import path = require("path");
 import { AppType } from "./app_type";
-import { AuthPageMock } from "./auth_page/container_mock";
+import { AuthPageMock } from "./auth_page/body_mock";
 import { BodyContainer } from "./body_container";
 import { BODY_STATE, BodyState } from "./body_state";
 import { ChatPageMock } from "./chat_page/body_mock";
@@ -36,8 +36,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new BodyContainer(
           (appendBodies) => new AuthPageMock(appendBodies),
-          (currentApp, appendBodies) =>
-            new ChooseAppPageMock(currentApp, appendBodies),
+          () => new ChooseAppPageMock(),
           (appendBodies, prependMenuBodies, appendMenuBodies) =>
             new ChatPageMock(appendBodies, prependMenuBodies, appendMenuBodies),
           (appendBodies, prependMenuBodies, appendMenuBodies) =>
@@ -94,8 +93,7 @@ TEST_RUNNER.run({
         let userServiceClient = new WebServiceClient(undefined, undefined);
         this.cut = new BodyContainer(
           (appendBodies) => new AuthPageMock(appendBodies),
-          (currentApp, appendBodies) =>
-            new ChooseAppPageMock(currentApp, appendBodies),
+          () => new ChooseAppPageMock(),
           (appendBodies, prependMenuBodies, appendMenuBodies) =>
             new ChatPageMock(appendBodies, prependMenuBodies, appendMenuBodies),
           (appendBodies, prependMenuBodies, appendMenuBodies) =>
@@ -135,8 +133,7 @@ TEST_RUNNER.run({
         let userServiceClient = new WebServiceClient(undefined, undefined);
         this.cut = new BodyContainer(
           (appendBodies) => new AuthPageMock(appendBodies),
-          (currentApp, appendBodies) =>
-            new ChooseAppPageMock(currentApp, appendBodies),
+          () => new ChooseAppPageMock(),
           (appendBodies, prependMenuBodies, appendMenuBodies) =>
             new ChatPageMock(appendBodies, prependMenuBodies, appendMenuBodies),
           (appendBodies, prependMenuBodies, appendMenuBodies) =>
@@ -186,8 +183,7 @@ TEST_RUNNER.run({
         let userServiceClient = new WebServiceClient(undefined, undefined);
         this.cut = new BodyContainer(
           (appendBodies) => new AuthPageMock(appendBodies),
-          (currentApp, appendBodies) =>
-            new ChooseAppPageMock(currentApp, appendBodies),
+          () => new ChooseAppPageMock(),
           (appendBodies, prependMenuBodies, appendMenuBodies) =>
             new ChatPageMock(appendBodies, prependMenuBodies, appendMenuBodies),
           (appendBodies, prependMenuBodies, appendMenuBodies) =>
@@ -257,8 +253,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new BodyContainer(
           (appendBodies) => new AuthPageMock(appendBodies),
-          (currentApp, appendBodies) =>
-            new ChooseAppPageMock(currentApp, appendBodies),
+          () => new ChooseAppPageMock(),
           (appendBodies, prependMenuBodies, appendMenuBodies) =>
             new ChatPageMock(appendBodies, prependMenuBodies, appendMenuBodies),
           (appendBodies, prependMenuBodies, appendMenuBodies) =>

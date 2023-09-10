@@ -1,5 +1,5 @@
 import EventEmitter = require("events");
-import { SCHEME } from "../../common/color_scheme";
+import { SCHEME } from "../color_scheme";
 import { E } from "@selfage/element/factory";
 
 export interface MenuItem {

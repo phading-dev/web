@@ -3,7 +3,7 @@ import tallerImage = require("./test_data/taller.jpg");
 import wideImage = require("./test_data/wide.jpeg");
 import widerImage = require("./test_data/wider.jpg");
 import path = require("path");
-import { ImageCropper } from "./container";
+import { ImageCropper } from "./body";
 import { E } from "@selfage/element/factory";
 import { getFiles } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -11,7 +11,7 @@ import {
   asyncAssertImage,
   asyncAssertScreenshot,
 } from "@selfage/screenshot_test_matcher";
-import "../../common/normalize_body";
+import "../normalize_body";
 
 let PADDING = 100;
 let LENGTH = 450;
@@ -64,7 +64,7 @@ TEST_RUNNER.run({
   name: "ImageCropperTest",
   cases: [
     new (class implements TestCase {
-      public name = "RenderThenResizeFromAllPoints";
+      public name = "Default_ResizeFromAllPoints";
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
@@ -81,9 +81,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/image_cropper_render.png"),
-          path.join(__dirname, "/golden/image_cropper_render.png"),
-          path.join(__dirname, "/image_cropper_render_diff.png"),
+          path.join(__dirname, "/image_cropper_default.png"),
+          path.join(__dirname, "/golden/image_cropper_default.png"),
+          path.join(__dirname, "/image_cropper_default_diff.png"),
           { fullPage: true }
         );
 
@@ -511,7 +511,7 @@ TEST_RUNNER.run({
       )
     ),
     new (class implements TestCase {
-      public name = "ChooseMultipleImages_Render";
+      public name = "ChooseMultipleImages";
       private container: HTMLDivElement;
       public async execute() {
         // Prepare

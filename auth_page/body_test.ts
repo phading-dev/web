@@ -1,5 +1,5 @@
 import path = require("path");
-import { AuthPage } from "./container";
+import { AuthPage } from "./body";
 import { SignInPageMock } from "./sign_in_page_mock";
 import { SignUpPageMock } from "./sign_up_page_mock";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -28,7 +28,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.signInPage.switchToSignUpButton.click();
+        this.cut.signInPage.emit("signUp");
 
         // Verify
         await asyncAssertScreenshot(
@@ -38,7 +38,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.signUpPage.switchToSignInButton.click();
+        this.cut.signUpPage.emit("signIn");
 
         // Verify
         await asyncAssertScreenshot(
