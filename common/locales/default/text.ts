@@ -74,6 +74,15 @@ export default class Text {
   get cancelButtonLabel() {
     return `Cancel`;
   }
+  get createConsumerTitle() {
+    return `Set up a consumer account`
+  }
+  get createConsumerButtonLabel() {
+    return `Set up`;
+  }
+  get createConsumerError() {
+    return `Failed to set up your consumer account. Please try again later.`
+  }
   get chooseAppLabel() {
     return `Switch app`;
   }
@@ -101,7 +110,7 @@ export default class Text {
   get chatAppName() {
     return `Chat`;
   }
-  get ShowAppName() {
+  get showAppName() {
     return `Show`;
   }
   get changeAvatarLabel() {

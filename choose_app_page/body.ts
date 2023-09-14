@@ -49,7 +49,7 @@ export class ChooseAppPage extends EventEmitter {
           AppCard.create(
             AppType.Show,
             createShowAppIcon(),
-            LOCALIZED_TEXT.ShowAppName
+            LOCALIZED_TEXT.showAppName
           )
         ).body
       )

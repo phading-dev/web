@@ -24,7 +24,9 @@ export class ConsumerPage extends EventEmitter {
     return new ConsumerPage(appendBodies, prependMenuBodies, appendMenuBodies);
   }
 
-  public updateState(newState?: ConsumerPageState): void {}
+  public async updateState(newState?: ConsumerPageState): Promise<void> {
+
+  }
 
   public remove(): void {}
 }

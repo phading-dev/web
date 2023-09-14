@@ -3,21 +3,33 @@ import { AddBodiesFn } from "../common/add_bodies_fn";
 import { PageNavigator } from "../common/page_navigator";
 import { USER_SERVICE_CLIENT } from "../common/user_service_client";
 import { ConsumerPage } from "./consumer_page/body";
+import { ConsumerSelectionPage } from "./consumer_selection_page/body";
 import { PublisherPage } from "./publisher_page/body";
-import { Page, ShowPageState } from "./state";
-import { AppVariant } from "@phading/user_service_interface/app_variant";
-import { getAppVariant } from "@phading/user_service_interface/client_requests";
+import { PublisherSelectionPage } from "./publisher_selection_page/body";
+import { Page as StatePage, ShowPageState } from "./state";
+import { getUserType } from "@phading/user_service_interface/client_requests";
+import { UserType } from "@phading/user_service_interface/user_type";
 import { WebServiceClient } from "@selfage/web_service_client";
+
+enum Page {
+  Consumer = 1,
+  ConsumerSelection = 2,
+  Publisher = 3,
+  PublisherSelection = 4,
+}
 
 export interface ShowPage {
   on(event: "newState", listener: (newState: ShowPageState) => void): this;
+  on(event: "stateUpdated", listener: () => void): this;
 }
 
 export class ShowPage extends EventEmitter {
   private state: ShowPageState;
   private pendingNewState: ShowPageState;
   private consumerPage: ConsumerPage;
+  private consumerSelectionPage: ConsumerSelectionPage;
   private publisherPage: PublisherPage;
+  private publisherSelectionPage: PublisherSelectionPage;
   private pageNavigator: PageNavigator<Page>;
 
   public constructor(
@@ -26,11 +38,21 @@ export class ShowPage extends EventEmitter {
       prependMenuBodies: AddBodiesFn,
       appendMenuBodies: AddBodiesFn
     ) => ConsumerPage,
+    private createConsumerSelectionPage: (
+      appendBodies: AddBodiesFn,
+      prependMenuBodies: AddBodiesFn,
+      appendMenuBodies: AddBodiesFn
+    ) => ConsumerSelectionPage,
     private createPublisherPage: (
       appendBodies: AddBodiesFn,
       prependMenuBodies: AddBodiesFn,
       appendMenuBodies: AddBodiesFn
     ) => PublisherPage,
+    private createPublisherSelectionPage: (
+      appendBodies: AddBodiesFn,
+      prependMenuBodies: AddBodiesFn,
+      appendMenuBodies: AddBodiesFn
+    ) => PublisherSelectionPage,
     private userServiceClient: WebServiceClient,
     private appendBodies: AddBodiesFn,
     private prependMenuBodies: AddBodiesFn,
@@ -51,7 +73,9 @@ export class ShowPage extends EventEmitter {
   ): ShowPage {
     return new ShowPage(
       ConsumerPage.create,
+      ConsumerSelectionPage.create,
       PublisherPage.create,
+      PublisherSelectionPage.create,
       USER_SERVICE_CLIENT,
       appendBodies,
       prependMenuBodies,
@@ -70,7 +94,7 @@ export class ShowPage extends EventEmitter {
         this.consumerPage
           .on("toPublish", () => {
             this.updateState({
-              page: Page.Publisher,
+              page: StatePage.Publisher,
             });
             this.emit("newState", this.state);
           })
@@ -79,6 +103,13 @@ export class ShowPage extends EventEmitter {
             this.emit("newState", this.state);
           });
         this.consumerPage.updateState(this.state.consumer);
+        break;
+      case Page.ConsumerSelection:
+        this.consumerSelectionPage = this.createConsumerSelectionPage(
+          this.appendBodies,
+          this.prependMenuBodies,
+          this.appendMenuBodies
+        ).on("selected", () => this.updateState(this.state));
         break;
       case Page.Publisher:
         this.publisherPage = this.createPublisherPage(
@@ -89,7 +120,7 @@ export class ShowPage extends EventEmitter {
         this.publisherPage
           .on("toConsume", () => {
             this.updateState({
-              page: Page.Consumer,
+              page: StatePage.Consumer,
             });
             this.emit("newState", this.state);
           })
@@ -99,6 +130,13 @@ export class ShowPage extends EventEmitter {
           });
         this.publisherPage.updateState(this.state.publisher);
         break;
+      case Page.PublisherSelection:
+        this.publisherSelectionPage = this.createPublisherSelectionPage(
+          this.appendBodies,
+          this.prependMenuBodies,
+          this.appendMenuBodies
+        ).on("selected", () => this.updateState(this.state));
+        break;
     }
   }
 
@@ -107,8 +145,14 @@ export class ShowPage extends EventEmitter {
       case Page.Consumer:
         this.consumerPage.remove();
         break;
+      case Page.ConsumerSelection:
+        this.consumerSelectionPage.remove();
+        break;
       case Page.Publisher:
         this.publisherPage.remove();
+        break;
+      case Page.PublisherSelection:
+        this.publisherSelectionPage.remove();
         break;
     }
   }
@@ -124,38 +168,39 @@ export class ShowPage extends EventEmitter {
     }
   }
 
-  public updateState(newState?: ShowPageState): void {
+  public async updateState(newState?: ShowPageState): Promise<void> {
     if (!newState) {
       newState = {};
     }
     this.pendingNewState = newState;
-    if (!newState.page) {
-      this.normalizeState(newState);
-    } else {
-      this.state = newState;
-      this.pageNavigator.goTo(this.state.page);
-    }
-  }
-
-  private async normalizeState(newState: ShowPageState): Promise<void> {
-    let response = await getAppVariant(this.userServiceClient, {});
-    if (this.pendingNewState.page) {
-      // A new update has been made before the service call is done and the
-      // page is already set.
-      return;
+    let response = await getUserType(this.userServiceClient, {});
+    if (!this.pendingNewState.page) {
+      if (response.userType === UserType.CONSUMER) {
+        this.pendingNewState = {
+          page: StatePage.Consumer,
+        };
+      } else if (response.userType === UserType.PUBLISHER) {
+        this.pendingNewState = {
+          page: StatePage.Publisher,
+        };
+      }
     }
 
-    if (response.appVariant === AppVariant.Consumer) {
-      newState = {
-        page: Page.Consumer,
-      };
-    } else if (response.appVariant === AppVariant.Publisher) {
-      newState = {
-        page: Page.Publisher,
-      };
+    this.state = this.pendingNewState;
+    if (this.pendingNewState.page === StatePage.Consumer) {
+      if (response.userType !== UserType.CONSUMER) {
+        this.pageNavigator.goTo(Page.ConsumerSelection);
+      } else {
+        this.pageNavigator.goTo(Page.Consumer);
+      }
+    } else if (this.pendingNewState.page === StatePage.Publisher) {
+      if (response.userType !== UserType.PUBLISHER) {
+        this.pageNavigator.goTo(Page.PublisherSelection);
+      } else {
+        this.pageNavigator.goTo(Page.Publisher);
+      }
     }
-    this.state = newState;
-    this.pageNavigator.goTo(this.state.page);
+    this.emit("stateUpdated");
   }
 
   public remove(): void {

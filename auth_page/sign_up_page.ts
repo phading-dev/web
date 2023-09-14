@@ -6,6 +6,11 @@ import { LOCALIZED_TEXT } from "../common/locales/localized_text";
 import { OptionButton, OptionInput } from "../common/option_input";
 import { MEDIUM_CARD_STYLE, PAGE_STYLE } from "../common/page_style";
 import { VerticalTextInputWithErrorMsg } from "../common/text_input";
+import {
+  NATURAL_NAME_LENGTH_LIMIT,
+  PASSWORD_LENGTH_LIMIT,
+  USERNAME_LENGTH_LIMIT,
+} from "../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../common/user_service_client";
 import { SWITCH_TEXT_STYLE, TITLE_STYLE } from "./styles";
 import { signUp } from "@phading/user_service_interface/client_requests";
@@ -15,7 +20,7 @@ import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
 
-export enum InputField {
+enum InputField {
   NATURAL_NAME,
   USERNAME,
   PASSWORD,
@@ -201,7 +206,7 @@ export class SignUpPage extends EventEmitter {
   }
 
   private checkNaturalNameInput(): void {
-    if (this.naturalNameInput.value.length > 100) {
+    if (this.naturalNameInput.value.length > NATURAL_NAME_LENGTH_LIMIT) {
       this.naturalNameInput.setAsInvalid(
         LOCALIZED_TEXT.naturalNameTooLongError
       );
@@ -214,7 +219,7 @@ export class SignUpPage extends EventEmitter {
   }
 
   private checkUsernameInput(): void {
-    if (this.usernameInput.value.length > 100) {
+    if (this.usernameInput.value.length > USERNAME_LENGTH_LIMIT) {
       this.usernameInput.setAsInvalid(LOCALIZED_TEXT.usernameTooLongError);
     } else if (this.usernameInput.value.length === 0) {
       this.usernameInput.setAsInvalid();
@@ -225,7 +230,7 @@ export class SignUpPage extends EventEmitter {
   }
 
   private checkPasswordInput(): void {
-    if (this.passwordInput.value.length > 100) {
+    if (this.passwordInput.value.length > PASSWORD_LENGTH_LIMIT) {
       this.passwordInput.setAsInvalid(LOCALIZED_TEXT.passwordTooLongError);
     } else if (this.passwordInput.value.length === 0) {
       this.passwordInput.setAsInvalid();
@@ -269,6 +274,7 @@ export class SignUpPage extends EventEmitter {
     });
     if (response.usernameIsNotAvailable) {
       this.usernameInput.setAsInvalid(LOCALIZED_TEXT.usernameIsUsedError);
+      this.refreshSubmitButton();
     } else {
       this.localSessionStorage.save(response.signedSession);
       this.emit("signedUp");
@@ -280,8 +286,6 @@ export class SignUpPage extends EventEmitter {
       console.error(error);
       this.submitError.style.visibility = "visible";
       this.submitError.textContent = LOCALIZED_TEXT.signUpError;
-    } else {
-      this.refreshSubmitButton();
     }
   }
 
