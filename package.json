@@ -40,8 +40,10 @@
   },
   "dependencies": {
     "@phading/constants": "^0.1.0",
+    "@phading/consumer_product_interaction_service_interface": "^0.0.3",
+    "@phading/product_service_interface": "^0.0.2",
     "@phading/tale_service_interface": "^0.1.2",
-    "@phading/user_service_interface": "^0.7.1",
+    "@phading/user_service_interface": "^0.8.0",
     "@selfage/closest_locale_finder": "^1.0.1",
     "@selfage/element": "^3.2.1",
     "@selfage/message": "^3.1.7",

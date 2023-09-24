@@ -6,7 +6,7 @@ import {
   createPlusIcon,
   createReplyIcon,
   createShuffleIcon,
-  createSignOutIcon,
+  createUploadIcon,
 } from "../../common/icons";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
 import { MenuItem } from "./body";
@@ -59,10 +59,10 @@ export function createBackMenuItem(): MenuItem {
   );
 }
 
-export function createSignOutMenuItem(): MenuItem {
+export function createUploadMenuItem(): MenuItem {
   return MenuItem.create(
-    createSignOutIcon(SCHEME.neutral1),
+    createUploadIcon(SCHEME.neutral1),
     `1rem`,
-    LOCALIZED_TEXT.signOutLabel
+    LOCALIZED_TEXT.uploadLabel
   );
 }

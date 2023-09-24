@@ -107,11 +107,17 @@ export default class Text {
   get backLabel() {
     return `Back`;
   }
+  get uploadLabel() {
+    return `Upload`;
+  }
   get chatAppName() {
     return `Chat`;
   }
   get showAppName() {
     return `Show`;
+  }
+  get musicAppName() {
+    return `Music`;
   }
   get changeAvatarLabel() {
     return `Update`;
@@ -301,5 +307,17 @@ export default class Text {
   }
   get noUserDescription() {
     return `They didn't say anything about themself.`;
+  }
+  get usageReportRangePartOneLabel() {
+    return `Your usage report starting from `;
+  }
+  get usageReportRangePartTwoLabel() {
+    return ` until `
+  }
+  get usageSumLabel() {
+    return `Total`;
+  }
+  get usageReportSeeOtherButtonLabel() {
+    return `See other usage reports`
   }
 }

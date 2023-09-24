@@ -1,6 +1,7 @@
 import EventEmitter = require("events");
-import { AppType } from "../app_type";
+import { getAppName } from "../common/app_name";
 import { SCHEME } from "../common/color_scheme";
+import { AppType } from "@phading/product_service_interface/app_type";
 import { E } from "@selfage/element/factory";
 
 export interface AppCard {
@@ -10,11 +11,7 @@ export interface AppCard {
 export class AppCard extends EventEmitter {
   public body: HTMLDivElement;
 
-  public constructor(
-    private appType: AppType,
-    icon: SVGSVGElement,
-    label: string
-  ) {
+  public constructor(private appType: AppType, icon: SVGSVGElement) {
     super();
     this.body = E.div(
       {
@@ -33,7 +30,7 @@ export class AppCard extends EventEmitter {
           class: "app-card-label",
           style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
         },
-        E.text(label)
+        E.text(getAppName(this.appType))
       )
     );
 
@@ -42,12 +39,8 @@ export class AppCard extends EventEmitter {
     );
   }
 
-  public static create(
-    appType: AppType,
-    icon: SVGSVGElement,
-    label: string
-  ): AppCard {
-    return new AppCard(appType, icon, label);
+  public static create(appType: AppType, icon: SVGSVGElement): AppCard {
+    return new AppCard(appType, icon);
   }
 
   public click(): void {

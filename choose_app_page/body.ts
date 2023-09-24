@@ -1,11 +1,10 @@
 import EventEmitter = require("events");
-import { AppType } from "../app_type";
 import { createChatAppIcon, createShowAppIcon } from "../common/icons";
-import { LOCALIZED_TEXT } from "../common/locales/localized_text";
 import { MenuItem } from "../common/menu_item/body";
 import { createBackMenuItem } from "../common/menu_item/factory";
 import { PAGE_STYLE } from "../common/page_style";
 import { AppCard } from "./app_card";
+import { AppType } from "@phading/product_service_interface/app_type";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
@@ -38,19 +37,11 @@ export class ChooseAppPage extends EventEmitter {
         },
         assign(
           chatAppCardRef,
-          AppCard.create(
-            AppType.Chat,
-            createChatAppIcon(),
-            LOCALIZED_TEXT.chatAppName
-          )
+          AppCard.create(AppType.CHAT, createChatAppIcon())
         ).body,
         assign(
           showAppCardRef,
-          AppCard.create(
-            AppType.Show,
-            createShowAppIcon(),
-            LOCALIZED_TEXT.showAppName
-          )
+          AppCard.create(AppType.SHOW, createShowAppIcon())
         ).body
       )
     );
