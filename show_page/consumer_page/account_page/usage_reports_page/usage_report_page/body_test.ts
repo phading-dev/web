@@ -41,7 +41,7 @@ TEST_RUNNER.run({
               );
               return {
                 playtimeMeterReport: {
-                  playtimeMeterPerApp: [
+                  playtimeMetersPerApp: [
                     {
                       appType: AppType.SHOW,
                       playtime: 100,
@@ -103,7 +103,7 @@ TEST_RUNNER.run({
               );
               return {
                 playtimeMeterReport: {
-                  playtimeMeterPerApp: [
+                  playtimeMetersPerApp: [
                     {
                       appType: AppType.SHOW,
                       playtime: 500,
@@ -151,7 +151,7 @@ TEST_RUNNER.run({
             public async send(request: any) {
               return {
                 playtimeMeterReport: {
-                  playtimeMeterPerApp: [
+                  playtimeMetersPerApp: [
                     {
                       appType: AppType.SHOW,
                       playtime: 500,

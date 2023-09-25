@@ -4,7 +4,12 @@ import { TEXT_BUTTON_STYLE } from "../../../../../common/button_styles";
 import { SCHEME } from "../../../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import { LARGE_CARD_STYLE, PAGE_STYLE } from "../../../../../common/page_style";
+import { CONSUMER_PRODUCT_INTERACTION_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { getPlaytimeMeterReport } from "@phading/consumer_product_interaction_service_interface/client_requests";
+import {
+  PlaytimeMeterPerApp,
+  PlaytimeMeterReport,
+} from "@phading/consumer_product_interaction_service_interface/playtime_meter_report";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -15,6 +20,13 @@ export interface UsageReportPage {
 }
 
 export class UsageReportPage extends EventEmitter {
+  public static create(reportId?: string): UsageReportPage {
+    return new UsageReportPage(
+      CONSUMER_PRODUCT_INTERACTION_SERVICE_CLIENT,
+      reportId
+    );
+  }
+
   private static LABEL_WIDTH = "5rem";
 
   public body: HTMLDivElement;
@@ -40,10 +52,10 @@ export class UsageReportPage extends EventEmitter {
     );
     this.card = cardRef.val;
 
-    this.loadReport();
+    this.load();
   }
 
-  private async loadReport(): Promise<void> {
+  private async load(): Promise<void> {
     let playtimeMeterReport = (
       await getPlaytimeMeterReport(
         this.consumerProductInteractionServiceClient,
@@ -53,73 +65,18 @@ export class UsageReportPage extends EventEmitter {
       )
     ).playtimeMeterReport;
 
-    let startDate = new Date(
-      playtimeMeterReport.startTimestamp * 1000
-    ).toLocaleDateString();
-    let title = `${LOCALIZED_TEXT.usageReportRangePartOneLabel}${startDate}`;
-    if (playtimeMeterReport.endTimestamp) {
-      let endDate = new Date(
-        playtimeMeterReport.endTimestamp * 1000
-      ).toLocaleDateString();
-      title = `${title}${LOCALIZED_TEXT.usageReportRangePartTwoLabel}${endDate}`;
-    }
+    let seeOtherButtonRef = new Ref<HTMLDivElement>();
     this.card.append(
       E.div(
         {
           class: "usage-report-title",
           style: `font-size: 1.6rem; color: ${SCHEME.neutral0};`,
         },
-        E.text(title)
-      )
-    );
-
-    let mostPlaytimePerApp = 0;
-    for (let playtimeMeterPerApp of playtimeMeterReport.playtimeMeterPerApp) {
-      if (mostPlaytimePerApp < playtimeMeterPerApp.playtime) {
-        mostPlaytimePerApp = playtimeMeterPerApp.playtime;
-      }
-    }
-    for (let playtimeMeterPerApp of playtimeMeterReport.playtimeMeterPerApp) {
-      let percentOfMostPlaytime =
-        mostPlaytimePerApp > 0
-          ? Math.ceil((playtimeMeterPerApp.playtime / mostPlaytimePerApp) * 100)
-          : 0;
-      this.card.append(
-        E.div(
-          {
-            class: "usage-report-row",
-            style: `width: 85%; display: flex; flex-flow: row nowrap; gap: 1rem; align-items: center;`,
-          },
-          E.div(
-            {
-              class: "usage-report-app-name",
-              style: `flex: 0 0 ${UsageReportPage.LABEL_WIDTH}; font-size: 1.4rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(getAppName(playtimeMeterPerApp.appType))
-          ),
-          E.div(
-            {
-              class: "usage-report-usage-bar-wrapper",
-              style: `flex: 1 0 0; height: 2rem; position: relative;`,
-            },
-            E.div({
-              class: "usage-report-usage-bar",
-              style: `position: absolute; left: 0; top: 0; width: ${percentOfMostPlaytime}%; height: 100%; background-color: ${SCHEME.primary1};`,
-            }),
-            E.div(
-              {
-                class: "usage-report-usage-value",
-                style: `position: relative; font-size: 1.4rem; width: ${percentOfMostPlaytime}%; line-height: 2rem; text-align: center; color: ${SCHEME.neutral0};`,
-              },
-              E.text(`${playtimeMeterPerApp.playtime}`)
-            )
-          )
-        )
-      );
-    }
-
-    let seeOtherButtonRef = new Ref<HTMLDivElement>();
-    this.card.append(
+        E.text(UsageReportPage.createTitle(playtimeMeterReport))
+      ),
+      ...UsageReportPage.createUsageRows(
+        playtimeMeterReport.playtimeMetersPerApp
+      ),
       E.div(
         {
           class: "usage-report-sum",
@@ -155,6 +112,71 @@ export class UsageReportPage extends EventEmitter {
       this.emit("chooseReports")
     );
     this.emit("loaded");
+  }
+
+  private static createTitle(playtimeMeterReport: PlaytimeMeterReport): string {
+    let startDate = new Date(
+      playtimeMeterReport.startTimestamp * 1000
+    ).toLocaleDateString();
+    let title = `${LOCALIZED_TEXT.usageReportRangePartOne}${startDate}`;
+    if (playtimeMeterReport.endTimestamp) {
+      let endDate = new Date(
+        playtimeMeterReport.endTimestamp * 1000
+      ).toLocaleDateString();
+      title = `${title}${LOCALIZED_TEXT.usageReportRangePartTwo}${endDate}`;
+    }
+    return title;
+  }
+
+  private static createUsageRows(
+    playtimeMetersPerApp: Array<PlaytimeMeterPerApp>
+  ): Array<HTMLDivElement> {
+    let rows = new Array<HTMLDivElement>();
+    let mostPlaytimePerApp = 0;
+    for (let playtimeMeterPerApp of playtimeMetersPerApp) {
+      if (mostPlaytimePerApp < playtimeMeterPerApp.playtime) {
+        mostPlaytimePerApp = playtimeMeterPerApp.playtime;
+      }
+    }
+    for (let playtimeMeterPerApp of playtimeMetersPerApp) {
+      let percentOfMostPlaytime =
+        mostPlaytimePerApp > 0
+          ? Math.ceil((playtimeMeterPerApp.playtime / mostPlaytimePerApp) * 100)
+          : 0;
+      rows.push(
+        E.div(
+          {
+            class: "usage-report-row",
+            style: `width: 85%; display: flex; flex-flow: row nowrap; gap: 1rem; align-items: center;`,
+          },
+          E.div(
+            {
+              class: "usage-report-app-name",
+              style: `flex: 0 0 ${UsageReportPage.LABEL_WIDTH}; font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(getAppName(playtimeMeterPerApp.appType))
+          ),
+          E.div(
+            {
+              class: "usage-report-usage-bar-wrapper",
+              style: `flex: 1 0 0; height: 2rem; position: relative;`,
+            },
+            E.div({
+              class: "usage-report-usage-bar",
+              style: `position: absolute; left: 0; top: 0; width: ${percentOfMostPlaytime}%; height: 100%; background-color: ${SCHEME.primary1};`,
+            }),
+            E.div(
+              {
+                class: "usage-report-usage-value",
+                style: `position: relative; font-size: 1.4rem; width: ${percentOfMostPlaytime}%; line-height: 2rem; text-align: center; color: ${SCHEME.neutral0};`,
+              },
+              E.text(`${playtimeMeterPerApp.playtime}`)
+            )
+          )
+        )
+      );
+    }
+    return rows;
   }
 
   public remove(): void {

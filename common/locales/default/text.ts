@@ -308,10 +308,10 @@ export default class Text {
   get noUserDescription() {
     return `They didn't say anything about themself.`;
   }
-  get usageReportRangePartOneLabel() {
+  get usageReportRangePartOne() {
     return `Your usage report starting from `;
   }
-  get usageReportRangePartTwoLabel() {
+  get usageReportRangePartTwo() {
     return ` until `
   }
   get usageSumLabel() {
@@ -319,5 +319,14 @@ export default class Text {
   }
   get usageReportSeeOtherButtonLabel() {
     return `See other usage reports`
+  }
+  get chooseReportTitle() {
+    return `Choose a usage report`;
+  }
+  get chooseReportCurrentButtonLabel() {
+    return `Current`
+  }
+  get chooseReportRangeEndedInDateLabel() {
+    return `Until `;
   }
 }
