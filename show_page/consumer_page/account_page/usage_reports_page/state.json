@@ -1,0 +1,23 @@
+[{
+  "name": "Page",
+  "enum": {
+    "values": [{
+      "name": "CHOOSE",
+      "value": 1
+    }, {
+      "name": "REPORT",
+      "value": 2
+    }]
+  }
+}, {
+  "name": "UsageReportsPageState",
+  "message": {
+    "fields": [{
+      "name": "page",
+      "type": "Page"
+    }, {
+      "name": "reportId",
+      "type": "string"
+    }]
+  }
+}]

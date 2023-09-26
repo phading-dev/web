@@ -13,7 +13,7 @@ import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface ChooseReportPage {
-  on(event: "choose", listener: (reportId?: string) => void): this;
+  on(event: "chosen", listener: (reportId?: string) => void): this;
   on(event: "back", listener: () => void): this;
   on(event: "loaded", listener: () => void): this;
 }
@@ -24,7 +24,7 @@ export class ChooseReportPage extends EventEmitter {
   }
 
   public body: HTMLDivElement;
-  public menuBody: HTMLDivElement;
+  public backMenuBody: HTMLDivElement;
   // Visible for testing
   public backMenuItem: MenuItem;
   public currentRangeButton: HTMLDivElement;
@@ -49,7 +49,7 @@ export class ChooseReportPage extends EventEmitter {
     this.card = cardRef.val;
 
     this.backMenuItem = createBackMenuItem();
-    this.menuBody = this.backMenuItem.body;
+    this.backMenuBody = this.backMenuItem.body;
     this.backMenuItem.on("action", () => this.emit("back"));
 
     this.load();
@@ -96,7 +96,7 @@ export class ChooseReportPage extends EventEmitter {
     this.historyRangeButtons = historyRangeButtonsRef.val;
 
     this.currentRangeButton.addEventListener("click", () =>
-      this.emit("choose")
+      this.emit("chosen")
     );
     this.emit("loaded");
   }
@@ -116,7 +116,7 @@ export class ChooseReportPage extends EventEmitter {
       );
       historyRangeButtons.push(historyRangeButton);
       historyRangeButton.addEventListener("click", () =>
-        this.emit("choose", range.reportId)
+        this.emit("chosen", range.reportId)
       );
     }
     return historyRangeButtons;

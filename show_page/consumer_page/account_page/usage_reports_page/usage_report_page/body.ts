@@ -16,7 +16,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface UsageReportPage {
   on(event: "loaded", listener: () => void): this;
-  on(event: "chooseReports", listener: () => void): this;
+  on(event: "chooseReport", listener: () => void): this;
 }
 
 export class UsageReportPage extends EventEmitter {
@@ -109,7 +109,7 @@ export class UsageReportPage extends EventEmitter {
     this.seeOtherButton = seeOtherButtonRef.val;
 
     this.seeOtherButton.addEventListener("click", () =>
-      this.emit("chooseReports")
+      this.emit("chooseReport")
     );
     this.emit("loaded");
   }

@@ -59,7 +59,7 @@ TEST_RUNNER.run({
 
         // Execute
         document.body.append(this.cut.body);
-        menuContainer.append(this.cut.menuBody);
+        menuContainer.append(this.cut.backMenuBody);
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
@@ -119,7 +119,7 @@ TEST_RUNNER.run({
 
         // Execute
         document.body.append(this.cut.body);
-        menuContainer.append(this.cut.menuBody);
+        menuContainer.append(this.cut.backMenuBody);
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
@@ -172,7 +172,7 @@ TEST_RUNNER.run({
           })()
         );
         let chosenId: string;
-        this.cut.on("choose", (reportId) => (chosenId = reportId));
+        this.cut.on("chosen", (reportId) => (chosenId = reportId));
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Execute

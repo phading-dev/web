@@ -139,7 +139,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ChooseReports";
+      public name = "ChooseReport";
       private cut: UsageReportPage;
       public async execute() {
         // Prepare
@@ -169,14 +169,14 @@ TEST_RUNNER.run({
           })()
         );
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
-        let chooseReports: boolean;
-        this.cut.on("chooseReports", () => (chooseReports = true));
+        let chooseReport: boolean;
+        this.cut.on("chooseReport", () => (chooseReport = true));
 
         // Execute
         this.cut.seeOtherButton.click();
 
         // Verify
-        assertThat(chooseReports, eq(true), "choose reports");
+        assertThat(chooseReport, eq(true), "choose report");
       }
       public tearDown() {
         this.cut.remove();
