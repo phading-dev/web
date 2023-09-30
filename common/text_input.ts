@@ -13,6 +13,22 @@ export declare interface VerticalTextInputWithErrorMsg<InputField> {
 }
 
 export class VerticalTextInputWithErrorMsg<InputField> extends EventEmitter {
+  public static create<InputField>(
+    label: string,
+    customStyle: string,
+    otherInputAttributes: ElementAttributeMap = {},
+    validInputs: Set<InputField>,
+    inputField: InputField
+  ): VerticalTextInputWithErrorMsg<InputField> {
+    return new VerticalTextInputWithErrorMsg<InputField>(
+      label,
+      customStyle,
+      otherInputAttributes,
+      validInputs,
+      inputField
+    );
+  }
+
   public body: HTMLDivElement;
   // Visible for testing
   public input: HTMLInputElement;
@@ -68,22 +84,6 @@ export class VerticalTextInputWithErrorMsg<InputField> extends EventEmitter {
     this.input.addEventListener("input", () => this.emit("input"));
   }
 
-  public static create<InputField>(
-    label: string,
-    customStyle: string,
-    otherInputAttributes: ElementAttributeMap = {},
-    validInputs: Set<InputField>,
-    inputField: InputField
-  ): VerticalTextInputWithErrorMsg<InputField> {
-    return new VerticalTextInputWithErrorMsg<InputField>(
-      label,
-      customStyle,
-      otherInputAttributes,
-      validInputs,
-      inputField
-    );
-  }
-
   private keydown(event: KeyboardEvent): void {
     if (event.code !== "Enter") {
       return;
@@ -126,88 +126,6 @@ export class VerticalTextInputWithErrorMsg<InputField> extends EventEmitter {
 
   public dispatchEnter(): void {
     this.input.dispatchEvent(new KeyboardEvent("keydown", { code: "Enter" }));
-  }
-
-  public remove(): void {
-    this.body.remove();
-  }
-}
-
-export interface VerticalTextInputValue {
-  on(event: "click", listener: () => void): this;
-}
-
-export class VerticalTextInputValue extends EventEmitter {
-  public body: HTMLDivElement;
-  private inputValue: HTMLDivElement;
-
-  public constructor(
-    label: string,
-    value: string,
-    customStyle: string,
-    customValueStle: string
-  ) {
-    super();
-    let inputValueRef = new Ref<HTMLDivElement>();
-    this.body = E.div(
-      {
-        class: "text-input-value",
-        style: `display: flex; flex-flow: column nowrap; ${customStyle}`,
-      },
-      E.div(
-        {
-          class: "text-input-value-label",
-          style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
-        },
-        E.text(label)
-      ),
-      E.div({
-        style: `height: 1rem;`,
-      }),
-      E.divRef(
-        inputValueRef,
-        {
-          class: "text-input-value-value",
-          style: `font-size: 1.4rem; line-height: 2rem; color: ${SCHEME.neutral0}; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customValueStle}`,
-        },
-        E.text(value)
-      ),
-      E.div({
-        style: `height: .5rem;`,
-      }),
-      E.div(
-        {
-          class: "text-input-value-error-holder",
-          style: `visibility: hidden; font-size: 1.2rem;`,
-        },
-        E.text("1")
-      )
-    );
-    this.inputValue = inputValueRef.val;
-
-    this.inputValue.addEventListener("click", () => this.emit("click"));
-  }
-
-  public static create(
-    label: string,
-    value: string,
-    customStyle: string,
-    customValueStle: string
-  ): VerticalTextInputValue {
-    return new VerticalTextInputValue(
-      label,
-      value,
-      customStyle,
-      customValueStle
-    );
-  }
-
-  public setValue(value: string): void {
-    this.inputValue.textContent = value;
-  }
-
-  public click(): void {
-    this.inputValue.click();
   }
 
   public remove(): void {

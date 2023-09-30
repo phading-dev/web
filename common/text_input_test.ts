@@ -1,8 +1,5 @@
 import path = require("path");
-import {
-  VerticalTextInputValue,
-  VerticalTextInputWithErrorMsg,
-} from "./text_input";
+import { VerticalTextInputWithErrorMsg } from "./text_input";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -148,38 +145,5 @@ TEST_RUNNER.run({
         assertThat(triggered, eq(true), "triggered");
       },
     },
-    new (class implements TestCase {
-      public name = "DefaultVerticalTextInputValue";
-      private cut: VerticalTextInputValue;
-      private followingLine: HTMLDivElement;
-      public async execute() {
-        // Execute
-        this.cut = VerticalTextInputValue.create(
-          "Input",
-          "Value",
-          "width: 50rem;",
-          ""
-        );
-        this.followingLine = E.div(
-          {
-            style: `font-size: 1.4rem; color: black;`,
-          },
-          E.text("following lines....")
-        );
-        document.body.append(this.cut.body, this.followingLine);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/vertical_text_input_value_default.png"),
-          path.join(__dirname, "/golden/vertical_text_input_value_default.png"),
-          path.join(__dirname, "/vertical_text_input_value_default_diff.png"),
-          { fullPage: true }
-        );
-      }
-      public tearDown() {
-        this.cut.remove();
-        this.followingLine.remove();
-      }
-    })(),
   ],
 });

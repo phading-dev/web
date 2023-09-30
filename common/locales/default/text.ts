@@ -5,8 +5,14 @@ export default class Text {
   get signUpTitle() {
     return `Create your new account`
   }
+  get contactEmailLabel() {
+    return `Contact email`;
+  }
   get naturalNameLabel() {
     return `Name`;
+  }
+  get accountDescriptionLabel() {
+    return `Description`;
   }
   get usernameLabel() {
     return `Username`;
