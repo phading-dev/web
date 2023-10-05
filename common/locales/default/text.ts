@@ -57,7 +57,7 @@ export default class Text {
     return `Sign up`;
   }
   get signUpError() {
-    return `Failed to sign up. Please try again later.`;
+    return `Failed to sign up. Please try again.`;
   }
   get signInTitle() {
     return `Sign in to your account`

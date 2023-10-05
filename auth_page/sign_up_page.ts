@@ -11,10 +11,10 @@ import {
   PASSWORD_LENGTH_LIMIT,
   USERNAME_LENGTH_LIMIT,
 } from "../common/user_limits";
-import { USER_SERVICE_CLIENT } from "../common/user_service_client";
+import { USER_SERVICE_CLIENT } from "../common/web_service_client";
 import { SWITCH_TEXT_STYLE, TITLE_STYLE } from "./styles";
+import { AccountType } from "@phading/user_service_interface/account_type";
 import { signUp } from "@phading/user_service_interface/client_requests";
-import { UserType } from "@phading/user_service_interface/user_type";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -30,6 +30,7 @@ enum InputField {
 export interface SignUpPage {
   on(event: "signIn", listener: () => void): this;
   on(event: "signedUp", listener: () => void): this;
+  on(event: "signUpError", listener: () => void): this;
 }
 
 export class SignUpPage extends EventEmitter {
@@ -39,7 +40,7 @@ export class SignUpPage extends EventEmitter {
   public usernameInput: VerticalTextInputWithErrorMsg<InputField>;
   public passwordInput: VerticalTextInputWithErrorMsg<InputField>;
   public repeatPasswordInput: VerticalTextInputWithErrorMsg<InputField>;
-  public userTypeInput: OptionInput<UserType>;
+  public accountTypeInput: OptionInput<AccountType>;
   public switchToSignInButton: HTMLDivElement;
   public submitButton: FilledBlockingButton;
   private validInputs = new Set<InputField>();
@@ -47,7 +48,7 @@ export class SignUpPage extends EventEmitter {
 
   public constructor(
     private localSessionStorage: LocalSessionStorage,
-    private webServiceClient: WebServiceClient
+    private userServiceClient: WebServiceClient
   ) {
     super();
     let naturalNameInputRef = new Ref<
@@ -58,7 +59,7 @@ export class SignUpPage extends EventEmitter {
     let repeatPasswordInputRef = new Ref<
       VerticalTextInputWithErrorMsg<InputField>
     >();
-    let userTypeInputRef = new Ref<OptionInput<UserType>>();
+    let accountTypeInputRef = new Ref<OptionInput<AccountType>>();
     let switchToSignInButtonRef = new Ref<HTMLDivElement>();
     let submitButtonRef = new Ref<FilledBlockingButton>();
     let submitErrorRef = new Ref<HTMLDivElement>();
@@ -132,19 +133,19 @@ export class SignUpPage extends EventEmitter {
           )
         ).body,
         assign(
-          userTypeInputRef,
+          accountTypeInputRef,
           OptionInput.create(
             LOCALIZED_TEXT.chooseUserTypeLabel,
             "",
             [
               OptionButton.create(
                 LOCALIZED_TEXT.userTypeConsumerLabel,
-                UserType.CONSUMER,
+                AccountType.CONSUMER,
                 ""
               ),
               OptionButton.create(
                 LOCALIZED_TEXT.userTypePublisherLabel,
-                UserType.PUBLISHER,
+                AccountType.PUBLISHER,
                 ""
               ),
             ],
@@ -180,7 +181,7 @@ export class SignUpPage extends EventEmitter {
     this.usernameInput = usernameInputRef.val;
     this.passwordInput = passwordInputRef.val;
     this.repeatPasswordInput = repeatPasswordInputRef.val;
-    this.userTypeInput = userTypeInputRef.val;
+    this.accountTypeInput = accountTypeInputRef.val;
     this.switchToSignInButton = switchToSignInButtonRef.val;
     this.submitButton = submitButtonRef.val;
     this.submitError = submitErrorRef.val;
@@ -266,18 +267,18 @@ export class SignUpPage extends EventEmitter {
 
   private async signUp(): Promise<void> {
     this.submitError.style.visibility = "hidden";
-    let response = await signUp(this.webServiceClient, {
+    let response = await signUp(this.userServiceClient, {
       naturalName: this.naturalNameInput.value,
       username: this.usernameInput.value,
       password: this.passwordInput.value,
-      userType: this.userTypeInput.value,
+      accountType: this.accountTypeInput.value,
     });
     if (response.usernameIsNotAvailable) {
       this.usernameInput.setAsInvalid(LOCALIZED_TEXT.usernameIsUsedError);
       this.refreshSubmitButton();
+      throw new Error("Username is invalid.");
     } else {
       this.localSessionStorage.save(response.signedSession);
-      this.emit("signedUp");
     }
   }
 
@@ -286,6 +287,9 @@ export class SignUpPage extends EventEmitter {
       console.error(error);
       this.submitError.style.visibility = "visible";
       this.submitError.textContent = LOCALIZED_TEXT.signUpError;
+      this.emit("signUpError");
+    } else {
+      this.emit("signedUp");
     }
   }
 

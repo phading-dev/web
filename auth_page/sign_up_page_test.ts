@@ -6,7 +6,7 @@ import {
   SIGN_UP_REQUEST_BODY,
   SignUpResponse,
 } from "@phading/user_service_interface/interface";
-import { UserType } from "@phading/user_service_interface/user_type";
+import { AccountType } from "@phading/user_service_interface/account_type";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -59,7 +59,7 @@ TEST_RUNNER.run({
         this.cut.passwordInput.dispatchInput();
         this.cut.repeatPasswordInput.value = "123123";
         this.cut.repeatPasswordInput.dispatchInput();
-        this.cut.userTypeInput.options[1].select();
+        this.cut.accountTypeInput.options[1].select();
 
         // Verify
         await asyncAssertScreenshot(
@@ -81,7 +81,7 @@ TEST_RUNNER.run({
                 naturalName: "First Second name",
                 username: "my_username",
                 password: "123123",
-                userType: UserType.PUBLISHER,
+                accountType: AccountType.PUBLISHER,
               },
               SIGN_UP_REQUEST_BODY
             ),
@@ -93,7 +93,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.submitButton.click();
         await new Promise<void>((resolve) =>
-          this.cut.submitButton.once("postAction", () => resolve())
+          this.cut.once("signUpError", () => resolve())
         );
 
         // Verify
@@ -114,7 +114,7 @@ TEST_RUNNER.run({
                 naturalName: "First Second name",
                 username: "my_new_username",
                 password: "123123",
-                userType: UserType.PUBLISHER,
+                accountType: AccountType.PUBLISHER,
               },
               SIGN_UP_REQUEST_BODY
             ),

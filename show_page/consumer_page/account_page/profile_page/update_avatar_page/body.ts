@@ -58,7 +58,7 @@ export class UpdateAvatarPage extends EventEmitter {
       E.div(
         {
           class: "update-avatar-card",
-          style: `${MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem; align-items: center;`,
+          style: `${MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 1.5rem; align-items: center;`,
         },
         assign(
           chooseFileButtonRef,

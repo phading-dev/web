@@ -69,6 +69,9 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.submitButton.click();
+        await new Promise<void>((resolve) =>
+          this.cut.on("signInError", resolve)
+        );
 
         // Verify
         await asyncAssertScreenshot(

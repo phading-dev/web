@@ -5,7 +5,7 @@ import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
 import { MEDIUM_CARD_STYLE, PAGE_STYLE } from "../common/page_style";
 import { VerticalTextInputWithErrorMsg } from "../common/text_input";
-import { USER_SERVICE_CLIENT } from "../common/user_service_client";
+import { USER_SERVICE_CLIENT } from "../common/web_service_client";
 import { SWITCH_TEXT_STYLE, TITLE_STYLE } from "./styles";
 import { signIn } from "@phading/user_service_interface/client_requests";
 import { E } from "@selfage/element/factory";
@@ -21,6 +21,7 @@ enum InputField {
 export interface SignInPage {
   on(event: "signUp", listener: () => void): this;
   on(event: "signedIn", listener: () => void): this;
+  on(event: "signInError", listener: () => void): this;
 }
 
 export class SignInPage extends EventEmitter {
@@ -35,7 +36,7 @@ export class SignInPage extends EventEmitter {
 
   public constructor(
     private localSessionStorage: LocalSessionStorage,
-    private webServiceClient: WebServiceClient
+    private userServiceClient: WebServiceClient
   ) {
     super();
     let usernameInputRef = new Ref<VerticalTextInputWithErrorMsg<InputField>>();
@@ -164,12 +165,11 @@ export class SignInPage extends EventEmitter {
 
   private async signIn(): Promise<void> {
     this.submitError.style.visibility = "hidden";
-    let response = await signIn(this.webServiceClient, {
+    let response = await signIn(this.userServiceClient, {
       username: this.usernameInput.value,
       password: this.passwordInput.value,
     });
     this.localSessionStorage.save(response.signedSession);
-    this.emit("signedIn");
   }
 
   private postSignIn(error?: Error): void {
@@ -177,6 +177,9 @@ export class SignInPage extends EventEmitter {
       console.error(error);
       this.submitError.style.visibility = "visible";
       this.submitError.textContent = LOCALIZED_TEXT.signInError;
+      this.emit("signInError");
+    } else {
+      this.emit("signedIn");
     }
   }
 
