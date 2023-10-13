@@ -13,13 +13,13 @@ export interface BlockingButton {
 }
 
 export abstract class BlockingButton extends EventEmitter {
-  public body: HTMLButtonElement;
+  protected container: HTMLButtonElement;
   private displayStyle: string;
   private cursorStyle: string;
 
   public constructor(customStyle: string, ...childNodes: Array<Node>) {
     super();
-    this.body = E.button(
+    this.container = E.button(
       {
         class: "blocking-button",
         style: customStyle,
@@ -27,10 +27,10 @@ export abstract class BlockingButton extends EventEmitter {
       },
       ...childNodes
     );
-    this.displayStyle = this.body.style.display;
-    this.cursorStyle = this.body.style.cursor;
+    this.displayStyle = this.container.style.display;
+    this.cursorStyle = this.container.style.cursor;
 
-    this.body.addEventListener("click", () => this.handleClick());
+    this.container.addEventListener("click", () => this.handleClick());
   }
 
   private async handleClick(): Promise<void> {
@@ -46,46 +46,46 @@ export abstract class BlockingButton extends EventEmitter {
     this.emit("postAction");
   }
 
+  public get body(): HTMLButtonElement {
+    return this.container;
+  }
+
   public enable(): this {
-    this.body.style.cursor = this.cursorStyle;
-    this.body.disabled = false;
+    this.container.style.cursor = this.cursorStyle;
+    this.container.disabled = false;
     this.enableOverride();
     return this;
   }
   protected abstract enableOverride(): void;
 
   public disable(): this {
-    this.body.style.cursor = "not-allowed";
-    this.body.disabled = true;
+    this.container.style.cursor = "not-allowed";
+    this.container.disabled = true;
     this.disableOverride();
     return this;
   }
   protected abstract disableOverride(): void;
 
   public click(): void {
-    this.body.click();
+    this.container.click();
   }
 
   public show(): this {
-    this.body.style.display = this.displayStyle;
+    this.container.style.display = this.displayStyle;
     return this;
   }
 
   public hide(): this {
-    this.body.style.display = "none";
+    this.container.style.display = "none";
     return this;
   }
 
   public remove(): void {
-    this.body.remove();
+    this.container.remove();
   }
 }
 
 export class FilledBlockingButton extends BlockingButton {
-  public constructor(customStyle: string, ...childNodes: Array<Node>) {
-    super(`${FILLED_BUTTON_STYLE} ${customStyle}`, ...childNodes);
-  }
-
   public static create(
     customStyle: string,
     ...childNodes: Array<Node>
@@ -93,20 +93,20 @@ export class FilledBlockingButton extends BlockingButton {
     return new FilledBlockingButton(customStyle, ...childNodes);
   }
 
+  public constructor(customStyle: string, ...childNodes: Array<Node>) {
+    super(`${FILLED_BUTTON_STYLE} ${customStyle}`, ...childNodes);
+  }
+
   protected enableOverride(): void {
-    this.body.style.backgroundColor = SCHEME.primary1;
+    this.container.style.backgroundColor = SCHEME.primary1;
   }
 
   protected disableOverride(): void {
-    this.body.style.backgroundColor = SCHEME.primary2;
+    this.container.style.backgroundColor = SCHEME.primary2;
   }
 }
 
 export class OutlineBlockingButton extends BlockingButton {
-  public constructor(customStyle: string, ...childNodes: Array<Node>) {
-    super(`${OUTLINE_BUTTON_STYLE} ${customStyle}`, ...childNodes);
-  }
-
   public static create(
     customStyle: string,
     ...childNodes: Array<Node>
@@ -114,22 +114,22 @@ export class OutlineBlockingButton extends BlockingButton {
     return new OutlineBlockingButton(customStyle, ...childNodes);
   }
 
+  public constructor(customStyle: string, ...childNodes: Array<Node>) {
+    super(`${OUTLINE_BUTTON_STYLE} ${customStyle}`, ...childNodes);
+  }
+
   protected enableOverride(): void {
-    this.body.style.color = SCHEME.neutral0;
-    this.body.style.borderColor = SCHEME.neutral1;
+    this.container.style.color = SCHEME.neutral0;
+    this.container.style.borderColor = SCHEME.neutral1;
   }
 
   protected disableOverride(): void {
-    this.body.style.color = SCHEME.neutral2;
-    this.body.style.borderColor = SCHEME.neutral2;
+    this.container.style.color = SCHEME.neutral2;
+    this.container.style.borderColor = SCHEME.neutral2;
   }
 }
 
 export class TextBlockingButton extends BlockingButton {
-  public constructor(customStyle: string, ...childNodes: Array<Node>) {
-    super(`${TEXT_BUTTON_STYLE} ${customStyle}`, ...childNodes);
-  }
-
   public static create(
     customStyle: string,
     ...childNodes: Array<Node>
@@ -137,16 +137,15 @@ export class TextBlockingButton extends BlockingButton {
     return new TextBlockingButton(customStyle, ...childNodes);
   }
 
-  public init(): this {
-    this.enable();
-    return this;
+  public constructor(customStyle: string, ...childNodes: Array<Node>) {
+    super(`${TEXT_BUTTON_STYLE} ${customStyle}`, ...childNodes);
   }
 
   protected enableOverride(): void {
-    this.body.style.color = SCHEME.neutral0;
+    this.container.style.color = SCHEME.neutral0;
   }
 
   protected disableOverride(): void {
-    this.body.style.color = SCHEME.neutral2;
+    this.container.style.color = SCHEME.neutral2;
   }
 }

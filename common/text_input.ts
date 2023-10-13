@@ -7,44 +7,51 @@ export let NULLIFIED_INPUT_STYLE = `padding: 0; margin: 0; outline: none; border
 // Missing border-color.
 export let BASIC_INPUT_STYLE = `${NULLIFIED_INPUT_STYLE} font-size: 1.4rem; line-height: 2rem; color: ${SCHEME.neutral0}; border-bottom: .1rem solid;`;
 
-export declare interface VerticalTextInputWithErrorMsg<InputField> {
-  on(event: "enter", listener: () => void): this;
-  on(event: "input", listener: () => void): this;
+interface ValidationResult {
+  valid: boolean;
+  errorMsg?: string;
 }
 
-export class VerticalTextInputWithErrorMsg<InputField> extends EventEmitter {
-  public static create<InputField>(
+export declare interface VerticalTextInputWithErrorMsg<Request> {
+  on(event: "submit", listener: () => void): this;
+  on(event: "validated", listener: () => void): this;
+}
+
+export class VerticalTextInputWithErrorMsg<Request> extends EventEmitter {
+  public static create<Request>(
     label: string,
     customStyle: string,
     otherInputAttributes: ElementAttributeMap = {},
-    validInputs: Set<InputField>,
-    inputField: InputField
-  ): VerticalTextInputWithErrorMsg<InputField> {
-    return new VerticalTextInputWithErrorMsg<InputField>(
+    validateFn: (value: string) => Promise<ValidationResult> | ValidationResult,
+    fillInRequestFn: (request: Request, value: string) => void
+  ): VerticalTextInputWithErrorMsg<Request> {
+    return new VerticalTextInputWithErrorMsg<Request>(
       label,
       customStyle,
       otherInputAttributes,
-      validInputs,
-      inputField
+      validateFn,
+      fillInRequestFn
     );
   }
 
-  public body: HTMLDivElement;
-  // Visible for testing
-  public input: HTMLInputElement;
+  private container: HTMLDivElement;
+  private input: HTMLInputElement;
   private errorMsg: HTMLDivElement;
+  private valid: boolean;
 
   public constructor(
     label: string,
     customStyle: string,
     otherInputAttributes: ElementAttributeMap,
-    private validInputs: Set<InputField>,
-    private inputField: InputField
+    private validateFn: (
+      value: string
+    ) => Promise<ValidationResult> | ValidationResult,
+    private fillInRequestFn: (request: Request, value: string) => void
   ) {
     super();
     let inputRef = new Ref<HTMLInputElement>();
     let errorMsgRef = new Ref<HTMLDivElement>();
-    this.body = E.div(
+    this.container = E.div(
       {
         class: "text-input",
         style: `display: flex; flex-flow: column nowrap; ${customStyle}`,
@@ -79,45 +86,58 @@ export class VerticalTextInputWithErrorMsg<InputField> extends EventEmitter {
     this.input = inputRef.val;
     this.errorMsg = errorMsgRef.val;
 
-    this.reset();
+    this.validate();
     this.input.addEventListener("keydown", (event) => this.keydown(event));
-    this.input.addEventListener("input", () => this.emit("input"));
+    this.input.addEventListener("input", () => this.validate());
   }
 
   private keydown(event: KeyboardEvent): void {
     if (event.code !== "Enter") {
       return;
     }
-    this.emit("enter");
+    this.emit("submit");
   }
 
-  private reset(): void {
+  private async validate(): Promise<void> {
+    this.resetError();
+    let result = await this.validateFn(this.input.value);
+    if (result.valid) {
+      this.valid = true;
+    } else {
+      if (result.errorMsg) {
+        this.input.style.borderColor = SCHEME.error0;
+        this.errorMsg.textContent = result.errorMsg;
+        this.errorMsg.style.visibility = "visible";
+      }
+      this.valid = false;
+    }
+    this.emit("validated");
+  }
+
+  private resetError(): void {
     this.input.style.borderColor = SCHEME.neutral1;
     this.errorMsg.style.visibility = "hidden";
   }
 
-  public setAsValid(): void {
-    this.reset();
-    this.validInputs.add(this.inputField);
+  public get body(): HTMLDivElement {
+    return this.container;
   }
 
-  public setAsInvalid(errorStr?: string): void {
-    if (errorStr) {
-      this.input.style.borderColor = SCHEME.error0;
-      this.errorMsg.textContent = errorStr;
-      this.errorMsg.style.visibility = "visible";
-    } else {
-      this.reset();
-    }
-    this.validInputs.delete(this.inputField);
+  public get isValid(): boolean {
+    return this.valid;
   }
 
-  set value(value: string) {
-    this.input.value = value;
+  public fillInRequest(request: Request): void {
+    this.fillInRequestFn(request, this.input.value);
   }
 
-  get value(): string {
-    return this.input.value;
+  public remove(): void {
+    this.body.remove();
+  }
+
+  // Visible for testing
+  public get inputEle(): HTMLInputElement {
+    return this.input;
   }
 
   public dispatchInput(): void {
@@ -126,9 +146,5 @@ export class VerticalTextInputWithErrorMsg<InputField> extends EventEmitter {
 
   public dispatchEnter(): void {
     this.input.dispatchEvent(new KeyboardEvent("keydown", { code: "Enter" }));
-  }
-
-  public remove(): void {
-    this.body.remove();
   }
 }

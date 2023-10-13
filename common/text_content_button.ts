@@ -16,14 +16,13 @@ export class TextContentButton extends EventEmitter {
     return new TextContentButton(label, value, customStyle);
   }
 
-  public body: HTMLDivElement;
-  // Visible
-  public clickable: HTMLDivElement;
+  private container: HTMLDivElement;
+  private clickable: HTMLDivElement;
 
   public constructor(label: string, value: string, customStyle: string) {
     super();
     let clickableRef = new Ref<HTMLDivElement>();
-    this.body = E.div(
+    this.container = E.div(
       {
         class: "text-content-button",
         style: `${customStyle} display: flex; flex-flow: column nowrap; gap: 1rem; align-items: flex-start;`,
@@ -53,11 +52,16 @@ export class TextContentButton extends EventEmitter {
     this.clickable.addEventListener("click", () => this.emit("action"));
   }
 
-  public click(): void {
-    this.clickable.click();
+  public get body(): HTMLDivElement {
+    return this.container;
   }
 
   public remove(): void {
     this.body.remove();
+  }
+
+  // Visible for testing
+  public click(): void {
+    this.clickable.click();
   }
 }

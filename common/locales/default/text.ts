@@ -143,6 +143,24 @@ export default class Text {
   get uploadAvatarError() {
     return `There is an issue when uploading your avatar. Please try again later.`;
   }
+  get updateContactEmailTitle() {
+    return `Update contact email`
+  }
+  get newContactEmailLabel() {
+    return `New email`;
+  }
+  get newContactEmailTooLongError() {
+    return `The new email is too long.`;
+  }
+  get updateDescriptionTitle() {
+    return `Update profile description`
+  }
+  get newDescriptionLabel() {
+    return `New description`;
+  }
+  get newDescrptionTooLongError() {
+    return `The new description is too long.`;
+  }
   get updatePasswordTitle() {
     return `Update password`
   }

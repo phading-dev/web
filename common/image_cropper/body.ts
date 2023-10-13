@@ -8,25 +8,27 @@ export interface ImageCropper {
 }
 
 export class ImageCropper extends EventEmitter {
-  public body: HTMLDivElement;
-  public canvas: HTMLCanvasElement;
-  public sx: number;
-  public sy: number;
-  public sWidth: number;
-  public sHeight: number;
-  public loaded: boolean;
-  // Visible for testing
-  public resizePointTopLeft: HTMLDivElement;
-  public resizePointTopRight: HTMLDivElement;
-  public resizePointBottmLeft: HTMLDivElement;
-  public resizePointBottmRight: HTMLDivElement;
+  public static create(): ImageCropper {
+    return new ImageCropper();
+  }
 
+  private container: HTMLDivElement;
+  private canvas: HTMLCanvasElement;
+  private sx_: number;
+  private sy_: number;
+  private sWidth_: number;
+  private sHeight_: number;
+  private loaded_: boolean;
   private leftColumn: HTMLDivElement;
   private midColumn: HTMLDivElement;
   private rightColumn: HTMLDivElement;
   private midTopBlock: HTMLDivElement;
   private midMidBlock: HTMLDivElement;
   private midBottmBlock: HTMLDivElement;
+  private resizePointTopLeft_: HTMLDivElement;
+  private resizePointTopRight_: HTMLDivElement;
+  private resizePointBottmLeft_: HTMLDivElement;
+  private resizePointBottmRight_: HTMLDivElement;
 
   public constructor() {
     super();
@@ -41,7 +43,7 @@ export class ImageCropper extends EventEmitter {
     let resizePointTopRightRef = new Ref<HTMLDivElement>();
     let resizePointBottmLeftRef = new Ref<HTMLDivElement>();
     let resizePointBottmRightRef = new Ref<HTMLDivElement>();
-    this.body = E.div(
+    this.container = E.div(
       {
         class: "avatar-canvas-container",
         style: `position: relative; width: 100%; height: 100%; background-color: white;`,
@@ -114,32 +116,28 @@ export class ImageCropper extends EventEmitter {
     this.midTopBlock = midTopBlockRef.val;
     this.midMidBlock = midMidBlockRef.val;
     this.midBottmBlock = midBottmBlockRef.val;
-    this.resizePointTopLeft = resizePointTopLeftRef.val;
-    this.resizePointTopRight = resizePointTopRightRef.val;
-    this.resizePointBottmLeft = resizePointBottmLeftRef.val;
-    this.resizePointBottmRight = resizePointBottmRightRef.val;
+    this.resizePointTopLeft_ = resizePointTopLeftRef.val;
+    this.resizePointTopRight_ = resizePointTopRightRef.val;
+    this.resizePointBottmLeft_ = resizePointBottmLeftRef.val;
+    this.resizePointBottmRight_ = resizePointBottmRightRef.val;
     this.clear();
 
-    this.resizePointTopLeft.addEventListener(
+    this.resizePointTopLeft_.addEventListener(
       "mousedown",
       this.startResizingTopLeft
     );
-    this.resizePointTopRight.addEventListener(
+    this.resizePointTopRight_.addEventListener(
       "mousedown",
       this.startResizingTopRight
     );
-    this.resizePointBottmLeft.addEventListener(
+    this.resizePointBottmLeft_.addEventListener(
       "mousedown",
       this.startResizingBottomLeft
     );
-    this.resizePointBottmRight.addEventListener(
+    this.resizePointBottmRight_.addEventListener(
       "mousedown",
       this.startResizingBottomRight
     );
-  }
-
-  public static create(): ImageCropper {
-    return new ImageCropper();
   }
 
   public clear(): void {
@@ -152,18 +150,18 @@ export class ImageCropper extends EventEmitter {
     this.midMidBlock.style.flex = "2 0 0";
     this.midBottmBlock.style.flex = "1 0 0";
     this.rightColumn.style.flex = "1 0 0";
-    this.loaded = false;
+    this.loaded_ = false;
   }
 
   private startResizingTopLeft = (event: MouseEvent): void => {
-    this.body.addEventListener("mousemove", this.resizeFromTopLeft);
-    this.body.addEventListener("mouseleave", this.stopResizingFromTopLeft);
-    this.body.addEventListener("mouseup", this.stopResizingFromTopLeft);
+    this.container.addEventListener("mousemove", this.resizeFromTopLeft);
+    this.container.addEventListener("mouseleave", this.stopResizingFromTopLeft);
+    this.container.addEventListener("mouseup", this.stopResizingFromTopLeft);
     this.resizeFromTopLeft(event);
   };
 
   private resizeFromTopLeft = (event: MouseEvent): void => {
-    let bodyRect = this.body.getBoundingClientRect();
+    let bodyRect = this.container.getBoundingClientRect();
     let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
     let x = Math.max(Math.min(event.x, midMidBlockRect.right), bodyRect.left);
     let y = Math.max(Math.min(event.y, midMidBlockRect.bottom), bodyRect.top);
@@ -184,31 +182,37 @@ export class ImageCropper extends EventEmitter {
 
   private saveSize(): void {
     // Need to force reflow.
-    let bodyRect = this.body.getBoundingClientRect();
+    let bodyRect = this.container.getBoundingClientRect();
     let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
-    this.sx = midMidBlockRect.left - bodyRect.left;
-    this.sy = midMidBlockRect.top - bodyRect.top;
-    this.sWidth = midMidBlockRect.width;
-    this.sHeight = midMidBlockRect.height;
+    this.sx_ = midMidBlockRect.left - bodyRect.left;
+    this.sy_ = midMidBlockRect.top - bodyRect.top;
+    this.sWidth_ = midMidBlockRect.width;
+    this.sHeight_ = midMidBlockRect.height;
     this.emit("change");
   }
 
   private stopResizingFromTopLeft = (event: MouseEvent): void => {
-    this.body.removeEventListener("mousemove", this.resizeFromTopLeft);
-    this.body.removeEventListener("mouseleave", this.stopResizingFromTopLeft);
-    this.body.removeEventListener("mouseup", this.stopResizingFromTopLeft);
+    this.container.removeEventListener("mousemove", this.resizeFromTopLeft);
+    this.container.removeEventListener(
+      "mouseleave",
+      this.stopResizingFromTopLeft
+    );
+    this.container.removeEventListener("mouseup", this.stopResizingFromTopLeft);
     this.resizeFromTopLeft(event);
   };
 
   private startResizingTopRight = (event: MouseEvent): void => {
-    this.body.addEventListener("mousemove", this.resizeFromTopRight);
-    this.body.addEventListener("mouseleave", this.stopResizingFromTopRight);
-    this.body.addEventListener("mouseup", this.stopResizingFromTopRight);
+    this.container.addEventListener("mousemove", this.resizeFromTopRight);
+    this.container.addEventListener(
+      "mouseleave",
+      this.stopResizingFromTopRight
+    );
+    this.container.addEventListener("mouseup", this.stopResizingFromTopRight);
     this.resizeFromTopRight(event);
   };
 
   private resizeFromTopRight = (event: MouseEvent): void => {
-    let bodyRect = this.body.getBoundingClientRect();
+    let bodyRect = this.container.getBoundingClientRect();
     let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
     let x = Math.min(Math.max(event.x, midMidBlockRect.left), bodyRect.right);
     let y = Math.max(Math.min(event.y, midMidBlockRect.bottom), bodyRect.top);
@@ -225,21 +229,33 @@ export class ImageCropper extends EventEmitter {
   };
 
   private stopResizingFromTopRight = (event: MouseEvent): void => {
-    this.body.removeEventListener("mousemove", this.resizeFromTopRight);
-    this.body.removeEventListener("mouseleave", this.stopResizingFromTopRight);
-    this.body.removeEventListener("mouseup", this.stopResizingFromTopRight);
+    this.container.removeEventListener("mousemove", this.resizeFromTopRight);
+    this.container.removeEventListener(
+      "mouseleave",
+      this.stopResizingFromTopRight
+    );
+    this.container.removeEventListener(
+      "mouseup",
+      this.stopResizingFromTopRight
+    );
     this.resizeFromTopRight(event);
   };
 
   private startResizingBottomRight = (event: MouseEvent): void => {
-    this.body.addEventListener("mousemove", this.resizeFromBottomRight);
-    this.body.addEventListener("mouseleave", this.stopResizingFromBottomRight);
-    this.body.addEventListener("mouseup", this.stopResizingFromBottomRight);
+    this.container.addEventListener("mousemove", this.resizeFromBottomRight);
+    this.container.addEventListener(
+      "mouseleave",
+      this.stopResizingFromBottomRight
+    );
+    this.container.addEventListener(
+      "mouseup",
+      this.stopResizingFromBottomRight
+    );
     this.resizeFromBottomRight(event);
   };
 
   private resizeFromBottomRight = (event: MouseEvent): void => {
-    let bodyRect = this.body.getBoundingClientRect();
+    let bodyRect = this.container.getBoundingClientRect();
     let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
     let x = Math.min(Math.max(event.x, midMidBlockRect.left), bodyRect.right);
     let y = Math.min(Math.max(event.y, midMidBlockRect.top), bodyRect.bottom);
@@ -256,24 +272,30 @@ export class ImageCropper extends EventEmitter {
   };
 
   private stopResizingFromBottomRight = (event: MouseEvent): void => {
-    this.body.removeEventListener("mousemove", this.resizeFromBottomRight);
-    this.body.removeEventListener(
+    this.container.removeEventListener("mousemove", this.resizeFromBottomRight);
+    this.container.removeEventListener(
       "mouseleave",
       this.stopResizingFromBottomRight
     );
-    this.body.removeEventListener("mouseup", this.stopResizingFromBottomRight);
+    this.container.removeEventListener(
+      "mouseup",
+      this.stopResizingFromBottomRight
+    );
     this.resizeFromBottomRight(event);
   };
 
   private startResizingBottomLeft = (event: MouseEvent): void => {
-    this.body.addEventListener("mousemove", this.resizeFromBottomLeft);
-    this.body.addEventListener("mouseleave", this.stopResizingFromBottomLeft);
-    this.body.addEventListener("mouseup", this.stopResizingFromBottomLeft);
+    this.container.addEventListener("mousemove", this.resizeFromBottomLeft);
+    this.container.addEventListener(
+      "mouseleave",
+      this.stopResizingFromBottomLeft
+    );
+    this.container.addEventListener("mouseup", this.stopResizingFromBottomLeft);
     this.resizeFromBottomLeft(event);
   };
 
   private resizeFromBottomLeft = (event: MouseEvent): void => {
-    let bodyRect = this.body.getBoundingClientRect();
+    let bodyRect = this.container.getBoundingClientRect();
     let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
     let x = Math.max(Math.min(event.x, midMidBlockRect.right), bodyRect.left);
     let y = Math.min(Math.max(event.y, midMidBlockRect.top), bodyRect.bottom);
@@ -290,14 +312,42 @@ export class ImageCropper extends EventEmitter {
   };
 
   private stopResizingFromBottomLeft = (event: MouseEvent): void => {
-    this.body.removeEventListener("mousemove", this.resizeFromBottomLeft);
-    this.body.removeEventListener(
+    this.container.removeEventListener("mousemove", this.resizeFromBottomLeft);
+    this.container.removeEventListener(
       "mouseleave",
       this.stopResizingFromBottomLeft
     );
-    this.body.removeEventListener("mouseup", this.stopResizingFromBottomLeft);
+    this.container.removeEventListener(
+      "mouseup",
+      this.stopResizingFromBottomLeft
+    );
     this.resizeFromBottomLeft(event);
   };
+
+  public get body(): HTMLDivElement {
+    return this.container;
+  }
+  public get canvasWidth(): number {
+    return this.canvas.width;
+  }
+  public get canvasHeight(): number {
+    return this.canvas.height;
+  }
+  public get sx(): number {
+    return this.sx_;
+  }
+  public get sy(): number {
+    return this.sy_;
+  }
+  public get sWidth(): number {
+    return this.sWidth_;
+  }
+  public get sHeight(): number {
+    return this.sHeight_;
+  }
+  public get loaded(): boolean {
+    return this.loaded_;
+  }
 
   public async load(imageFile: File): Promise<void> {
     this.canvas
@@ -308,7 +358,7 @@ export class ImageCropper extends EventEmitter {
       fileReader.onload = () => {
         let image = new Image();
         image.onload = () => {
-          this.loaded = true;
+          this.loaded_ = true;
           let canvasWidth = this.canvas.offsetWidth;
           let canvasHeight = this.canvas.offsetHeight;
           let imageWidth = image.naturalWidth;
@@ -377,5 +427,22 @@ export class ImageCropper extends EventEmitter {
         resovle(blob);
       });
     });
+  }
+
+  // Visible for testing
+  public get resizePointTopLeft(): HTMLDivElement {
+    return this.resizePointTopLeft_;
+  }
+
+  public get resizePointTopRight(): HTMLDivElement {
+    return this.resizePointTopRight_;
+  }
+
+  public get resizePointBottmLeft(): HTMLDivElement {
+    return this.resizePointBottmLeft_;
+  }
+
+  public get resizePointBottmRight(): HTMLDivElement {
+    return this.resizePointBottmRight_;
   }
 }

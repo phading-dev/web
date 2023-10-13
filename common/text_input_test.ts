@@ -6,8 +6,8 @@ import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import "./normalize_body";
 
-enum InputField {
-  USERNAME,
+interface Request {
+  username?: string;
 }
 
 TEST_RUNNER.run({
@@ -16,12 +16,9 @@ TEST_RUNNER.run({
     new (class implements TestCase {
       public name =
         "DefaultVerticalTextInput_InvalidWithErrors_Valid_InvalidWithoutErrors";
-      private cut: VerticalTextInputWithErrorMsg<InputField>;
+      private cut: VerticalTextInputWithErrorMsg<Request>;
       private followingLine: HTMLDivElement;
       public async execute() {
-        // Prepare
-        let validInputs = new Set<InputField>();
-
         // Execute
         this.cut = VerticalTextInputWithErrorMsg.create(
           "Input",
@@ -30,9 +27,23 @@ TEST_RUNNER.run({
             type: "text",
             autocomplete: "username",
           },
-          validInputs,
-          InputField.USERNAME
+          (value) => {
+            if (value.length > 10) {
+              return {
+                valid: false,
+                errorMsg: "Too long.",
+              };
+            } else if (value.length === 0) {
+              return { valid: false };
+            } else {
+              return { valid: true };
+            }
+          },
+          (request, value) => {
+            request.username = value;
+          }
         );
+        await new Promise<void>((resolve) => this.cut.on("validated", resolve));
         this.followingLine = E.div(
           {
             style: `font-size: 1.4rem; color: black;`,
@@ -42,6 +53,11 @@ TEST_RUNNER.run({
         document.body.append(this.cut.body, this.followingLine);
 
         // Verify
+        assertThat(
+          this.cut.isValid,
+          eq(false),
+          "Initial empty input is invalid"
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/vertical_text_input_default.png"),
           path.join(__dirname, "/golden/vertical_text_input_default.png"),
@@ -50,9 +66,12 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.setAsInvalid("Failed to validate.");
+        this.cut.inputEle.value = "12345678901";
+        this.cut.dispatchInput();
+        await new Promise<void>((resolve) => this.cut.on("validated", resolve));
 
         // Verify
+        assertThat(this.cut.isValid, eq(false), "Too long input is invalid");
         await asyncAssertScreenshot(
           path.join(__dirname, "/vertical_text_input_with_error.png"),
           path.join(__dirname, "/golden/vertical_text_input_with_error.png"),
@@ -61,30 +80,26 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.setAsValid();
+        this.cut.inputEle.value = "123456";
+        this.cut.dispatchInput();
+        await new Promise<void>((resolve) => this.cut.on("validated", resolve));
 
         // Verify
-        assertThat(
-          validInputs.has(InputField.USERNAME),
-          eq(true),
-          "valid input"
-        );
+        assertThat(this.cut.isValid, eq(true), "valid input");
         await asyncAssertScreenshot(
           path.join(__dirname, "/vertical_text_input_valid.png"),
-          path.join(__dirname, "/golden/vertical_text_input_default.png"),
+          path.join(__dirname, "/golden/vertical_text_input_valid.png"),
           path.join(__dirname, "/vertical_text_input_valid_diff.png"),
           { fullPage: true }
         );
 
         // Execute
-        this.cut.setAsInvalid();
+        this.cut.inputEle.value = "";
+        this.cut.dispatchInput();
+        await new Promise<void>((resolve) => this.cut.on("validated", resolve));
 
         // Verify
-        assertThat(
-          validInputs.has(InputField.USERNAME),
-          eq(false),
-          "invalid input"
-        );
+        assertThat(this.cut.isValid, eq(false), "empty input again");
         await asyncAssertScreenshot(
           path.join(
             __dirname,
@@ -104,45 +119,53 @@ TEST_RUNNER.run({
       }
     })(),
     {
-      name: "DispatchInputEvent",
+      name: "SubmitEvent",
       execute() {
         // Prepare
-        let cut = VerticalTextInputWithErrorMsg.create(
+        let cut = VerticalTextInputWithErrorMsg.create<Request>(
           "Label",
           "",
           { type: "text" },
-          new Set(),
-          InputField.USERNAME
+          (value) => {
+            return { valid: true };
+          },
+          (request, value) => {
+            request.username = value;
+          }
         );
-        let triggered = false;
-        cut.on("input", () => (triggered = true));
-
-        // Execute
-        cut.dispatchInput();
-
-        // Verify
-        assertThat(triggered, eq(true), "triggered");
-      },
-    },
-    {
-      name: "DispatchEnterEvent",
-      execute() {
-        // Prepare
-        let cut = VerticalTextInputWithErrorMsg.create(
-          "Label",
-          "",
-          { type: "text" },
-          new Set(),
-          InputField.USERNAME
-        );
-        let triggered = false;
-        cut.on("enter", () => (triggered = true));
+        let submitted = false;
+        cut.on("submit", () => (submitted = true));
 
         // Execute
         cut.dispatchEnter();
 
         // Verify
-        assertThat(triggered, eq(true), "triggered");
+        assertThat(submitted, eq(true), "submitted");
+      },
+    },
+    {
+      name: "FillInRequest",
+      execute() {
+        // Prepare
+        let cut = VerticalTextInputWithErrorMsg.create<Request>(
+          "Label",
+          "",
+          { type: "text" },
+          (value) => {
+            return { valid: true };
+          },
+          (request, value) => {
+            request.username = value;
+          }
+        );
+        cut.inputEle.value = "123";
+        let request: Request = {};
+
+        // Execute
+        cut.fillInRequest(request);
+
+        // Verify
+        assertThat(request.username, eq("123"), "username filled in");
       },
     },
   ],

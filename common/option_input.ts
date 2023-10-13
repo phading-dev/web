@@ -8,25 +8,6 @@ export interface OptionButton<ValueType> {
 }
 
 export class OptionButton<ValueType> extends EventEmitter {
-  public body: HTMLDivElement;
-
-  public constructor(
-    label: string,
-    public value: ValueType,
-    customStyle: string
-  ) {
-    super();
-    this.body = E.div(
-      {
-        class: "option-button",
-        style: `flex: 0 0 auto; display: flex; justify-content: center; align-items: center; padding: .8rem 1.2rem; font-size: 1.4rem; border: .1rem solid; border-radius: .5rem; cursor: pointer; ${customStyle}`,
-      },
-      E.text(label)
-    );
-
-    this.body.addEventListener("click", () => this.select());
-  }
-
   public static create<ValueType>(
     label: string,
     value: ValueType,
@@ -35,16 +16,39 @@ export class OptionButton<ValueType> extends EventEmitter {
     return new OptionButton(label, value, customStyle);
   }
 
+  private container: HTMLDivElement;
+
+  public constructor(
+    label: string,
+    public value: ValueType,
+    customStyle: string
+  ) {
+    super();
+    this.container = E.div(
+      {
+        class: "option-button",
+        style: `flex: 0 0 auto; display: flex; justify-content: center; align-items: center; padding: .8rem 1.2rem; font-size: 1.4rem; border: .1rem solid; border-radius: .5rem; cursor: pointer; ${customStyle}`,
+      },
+      E.text(label)
+    );
+
+    this.container.addEventListener("click", () => this.select());
+  }
+
+  public get body(): HTMLDivElement {
+    return this.container;
+  }
+
   public select(): this {
-    this.body.style.color = SCHEME.primary0;
-    this.body.style.borderColor = SCHEME.primary1;
+    this.container.style.color = SCHEME.primary0;
+    this.container.style.borderColor = SCHEME.primary1;
     this.emit("select", this.value);
     return this;
   }
 
   public unselect(): this {
-    this.body.style.color = SCHEME.neutral0;
-    this.body.style.borderColor = SCHEME.neutral1;
+    this.container.style.color = SCHEME.neutral0;
+    this.container.style.borderColor = SCHEME.neutral1;
     return this;
   }
 }
@@ -54,7 +58,16 @@ export interface OptionInput<ValueType> {
 }
 
 export class OptionInput<ValueType> extends EventEmitter {
-  public body: HTMLDivElement;
+  public static create<ValueType>(
+    label: string,
+    customStyle: string,
+    options: Array<OptionButton<ValueType>>,
+    defaultSelected: number
+  ): OptionInput<ValueType> {
+    return new OptionInput(label, customStyle, options, defaultSelected);
+  }
+
+  private container: HTMLDivElement;
   private value_: ValueType;
   private lastOption: OptionButton<ValueType>;
 
@@ -67,7 +80,7 @@ export class OptionInput<ValueType> extends EventEmitter {
   ) {
     super();
     let optionsListRef = new Ref<HTMLDivElement>();
-    this.body = E.div(
+    this.container = E.div(
       {
         class: "options-input",
         style: `display: flex; flex-flow: column nowrap; ${customStyle}`,
@@ -101,15 +114,6 @@ export class OptionInput<ValueType> extends EventEmitter {
     }
   }
 
-  public static create<ValueType>(
-    label: string,
-    customStyle: string,
-    options: Array<OptionButton<ValueType>>,
-    defaultSelected: number
-  ): OptionInput<ValueType> {
-    return new OptionInput(label, customStyle, options, defaultSelected);
-  }
-
   private selectOption(optionButton: OptionButton<ValueType>): void {
     if (this.lastOption) {
       this.lastOption.unselect();
@@ -119,11 +123,15 @@ export class OptionInput<ValueType> extends EventEmitter {
     this.emit("select", this.value_);
   }
 
+  public get body(): HTMLDivElement {
+    return this.container;
+  }
+
   public get value(): ValueType {
     return this.value_;
   }
 
   public remove(): void {
-    this.body.remove();
+    this.container.remove();
   }
 }

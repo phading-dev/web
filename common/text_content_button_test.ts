@@ -62,7 +62,7 @@ TEST_RUNNER.run({
         this.cut.on("action", () => (clicked = true));
 
         // Execute
-        this.cut.clickable.click();
+        this.cut.click();
 
         // Verify
         assertThat(clicked, eq(true), "clicked");

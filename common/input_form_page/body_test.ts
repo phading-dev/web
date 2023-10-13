@@ -1,0 +1,144 @@
+// import { assertThat } from "@selfage/test_matcher";
+import path = require("path");
+import { VerticalTextInputWithErrorMsg } from "../text_input";
+import { InputFormPage } from "./body";
+import { setViewport } from "@selfage/puppeteer_test_executor_api";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
+import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+import { assertThat, eq } from "@selfage/test_matcher";
+import "../normalize_body";
+
+interface Request {
+  username?: string;
+}
+
+interface Response {
+  used?: boolean;
+}
+
+TEST_RUNNER.run({
+  name: "InputFormPageTest",
+  cases: [
+    new (class implements TestCase {
+      public name =
+        "Default_ValidInput_SubmitError_ErrorInResponse_SubmitSuccess";
+      private cut: InputFormPage<Request, Response>;
+      public async execute() {
+        // Prepare
+        await setViewport(1000, 600);
+        let input = VerticalTextInputWithErrorMsg.create<Request>(
+          "Input",
+          "",
+          { type: "text" },
+          () => {
+            return { valid: true };
+          },
+          (request, value) => {
+            request.username = value;
+          }
+        );
+        let callError: Error;
+        let requestSubmitted: Request;
+        let response: Response;
+
+        // Execute
+        this.cut = new InputFormPage<Request, Response>(
+          "A title",
+          [input],
+          {},
+          async (request) => {
+            requestSubmitted = request;
+            if (callError) {
+              throw callError;
+            } else {
+              return response;
+            }
+          },
+          (response, error) => {
+            if (error) {
+              return "Failed to submit";
+            } else if (response.used) {
+              return "Username is used";
+            } else {
+              return "";
+            }
+          }
+        );
+        document.body.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_default.png"),
+          path.join(__dirname, "/golden/input_form_page_default.png"),
+          path.join(__dirname, "/input_form_page_default_diff.png")
+        );
+
+        // Execute
+        input.inputEle.value = "Joe";
+        input.dispatchInput();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_valid.png"),
+          path.join(__dirname, "/golden/input_form_page_valid.png"),
+          path.join(__dirname, "/input_form_page_valid_diff.png")
+        );
+
+        // Prepare
+        callError = new Error("Fake error");
+
+        // Execute
+        this.cut.submit();
+        await new Promise<void>((resolve) =>
+          this.cut.once("submitError", resolve)
+        );
+
+        // Verify
+        assertThat(requestSubmitted.username, eq("Joe"), "request");
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_submit_error.png"),
+          path.join(__dirname, "/golden/input_form_page_submit_error.png"),
+          path.join(__dirname, "/input_form_page_submit_error_diff.png")
+        );
+
+        // Cleanup
+        callError = undefined;
+
+        // Prepare
+        response = { used: true };
+
+        // Execute
+        input.dispatchEnter();
+        await new Promise<void>((resolve) =>
+          this.cut.once("submitError", resolve)
+        );
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_error_in_response.png"),
+          path.join(__dirname, "/golden/input_form_page_error_in_response.png"),
+          path.join(__dirname, "/input_form_page_error_in_response_diff.png")
+        );
+
+        // Prepare
+        response = {};
+
+        // Execute
+        this.cut.submit();
+        await new Promise<void>((resolve) =>
+          this.cut.once("submitted", resolve)
+        );
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_submitted.png"),
+          path.join(__dirname, "/golden/input_form_page_valid.png"),
+          path.join(__dirname, "/input_form_page_submitted_diff.png")
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+  ],
+});

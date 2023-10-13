@@ -17,9 +17,19 @@ export interface IconButton {
 }
 
 export class IconButton extends EventEmitter {
-  public body: HTMLButtonElement;
+  public static create(
+    customButtonStyle: string,
+    svgElement: SVGSVGElement,
+    position: TooltipPosition,
+    text: string
+  ): IconButton {
+    return new IconButton(customButtonStyle, svgElement, position, text);
+  }
+
+  private container: HTMLElement;
   private tooltip: HTMLDivElement;
   private displayStyle: string;
+
   public constructor(
     customButtonStyle: string,
     svgElement: SVGSVGElement,
@@ -28,7 +38,7 @@ export class IconButton extends EventEmitter {
   ) {
     super();
     let tooltipRef = new Ref<HTMLDivElement>();
-    this.body = E.button(
+    this.container = E.button(
       {
         class: "icon-button",
         style: `${NULLIFIED_BUTTON_STYLE} position: relative; cursor: pointer; ${customButtonStyle}`,
@@ -50,7 +60,7 @@ export class IconButton extends EventEmitter {
       )
     );
     this.tooltip = tooltipRef.val;
-    this.displayStyle = this.body.style.display;
+    this.displayStyle = this.container.style.display;
 
     switch (position) {
       case TooltipPosition.TOP:
@@ -83,18 +93,9 @@ export class IconButton extends EventEmitter {
     this.tooltip.addEventListener("transitionend", () =>
       this.emit("tooltipShowed")
     );
-    this.body.addEventListener("mouseenter", () => this.showTootlip());
-    this.body.addEventListener("mouseleave", () => this.hideTooltip());
-    this.body.addEventListener("click", () => this.emit("action"));
-  }
-
-  public static create(
-    customButtonStyle: string,
-    svgElement: SVGSVGElement,
-    position: TooltipPosition,
-    text: string
-  ): IconButton {
-    return new IconButton(customButtonStyle, svgElement, position, text);
+    this.container.addEventListener("mouseenter", () => this.showTootlip());
+    this.container.addEventListener("mouseleave", () => this.hideTooltip());
+    this.container.addEventListener("click", () => this.emit("action"));
   }
 
   private showTootlip(): void {
@@ -108,21 +109,26 @@ export class IconButton extends EventEmitter {
     this.tooltip.style.opacity = "0";
   }
 
+  public get body(): HTMLElement {
+    return this.container;
+  }
+
   public show(): this {
-    this.body.style.display = this.displayStyle;
+    this.container.style.display = this.displayStyle;
     return this;
   }
 
   public hide(): this {
-    this.body.style.display = "none";
+    this.container.style.display = "none";
     return this;
   }
 
-  public click(): void {
-    this.body.click();
+  public remove(): void {
+    this.container.remove();
   }
 
-  public remove(): void {
-    this.body.remove();
+  // Visible for testing
+  public click(): void {
+    this.container.click();
   }
 }

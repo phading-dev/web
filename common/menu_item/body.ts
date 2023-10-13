@@ -8,13 +8,21 @@ export interface MenuItem {
 }
 
 export class MenuItem extends EventEmitter {
+  public static create(
+    icon: Element,
+    padding: string,
+    label: string
+  ): MenuItem {
+    return new MenuItem(icon, padding, label);
+  }
+
   public static MENU_ITEM_LENGTH = 5; // rem
 
-  public body: HTMLDivElement;
+  private container: HTMLDivElement;
 
   public constructor(icon: Element, padding: string, label: string) {
     super();
-    this.body = E.div(
+    this.container = E.div(
       {
         class: "menu-item",
         style: `display: flex; flex-flow: row nowrap; align-items: center; height: ${MenuItem.MENU_ITEM_LENGTH}rem; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral2}; border-radius: ${MenuItem.MENU_ITEM_LENGTH}rem; background-color: ${SCHEME.neutral4}; transition: width .3s .5s linear; overflow: hidden; cursor: pointer;`,
@@ -36,35 +44,32 @@ export class MenuItem extends EventEmitter {
     );
     this.collapse();
 
-    this.body.addEventListener("transitionend", () =>
+    this.container.addEventListener("transitionend", () =>
       this.emit("transitionEnded")
     );
-    this.body.addEventListener("mouseover", () => this.expand());
-    this.body.addEventListener("mouseleave", () => this.collapse());
-    this.body.addEventListener("click", () => this.emit("action"));
-  }
-
-  public static create(
-    icon: Element,
-    padding: string,
-    label: string
-  ): MenuItem {
-    return new MenuItem(icon, padding, label);
+    this.container.addEventListener("mouseover", () => this.expand());
+    this.container.addEventListener("mouseleave", () => this.collapse());
+    this.container.addEventListener("click", () => this.emit("action"));
   }
 
   private expand(): void {
-    this.body.style.width = `${this.body.scrollWidth}px`;
+    this.container.style.width = `${this.container.scrollWidth}px`;
   }
 
   private collapse(): void {
-    this.body.style.width = `${MenuItem.MENU_ITEM_LENGTH}rem`;
+    this.container.style.width = `${MenuItem.MENU_ITEM_LENGTH}rem`;
+  }
+
+  public get body(): HTMLDivElement {
+    return this.container;
   }
 
   public remove(): void {
-    this.body.remove();
+    this.container.remove();
   }
 
+  // Visible for testing
   public click(): void {
-    this.body.click();
+    this.container.click();
   }
 }
