@@ -68,7 +68,7 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        this.cut.submitButton.click();
+        this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) =>
           this.cut.on("signInError", resolve)
         );
@@ -97,7 +97,7 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        this.cut.submitButton.click();
+        this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) =>
           this.cut.once("signedIn", resolve)
         );

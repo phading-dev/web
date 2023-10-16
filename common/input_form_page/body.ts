@@ -1,9 +1,8 @@
 import EventEmitter = require("events");
 import { SCHEME } from "..//color_scheme";
 import { FilledBlockingButton } from "../blocking_button";
-import { LOCALIZED_TEXT } from "../locales/localized_text";
 import { MEDIUM_CARD_STYLE, PAGE_STYLE } from "../page_style";
-import { VerticalTextInputWithErrorMsg } from "../text_input";
+import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
@@ -15,17 +14,21 @@ export interface InputFormPage<Request, Response> {
 export class InputFormPage<Request, Response> extends EventEmitter {
   public static create<Request, Response>(
     title: string,
-    inputs: Array<VerticalTextInputWithErrorMsg<Request>>,
+    submitButtonLabel: string,
+    lines: Array<HTMLElement>,
+    inputs: Array<InputField<Request>>,
     submitRequestFn: (request: Request) => Promise<Response>,
-    getSubmitErrorMsgFn: (response: Response, error?: Error) => string,
+    postSubmitFn: (response: Response, error?: Error) => string,
     initRequest: Request
   ): InputFormPage<Request, Response> {
     return new InputFormPage(
       title,
+      submitButtonLabel,
+      lines,
       inputs,
       initRequest,
       submitRequestFn,
-      getSubmitErrorMsgFn
+      postSubmitFn
     );
   }
 
@@ -36,10 +39,12 @@ export class InputFormPage<Request, Response> extends EventEmitter {
 
   public constructor(
     title: string,
-    private inputs: Array<VerticalTextInputWithErrorMsg<Request>>,
+    submitButtonLabel: string,
+    lines: Array<HTMLElement>,
+    private inputs: Array<InputField<Request>>,
     private request: Request,
     private submitRequestFn: (request: Request) => Promise<Response>,
-    private getSubmitErrorMsgFn: (response: Response, error?: Error) => string
+    private postSubmitFn: (response: Response, error?: Error) => string
   ) {
     super();
     let submitButtonRef = new Ref<FilledBlockingButton>();
@@ -57,16 +62,16 @@ export class InputFormPage<Request, Response> extends EventEmitter {
         E.div(
           {
             class: "input-form-title",
-            style: `font-size: 1.6rem; color: ${SCHEME.neutral0};`,
+            style: `align-self: center; font-size: 1.6rem; color: ${SCHEME.neutral0};`,
           },
           E.text(title)
         ),
-        ...inputs.map((input) => input.body),
+        ...lines,
         assign(
           submitButtonRef,
           FilledBlockingButton.create(
             `align-self: flex-end;`,
-            E.text(LOCALIZED_TEXT.updateButtonLabel)
+            E.text(submitButtonLabel)
           )
         ).body,
         E.divRef(
@@ -89,7 +94,7 @@ export class InputFormPage<Request, Response> extends EventEmitter {
     }
     this.submitButton.on("action", () => this.submitRequest());
     this.submitButton.on("postAction", (error) =>
-      this.postSubmitRequest(this.response, error)
+      this.postSubmitRequest(error)
     );
   }
 
@@ -101,11 +106,11 @@ export class InputFormPage<Request, Response> extends EventEmitter {
     this.response = await this.submitRequestFn(this.request);
   }
 
-  private postSubmitRequest(response: Response, error?: Error): void {
+  private postSubmitRequest(error?: Error): void {
     if (error) {
       console.error(error);
     }
-    let errorMsg = this.getSubmitErrorMsgFn(this.response, error);
+    let errorMsg = this.postSubmitFn(this.response, error);
     if (errorMsg) {
       this.submitError.style.visibility = "visible";
       this.submitError.textContent = errorMsg;
@@ -130,7 +135,7 @@ export class InputFormPage<Request, Response> extends EventEmitter {
     }
   }
 
-  public get body(): HTMLDivElement {
+  public get body() {
     return this.container;
   }
 

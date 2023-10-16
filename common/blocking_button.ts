@@ -46,7 +46,7 @@ export abstract class BlockingButton extends EventEmitter {
     this.emit("postAction");
   }
 
-  public get body(): HTMLButtonElement {
+  public get body() {
     return this.container;
   }
 

@@ -52,7 +52,7 @@ export class TextContentButton extends EventEmitter {
     this.clickable.addEventListener("click", () => this.emit("action"));
   }
 
-  public get body(): HTMLDivElement {
+  public get body() {
     return this.container;
   }
 

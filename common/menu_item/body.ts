@@ -60,7 +60,7 @@ export class MenuItem extends EventEmitter {
     this.container.style.width = `${MenuItem.MENU_ITEM_LENGTH}rem`;
   }
 
-  public get body(): HTMLDivElement {
+  public get body() {
     return this.container;
   }
 

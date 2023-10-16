@@ -4,7 +4,7 @@ import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import "./normalize_body";
+import "../normalize_body";
 
 interface Request {
   username?: string;
@@ -27,6 +27,9 @@ TEST_RUNNER.run({
             type: "text",
             autocomplete: "username",
           },
+          (request, value) => {
+            request.username = value;
+          },
           (value) => {
             if (value.length > 10) {
               return {
@@ -38,9 +41,6 @@ TEST_RUNNER.run({
             } else {
               return { valid: true };
             }
-          },
-          (request, value) => {
-            request.username = value;
           }
         );
         await new Promise<void>((resolve) => this.cut.on("validated", resolve));
@@ -66,7 +66,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.inputEle.value = "12345678901";
+        this.cut.value = "12345678901";
         this.cut.dispatchInput();
         await new Promise<void>((resolve) => this.cut.on("validated", resolve));
 
@@ -80,7 +80,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.inputEle.value = "123456";
+        this.cut.value = "123456";
         this.cut.dispatchInput();
         await new Promise<void>((resolve) => this.cut.on("validated", resolve));
 
@@ -94,7 +94,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.inputEle.value = "";
+        this.cut.value = "";
         this.cut.dispatchInput();
         await new Promise<void>((resolve) => this.cut.on("validated", resolve));
 
@@ -126,11 +126,11 @@ TEST_RUNNER.run({
           "Label",
           "",
           { type: "text" },
-          (value) => {
-            return { valid: true };
-          },
           (request, value) => {
             request.username = value;
+          },
+          (value) => {
+            return { valid: true };
           }
         );
         let submitted = false;
@@ -151,14 +151,14 @@ TEST_RUNNER.run({
           "Label",
           "",
           { type: "text" },
-          (value) => {
-            return { valid: true };
-          },
           (request, value) => {
             request.username = value;
+          },
+          (value) => {
+            return { valid: true };
           }
         );
-        cut.inputEle.value = "123";
+        cut.value = "123";
         let request: Request = {};
 
         // Execute

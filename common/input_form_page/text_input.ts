@@ -1,5 +1,6 @@
 import EventEmitter = require("events");
-import { SCHEME } from "./color_scheme";
+import { SCHEME } from "../color_scheme";
+import { InputField } from "./input_field";
 import { E, ElementAttributeMap } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
@@ -7,30 +8,28 @@ export let NULLIFIED_INPUT_STYLE = `padding: 0; margin: 0; outline: none; border
 // Missing border-color.
 export let BASIC_INPUT_STYLE = `${NULLIFIED_INPUT_STYLE} font-size: 1.4rem; line-height: 2rem; color: ${SCHEME.neutral0}; border-bottom: .1rem solid;`;
 
-interface ValidationResult {
+export interface ValidationResult {
   valid: boolean;
   errorMsg?: string;
 }
 
-export declare interface VerticalTextInputWithErrorMsg<Request> {
-  on(event: "submit", listener: () => void): this;
-  on(event: "validated", listener: () => void): this;
-}
-
-export class VerticalTextInputWithErrorMsg<Request> extends EventEmitter {
+export class VerticalTextInputWithErrorMsg<Request>
+  extends EventEmitter
+  implements InputField<Request>
+{
   public static create<Request>(
     label: string,
     customStyle: string,
     otherInputAttributes: ElementAttributeMap = {},
-    validateFn: (value: string) => Promise<ValidationResult> | ValidationResult,
-    fillInRequestFn: (request: Request, value: string) => void
+    fillInRequestFn: (request: Request, value: string) => void,
+    validateFn: (value: string) => Promise<ValidationResult> | ValidationResult
   ): VerticalTextInputWithErrorMsg<Request> {
     return new VerticalTextInputWithErrorMsg<Request>(
       label,
       customStyle,
       otherInputAttributes,
-      validateFn,
-      fillInRequestFn
+      fillInRequestFn,
+      validateFn
     );
   }
 
@@ -43,10 +42,10 @@ export class VerticalTextInputWithErrorMsg<Request> extends EventEmitter {
     label: string,
     customStyle: string,
     otherInputAttributes: ElementAttributeMap,
+    private fillInRequestFn: (request: Request, value: string) => void,
     private validateFn: (
       value: string
-    ) => Promise<ValidationResult> | ValidationResult,
-    private fillInRequestFn: (request: Request, value: string) => void
+    ) => Promise<ValidationResult> | ValidationResult
   ) {
     super();
     let inputRef = new Ref<HTMLInputElement>();
@@ -119,11 +118,11 @@ export class VerticalTextInputWithErrorMsg<Request> extends EventEmitter {
     this.errorMsg.style.visibility = "hidden";
   }
 
-  public get body(): HTMLDivElement {
+  public get body() {
     return this.container;
   }
 
-  public get isValid(): boolean {
+  public get isValid() {
     return this.valid;
   }
 
@@ -136,8 +135,8 @@ export class VerticalTextInputWithErrorMsg<Request> extends EventEmitter {
   }
 
   // Visible for testing
-  public get inputEle(): HTMLInputElement {
-    return this.input;
+  public set value(value: string) {
+    this.input.value = value;
   }
 
   public dispatchInput(): void {

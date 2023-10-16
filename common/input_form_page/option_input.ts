@@ -1,5 +1,6 @@
 import EventEmitter = require("events");
-import { SCHEME } from "./color_scheme";
+import { SCHEME } from "../color_scheme";
+import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
@@ -20,7 +21,7 @@ export class OptionButton<ValueType> extends EventEmitter {
 
   public constructor(
     label: string,
-    public value: ValueType,
+    private value_: ValueType,
     customStyle: string
   ) {
     super();
@@ -39,6 +40,10 @@ export class OptionButton<ValueType> extends EventEmitter {
     return this.container;
   }
 
+  public get value(): ValueType {
+    return this.value_;
+  }
+
   public select(): this {
     this.container.style.color = SCHEME.primary0;
     this.container.style.borderColor = SCHEME.primary1;
@@ -51,20 +56,31 @@ export class OptionButton<ValueType> extends EventEmitter {
     this.container.style.borderColor = SCHEME.neutral1;
     return this;
   }
+
+  // Visible for testing
+  public click(): void {
+    this.container.click();
+  }
 }
 
-export interface OptionInput<ValueType> {
-  on(event: "select", listener: (value: ValueType) => void): this;
-}
-
-export class OptionInput<ValueType> extends EventEmitter {
-  public static create<ValueType>(
+export class OptionInput<ValueType, Request>
+  extends EventEmitter
+  implements InputField<Request>
+{
+  public static create<ValueType, Request>(
     label: string,
     customStyle: string,
     options: Array<OptionButton<ValueType>>,
-    defaultSelected: number
-  ): OptionInput<ValueType> {
-    return new OptionInput(label, customStyle, options, defaultSelected);
+    defaultValue: ValueType,
+    fillInRequestFn: (request: Request, value: ValueType) => void
+  ): OptionInput<ValueType, Request> {
+    return new OptionInput(
+      label,
+      customStyle,
+      options,
+      defaultValue,
+      fillInRequestFn
+    );
   }
 
   private container: HTMLDivElement;
@@ -74,9 +90,9 @@ export class OptionInput<ValueType> extends EventEmitter {
   public constructor(
     label: string,
     customStyle: string,
-    // Visible for testing
-    public options: Array<OptionButton<ValueType>>,
-    defaultSelected: number
+    private options: Array<OptionButton<ValueType>>,
+    defaultValue: ValueType,
+    private fillInRequestFn: (request: Request, value: ValueType) => void
   ) {
     super();
     let optionsListRef = new Ref<HTMLDivElement>();
@@ -106,7 +122,7 @@ export class OptionInput<ValueType> extends EventEmitter {
       optionsListRef.val.append(optionButton.body);
       optionButton.on("select", () => this.selectOption(optionButton));
 
-      if (i == defaultSelected) {
+      if (optionButton.value === defaultValue) {
         optionButton.select();
       } else {
         optionButton.unselect();
@@ -123,15 +139,24 @@ export class OptionInput<ValueType> extends EventEmitter {
     this.emit("select", this.value_);
   }
 
-  public get body(): HTMLDivElement {
+  public get body() {
     return this.container;
   }
 
-  public get value(): ValueType {
-    return this.value_;
+  public get isValid() {
+    return true;
+  }
+
+  public fillInRequest(requset: Request): void {
+    this.fillInRequestFn(requset, this.value_);
   }
 
   public remove(): void {
     this.container.remove();
+  }
+
+  // Visible for testing
+  public get optionButtons() {
+    return this.options;
   }
 }

@@ -59,7 +59,7 @@ TEST_RUNNER.run({
         this.cut.passwordInput.dispatchInput();
         this.cut.repeatPasswordInput.value = "123123";
         this.cut.repeatPasswordInput.dispatchInput();
-        this.cut.accountTypeInput.options[1].select();
+        this.cut.accountTypeInput.optionButtons[1].select();
 
         // Verify
         await asyncAssertScreenshot(
@@ -91,7 +91,7 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        this.cut.submitButton.click();
+        this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) =>
           this.cut.once("signUpError", () => resolve())
         );
@@ -128,7 +128,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.usernameInput.value = "my_new_username";
         this.cut.usernameInput.dispatchInput();
-        this.cut.submitButton.click();
+        this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) =>
           this.cut.once("signedUp", resolve)
         );

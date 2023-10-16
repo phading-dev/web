@@ -1,22 +1,22 @@
 import EventEmitter = require("events");
-import { FilledBlockingButton } from "../common/blocking_button";
-import { SCHEME } from "../common/color_scheme";
+import { InputFormPage } from "../common/input_form_page/body";
+import {
+  ValidationResult,
+  VerticalTextInputWithErrorMsg,
+} from "../common/input_form_page/text_input";
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
-import { MEDIUM_CARD_STYLE, PAGE_STYLE } from "../common/page_style";
-import { VerticalTextInputWithErrorMsg } from "../common/text_input";
 import { USER_SERVICE_CLIENT } from "../common/web_service_client";
-import { SWITCH_TEXT_STYLE, TITLE_STYLE } from "./styles";
+import { SWITCH_TEXT_STYLE } from "./styles";
 import { signIn } from "@phading/user_service_interface/client_requests";
+import {
+  SignInRequestBody,
+  SignInResponse,
+} from "@phading/user_service_interface/interface";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
-
-enum InputField {
-  USERNAME,
-  PASSWORD,
-}
 
 export interface SignInPage {
   on(event: "signUp", listener: () => void): this;
@@ -25,66 +25,55 @@ export interface SignInPage {
 }
 
 export class SignInPage extends EventEmitter {
-  public body: HTMLDivElement;
-  // Visible for testing
-  public usernameInput: VerticalTextInputWithErrorMsg<InputField>;
-  public passwordInput: VerticalTextInputWithErrorMsg<InputField>;
-  public switchToSignUpButton: HTMLDivElement;
-  public submitButton: FilledBlockingButton;
-  private submitError: HTMLDivElement;
-  private validInputs = new Set<InputField>();
+  private usernameInput_: VerticalTextInputWithErrorMsg<SignInRequestBody>;
+  private passwordInput_: VerticalTextInputWithErrorMsg<SignInRequestBody>;
+  private switchToSignUpButton_: HTMLDivElement;
+  private inputFormPage_: InputFormPage<SignInRequestBody, SignInResponse>;
 
   public constructor(
     private localSessionStorage: LocalSessionStorage,
     private userServiceClient: WebServiceClient
   ) {
     super();
-    let usernameInputRef = new Ref<VerticalTextInputWithErrorMsg<InputField>>();
-    let passwordInputRef = new Ref<VerticalTextInputWithErrorMsg<InputField>>();
+    let usernameInputRef = new Ref<
+      VerticalTextInputWithErrorMsg<SignInRequestBody>
+    >();
+    let passwordInputRef = new Ref<
+      VerticalTextInputWithErrorMsg<SignInRequestBody>
+    >();
     let switchToSignUpButtonRef = new Ref<HTMLDivElement>();
-    let submitButtonRef = new Ref<FilledBlockingButton>();
-    let submitErrorRef = new Ref<HTMLDivElement>();
-    this.body = E.div(
-      {
-        class: "sign-in",
-        style: PAGE_STYLE,
-      },
-      E.div(
-        {
-          class: "sign-in-box",
-          style: `${MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
-        },
-        E.div(
-          {
-            class: "sign-in-title",
-            style: TITLE_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.signInTitle)
-        ),
+    this.inputFormPage_ = InputFormPage.create(
+      LOCALIZED_TEXT.signInTitle,
+      LOCALIZED_TEXT.signInButtonLabel,
+      [
         assign(
           usernameInputRef,
-          VerticalTextInputWithErrorMsg.create(
+          VerticalTextInputWithErrorMsg.create<SignInRequestBody>(
             LOCALIZED_TEXT.usernameLabel,
             "",
             {
               type: "text",
               autocomplete: "username",
             },
-            this.validInputs,
-            InputField.USERNAME
+            (request, value) => {
+              request.username = value;
+            },
+            (value) => this.checkUsernameInput(value)
           )
         ).body,
         assign(
           passwordInputRef,
-          VerticalTextInputWithErrorMsg.create(
+          VerticalTextInputWithErrorMsg.create<SignInRequestBody>(
             LOCALIZED_TEXT.passwordLabel,
             "",
             {
               type: "password",
               autocomplete: "current-password",
             },
-            this.validInputs,
-            InputField.PASSWORD
+            (request, value) => {
+              request.password = value;
+            },
+            (value) => this.checkPasswordInput(value)
           )
         ).body,
         E.divRef(
@@ -95,95 +84,86 @@ export class SignInPage extends EventEmitter {
           },
           E.text(LOCALIZED_TEXT.switchToSignUpLink)
         ),
-        assign(
-          submitButtonRef,
-          FilledBlockingButton.create(
-            `align-self: flex-end;`,
-            E.text(LOCALIZED_TEXT.signInButtonLabel)
-          )
-        ).body,
-        E.divRef(
-          submitErrorRef,
-          {
-            class: "sign-in-error",
-            style: `visibility: hidden; align-self: flex-end; font-size: 1.4rem; color: ${SCHEME.error0};`,
-          },
-          E.text("1")
-        )
-      )
+      ],
+      [usernameInputRef.val, passwordInputRef.val],
+      (request) => this.signIn(request),
+      (response, error) => this.postSignIn(response, error),
+      {}
     );
-    this.usernameInput = usernameInputRef.val;
-    this.passwordInput = passwordInputRef.val;
-    this.switchToSignUpButton = switchToSignUpButtonRef.val;
-    this.submitButton = submitButtonRef.val;
-    this.submitError = submitErrorRef.val;
+    this.usernameInput_ = usernameInputRef.val;
+    this.passwordInput_ = passwordInputRef.val;
+    this.switchToSignUpButton_ = switchToSignUpButtonRef.val;
 
-    this.refreshSubmitButton();
-    this.usernameInput.on("input", () => this.checkUsernameInput());
-    this.usernameInput.on("enter", () => this.submitButton.click());
-    this.passwordInput.on("input", () => this.checkPasswordInput());
-    this.passwordInput.on("enter", () => this.submitButton.click());
-    this.submitButton.on("action", () => this.signIn());
-    this.submitButton.on("postAction", (error) => this.postSignIn(error));
-    this.switchToSignUpButton.addEventListener("click", () =>
+    this.switchToSignUpButton_.addEventListener("click", () =>
       this.emit("signUp")
     );
+    this.inputFormPage_.on("submitted", () => this.emit("signedIn"));
+    this.inputFormPage_.on("submitError", () => this.emit("signInError"));
   }
 
   public static create(): SignInPage {
     return new SignInPage(LOCAL_SESSION_STORAGE, USER_SERVICE_CLIENT);
   }
 
-  private refreshSubmitButton(): void {
-    if (
-      this.validInputs.has(InputField.USERNAME) &&
-      this.validInputs.has(InputField.PASSWORD)
-    ) {
-      this.submitButton.enable();
+  private checkUsernameInput(value: string): ValidationResult {
+    if (value.length > 0) {
+      return {
+        valid: true,
+      };
     } else {
-      this.submitButton.disable();
+      return {
+        valid: false,
+      };
     }
   }
 
-  private checkUsernameInput(): void {
-    if (this.usernameInput.value.length > 0) {
-      this.usernameInput.setAsValid();
+  private checkPasswordInput(value: string): ValidationResult {
+    if (value.length > 0) {
+      return {
+        valid: true,
+      };
     } else {
-      this.usernameInput.setAsInvalid();
+      return {
+        valid: false,
+      };
     }
-    this.refreshSubmitButton();
   }
 
-  private checkPasswordInput(): void {
-    if (this.passwordInput.value.length > 0) {
-      this.passwordInput.setAsValid();
-    } else {
-      this.passwordInput.setAsInvalid();
-    }
-    this.refreshSubmitButton();
+  private async signIn(request: SignInRequestBody): Promise<SignInResponse> {
+    return await signIn(this.userServiceClient, request);
   }
 
-  private async signIn(): Promise<void> {
-    this.submitError.style.visibility = "hidden";
-    let response = await signIn(this.userServiceClient, {
-      username: this.usernameInput.value,
-      password: this.passwordInput.value,
-    });
-    this.localSessionStorage.save(response.signedSession);
-  }
-
-  private postSignIn(error?: Error): void {
+  private postSignIn(response: SignInResponse, error?: Error): string {
     if (error) {
-      console.error(error);
-      this.submitError.style.visibility = "visible";
-      this.submitError.textContent = LOCALIZED_TEXT.signInError;
-      this.emit("signInError");
+      return LOCALIZED_TEXT.signInError;
     } else {
-      this.emit("signedIn");
+      this.localSessionStorage.save(response.signedSession);
+      return "";
     }
+  }
+
+  public get body() {
+    return this.inputFormPage.body;
   }
 
   public remove(): void {
-    this.body.remove();
+    this.inputFormPage.remove();
+  }
+
+  // Visible for testing
+  public get usernameInput() {
+    return this.usernameInput_;
+  }
+
+  public get passwordInput() {
+    return this.passwordInput_;
+  }
+
+  public get switchToSignUpButton() {
+    return this.switchToSignUpButton_;
+  }
+
+  public get inputFormPage() {
+    return this.inputFormPage_;
   }
 }

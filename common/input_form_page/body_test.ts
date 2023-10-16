@@ -1,4 +1,3 @@
-// import { assertThat } from "@selfage/test_matcher";
 import path = require("path");
 import { VerticalTextInputWithErrorMsg } from "../text_input";
 import { InputFormPage } from "./body";
@@ -30,11 +29,15 @@ TEST_RUNNER.run({
           "Input",
           "",
           { type: "text" },
-          () => {
-            return { valid: true };
-          },
           (request, value) => {
             request.username = value;
+          },
+          (value) => {
+            if (value.length === 0) {
+              return { valid: false };
+            } else {
+              return { valid: true };
+            }
           }
         );
         let callError: Error;
@@ -44,6 +47,8 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new InputFormPage<Request, Response>(
           "A title",
+          "Update",
+          [input.body],
           [input],
           {},
           async (request) => {
@@ -74,7 +79,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        input.inputEle.value = "Joe";
+        input.setValue("Joe");
         input.dispatchInput();
 
         // Verify

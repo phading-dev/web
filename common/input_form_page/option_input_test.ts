@@ -3,11 +3,15 @@ import { OptionButton, OptionInput } from "./option_input";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import "./normalize_body";
+import "../normalize_body";
 
 enum ValueType {
   WALK,
   RUN,
+}
+
+interface Request {
+  movement?: ValueType;
 }
 
 TEST_RUNNER.run({
@@ -15,7 +19,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name = "Default_ChooseSecondOption";
-      private cut: OptionInput<ValueType>;
+      private cut: OptionInput<ValueType, Request>;
       public async execute() {
         // Execute
         this.cut = new OptionInput(
@@ -25,12 +29,14 @@ TEST_RUNNER.run({
             new OptionButton("Walk", ValueType.WALK, ""),
             new OptionButton("Run", ValueType.RUN, ""),
           ],
-          0
+          ValueType.WALK,
+          (request, value) => {
+            request.movement = value;
+          }
         );
         document.body.append(this.cut.body);
 
         // Verify
-        assertThat(this.cut.value, eq(ValueType.WALK), "value is walk");
         await asyncAssertScreenshot(
           path.join(__dirname, "/option_input_default.png"),
           path.join(__dirname, "/golden/option_input_default.png"),
@@ -39,21 +45,30 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let valueCaptured: ValueType;
-        this.cut.on("select", (value) => (valueCaptured = value));
+        let request: Request = {};
 
         // Execute
-        this.cut.options[1].body.click();
+        this.cut.fillInRequest(request);
 
         // Verify
-        assertThat(this.cut.value, eq(ValueType.RUN), "value is run");
-        assertThat(valueCaptured, eq(ValueType.RUN), "value captured is run");
+        assertThat(request.movement, eq(ValueType.WALK), "request is walk");
+
+        // Execute
+        this.cut.optionButtons[1].click();
+
+        // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/option_input_select_second.png"),
           path.join(__dirname, "/golden/option_input_select_second.png"),
           path.join(__dirname, "/option_input_select_second_diff.png"),
           { fullPage: true }
         );
+
+        // Execute
+        this.cut.fillInRequest(request);
+
+        // Verify
+        assertThat(request.movement, eq(ValueType.RUN), "request is run");
       }
       public tearDown() {
         this.cut.remove();

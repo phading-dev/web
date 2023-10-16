@@ -14,9 +14,8 @@ export interface AuthPage {
 }
 
 export class AuthPage extends EventEmitter {
-  // Visible for testing
-  public signInPage: SignInPage;
-  public signUpPage: SignUpPage;
+  private signInPage_: SignInPage;
+  private signUpPage_: SignUpPage;
   private pageNavigator: PageNavigator<Page>;
 
   public constructor(
@@ -39,21 +38,21 @@ export class AuthPage extends EventEmitter {
   private addPage(page: Page): void {
     switch (page) {
       case Page.SIGN_IN: {
-        this.signInPage = this.createSignInPage();
-        this.appendBodiesFn(this.signInPage.body);
-        this.signInPage.on("signUp", () =>
+        this.signInPage_ = this.createSignInPage();
+        this.appendBodiesFn(this.signInPage_.body);
+        this.signInPage_.on("signUp", () =>
           this.pageNavigator.goTo(Page.SIGN_UP)
         );
-        this.signInPage.on("signedIn", () => this.emit("signedIn"));
+        this.signInPage_.on("signedIn", () => this.emit("signedIn"));
         break;
       }
       case Page.SIGN_UP: {
-        this.signUpPage = this.createSignUpPage();
-        this.appendBodiesFn(this.signUpPage.body);
-        this.signUpPage.on("signIn", () =>
+        this.signUpPage_ = this.createSignUpPage();
+        this.appendBodiesFn(this.signUpPage_.body);
+        this.signUpPage_.on("signIn", () =>
           this.pageNavigator.goTo(Page.SIGN_IN)
         );
-        this.signUpPage.on("signedUp", () => this.emit("signedIn"));
+        this.signUpPage_.on("signedUp", () => this.emit("signedIn"));
         break;
       }
     }
@@ -62,15 +61,24 @@ export class AuthPage extends EventEmitter {
   private removePage(page: Page): void {
     switch (page) {
       case Page.SIGN_IN:
-        this.signInPage.remove();
+        this.signInPage_.remove();
         break;
       case Page.SIGN_UP:
-        this.signUpPage.remove();
+        this.signUpPage_.remove();
         break;
     }
   }
 
   public remove(): void {
     this.pageNavigator.remove();
+  }
+
+  // Visible for testing
+  public get signInPage() {
+    return this.signInPage_;
+  }
+
+  public get signUpPage() {
+    return this.signUpPage_;
   }
 }

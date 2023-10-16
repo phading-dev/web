@@ -1,31 +1,32 @@
 import EventEmitter = require("events");
-import { FilledBlockingButton } from "../common/blocking_button";
-import { SCHEME } from "../common/color_scheme";
+import {
+  OptionButton,
+  OptionInput,
+} from "../common/input_form_page//option_input";
+import { InputFormPage } from "../common/input_form_page/body";
+import {
+  ValidationResult,
+  VerticalTextInputWithErrorMsg,
+} from "../common/input_form_page/text_input";
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
-import { OptionButton, OptionInput } from "../common/option_input";
-import { MEDIUM_CARD_STYLE, PAGE_STYLE } from "../common/page_style";
-import { VerticalTextInputWithErrorMsg } from "../common/text_input";
 import {
   NATURAL_NAME_LENGTH_LIMIT,
   PASSWORD_LENGTH_LIMIT,
   USERNAME_LENGTH_LIMIT,
 } from "../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../common/web_service_client";
-import { SWITCH_TEXT_STYLE, TITLE_STYLE } from "./styles";
+import { SWITCH_TEXT_STYLE } from "./styles";
 import { AccountType } from "@phading/user_service_interface/account_type";
 import { signUp } from "@phading/user_service_interface/client_requests";
+import {
+  SignUpRequestBody,
+  SignUpResponse,
+} from "@phading/user_service_interface/interface";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
-
-enum InputField {
-  NATURAL_NAME,
-  USERNAME,
-  PASSWORD,
-  REPEAT_PASSWORD,
-}
 
 export interface SignUpPage {
   on(event: "signIn", listener: () => void): this;
@@ -34,17 +35,14 @@ export interface SignUpPage {
 }
 
 export class SignUpPage extends EventEmitter {
-  public body: HTMLDivElement;
-  // Visible for testing
-  public naturalNameInput: VerticalTextInputWithErrorMsg<InputField>;
-  public usernameInput: VerticalTextInputWithErrorMsg<InputField>;
-  public passwordInput: VerticalTextInputWithErrorMsg<InputField>;
-  public repeatPasswordInput: VerticalTextInputWithErrorMsg<InputField>;
-  public accountTypeInput: OptionInput<AccountType>;
-  public switchToSignInButton: HTMLDivElement;
-  public submitButton: FilledBlockingButton;
-  private validInputs = new Set<InputField>();
-  private submitError: HTMLDivElement;
+  private naturalNameInput_: VerticalTextInputWithErrorMsg<SignUpRequestBody>;
+  private usernameInput_: VerticalTextInputWithErrorMsg<SignUpRequestBody>;
+  private passwordInput_: VerticalTextInputWithErrorMsg<SignUpRequestBody>;
+  private repeatPasswordInput_: VerticalTextInputWithErrorMsg<SignUpRequestBody>;
+  private accountTypeInput_: OptionInput<AccountType, SignUpRequestBody>;
+  private switchToSignInButton_: HTMLDivElement;
+  private inputFormPage_: InputFormPage<SignUpRequestBody, SignUpResponse>;
+  private password: string;
 
   public constructor(
     private localSessionStorage: LocalSessionStorage,
@@ -52,34 +50,25 @@ export class SignUpPage extends EventEmitter {
   ) {
     super();
     let naturalNameInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<InputField>
+      VerticalTextInputWithErrorMsg<SignUpRequestBody>
     >();
-    let usernameInputRef = new Ref<VerticalTextInputWithErrorMsg<InputField>>();
-    let passwordInputRef = new Ref<VerticalTextInputWithErrorMsg<InputField>>();
+    let usernameInputRef = new Ref<
+      VerticalTextInputWithErrorMsg<SignUpRequestBody>
+    >();
+    let passwordInputRef = new Ref<
+      VerticalTextInputWithErrorMsg<SignUpRequestBody>
+    >();
     let repeatPasswordInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<InputField>
+      VerticalTextInputWithErrorMsg<SignUpRequestBody>
     >();
-    let accountTypeInputRef = new Ref<OptionInput<AccountType>>();
+    let accountTypeInputRef = new Ref<
+      OptionInput<AccountType, SignUpRequestBody>
+    >();
     let switchToSignInButtonRef = new Ref<HTMLDivElement>();
-    let submitButtonRef = new Ref<FilledBlockingButton>();
-    let submitErrorRef = new Ref<HTMLDivElement>();
-    this.body = E.div(
-      {
-        class: "sign-up",
-        style: PAGE_STYLE,
-      },
-      E.div(
-        {
-          class: "sign-up-card",
-          style: `${MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 1.5rem;`,
-        },
-        E.div(
-          {
-            class: "sign-up-title",
-            style: TITLE_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.signUpTitle)
-        ),
+    this.inputFormPage_ = InputFormPage.create(
+      LOCALIZED_TEXT.signUpTitle,
+      LOCALIZED_TEXT.signUpButtonLabel,
+      [
         assign(
           naturalNameInputRef,
           VerticalTextInputWithErrorMsg.create(
@@ -89,8 +78,10 @@ export class SignUpPage extends EventEmitter {
               type: "text",
               autocomplete: "name",
             },
-            this.validInputs,
-            InputField.NATURAL_NAME
+            (request, value) => {
+              request.naturalName = value;
+            },
+            (value) => this.checkNaturalNameInput(value)
           )
         ).body,
         assign(
@@ -102,8 +93,10 @@ export class SignUpPage extends EventEmitter {
               type: "text",
               autocomplete: "username",
             },
-            this.validInputs,
-            InputField.USERNAME
+            (request, value) => {
+              request.username = value;
+            },
+            (value) => this.checkUsernameInput(value)
           )
         ).body,
         assign(
@@ -115,8 +108,10 @@ export class SignUpPage extends EventEmitter {
               type: "password",
               autocomplete: "new-password",
             },
-            this.validInputs,
-            InputField.PASSWORD
+            (request, value) => {
+              request.password = value;
+            },
+            (value) => this.checkPasswordInput(value)
           )
         ).body,
         assign(
@@ -128,8 +123,8 @@ export class SignUpPage extends EventEmitter {
               type: "password",
               autocomplete: "new-password",
             },
-            this.validInputs,
-            InputField.REPEAT_PASSWORD
+            () => {},
+            (value) => this.checkRepeatPasswordInput(value)
           )
         ).body,
         assign(
@@ -149,7 +144,10 @@ export class SignUpPage extends EventEmitter {
                 ""
               ),
             ],
-            0
+            AccountType.CONSUMER,
+            (request, value) => {
+              request.accountType = value;
+            }
           )
         ).body,
         E.divRef(
@@ -160,140 +158,136 @@ export class SignUpPage extends EventEmitter {
           },
           E.text(LOCALIZED_TEXT.switchToSignInLink)
         ),
-        assign(
-          submitButtonRef,
-          FilledBlockingButton.create(
-            `align-self: flex-end;`,
-            E.text(LOCALIZED_TEXT.signUpButtonLabel)
-          )
-        ).body,
-        E.divRef(
-          submitErrorRef,
-          {
-            class: "sign-up-error",
-            style: `visibility: hidden; align-self: flex-end; font-size: 1.4rem; color: ${SCHEME.error0};`,
-          },
-          E.text("1")
-        )
-      )
+      ],
+      [
+        naturalNameInputRef.val,
+        usernameInputRef.val,
+        passwordInputRef.val,
+        repeatPasswordInputRef.val,
+        accountTypeInputRef.val,
+      ],
+      (request) => this.signUp(request),
+      (response, error) => this.postSignUp(response, error),
+      {}
     );
-    this.naturalNameInput = naturalNameInputRef.val;
-    this.usernameInput = usernameInputRef.val;
-    this.passwordInput = passwordInputRef.val;
-    this.repeatPasswordInput = repeatPasswordInputRef.val;
-    this.accountTypeInput = accountTypeInputRef.val;
-    this.switchToSignInButton = switchToSignInButtonRef.val;
-    this.submitButton = submitButtonRef.val;
-    this.submitError = submitErrorRef.val;
+    this.naturalNameInput_ = naturalNameInputRef.val;
+    this.usernameInput_ = usernameInputRef.val;
+    this.passwordInput_ = passwordInputRef.val;
+    this.repeatPasswordInput_ = repeatPasswordInputRef.val;
+    this.accountTypeInput_ = accountTypeInputRef.val;
+    this.switchToSignInButton_ = switchToSignInButtonRef.val;
 
-    this.refreshSubmitButton();
-    this.naturalNameInput.on("input", () => this.checkNaturalNameInput());
-    this.naturalNameInput.on("enter", () => this.submitButton.click());
-    this.usernameInput.on("input", () => this.checkUsernameInput());
-    this.usernameInput.on("enter", () => this.submitButton.click());
-    this.passwordInput.on("input", () => this.checkPasswordInput());
-    this.passwordInput.on("enter", () => this.submitButton.click());
-    this.repeatPasswordInput.on("input", () => this.checkRepeatPasswordInput());
-    this.repeatPasswordInput.on("enter", () => this.submitButton.click());
-    this.switchToSignInButton.addEventListener("click", () =>
+    this.switchToSignInButton_.addEventListener("click", () =>
       this.emit("signIn")
     );
-    this.submitButton.on("action", () => this.signUp());
-    this.submitButton.on("postAction", (error) => this.postSignUp(error));
+    this.inputFormPage.on("submitError", () => this.emit("signUpError"));
+    this.inputFormPage.on("submitted", () => this.emit("signedUp"));
   }
 
   public static create(): SignUpPage {
     return new SignUpPage(LOCAL_SESSION_STORAGE, USER_SERVICE_CLIENT);
   }
 
-  private checkNaturalNameInput(): void {
-    if (this.naturalNameInput.value.length > NATURAL_NAME_LENGTH_LIMIT) {
-      this.naturalNameInput.setAsInvalid(
-        LOCALIZED_TEXT.naturalNameTooLongError
-      );
-    } else if (this.naturalNameInput.value.length === 0) {
-      this.naturalNameInput.setAsInvalid();
+  private checkNaturalNameInput(value: string): ValidationResult {
+    if (value.length > NATURAL_NAME_LENGTH_LIMIT) {
+      return {
+        valid: false,
+        errorMsg: LOCALIZED_TEXT.naturalNameTooLongError,
+      };
+    } else if (value.length === 0) {
+      return { valid: false };
     } else {
-      this.naturalNameInput.setAsValid();
-    }
-    this.refreshSubmitButton();
-  }
-
-  private checkUsernameInput(): void {
-    if (this.usernameInput.value.length > USERNAME_LENGTH_LIMIT) {
-      this.usernameInput.setAsInvalid(LOCALIZED_TEXT.usernameTooLongError);
-    } else if (this.usernameInput.value.length === 0) {
-      this.usernameInput.setAsInvalid();
-    } else {
-      this.usernameInput.setAsValid();
-    }
-    this.refreshSubmitButton();
-  }
-
-  private checkPasswordInput(): void {
-    if (this.passwordInput.value.length > PASSWORD_LENGTH_LIMIT) {
-      this.passwordInput.setAsInvalid(LOCALIZED_TEXT.passwordTooLongError);
-    } else if (this.passwordInput.value.length === 0) {
-      this.passwordInput.setAsInvalid();
-    } else {
-      this.passwordInput.setAsValid();
-    }
-    this.refreshSubmitButton();
-  }
-
-  private checkRepeatPasswordInput(): void {
-    if (this.repeatPasswordInput.value !== this.passwordInput.value) {
-      this.repeatPasswordInput.setAsInvalid(
-        LOCALIZED_TEXT.repeatPasswordNotMatchError
-      );
-    } else {
-      this.repeatPasswordInput.setAsValid();
-    }
-    this.refreshSubmitButton();
-  }
-
-  private refreshSubmitButton(): void {
-    if (
-      this.validInputs.has(InputField.NATURAL_NAME) &&
-      this.validInputs.has(InputField.USERNAME) &&
-      this.validInputs.has(InputField.PASSWORD) &&
-      this.validInputs.has(InputField.REPEAT_PASSWORD)
-    ) {
-      this.submitButton.enable();
-    } else {
-      this.submitButton.disable();
+      return { valid: true };
     }
   }
 
-  private async signUp(): Promise<void> {
-    this.submitError.style.visibility = "hidden";
-    let response = await signUp(this.userServiceClient, {
-      naturalName: this.naturalNameInput.value,
-      username: this.usernameInput.value,
-      password: this.passwordInput.value,
-      accountType: this.accountTypeInput.value,
-    });
+  private checkUsernameInput(value: string): ValidationResult {
+    if (value.length > USERNAME_LENGTH_LIMIT) {
+      return {
+        valid: false,
+        errorMsg: LOCALIZED_TEXT.usernameTooLongError,
+      };
+    } else if (value.length === 0) {
+      return { valid: false };
+    } else {
+      return { valid: true };
+    }
+  }
+
+  private checkPasswordInput(value: string): ValidationResult {
+    this.password = value;
+    if (value.length > PASSWORD_LENGTH_LIMIT) {
+      return {
+        valid: false,
+        errorMsg: LOCALIZED_TEXT.passwordTooLongError,
+      };
+    } else if (value.length === 0) {
+      return { valid: false };
+    } else {
+      return { valid: true };
+    }
+  }
+
+  private checkRepeatPasswordInput(value: string): ValidationResult {
+    if (value !== this.password) {
+      return {
+        valid: false,
+        errorMsg: LOCALIZED_TEXT.repeatNewPasswordNotMatchError,
+      };
+    } else {
+      return { valid: true };
+    }
+  }
+
+  private async signUp(requset: SignUpRequestBody): Promise<SignUpResponse> {
+    return await signUp(this.userServiceClient, requset);
+  }
+
+  private postSignUp(response: SignUpResponse, error?: Error): string {
     if (response.usernameIsNotAvailable) {
-      this.usernameInput.setAsInvalid(LOCALIZED_TEXT.usernameIsUsedError);
-      this.refreshSubmitButton();
-      throw new Error("Username is invalid.");
+      return LOCALIZED_TEXT.usernameIsUsedError;
+    } else if (error) {
+      return LOCALIZED_TEXT.signUpError;
     } else {
       this.localSessionStorage.save(response.signedSession);
+      return "";
     }
   }
 
-  private postSignUp(error?: Error): void {
-    if (error) {
-      console.error(error);
-      this.submitError.style.visibility = "visible";
-      this.submitError.textContent = LOCALIZED_TEXT.signUpError;
-      this.emit("signUpError");
-    } else {
-      this.emit("signedUp");
-    }
+  public get body() {
+    return this.inputFormPage_.body;
   }
 
   public remove(): void {
-    this.body.remove();
+    this.inputFormPage_.remove();
+  }
+
+  // Visible for testing
+  public get inputFormPage() {
+    return this.inputFormPage_;
+  }
+
+  public get naturalNameInput() {
+    return this.naturalNameInput_;
+  }
+
+  public get usernameInput() {
+    return this.usernameInput_;
+  }
+
+  public get passwordInput() {
+    return this.passwordInput_;
+  }
+
+  public get repeatPasswordInput() {
+    return this.repeatPasswordInput_;
+  }
+
+  public get accountTypeInput() {
+    return this.accountTypeInput_;
+  }
+
+  public get switchToSignInButton() {
+    return this.switchToSignInButton_;
   }
 }

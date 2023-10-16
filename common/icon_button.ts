@@ -109,7 +109,7 @@ export class IconButton extends EventEmitter {
     this.tooltip.style.opacity = "0";
   }
 
-  public get body(): HTMLElement {
+  public get body() {
     return this.container;
   }
 

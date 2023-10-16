@@ -324,28 +324,28 @@ export class ImageCropper extends EventEmitter {
     this.resizeFromBottomLeft(event);
   };
 
-  public get body(): HTMLDivElement {
+  public get body() {
     return this.container;
   }
-  public get canvasWidth(): number {
+  public get canvasWidth() {
     return this.canvas.width;
   }
-  public get canvasHeight(): number {
+  public get canvasHeight() {
     return this.canvas.height;
   }
-  public get sx(): number {
+  public get sx() {
     return this.sx_;
   }
-  public get sy(): number {
+  public get sy() {
     return this.sy_;
   }
-  public get sWidth(): number {
+  public get sWidth() {
     return this.sWidth_;
   }
-  public get sHeight(): number {
+  public get sHeight() {
     return this.sHeight_;
   }
-  public get loaded(): boolean {
+  public get loaded() {
     return this.loaded_;
   }
 
@@ -430,19 +430,19 @@ export class ImageCropper extends EventEmitter {
   }
 
   // Visible for testing
-  public get resizePointTopLeft(): HTMLDivElement {
+  public get resizePointTopLeft() {
     return this.resizePointTopLeft_;
   }
 
-  public get resizePointTopRight(): HTMLDivElement {
+  public get resizePointTopRight() {
     return this.resizePointTopRight_;
   }
 
-  public get resizePointBottmLeft(): HTMLDivElement {
+  public get resizePointBottmLeft() {
     return this.resizePointBottmLeft_;
   }
 
-  public get resizePointBottmRight(): HTMLDivElement {
+  public get resizePointBottmRight() {
     return this.resizePointBottmRight_;
   }
 }
