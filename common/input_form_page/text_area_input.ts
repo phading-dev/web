@@ -10,7 +10,7 @@ export interface ValidationResult {
   errorMsg?: string;
 }
 
-export class VerticalTextInputWithErrorMsg<Request>
+export class TextAreaInputWithErrorMsg<Request>
   extends EventEmitter
   implements InputField<Request>
 {
@@ -20,8 +20,8 @@ export class VerticalTextInputWithErrorMsg<Request>
     otherInputAttributes: ElementAttributeMap = {},
     fillInRequestFn: (request: Request, value: string) => void,
     validateFn: (value: string) => Promise<ValidationResult> | ValidationResult
-  ): VerticalTextInputWithErrorMsg<Request> {
-    return new VerticalTextInputWithErrorMsg<Request>(
+  ): TextAreaInputWithErrorMsg<Request> {
+    return new TextAreaInputWithErrorMsg<Request>(
       label,
       customStyle,
       otherInputAttributes,
@@ -31,7 +31,7 @@ export class VerticalTextInputWithErrorMsg<Request>
   }
 
   private container: HTMLDivElement;
-  private input: HTMLInputElement;
+  private input: HTMLTextAreaElement;
   private errorMsg: HTMLDivElement;
   private valid: boolean;
 
@@ -45,7 +45,7 @@ export class VerticalTextInputWithErrorMsg<Request>
     ) => Promise<ValidationResult> | ValidationResult
   ) {
     super();
-    let inputRef = new Ref<HTMLInputElement>();
+    let inputRef = new Ref<HTMLTextAreaElement>();
     let errorMsgRef = new Ref<HTMLDivElement>();
     this.container = E.div(
       {
@@ -62,9 +62,10 @@ export class VerticalTextInputWithErrorMsg<Request>
       E.div({
         style: `height: 1rem;`,
       }),
-      E.inputRef(inputRef, {
+      E.textareaRef(inputRef, {
         class: "text-input-input",
         style: `${BASIC_INPUT_STYLE} width: 100%;`,
+        rows: "3",
         ...otherInputAttributes,
       }),
       E.div({
@@ -83,15 +84,7 @@ export class VerticalTextInputWithErrorMsg<Request>
     this.errorMsg = errorMsgRef.val;
 
     this.validate();
-    this.input.addEventListener("keydown", (event) => this.keydown(event));
     this.input.addEventListener("input", () => this.validate());
-  }
-
-  private keydown(event: KeyboardEvent): void {
-    if (event.code !== "Enter") {
-      return;
-    }
-    this.emit("submit");
   }
 
   private async validate(): Promise<void> {
@@ -138,9 +131,5 @@ export class VerticalTextInputWithErrorMsg<Request>
 
   public dispatchInput(): void {
     this.input.dispatchEvent(new Event("input"));
-  }
-
-  public dispatchEnter(): void {
-    this.input.dispatchEvent(new KeyboardEvent("keydown", { code: "Enter" }));
   }
 }

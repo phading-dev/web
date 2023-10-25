@@ -1,9 +1,9 @@
 export default class Text {
   get locale() {
-    return 'en';
+    return "en";
   }
   get signUpTitle() {
-    return `Create your new account`
+    return `Create your new account`;
   }
   get contactEmailLabel() {
     return `Contact email`;
@@ -45,7 +45,7 @@ export default class Text {
     return `Your username is too long`;
   }
   get usernameIsUsedError() {
-    return `The username is already taken`
+    return `The username is already taken`;
   }
   get passwordTooLongError() {
     return `Your password is too long`;
@@ -60,7 +60,7 @@ export default class Text {
     return `Failed to sign up. Please try again.`;
   }
   get signInTitle() {
-    return `Sign in to your account`
+    return `Sign in to your account`;
   }
   get signInButtonLabel() {
     return `Sign in`;
@@ -81,13 +81,13 @@ export default class Text {
     return `Cancel`;
   }
   get createConsumerTitle() {
-    return `Set up a consumer account`
+    return `Set up a consumer account`;
   }
   get createConsumerButtonLabel() {
     return `Set up`;
   }
   get createConsumerError() {
-    return `Failed to set up your consumer account. Please try again later.`
+    return `Failed to set up your consumer account. Please try again later.`;
   }
   get chooseAppLabel() {
     return `Switch app`;
@@ -99,7 +99,7 @@ export default class Text {
     return `Compose`;
   }
   get replyTaleLabel() {
-    return `Reply`
+    return `Reply`;
   }
   get shuffleTalesLabel() {
     return `Shuffle`;
@@ -144,7 +144,7 @@ export default class Text {
     return `There is an issue when uploading your avatar. Please try again later.`;
   }
   get updateContactEmailTitle() {
-    return `Update contact email`
+    return `Update contact email`;
   }
   get newContactEmailLabel() {
     return `New email`;
@@ -153,7 +153,7 @@ export default class Text {
     return `The new email is too long.`;
   }
   get updateDescriptionTitle() {
-    return `Update profile description`
+    return `Update profile description`;
   }
   get newDescriptionLabel() {
     return `New description`;
@@ -162,7 +162,7 @@ export default class Text {
     return `The new description is too long.`;
   }
   get updatePasswordTitle() {
-    return `Update password`
+    return `Update password`;
   }
   get currentPasswordLabel() {
     return `Current password`;
@@ -180,10 +180,13 @@ export default class Text {
     return `Please double check your new passwords. They don't match.`;
   }
   get updatePasswordError() {
-    return `Failed to update password. Please try again later.`
+    return `Failed to update password. Please try again later.`;
   }
   get updateButtonLabel() {
     return `Update`;
+  }
+  get updateGenericFailureLabel() {
+    return `Failed to update. Please try again later.`;
   }
   get chooseLayoutLabel() {
     return `Choose a layout from below`;
@@ -216,10 +219,10 @@ export default class Text {
     return `Or upload up to 9 images`;
   }
   get quickLayoutUploadImageFailure1() {
-    return `Failed to upload the following files `
+    return `Failed to upload the following files `;
   }
   get quickLayoutUploadImageFailure2() {
-    return `. Please only upload image files, and only up to 9 of them.`
+    return `. Please only upload image files, and only up to 9 of them.`;
   }
   get quickLayoutUploadImageButtonLabel() {
     return `Choose one or more files`;
@@ -318,16 +321,16 @@ export default class Text {
     return `Try reload`;
   }
   get likeUserLabel() {
-    return `Recommend more`
+    return `Recommend more`;
   }
   get likedUserLabel() {
-    return `Recommending more`
+    return `Recommending more`;
   }
   get dislikeUserLabel() {
-    return `Recommend less`
+    return `Recommend less`;
   }
   get dislikedUserLabel() {
-    return `Recommending less`
+    return `Recommending less`;
   }
   get noUserDescription() {
     return `They didn't say anything about themself.`;
@@ -336,19 +339,19 @@ export default class Text {
     return `Your usage report starting from `;
   }
   get usageReportRangePartTwo() {
-    return ` until `
+    return ` until `;
   }
   get usageSumLabel() {
     return `Total`;
   }
   get usageReportSeeOtherButtonLabel() {
-    return `See other usage reports`
+    return `See other usage reports`;
   }
   get chooseReportTitle() {
     return `Choose a usage report`;
   }
   get chooseReportCurrentButtonLabel() {
-    return `Current`
+    return `Current`;
   }
   get chooseReportRangeEndedInDateLabel() {
     return `Until `;
