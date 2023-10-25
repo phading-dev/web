@@ -143,6 +143,15 @@ export default class Text {
   get uploadAvatarError() {
     return `There is an issue when uploading your avatar. Please try again later.`;
   }
+  get updateNaturalNameTitle() {
+    return `Update your name`;
+  }
+  get newNaturalNameLabel() {
+    return `New name`;
+  }
+  get newNaturalNameTooLongError() {
+    return `THe new name is too long.`;
+  }
   get updateContactEmailTitle() {
     return `Update contact email`;
   }
