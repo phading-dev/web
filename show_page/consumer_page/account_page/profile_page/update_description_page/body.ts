@@ -107,6 +107,7 @@ export class UpdateDescriptionPage extends EventEmitter {
 
   public remove(): void {
     this.inputFormPage_.remove();
+    this.backMenuItem.remove();
   }
 
   // Visible for testing

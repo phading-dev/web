@@ -26,19 +26,18 @@ export class BasicInfoPag extends EventEmitter {
     return new BasicInfoPag(USER_SERVICE_CLIENT);
   }
 
-  public body: HTMLDivElement;
-  // Visible for testing
-  public avatarContainer: HTMLDivElement;
-  public naturalName: TextContentButton;
-  public contactEmail: TextContentButton;
-  public description: TextContentButton;
+  private body_: HTMLDivElement;
+  private avatarContainer_: HTMLDivElement;
+  private naturalName_: TextContentButton;
+  private contactEmail_: TextContentButton;
+  private description_: TextContentButton;
   private card: HTMLDivElement;
   private avatarUpdateHint: HTMLDivElement;
 
   public constructor(private userServiceClient: WebServiceClient) {
     super();
     let cardRef = new Ref<HTMLDivElement>();
-    this.body = E.div(
+    this.body_ = E.div(
       {
         class: "basic-info",
         style: PAGE_STYLE,
@@ -113,28 +112,28 @@ export class BasicInfoPag extends EventEmitter {
         )
       ).body
     );
-    this.avatarContainer = avatarContainerRef.val;
+    this.avatarContainer_ = avatarContainerRef.val;
     this.avatarUpdateHint = avatarUpdateHintRef.val;
-    this.naturalName = naturalNameRef.val;
-    this.contactEmail = contactEmailRef.val;
-    this.description = descriptionRef.val;
+    this.naturalName_ = naturalNameRef.val;
+    this.contactEmail_ = contactEmailRef.val;
+    this.description_ = descriptionRef.val;
 
     this.hideChangeAvatarHint();
-    this.avatarContainer.addEventListener("mouseenter", () =>
+    this.avatarContainer_.addEventListener("mouseenter", () =>
       this.showChangeAvatarHint()
     );
-    this.avatarContainer.addEventListener("mouseleave", () =>
+    this.avatarContainer_.addEventListener("mouseleave", () =>
       this.hideChangeAvatarHint()
     );
-    this.avatarContainer.addEventListener("click", () =>
+    this.avatarContainer_.addEventListener("click", () =>
       this.emit("updateAvatar")
     );
     this.avatarUpdateHint.addEventListener("transitionend", () =>
       this.emit("avatarUpdateHintTransitionEnded")
     );
-    this.naturalName.on("action", () => this.emit("updateNaturalName"));
-    this.contactEmail.on("action", () => this.emit("updateContactEmail"));
-    this.description.on("action", () => this.emit("updateDescription"));
+    this.naturalName_.on("action", () => this.emit("updateNaturalName"));
+    this.contactEmail_.on("action", () => this.emit("updateContactEmail"));
+    this.description_.on("action", () => this.emit("updateDescription"));
     this.emit("loaded");
   }
 
@@ -146,7 +145,25 @@ export class BasicInfoPag extends EventEmitter {
     this.avatarUpdateHint.style.height = "0";
   }
 
+  public get body() {
+    return this.body_;
+  }
+
   public remove(): void {
-    this.body.remove();
+    this.body_.remove();
+  }
+
+  // Visible for testing
+  public get avatarContainer() {
+    return this.avatarContainer_;
+  }
+  public get naturalName() {
+    return this.naturalName_;
+  }
+  public get contactEmail() {
+    return this.contactEmail_;
+  }
+  public get description() {
+    return this.description_;
   }
 }

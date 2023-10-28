@@ -1,0 +1,29 @@
+[{
+  "name": "Page",
+  "enum": {
+    "values": [{
+      "name": "BasicInfo",
+      "value": 1
+    }, {
+      "name": "UpdateAvatar",
+      "value": 2
+    }, {
+      "name": "UpdateNaturalName",
+      "value": 3
+    }, {
+      "name": "UpdateContactEmail",
+      "value": 4
+    }, {
+      "name": "UpdateDescription",
+      "value": 5
+    }]
+  }
+}, {
+  "name": "ProfilePageState",
+  "message": {
+    "fields": [{
+      "name": "page",
+      "type": "Page"
+    }]
+  }
+}]
