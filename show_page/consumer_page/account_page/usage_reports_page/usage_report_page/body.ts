@@ -3,7 +3,10 @@ import { getAppName } from "../../../../../common/app_name";
 import { TEXT_BUTTON_STYLE } from "../../../../../common/button_styles";
 import { SCHEME } from "../../../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
-import { LARGE_CARD_STYLE, PAGE_STYLE } from "../../../../../common/page_style";
+import {
+  MEDIUM_CARD_STYLE,
+  PAGE_STYLE,
+} from "../../../../../common/page_style";
 import { CONSUMER_PRODUCT_INTERACTION_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { getPlaytimeMeterReport } from "@phading/consumer_product_interaction_service_interface/client_requests";
 import {
@@ -47,7 +50,7 @@ export class UsageReportPage extends EventEmitter {
       },
       E.divRef(cardRef, {
         class: "usage-report-card",
-        style: `${LARGE_CARD_STYLE}; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+        style: `${MEDIUM_CARD_STYLE}; display: flex; flex-flow: column nowrap; gap: 2rem;`,
       })
     );
     this.card = cardRef.val;

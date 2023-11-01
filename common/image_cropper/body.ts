@@ -13,7 +13,7 @@ export class ImageCropper extends EventEmitter {
   }
 
   private container: HTMLDivElement;
-  private canvas: HTMLCanvasElement;
+  private canvas_: HTMLCanvasElement;
   private sx_: number;
   private sy_: number;
   private sWidth_: number;
@@ -109,7 +109,7 @@ export class ImageCropper extends EventEmitter {
         })
       )
     );
-    this.canvas = canvasRef.val;
+    this.canvas_ = canvasRef.val;
     this.leftColumn = leftColumnRef.val;
     this.midColumn = midColumnRef.val;
     this.rightColumn = rightColumnRef.val;
@@ -141,9 +141,9 @@ export class ImageCropper extends EventEmitter {
   }
 
   public clear(): void {
-    this.canvas
+    this.canvas_
       .getContext("2d")
-      .clearRect(0, 0, this.canvas.width, this.canvas.height);
+      .clearRect(0, 0, this.canvas_.width, this.canvas_.height);
     this.leftColumn.style.flex = "1 0 0";
     this.midColumn.style.flex = "2 0 0";
     this.midTopBlock.style.flex = "1 0 0";
@@ -327,11 +327,8 @@ export class ImageCropper extends EventEmitter {
   public get body() {
     return this.container;
   }
-  public get canvasWidth() {
-    return this.canvas.width;
-  }
-  public get canvasHeight() {
-    return this.canvas.height;
+  public get canvas() {
+    return this.canvas_;
   }
   public get sx() {
     return this.sx_;
@@ -350,17 +347,17 @@ export class ImageCropper extends EventEmitter {
   }
 
   public async load(imageFile: File): Promise<void> {
-    this.canvas
+    this.canvas_
       .getContext("2d")
-      .clearRect(0, 0, this.canvas.width, this.canvas.height);
+      .clearRect(0, 0, this.canvas_.width, this.canvas_.height);
     await new Promise<void>((resolve, reject) => {
       let fileReader = new FileReader();
       fileReader.onload = () => {
         let image = new Image();
         image.onload = () => {
           this.loaded_ = true;
-          let canvasWidth = this.canvas.offsetWidth;
-          let canvasHeight = this.canvas.offsetHeight;
+          let canvasWidth = this.canvas_.offsetWidth;
+          let canvasHeight = this.canvas_.offsetHeight;
           let imageWidth = image.naturalWidth;
           let imageHeight = image.naturalHeight;
           let dWidth = 0;
@@ -384,9 +381,9 @@ export class ImageCropper extends EventEmitter {
           }
           let dx = (canvasWidth - dWidth) / 2;
           let dy = (canvasHeight - dHeight) / 2;
-          this.canvas.width = canvasWidth;
-          this.canvas.height = canvasHeight;
-          this.canvas
+          this.canvas_.width = canvasWidth;
+          this.canvas_.height = canvasHeight;
+          this.canvas_
             .getContext("2d")
             .drawImage(image, dx, dy, dWidth, dHeight);
 
@@ -412,7 +409,7 @@ export class ImageCropper extends EventEmitter {
     resultCanvas
       .getContext("2d")
       .drawImage(
-        this.canvas,
+        this.canvas_,
         this.sx,
         this.sy,
         this.sWidth,
