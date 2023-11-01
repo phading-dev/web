@@ -35,6 +35,10 @@ export interface SignUpPage {
 }
 
 export class SignUpPage extends EventEmitter {
+  public static create(): SignUpPage {
+    return new SignUpPage(LOCAL_SESSION_STORAGE, USER_SERVICE_CLIENT);
+  }
+
   private naturalNameInput_: VerticalTextInputWithErrorMsg<SignUpRequestBody>;
   private usernameInput_: VerticalTextInputWithErrorMsg<SignUpRequestBody>;
   private passwordInput_: VerticalTextInputWithErrorMsg<SignUpRequestBody>;
@@ -182,10 +186,6 @@ export class SignUpPage extends EventEmitter {
     );
     this.inputFormPage.on("submitError", () => this.emit("signUpError"));
     this.inputFormPage.on("submitted", () => this.emit("signedUp"));
-  }
-
-  public static create(): SignUpPage {
-    return new SignUpPage(LOCAL_SESSION_STORAGE, USER_SERVICE_CLIENT);
   }
 
   private checkNaturalNameInput(value: string): ValidationResult {

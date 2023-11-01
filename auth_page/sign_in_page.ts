@@ -25,6 +25,10 @@ export interface SignInPage {
 }
 
 export class SignInPage extends EventEmitter {
+  public static create(): SignInPage {
+    return new SignInPage(LOCAL_SESSION_STORAGE, USER_SERVICE_CLIENT);
+  }
+
   private usernameInput_: VerticalTextInputWithErrorMsg<SignInRequestBody>;
   private passwordInput_: VerticalTextInputWithErrorMsg<SignInRequestBody>;
   private switchToSignUpButton_: HTMLDivElement;
@@ -99,10 +103,6 @@ export class SignInPage extends EventEmitter {
     );
     this.inputFormPage_.on("submitted", () => this.emit("signedIn"));
     this.inputFormPage_.on("submitError", () => this.emit("signInError"));
-  }
-
-  public static create(): SignInPage {
-    return new SignInPage(LOCAL_SESSION_STORAGE, USER_SERVICE_CLIENT);
   }
 
   private checkUsernameInput(value: string): ValidationResult {

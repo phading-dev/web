@@ -14,6 +14,10 @@ export interface AuthPage {
 }
 
 export class AuthPage extends EventEmitter {
+  public static create(appendBodiesFn: AddBodiesFn): AuthPage {
+    return new AuthPage(SignInPage.create, SignUpPage.create, appendBodiesFn);
+  }
+
   private signInPage_: SignInPage;
   private signUpPage_: SignUpPage;
   private pageNavigator: PageNavigator<Page>;
@@ -29,10 +33,6 @@ export class AuthPage extends EventEmitter {
       (page) => this.removePage(page)
     );
     this.pageNavigator.goTo(Page.SIGN_IN);
-  }
-
-  public static create(appendBodiesFn: AddBodiesFn): AuthPage {
-    return new AuthPage(SignInPage.create, SignUpPage.create, appendBodiesFn);
   }
 
   private addPage(page: Page): void {

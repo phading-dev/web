@@ -26,16 +26,18 @@ export interface UpdateAvatarPage {
 }
 
 export class UpdateAvatarPage extends EventEmitter {
+  public static create(): UpdateAvatarPage {
+    return new UpdateAvatarPage(USER_SERVICE_CLIENT);
+  }
+
   private static LARGE_IMAGE_LENGTH = 160;
   private static SMALL_IMAGE_LENGTH = 50;
 
-  public body: HTMLDivElement;
-  public backMenuBody: HTMLDivElement;
-  // Visible for testing
-  public backMenuItem: MenuItem;
-  public chooseFileButton: OutlineBlockingButton;
-  public uploadButton: FilledBlockingButton;
-  public imageCropper: ImageCropper;
+  private body_: HTMLDivElement;
+  private backMenuItem_: MenuItem;
+  private chooseFileButton_: OutlineBlockingButton;
+  private uploadButton_: FilledBlockingButton;
+  private imageCropper_: ImageCropper;
   private loadErrorText: HTMLDivElement;
   private previewLargeCanvas: HTMLCanvasElement;
   private previewSmallCanvas: HTMLCanvasElement;
@@ -50,7 +52,7 @@ export class UpdateAvatarPage extends EventEmitter {
     let previewSmallCanvasRef = new Ref<HTMLCanvasElement>();
     let uploadButtonRef = new Ref<FilledBlockingButton>();
     let uploadStatusTextRef = new Ref<HTMLDivElement>();
-    this.body = E.div(
+    this.body_ = E.div(
       {
         class: "update-avatar",
         style: PAGE_STYLE,
@@ -158,26 +160,23 @@ export class UpdateAvatarPage extends EventEmitter {
         )
       )
     );
-    this.chooseFileButton = chooseFileButtonRef.val;
+    this.chooseFileButton_ = chooseFileButtonRef.val;
     this.loadErrorText = loadErrorTextRef.val;
-    this.imageCropper = imageCropperRef.val;
+    this.imageCropper_ = imageCropperRef.val;
     this.previewLargeCanvas = previewLargeCanvasRef.val;
     this.previewSmallCanvas = previewSmallCanvasRef.val;
-    this.uploadButton = uploadButtonRef.val;
+    this.uploadButton_ = uploadButtonRef.val;
     this.uploadStatusText = uploadStatusTextRef.val;
 
-    this.backMenuItem = createBackMenuItem();
-    this.backMenuBody = this.backMenuItem.body;
+    this.backMenuItem_ = createBackMenuItem();
 
-    this.backMenuItem.on("action", () => this.emit("back"));
-    this.chooseFileButton.on("action", () => this.chooseFile());
-    this.imageCropper.on("change", () => this.preview());
-    this.uploadButton.on("action", () => this.uploadAvatar());
-    this.uploadButton.on("postAction", (error) => this.postUploadAvatar(error));
-  }
-
-  public static create(): UpdateAvatarPage {
-    return new UpdateAvatarPage(USER_SERVICE_CLIENT);
+    this.backMenuItem_.on("action", () => this.emit("back"));
+    this.chooseFileButton_.on("action", () => this.chooseFile());
+    this.imageCropper_.on("change", () => this.preview());
+    this.uploadButton_.on("action", () => this.uploadAvatar());
+    this.uploadButton_.on("postAction", (error) =>
+      this.postUploadAvatar(error)
+    );
   }
 
   private async chooseFile(): Promise<void> {
@@ -194,7 +193,7 @@ export class UpdateAvatarPage extends EventEmitter {
   private async load(files: FileList): Promise<void> {
     this.loadErrorText.style.visibility = "hidden";
     try {
-      await this.imageCropper.load(files[0]);
+      await this.imageCropper_.load(files[0]);
     } catch (e) {
       this.loadErrorText.textContent = LOCALIZED_TEXT.loadImageError;
       this.loadErrorText.style.visibility = "visible";
@@ -203,58 +202,58 @@ export class UpdateAvatarPage extends EventEmitter {
       return;
     }
 
-    this.previewLargeCanvas.width = this.imageCropper.canvas.width;
-    this.previewLargeCanvas.height = this.imageCropper.canvas.height;
+    this.previewLargeCanvas.width = this.imageCropper_.canvas.width;
+    this.previewLargeCanvas.height = this.imageCropper_.canvas.height;
     this.previewLargeCanvas
       .getContext("2d")
-      .drawImage(this.imageCropper.canvas, 0, 0);
-    this.previewSmallCanvas.width = this.imageCropper.canvas.width;
-    this.previewSmallCanvas.height = this.imageCropper.canvas.height;
+      .drawImage(this.imageCropper_.canvas, 0, 0);
+    this.previewSmallCanvas.width = this.imageCropper_.canvas.width;
+    this.previewSmallCanvas.height = this.imageCropper_.canvas.height;
     this.previewSmallCanvas
       .getContext("2d")
-      .drawImage(this.imageCropper.canvas, 0, 0);
-    this.uploadButton.enable();
+      .drawImage(this.imageCropper_.canvas, 0, 0);
+    this.uploadButton_.enable();
     this.emit("imageLoaded");
   }
 
   private preview(): void {
     this.previewLargeCanvas.style.width = `${
-      (this.imageCropper.canvas.width / this.imageCropper.sWidth) *
+      (this.imageCropper_.canvas.width / this.imageCropper_.sWidth) *
       UpdateAvatarPage.LARGE_IMAGE_LENGTH
     }px`;
     this.previewLargeCanvas.style.height = `${
-      (this.imageCropper.canvas.height / this.imageCropper.sHeight) *
+      (this.imageCropper_.canvas.height / this.imageCropper_.sHeight) *
       UpdateAvatarPage.LARGE_IMAGE_LENGTH
     }px`;
     this.previewLargeCanvas.style.left = `-${
-      (this.imageCropper.sx / this.imageCropper.sWidth) *
+      (this.imageCropper_.sx / this.imageCropper_.sWidth) *
       UpdateAvatarPage.LARGE_IMAGE_LENGTH
     }px`;
     this.previewLargeCanvas.style.top = `-${
-      (this.imageCropper.sy / this.imageCropper.sHeight) *
+      (this.imageCropper_.sy / this.imageCropper_.sHeight) *
       UpdateAvatarPage.LARGE_IMAGE_LENGTH
     }px`;
     this.previewSmallCanvas.style.width = `${
-      (this.imageCropper.canvas.width / this.imageCropper.sWidth) *
+      (this.imageCropper_.canvas.width / this.imageCropper_.sWidth) *
       UpdateAvatarPage.SMALL_IMAGE_LENGTH
     }px`;
     this.previewSmallCanvas.style.height = `${
-      (this.imageCropper.canvas.height / this.imageCropper.sHeight) *
+      (this.imageCropper_.canvas.height / this.imageCropper_.sHeight) *
       UpdateAvatarPage.SMALL_IMAGE_LENGTH
     }px`;
     this.previewSmallCanvas.style.left = `-${
-      (this.imageCropper.sx / this.imageCropper.sWidth) *
+      (this.imageCropper_.sx / this.imageCropper_.sWidth) *
       UpdateAvatarPage.SMALL_IMAGE_LENGTH
     }px`;
     this.previewSmallCanvas.style.top = `-${
-      (this.imageCropper.sy / this.imageCropper.sHeight) *
+      (this.imageCropper_.sy / this.imageCropper_.sHeight) *
       UpdateAvatarPage.SMALL_IMAGE_LENGTH
     }px`;
   }
 
   private async uploadAvatar(): Promise<void> {
     this.uploadStatusText.style.visibility = "hidden";
-    let blob = await this.imageCropper.export();
+    let blob = await this.imageCropper_.export();
     await uploadAvatar(this.userServiceClient, blob);
   }
 
@@ -269,8 +268,29 @@ export class UpdateAvatarPage extends EventEmitter {
     }
   }
 
+  public get body() {
+    return this.body_;
+  }
+  public get backMenuBody() {
+    return this.backMenuItem_.body;
+  }
+
   public remove(): void {
-    this.backMenuItem.remove();
-    this.body.remove();
+    this.backMenuItem_.remove();
+    this.body_.remove();
+  }
+
+  // Visible for testing
+  public get backMenuItem() {
+    return this.backMenuItem_;
+  }
+  public get chooseFileButton() {
+    return this.chooseFileButton_;
+  }
+  public get uploadButton() {
+    return this.uploadButton_;
+  }
+  public get imageCropper() {
+    return this.imageCropper_;
   }
 }
