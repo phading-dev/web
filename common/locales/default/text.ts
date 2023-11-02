@@ -17,8 +17,8 @@ export default class Text {
   get usernameLabel() {
     return `Username`;
   }
-  get emailLabel() {
-    return `Email`;
+  get recoveryEmailLabel() {
+    return `Recovery email`;
   }
   get passwordLabel() {
     return `Password`;

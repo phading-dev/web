@@ -25,7 +25,7 @@ export class TextContentButton extends EventEmitter {
     this.container = E.div(
       {
         class: "text-content-button",
-        style: `${customStyle} display: flex; flex-flow: column nowrap; gap: 1rem; align-items: flex-start;`,
+        style: `display: flex; flex-flow: column nowrap; gap: 1rem; align-items: flex-start; ${customStyle}`,
       },
       E.div(
         {
