@@ -244,10 +244,10 @@ export class SignUpPage extends EventEmitter {
   }
 
   private postSignUp(response: SignUpResponse, error?: Error): string {
-    if (response.usernameIsNotAvailable) {
-      return LOCALIZED_TEXT.usernameIsUsedError;
-    } else if (error) {
+    if (error) {
       return LOCALIZED_TEXT.signUpError;
+    } else if (response.usernameIsNotAvailable) {
+      return LOCALIZED_TEXT.usernameIsUsedError;
     } else {
       this.localSessionStorage.save(response.signedSession);
       return "";

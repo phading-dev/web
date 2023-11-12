@@ -28,7 +28,7 @@ export class UpdateNaturalNamePage extends EventEmitter {
     return new UpdateNaturalNamePage(USER_SERVICE_CLIENT);
   }
 
-  private backMenuItem: MenuItem;
+  private backMenuItem_: MenuItem;
   private naturalNameInput_: VerticalTextInputWithErrorMsg<UpdateNaturalNameRequestBody>;
   private inputFormPage_: InputFormPage<
     UpdateNaturalNameRequestBody,
@@ -67,11 +67,11 @@ export class UpdateNaturalNamePage extends EventEmitter {
     );
     this.naturalNameInput_ = naturalNameInputRef.val;
 
-    this.backMenuItem = createBackMenuItem();
+    this.backMenuItem_ = createBackMenuItem();
 
     this.inputFormPage_.on("submitError", () => this.emit("updateError"));
     this.inputFormPage_.on("submitted", () => this.emit("updated"));
-    this.backMenuItem.on("action", () => this.emit("back"));
+    this.backMenuItem_.on("action", () => this.emit("back"));
   }
 
   private checkNaturalNameInput(value: string): ValidationResult {
@@ -105,12 +105,12 @@ export class UpdateNaturalNamePage extends EventEmitter {
     return this.inputFormPage_.body;
   }
   public get menuBody() {
-    return this.backMenuItem.body;
+    return this.backMenuItem_.body;
   }
 
   public remove(): void {
     this.inputFormPage_.remove();
-    this.backMenuItem.remove();
+    this.backMenuItem_.remove();
   }
 
   // Visible for testing
@@ -119,5 +119,8 @@ export class UpdateNaturalNamePage extends EventEmitter {
   }
   public get inputFormPage() {
     return this.inputFormPage_;
+  }
+  public get backMenuItem() {
+    return this.backMenuItem_;
   }
 }

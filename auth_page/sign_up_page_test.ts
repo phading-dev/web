@@ -1,12 +1,12 @@
 import path = require("path");
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { SignUpPage } from "./sign_up_page";
+import { AccountType } from "@phading/user_service_interface/account_type";
 import {
   SIGN_UP,
   SIGN_UP_REQUEST_BODY,
   SignUpResponse,
 } from "@phading/user_service_interface/interface";
-import { AccountType } from "@phading/user_service_interface/account_type";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -27,8 +27,7 @@ TEST_RUNNER.run({
   name: "SignUpPageTest",
   cases: [
     new (class implements TestCase {
-      public name =
-        "LargeScreen_EnterAllFields_SignUpFailed_SignUpSuccess";
+      public name = "LargeScreen_EnterAllFields_SignUpFailed_SignUpSuccess";
       private cut: SignUpPage;
       public async execute() {
         // Prepare
@@ -87,6 +86,25 @@ TEST_RUNNER.run({
             ),
             "sign up request body"
           );
+          throw new Error("Fake error");
+        };
+
+        // Execute
+        this.cut.inputFormPage.submit();
+        await new Promise<void>((resolve) =>
+          this.cut.once("signUpError", () => resolve())
+        );
+
+        // Verify
+        assertThat(LOCAL_SESSION_STORAGE.read(), eq(null), "no session");
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/sign_up_page_username_submit_failed.png"),
+          path.join(__dirname, "/golden/sign_up_page_username_submit_failed.png"),
+          path.join(__dirname, "/sign_up_page_username_submit_failed_diff.png")
+        );
+
+        // Prepare
+        webServiceClientMock.send = async (request) => {
           return { usernameIsNotAvailable: true } as SignUpResponse;
         };
 
@@ -106,20 +124,6 @@ TEST_RUNNER.run({
 
         // Prepare
         webServiceClientMock.send = async (request) => {
-          assertThat(request.descriptor, eq(SIGN_UP), "sign up service");
-          assertThat(
-            request.body,
-            eqMessage(
-              {
-                naturalName: "First Second name",
-                username: "my_new_username",
-                password: "123123",
-                accountType: AccountType.PUBLISHER,
-              },
-              SIGN_UP_REQUEST_BODY
-            ),
-            "sign up request body"
-          );
           return {
             signedSession: "signed_session",
           } as SignUpResponse;

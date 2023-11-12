@@ -39,7 +39,7 @@ TEST_RUNNER.run({
   },
   cases: [
     new (class implements TestCase {
-      public name = "Default";
+      public name = "Default_UpdateFailed_UpdateSuccess";
       private cut: UpdateDescriptionPage;
       public async execute() {
         // Prepare
@@ -161,5 +161,20 @@ TEST_RUNNER.run({
         this.cut.remove();
       }
     })(),
+    {
+      name: "Back",
+      execute: () => {
+        // Prepare
+        let cut = new UpdateDescriptionPage(undefined);
+        let isBack = false;
+        cut.on("back", () => (isBack = true));
+
+        // Execute
+        cut.backMenuItem.click();
+
+        // Verify
+        assertThat(isBack, eq(true), "Back");
+      },
+    },
   ],
 });

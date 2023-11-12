@@ -1,9 +1,9 @@
 import path = require("path");
-import { UpdateContactEmailPage } from "./body";
+import { UpdateUsernamePage } from "./body";
 import {
-  UPDATE_CONTACT_EMAIL,
-  UPDATE_CONTACT_EMAIL_REQUEST_BODY,
-  UpdateContactEmailResponse,
+  UPDATE_USERNAME,
+  UPDATE_USERNAME_REQUEST_BODY,
+  UpdateUsernameResponse,
 } from "@phading/user_service_interface/interface";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
@@ -25,7 +25,7 @@ function createLongString(length: number) {
 let menuContainer: HTMLDivElement;
 
 TEST_RUNNER.run({
-  name: "UpateContactEmailPageTest",
+  name: "UpdateUsernamePageTest",
   environment: {
     setUp: () => {
       menuContainer = E.div({
@@ -40,16 +40,16 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name = "Default_UpdateFailed_UpdateSuccess";
-      private cut: UpdateContactEmailPage;
+      private cut: UpdateUsernamePage;
       public async execute() {
         // Prepare
         await setViewport(1000, 600);
         let requestCaptured: any;
         let error: Error;
-        let response: UpdateContactEmailResponse;
+        let response: UpdateUsernameResponse;
 
         // Execute
-        this.cut = new UpdateContactEmailPage(
+        this.cut = new UpdateUsernamePage(
           new (class extends WebServiceClient {
             public constructor() {
               super(undefined, undefined);
@@ -69,33 +69,38 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/update_contact_email_page.png"),
-          path.join(__dirname, "/golden/update_contact_email_page.png"),
-          path.join(__dirname, "/update_contact_email_page_diff.png")
+          path.join(__dirname, "/update_username_page.png"),
+          path.join(__dirname, "/golden/update_username_page.png"),
+          path.join(__dirname, "/update_username_page_diff.png")
         );
 
         // Execute
-        this.cut.emailInput.value = createLongString(101);
-        this.cut.emailInput.dispatchInput();
+        this.cut.newUsernameInput.value = createLongString(101);
+        this.cut.newUsernameInput.dispatchInput();
         await new Promise<void>((resolve) =>
-          this.cut.emailInput.once("validated", resolve)
+          this.cut.newUsernameInput.once("validated", resolve)
         );
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/update_contact_email_too_long_error.png"),
+          path.join(__dirname, "/update_username_page_too_long_error.png"),
           path.join(
             __dirname,
-            "/golden/update_contact_email_too_long_error.png"
+            "/golden/update_username_page_too_long_error.png"
           ),
-          path.join(__dirname, "/update_contact_email_too_long_error_diff.png")
+          path.join(__dirname, "/update_username_page_too_long_error_diff.png")
         );
 
         // Prepare
-        this.cut.emailInput.value = "new@gmail.com";
-        this.cut.emailInput.dispatchInput();
+        this.cut.currentPasswordInput.value = "current password";
+        this.cut.currentPasswordInput.dispatchInput();
         await new Promise<void>((resolve) =>
-          this.cut.emailInput.once("validated", resolve)
+          this.cut.currentPasswordInput.once("validated", resolve)
+        );
+        this.cut.newUsernameInput.value = "new username";
+        this.cut.newUsernameInput.dispatchInput();
+        await new Promise<void>((resolve) =>
+          this.cut.newUsernameInput.once("validated", resolve)
         );
         error = new Error("fake error");
 
@@ -106,35 +111,58 @@ TEST_RUNNER.run({
         );
 
         // Verify
-        assertThat(
-          requestCaptured.descriptor,
-          eq(UPDATE_CONTACT_EMAIL),
-          "service"
-        );
+        assertThat(requestCaptured.descriptor, eq(UPDATE_USERNAME), "service");
         assertThat(
           requestCaptured.body,
           eqMessage(
             {
-              contactEmail: "new@gmail.com",
+              newUsername: "new username",
+              currentPassword: "current password",
             },
-            UPDATE_CONTACT_EMAIL_REQUEST_BODY
+            UPDATE_USERNAME_REQUEST_BODY
           ),
           "request body"
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/update_contact_email_page_update_failed.png"),
+          path.join(__dirname, "/update_username_page_update_failed.png"),
           path.join(
             __dirname,
-            "/golden/update_contact_email_page_update_failed.png"
+            "/golden/update_username_page_update_failed.png"
+          ),
+          path.join(__dirname, "/update_username_page_update_failed_diff.png")
+        );
+
+        // Cleanup
+        error = undefined;
+
+        // Prepare
+        response = {
+          usernameIsNotAvailable: true,
+        };
+
+        // Execute
+        this.cut.inputFormPage.submit();
+        await new Promise<void>((resolve) =>
+          this.cut.once("updateError", resolve)
+        );
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/update_username_page_username_not_available.png"
           ),
           path.join(
             __dirname,
-            "/update_contact_email_page_update_failed_diff.png"
+            "/golden/update_username_page_username_not_available.png"
+          ),
+          path.join(
+            __dirname,
+            "/update_username_page_username_not_available_diff.png"
           )
         );
 
         // Prepare
-        error = undefined;
         response = {};
 
         // Execute
@@ -143,15 +171,12 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/update_contact_email_page_update_success.png"),
+          path.join(__dirname, "/update_username_page_update_successs.png"),
           path.join(
             __dirname,
-            "/golden/update_contact_email_page_update_success.png"
+            "/golden/update_username_page_update_successs.png"
           ),
-          path.join(
-            __dirname,
-            "/update_contact_email_page_update_success_diff.png"
-          )
+          path.join(__dirname, "/update_username_page_update_successs_diff.png")
         );
       }
       public tearDown() {
@@ -162,7 +187,7 @@ TEST_RUNNER.run({
       name: "Back",
       execute: () => {
         // Prepare
-        let cut = new UpdateContactEmailPage(undefined);
+        let cut = new UpdateUsernamePage(undefined);
         let isBack = false;
         cut.on("back", () => (isBack = true));
 

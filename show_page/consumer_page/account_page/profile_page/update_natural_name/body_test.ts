@@ -158,5 +158,20 @@ TEST_RUNNER.run({
         this.cut.remove();
       }
     })(),
+    {
+      name: "Back",
+      execute: () => {
+        // Prepare
+        let cut = new UpdateNaturalNamePage(undefined);
+        let isBack = false;
+        cut.on("back", () => (isBack = true));
+
+        // Execute
+        cut.backMenuItem.click();
+
+        // Verify
+        assertThat(isBack, eq(true), "Back");
+      },
+    },
   ],
 });

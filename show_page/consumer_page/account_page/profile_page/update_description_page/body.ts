@@ -28,7 +28,7 @@ export class UpdateDescriptionPage extends EventEmitter {
     return new UpdateDescriptionPage(USER_SERVICE_CLIENT);
   }
 
-  private backMenuItem: MenuItem;
+  private backMenuItem_: MenuItem;
   private descriptionInput_: TextAreaInputWithErrorMsg<UpdateDescriptionRequestBody>;
   private inputFormPage_: InputFormPage<
     UpdateDescriptionRequestBody,
@@ -64,11 +64,11 @@ export class UpdateDescriptionPage extends EventEmitter {
     );
     this.descriptionInput_ = descriptionInputRef.val;
 
-    this.backMenuItem = createBackMenuItem();
+    this.backMenuItem_ = createBackMenuItem();
 
     this.inputFormPage_.on("submitError", () => this.emit("updateError"));
     this.inputFormPage_.on("submitted", () => this.emit("updated"));
-    this.backMenuItem.on("action", () => this.emit("back"));
+    this.backMenuItem_.on("action", () => this.emit("back"));
   }
 
   private checkDescriptionInput(value: string): ValidationResult {
@@ -102,12 +102,12 @@ export class UpdateDescriptionPage extends EventEmitter {
     return this.inputFormPage_.body;
   }
   public get menuBody() {
-    return this.backMenuItem.body;
+    return this.backMenuItem_.body;
   }
 
   public remove(): void {
     this.inputFormPage_.remove();
-    this.backMenuItem.remove();
+    this.backMenuItem_.remove();
   }
 
   // Visible for testing
@@ -116,5 +116,8 @@ export class UpdateDescriptionPage extends EventEmitter {
   }
   public get descriptionInput() {
     return this.descriptionInput_;
+  }
+  public get backMenuItem() {
+    return this.backMenuItem_;
   }
 }

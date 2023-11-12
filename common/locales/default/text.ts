@@ -188,8 +188,20 @@ export default class Text {
   get repeatNewPasswordNotMatchError() {
     return `Please double check your new passwords. They don't match.`;
   }
-  get updatePasswordError() {
-    return `Failed to update password. Please try again later.`;
+  get updateUsernameTitle() {
+    return `Update username`;
+  }
+  get newUsernameLabel() {
+    return `New username`;
+  }
+  get updateRecoveryEmailTitle() {
+    return `Update recovery email`;
+  }
+  get newRecoveryEmailLabel() {
+    return `New email`;
+  }
+  get newRecoveryEmailTooLongError() {
+    return `The new email is too long.`;
   }
   get updateButtonLabel() {
     return `Update`;
