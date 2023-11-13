@@ -95,7 +95,7 @@ class NavigateForwardAndBack implements TestCase {
     );
 
     // Prepare
-    this.cut.basicInfoPage.avatarContainer.click();
+    this.click(this.cut);
 
     // Execute
     this.emitUpdated(this.cut);
