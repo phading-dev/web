@@ -1,6 +1,6 @@
 import path = require("path");
-import { VerticalTextInputWithErrorMsg } from "../text_input";
 import { InputFormPage } from "./body";
+import { VerticalTextInputWithErrorMsg } from "./text_input";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -79,7 +79,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        input.setValue("Joe");
+        input.value = "Joe";
         input.dispatchInput();
 
         // Verify

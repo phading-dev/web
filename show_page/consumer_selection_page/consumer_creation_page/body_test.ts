@@ -1,10 +1,10 @@
 import path = require("path");
 import { ConsumerCreationPage } from "./body";
 import {
-  CREATE_USER_REQUEST_BODY,
-  CreateUserResponse,
+  CREATE_ACCOUNT,
+  CREATE_ACCOUNT_REQUEST_BODY,
+  CreateAccountResponse,
 } from "@phading/user_service_interface/interface";
-import { UserType } from "@phading/user_service_interface/user_type";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -12,6 +12,7 @@ import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClient } from "@selfage/web_service_client";
 import "../../../common/normalize_body";
+import { AccountType } from "@phading/user_service_interface/account_type";
 
 TEST_RUNNER.run({
   name: "ConsumerCreationPageTest",
@@ -57,7 +58,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.nameInput.dispatchEnter();
-        await new Promise<void>((resolve) => this.cut.once("error", resolve));
+        await new Promise<void>((resolve) => this.cut.once("createError", resolve));
 
         // Verify
         await asyncAssertScreenshot(
@@ -70,25 +71,28 @@ TEST_RUNNER.run({
         );
 
         // Prepare
+        let requestCaptured: any;
         userServiceClientMock.send = async (request): Promise<any> => {
-          assertThat(
-            request.body,
-            eqMessage(
-              { naturalName: "new name", userType: UserType.CONSUMER },
-              CREATE_USER_REQUEST_BODY
-            ),
-            "request body"
-          );
-          return { signedSession: "new session" } as CreateUserResponse;
+          requestCaptured = request;
+          return { signedSession: "new session" } as CreateAccountResponse;
         };
 
         // Execute
-        this.cut.createButton.click();
+        this.cut.inputFormPage.submit();
         let newSession = await new Promise<string>((resolve) =>
           this.cut.once("created", (newSession) => resolve(newSession))
         );
 
         // Verify
+        assertThat(requestCaptured.descriptor, eq(CREATE_ACCOUNT), "service")
+        assertThat(
+          requestCaptured.body,
+          eqMessage(
+            { naturalName: "new name", accountType: AccountType.CONSUMER },
+            CREATE_ACCOUNT_REQUEST_BODY
+          ),
+          "request body"
+        );
         assertThat(newSession, eq("new session"), "new session");
         await asyncAssertScreenshot(
           path.join(__dirname, "/consumer_creation_page_create_succeeded.png"),

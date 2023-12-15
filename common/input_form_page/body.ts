@@ -69,8 +69,7 @@ export class InputFormPage<Request, Response> extends EventEmitter {
         ...lines,
         assign(
           submitButtonRef,
-          FilledBlockingButton.create(
-            `align-self: flex-end;`,
+          FilledBlockingButton.create(`align-self: flex-end;`).append(
             E.text(submitButtonLabel)
           )
         ).body,

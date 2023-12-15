@@ -65,6 +65,7 @@ export function createMinusIcon(color: string): SVGSVGElement {
   );
 }
 
+// Points to left
 export function createArrowIcon(color: string): SVGSVGElement {
   return E.svg(
     {

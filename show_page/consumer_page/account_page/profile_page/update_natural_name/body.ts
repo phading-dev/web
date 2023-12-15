@@ -95,7 +95,7 @@ export class UpdateNaturalNamePage extends EventEmitter {
 
   private postUpdateNaturalName(error?: Error): string {
     if (error) {
-      return LOCALIZED_TEXT.updateGenericFailureLabel;
+      return LOCALIZED_TEXT.updateGenericFailure;
     } else {
       return "";
     }

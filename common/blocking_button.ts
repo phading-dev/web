@@ -17,16 +17,13 @@ export abstract class BlockingButton extends EventEmitter {
   private displayStyle: string;
   private cursorStyle: string;
 
-  public constructor(customStyle: string, ...childNodes: Array<Node>) {
+  public constructor(customStyle: string) {
     super();
-    this.container = E.button(
-      {
-        class: "blocking-button",
-        style: customStyle,
-        type: "button",
-      },
-      ...childNodes
-    );
+    this.container = E.button({
+      class: "blocking-button",
+      style: customStyle,
+      type: "button",
+    });
     this.displayStyle = this.container.style.display;
     this.cursorStyle = this.container.style.cursor;
 
@@ -44,6 +41,11 @@ export abstract class BlockingButton extends EventEmitter {
     }
     this.enable();
     this.emit("postAction");
+  }
+
+  public append(...childNodes: Array<Node>): this {
+    this.container.append(...childNodes);
+    return this;
   }
 
   public get body() {
@@ -86,15 +88,12 @@ export abstract class BlockingButton extends EventEmitter {
 }
 
 export class FilledBlockingButton extends BlockingButton {
-  public static create(
-    customStyle: string,
-    ...childNodes: Array<Node>
-  ): FilledBlockingButton {
-    return new FilledBlockingButton(customStyle, ...childNodes);
+  public static create(customStyle: string): FilledBlockingButton {
+    return new FilledBlockingButton(customStyle);
   }
 
-  public constructor(customStyle: string, ...childNodes: Array<Node>) {
-    super(`${FILLED_BUTTON_STYLE} ${customStyle}`, ...childNodes);
+  public constructor(customStyle: string) {
+    super(`${FILLED_BUTTON_STYLE} ${customStyle}`);
   }
 
   protected enableOverride(): void {
@@ -107,15 +106,12 @@ export class FilledBlockingButton extends BlockingButton {
 }
 
 export class OutlineBlockingButton extends BlockingButton {
-  public static create(
-    customStyle: string,
-    ...childNodes: Array<Node>
-  ): OutlineBlockingButton {
-    return new OutlineBlockingButton(customStyle, ...childNodes);
+  public static create(customStyle: string): OutlineBlockingButton {
+    return new OutlineBlockingButton(customStyle);
   }
 
-  public constructor(customStyle: string, ...childNodes: Array<Node>) {
-    super(`${OUTLINE_BUTTON_STYLE} ${customStyle}`, ...childNodes);
+  public constructor(customStyle: string) {
+    super(`${OUTLINE_BUTTON_STYLE} ${customStyle}`);
   }
 
   protected enableOverride(): void {
@@ -130,15 +126,12 @@ export class OutlineBlockingButton extends BlockingButton {
 }
 
 export class TextBlockingButton extends BlockingButton {
-  public static create(
-    customStyle: string,
-    ...childNodes: Array<Node>
-  ): TextBlockingButton {
-    return new TextBlockingButton(customStyle, ...childNodes);
+  public static create(customStyle: string): TextBlockingButton {
+    return new TextBlockingButton(customStyle);
   }
 
-  public constructor(customStyle: string, ...childNodes: Array<Node>) {
-    super(`${TEXT_BUTTON_STYLE} ${customStyle}`, ...childNodes);
+  public constructor(customStyle: string) {
+    super(`${TEXT_BUTTON_STYLE} ${customStyle}`);
   }
 
   protected enableOverride(): void {

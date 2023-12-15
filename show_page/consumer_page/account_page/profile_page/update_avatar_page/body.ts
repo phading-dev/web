@@ -64,10 +64,9 @@ export class UpdateAvatarPage extends EventEmitter {
         },
         assign(
           chooseFileButtonRef,
-          OutlineBlockingButton.create(
-            "",
-            E.text(LOCALIZED_TEXT.chooseAvatarLabel)
-          ).enable()
+          OutlineBlockingButton.create("")
+            .append(E.text(LOCALIZED_TEXT.chooseAvatarLabel))
+            .enable()
         ).body,
         E.divRef(
           loadErrorTextRef,
@@ -145,10 +144,9 @@ export class UpdateAvatarPage extends EventEmitter {
         ),
         assign(
           uploadButtonRef,
-          FilledBlockingButton.create(
-            "",
-            E.text(LOCALIZED_TEXT.uploadAvatarLabel)
-          ).disable()
+          FilledBlockingButton.create("")
+            .append(E.text(LOCALIZED_TEXT.uploadAvatarLabel))
+            .disable()
         ).body,
         E.divRef(
           uploadStatusTextRef,

@@ -206,7 +206,7 @@ export default class Text {
   get updateButtonLabel() {
     return `Update`;
   }
-  get updateGenericFailureLabel() {
+  get updateGenericFailure() {
     return `Failed to update. Please try again later.`;
   }
   get chooseLayoutLabel() {
@@ -376,5 +376,50 @@ export default class Text {
   }
   get chooseReportRangeEndedInDateLabel() {
     return `Until `;
+  }
+  get paymentMethodsListTitle() {
+    return `Payment methods`;
+  }
+  get paymentMethodPrimary() {
+    return `Primary`;
+  }
+  get paymentMethodBackup() {
+    return `Backup`;
+  }
+  get cardExpiresPartOne() {
+    return `Expires `;
+  }
+  get cardExpiresPartTwo() {
+    return ``;
+  }
+  get cardExpired() {
+    return `Expired`;
+  }
+  get startToAddPaymentMethodsFailed() {
+    return `Failed to add payment method. Please try again later.`;
+  }
+  get updatePaymentMethodTitle() {
+    return `Update payment method`
+  }
+  get updatePaymentMethodExpiresLabel() {
+    return `Expires`
+  }
+  get cardIsSavedAsLabel() {
+    return `Saved as`;
+  }
+  get cardIsUsedAsPrimaryPaymentMethodLabel() {
+    return `Primary`;
+  }
+  get cardIsUsedAsBackupPaymentMethodLabel() {
+    return `Backup`;
+  }
+  get cardIsSavedForFutureLabel() {
+    return `Not used`;
+  }
+  get deleteButtonLabel() {
+    return `Delete`;
+  }
+  get deletePaymentMethodFailure() {
+    return `Failed to delete the payment method. Please try again later.`
   }
 }

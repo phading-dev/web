@@ -2,13 +2,13 @@ import EventEmitter = require("events");
 import { AddBodiesFn } from "../../common/add_bodies_fn";
 import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
 import { PageNavigator } from "../../common/page_navigator";
-import { USER_SERVICE_CLIENT } from "../../common/user_service_client";
+import { USER_SERVICE_CLIENT } from "../../common/web_service_client";
 import { ConsumerCreationPage } from "./consumer_creation_page/body";
 import {
-  listOwnedUsers,
-  switchUser,
+  listOwnedAccounts,
+  switchAccount,
 } from "@phading/user_service_interface/client_requests";
-import { UserType } from "@phading/user_service_interface/user_type";
+import { AccountType } from "@phading/user_service_interface/account_type";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
 
@@ -22,8 +22,16 @@ export interface ConsumerSelectionPage {
 }
 
 export class ConsumerSelectionPage extends EventEmitter {
-  // Visible for testing
-  public consumerCreationPage: ConsumerCreationPage;
+  public static create(appendBodies: AddBodiesFn): ConsumerSelectionPage {
+    return new ConsumerSelectionPage(
+      ConsumerCreationPage.create,
+      LOCAL_SESSION_STORAGE,
+      USER_SERVICE_CLIENT,
+      appendBodies
+    );
+  }
+
+  private consumerCreationPage_: ConsumerCreationPage;
   private pageNavigator: PageNavigator<Page>;
 
   public constructor(
@@ -41,23 +49,14 @@ export class ConsumerSelectionPage extends EventEmitter {
     this.getConsumerOrCreate();
   }
 
-  public static create(appendBodies: AddBodiesFn): ConsumerSelectionPage {
-    return new ConsumerSelectionPage(
-      ConsumerCreationPage.create,
-      LOCAL_SESSION_STORAGE,
-      USER_SERVICE_CLIENT,
-      appendBodies
-    );
-  }
-
   private addPage(page: Page): void {
     switch (page) {
       case Page.Create:
-        this.consumerCreationPage = this.createConsumerCreationPage().on(
+        this.consumerCreationPage_ = this.createConsumerCreationPage().on(
           "created",
           (signedSession) => this.select(signedSession)
         );
-        this.appendBodies(this.consumerCreationPage.body);
+        this.appendBodies(this.consumerCreationPage_.body);
         break;
     }
   }
@@ -65,18 +64,18 @@ export class ConsumerSelectionPage extends EventEmitter {
   private removePage(page: Page): void {
     switch (page) {
       case Page.Create:
-        this.consumerCreationPage.remove();
+        this.consumerCreationPage_.remove();
         break;
     }
   }
 
   private async getConsumerOrCreate(): Promise<void> {
-    let listOwnedUsersResponse = await listOwnedUsers(this.userServiceClient, {
-      userType: UserType.CONSUMER,
+    let listOwnedUsersResponse = await listOwnedAccounts(this.userServiceClient, {
+      accountType: AccountType.CONSUMER,
     });
-    if (listOwnedUsersResponse.users.length > 0) {
-      let switchUserResponse = await switchUser(this.userServiceClient, {
-        userId: listOwnedUsersResponse.users[0].userId,
+    if (listOwnedUsersResponse.accounts.length > 0) {
+      let switchUserResponse = await switchAccount(this.userServiceClient, {
+        accountId: listOwnedUsersResponse.accounts[0].accountId,
       });
       this.select(switchUserResponse.signedSession);
     } else {
@@ -92,5 +91,10 @@ export class ConsumerSelectionPage extends EventEmitter {
 
   public remove(): void {
     this.pageNavigator.remove();
+  }
+
+  // Visible for testing
+  public get consumerCreationPage() {
+    return this.consumerCreationPage_;
   }
 }

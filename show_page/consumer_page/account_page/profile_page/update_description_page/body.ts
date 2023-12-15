@@ -92,7 +92,7 @@ export class UpdateDescriptionPage extends EventEmitter {
 
   private postUpdateDescription(error?: Error): string {
     if (error) {
-      return LOCALIZED_TEXT.updateGenericFailureLabel;
+      return LOCALIZED_TEXT.updateGenericFailure;
     } else {
       return "";
     }

@@ -124,7 +124,7 @@ export class UpdateUsernamePage extends EventEmitter {
     error?: Error
   ): string {
     if (error) {
-      return LOCALIZED_TEXT.updateGenericFailureLabel;
+      return LOCALIZED_TEXT.updateGenericFailure;
     } else if (response.usernameIsNotAvailable) {
       return LOCALIZED_TEXT.usernameIsUsedError;
     } else {

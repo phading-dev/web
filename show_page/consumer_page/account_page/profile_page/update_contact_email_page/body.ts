@@ -95,7 +95,7 @@ export class UpdateContactEmailPage extends EventEmitter {
 
   private postUpdateContactEmail(error?: Error): string {
     if (error) {
-      return LOCALIZED_TEXT.updateGenericFailureLabel;
+      return LOCALIZED_TEXT.updateGenericFailure;
     } else {
       return "";
     }

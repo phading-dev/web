@@ -1,55 +1,47 @@
 import EventEmitter = require("events");
-import { FilledBlockingButton } from "../../../common/blocking_button";
-import { SCHEME } from "../../../common/color_scheme";
+import { InputFormPage } from "../../../common/input_form_page/body";
+import {
+  ValidationResult,
+  VerticalTextInputWithErrorMsg,
+} from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { MEDIUM_CARD_STYLE, PAGE_STYLE } from "../../../common/page_style";
-import { VerticalTextInputWithErrorMsg } from "../../../common/text_input";
 import { NATURAL_NAME_LENGTH_LIMIT } from "../../../common/user_limits";
-import { USER_SERVICE_CLIENT } from "../../../common/user_service_client";
-import { createUser } from "@phading/user_service_interface/client_requests";
-import { UserType } from "@phading/user_service_interface/user_type";
-import { E } from "@selfage/element/factory";
+import { USER_SERVICE_CLIENT } from "../../../common/web_service_client";
+import { AccountType } from "@phading/user_service_interface/account_type";
+import { createAccount } from "@phading/user_service_interface/client_requests";
+import {
+  CreateAccountRequestBody,
+  CreateAccountResponse,
+} from "@phading/user_service_interface/interface";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
-enum InputField {
-  NaturalName,
-}
-
 export interface ConsumerCreationPage {
   on(event: "created", listener: (signedSession: string) => void): this;
+  on(event: "createError", listener: () => void): this;
 }
 
 export class ConsumerCreationPage extends EventEmitter {
-  public body: HTMLDivElement;
-  // Visible for testing
-  public nameInput: VerticalTextInputWithErrorMsg<InputField>;
-  public createButton: FilledBlockingButton;
-  private createError: HTMLDivElement;
-  private validInputs = new Set<InputField>();
+  public static create(): ConsumerCreationPage {
+    return new ConsumerCreationPage(USER_SERVICE_CLIENT);
+  }
+
+  private nameInput_: VerticalTextInputWithErrorMsg<CreateAccountRequestBody>;
+  private inputFormPage_: InputFormPage<
+    CreateAccountRequestBody,
+    CreateAccountResponse
+  >;
+  private signedSession: string;
 
   public constructor(private userServiceClient: WebServiceClient) {
     super();
-    let nameInputRef = new Ref<VerticalTextInputWithErrorMsg<InputField>>();
-    let createButtonRef = new Ref<FilledBlockingButton>();
-    let createErrorRef = new Ref<HTMLDivElement>();
-    this.body = E.div(
-      {
-        class: "consumer-creation",
-        style: PAGE_STYLE,
-      },
-      E.div(
-        {
-          class: "consumer-creation-card",
-          style: `${MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 1.5rem;`,
-        },
-        E.div(
-          {
-            class: "consumer-creation-title",
-            style: `align-self: center; font-size: 1.6rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(LOCALIZED_TEXT.createConsumerTitle)
-        ),
+    let nameInputRef = new Ref<
+      VerticalTextInputWithErrorMsg<CreateAccountRequestBody>
+    >();
+    this.inputFormPage_ = InputFormPage.create(
+      LOCALIZED_TEXT.createConsumerTitle,
+      LOCALIZED_TEXT.createConsumerButtonLabel,
+      [
         assign(
           nameInputRef,
           VerticalTextInputWithErrorMsg.create(
@@ -59,82 +51,68 @@ export class ConsumerCreationPage extends EventEmitter {
               type: "text",
               autocomplete: "name",
             },
-            this.validInputs,
-            InputField.NaturalName
+            (request, value) => {
+              request.naturalName = value;
+            },
+            (value) => this.checkNaturalNameInput(value)
           )
         ).body,
-        assign(
-          createButtonRef,
-          FilledBlockingButton.create(
-            `align-self: flex-end;`,
-            E.text(LOCALIZED_TEXT.createConsumerButtonLabel)
-          )
-        ).body,
-        E.divRef(
-          createErrorRef,
-          {
-            class: "consumer-creation-error",
-            style: `visibility: hidden; align-self: flex-end; font-size: 1.4rem; color: ${SCHEME.error0};`,
-          },
-          E.text("1")
-        )
-      )
+      ],
+      [nameInputRef.val],
+      (request) => this.createConsumer(request),
+      (response, error) => this.postCreateConsumer(response, error),
+      {}
     );
-    this.nameInput = nameInputRef.val;
-    this.createButton = createButtonRef.val;
-    this.createError = createErrorRef.val;
+    this.nameInput_ = nameInputRef.val;
 
-    this.refreshSubmitButton();
-    this.nameInput.on("input", () => this.checkNaturalNameInput());
-    this.nameInput.on("enter", () => this.createButton.click());
-    this.createButton.on("action", () => this.createConsumer());
-    this.createButton.on("postAction", (error) =>
-      this.postCreateConsumer(error)
+    this.inputFormPage_.on("submitError", () => this.emit("createError"));
+    this.inputFormPage_.on("submitted", () =>
+      this.emit("created", this.signedSession)
     );
   }
 
-  public static create(): ConsumerCreationPage {
-    return new ConsumerCreationPage(USER_SERVICE_CLIENT);
-  }
-
-  private checkNaturalNameInput(): void {
-    if (this.nameInput.value.length > NATURAL_NAME_LENGTH_LIMIT) {
-      this.nameInput.setAsInvalid(LOCALIZED_TEXT.naturalNameTooLongError);
-    } else if (this.nameInput.value.length === 0) {
-      this.nameInput.setAsInvalid();
+  private checkNaturalNameInput(value: string): ValidationResult {
+    if (value.length > NATURAL_NAME_LENGTH_LIMIT) {
+      return { valid: false, errorMsg: LOCALIZED_TEXT.naturalNameTooLongError };
+    } else if (value.length === 0) {
+      return { valid: false };
     } else {
-      this.nameInput.setAsValid();
-    }
-    this.refreshSubmitButton();
-  }
-
-  private async createConsumer(): Promise<void> {
-    this.createError.style.visibility = "hidden";
-    let response = await createUser(this.userServiceClient, {
-      naturalName: this.nameInput.value,
-      userType: UserType.CONSUMER,
-    });
-    this.emit("created", response.signedSession);
-  }
-
-  private refreshSubmitButton(): void {
-    if (this.validInputs.has(InputField.NaturalName)) {
-      this.createButton.enable();
-    } else {
-      this.createButton.disable();
+      return { valid: true };
     }
   }
 
-  private postCreateConsumer(error?: Error): void {
+  private async createConsumer(
+    request: CreateAccountRequestBody
+  ): Promise<CreateAccountResponse> {
+    request.accountType = AccountType.CONSUMER;
+    return await createAccount(this.userServiceClient, request);
+  }
+
+  private postCreateConsumer(
+    response: CreateAccountResponse,
+    error?: Error
+  ): string {
     if (error) {
-      console.error(error);
-      this.createError.style.visibility = "visible";
-      this.createError.textContent = LOCALIZED_TEXT.createConsumerError;
-      this.emit("error");
+      return LOCALIZED_TEXT.createConsumerError;
+    } else {
+      this.signedSession = response.signedSession;
+      return "";
     }
+  }
+
+  public get body() {
+    return this.inputFormPage_.body;
   }
 
   public remove(): void {
-    this.body.remove();
+    this.inputFormPage_.remove();
+  }
+
+  // Visible for testing
+  public get inputFormPage() {
+    return this.inputFormPage_;
+  }
+  public get nameInput() {
+    return this.nameInput_;
   }
 }

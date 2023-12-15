@@ -15,10 +15,7 @@ class RenderCase implements TestCase {
   private container: HTMLDivElement;
   public constructor(
     public name: string,
-    private buttonFactoryFn: (
-      customeStyle: string,
-      ...childNodes: Array<Node>
-    ) => BlockingButton,
+    private buttonFactoryFn: (customeStyle: string) => BlockingButton,
     private renderScreenshotPath: string,
     private renderScreenshotGoldenPath: string,
     private renderScreenshotDiffPath: string,
@@ -31,7 +28,10 @@ class RenderCase implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    let cut = this.buttonFactoryFn("", E.text("some button")).enable().show();
+    let cut = this.buttonFactoryFn("")
+      .append(E.text("some button"))
+      .enable()
+      .show();
     let resolveFn: Function;
     let resovablePromise = new Promise<void>((resolve) => {
       resolveFn = resolve;
@@ -121,7 +121,7 @@ TEST_RUNNER.run({
       async execute() {
         // Prepare
         let actioned = false;
-        let cut = FilledBlockingButton.create("", E.text(""));
+        let cut = FilledBlockingButton.create("");
         cut.on("action", async () => {
           actioned = true;
         });

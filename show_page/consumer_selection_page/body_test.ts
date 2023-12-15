@@ -2,15 +2,15 @@ import path = require("path");
 import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
 import { ConsumerSelectionPage } from "./body";
 import { ConsumerCreationPageMock } from "./consumer_creation_page/body_mock";
+import { AccountType } from "@phading/user_service_interface/account_type";
 import {
-  LIST_OWNED_USERS,
-  LIST_OWNED_USERS_REQUEST_BODY,
-  ListOwnedUsersResponse,
-  SWITCH_USER,
-  SWITCH_USER_REQUEST_BODY,
-  SwitchUserResponse,
+  LIST_OWNED_ACCOUNTS,
+  LIST_OWNED_ACCOUNTS_REQUEST_BODY,
+  ListOwnedAccountsResponse,
+  SWITCH_ACCOUNT,
+  SWITCH_ACCOUNT_REQUEST_BODY,
+  SwitchAccountResponse,
 } from "@phading/user_service_interface/interface";
-import { UserType } from "@phading/user_service_interface/user_type";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -28,43 +28,27 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(1000, 800);
+        let listOwnedAccountsRequestCaptured: any;
+        let switchAccountRequestCaptured: any;
         let userServiceClientMock = new (class extends WebServiceClient {
           public constructor() {
             super(undefined, undefined);
           }
           public async send(request: any): Promise<any> {
-            if (request.descriptor === LIST_OWNED_USERS) {
-              assertThat(
-                request.body,
-                eqMessage(
-                  {
-                    userType: UserType.CONSUMER,
-                  },
-                  LIST_OWNED_USERS_REQUEST_BODY
-                ),
-                "ListOwnedUsersRequestBody"
-              );
+            if (request.descriptor === LIST_OWNED_ACCOUNTS) {
+              listOwnedAccountsRequestCaptured = request;
               return {
-                users: [
+                accounts: [
                   {
-                    userId: "user id",
+                    accountId: "user id",
                   },
                 ],
-              } as ListOwnedUsersResponse;
-            } else if (request.descriptor === SWITCH_USER) {
-              assertThat(
-                request.body,
-                eqMessage(
-                  {
-                    userId: "user id",
-                  },
-                  SWITCH_USER_REQUEST_BODY
-                ),
-                "SwitchUserRequestBody"
-              );
+              } as ListOwnedAccountsResponse;
+            } else if (request.descriptor === SWITCH_ACCOUNT) {
+              switchAccountRequestCaptured = request;
               return {
                 signedSession: "new session",
-              } as SwitchUserResponse;
+              } as SwitchAccountResponse;
             } else {
               throw new Error("Unexpected.");
             }
@@ -84,6 +68,26 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
+          listOwnedAccountsRequestCaptured.body,
+          eqMessage(
+            {
+              accountType: AccountType.CONSUMER,
+            },
+            LIST_OWNED_ACCOUNTS_REQUEST_BODY
+          ),
+          "ListOwnedAccounts request body"
+        );
+        assertThat(
+          switchAccountRequestCaptured.body,
+          eqMessage(
+            {
+              accountId: "user id",
+            },
+            SWITCH_ACCOUNT_REQUEST_BODY
+          ),
+          "SwitchAccounts request body"
+        );
+        assertThat(
           LOCAL_SESSION_STORAGE.read(),
           eq("new session"),
           "new session"
@@ -100,29 +104,16 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(1000, 800);
+        let requestCaptured: any;
         let userServiceClientMock = new (class extends WebServiceClient {
           public constructor() {
             super(undefined, undefined);
           }
           public async send(request: any): Promise<any> {
-            assertThat(
-              request.descriptor,
-              eq(LIST_OWNED_USERS),
-              "init request"
-            );
-            assertThat(
-              request.body,
-              eqMessage(
-                {
-                  userType: UserType.CONSUMER,
-                },
-                LIST_OWNED_USERS_REQUEST_BODY
-              ),
-              "ListOwnedUsersRequestBody"
-            );
+            requestCaptured = request;
             return {
-              users: [],
-            } as ListOwnedUsersResponse;
+              accounts: [],
+            } as ListOwnedAccountsResponse;
           }
         })();
 
@@ -138,6 +129,21 @@ TEST_RUNNER.run({
         );
 
         // Verify
+        assertThat(
+          requestCaptured.descriptor,
+          eq(LIST_OWNED_ACCOUNTS),
+          "init request"
+        );
+        assertThat(
+          requestCaptured.body,
+          eqMessage(
+            {
+              accountType: AccountType.CONSUMER,
+            },
+            LIST_OWNED_ACCOUNTS_REQUEST_BODY
+          ),
+          "ListOwnedAccounts requesty body"
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/consumer_selection_page_create.png"),
           path.join(__dirname, "/golden/consumer_selection_page_create.png"),
