@@ -6,6 +6,7 @@ import {
   MEDIUM_CARD_STYLE,
   PAGE_STYLE,
 } from "../../../../../common/page_style";
+import { BILLING_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { AddPaymentMethodButton } from "./add_payment_method_button";
 import { CardPaymentCard } from "./card_payment_card/body";
 import {
@@ -29,6 +30,14 @@ export interface PaymentMethodsListPage {
 }
 
 export class PaymentMethodsListPage extends EventEmitter {
+  public static create(): PaymentMethodsListPage {
+    return new PaymentMethodsListPage(
+      window,
+      CardPaymentCard.create,
+      BILLING_SERVICE_CLIENT
+    );
+  }
+
   private body_: HTMLDivElement;
   private container: HTMLDivElement;
   private cards = new Array<CardPaymentCard>();

@@ -17,6 +17,7 @@ import {
   MEDIUM_CARD_STYLE,
   PAGE_STYLE,
 } from "../../../../../common/page_style";
+import { BILLING_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { createCardBrandIcon } from "../common/card_brand_icons";
 import { getCardBrandName } from "../common/card_brand_name";
 import {
@@ -40,6 +41,12 @@ export interface UpdatePaymentMethodPage {
 
 // Only handles card-type payment method for now.
 export class UpdatePaymentMethodPage extends EventEmitter {
+  public static create(
+    paymentMethod: PaymentMethodMasked
+  ): UpdatePaymentMethodPage {
+    return new UpdatePaymentMethodPage(BILLING_SERVICE_CLIENT, paymentMethod);
+  }
+
   private body_: HTMLDivElement;
   private expMonthInput_: HTMLInputElement;
   private expYearInput_: HTMLInputElement;
@@ -314,5 +321,8 @@ export class UpdatePaymentMethodPage extends EventEmitter {
   }
   public get deleteButton() {
     return this.deleteButton_;
+  }
+  public get backMenuItem() {
+    return this.backMenuItem_;
   }
 }

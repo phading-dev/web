@@ -368,5 +368,38 @@ TEST_RUNNER.run({
       expMonth: 12,
       expYear: 2020,
     }),
+    new (class implements TestCase {
+      public name = "Back";
+      private cut: UpdatePaymentMethodPage;
+      public async execute() {
+        // Prepare
+        let webServiceClientMock = new (class extends WebServiceClient {
+          public constructor() {
+            super(undefined, undefined);
+          }
+        })();
+        this.cut = new UpdatePaymentMethodPage(webServiceClientMock, {
+          id: "id1",
+          priority: PaymentMethodPriority.BACKUP,
+          card: {
+            brand: CardBrand.AMEX,
+            lastFourDigits: "1234",
+          },
+        });
+        document.body.append(this.cut.body);
+        menuBodyContainer.append(this.cut.menuBody);
+        let goBack = false;
+        this.cut.on("back", () => (goBack = true));
+
+        // Execute
+        this.cut.backMenuItem.click();
+
+        // Verify
+        assertThat(goBack, eq(true), "go back");
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
   ],
 });
