@@ -143,7 +143,7 @@ export class SecurityPage extends EventEmitter {
     }
   }
 
-  public updateState(newState?: SecurityPageState): void {
+  public updateState(newState?: SecurityPageState): this {
     if (!newState) {
       newState = {};
     }
@@ -152,6 +152,7 @@ export class SecurityPage extends EventEmitter {
     }
     this.state = newState;
     this.pageNavigator.goTo(this.state.page);
+    return this;
   }
 
   public remove(): void {

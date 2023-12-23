@@ -94,7 +94,7 @@ export class UsageReportsPage extends EventEmitter {
     this.emit("newState", this.state);
   }
 
-  public updateState(newState?: UsageReportsPageState): void {
+  public updateState(newState?: UsageReportsPageState): this {
     if (!newState) {
       newState = {};
     }
@@ -103,6 +103,7 @@ export class UsageReportsPage extends EventEmitter {
     }
     this.state = newState;
     this.pageNavigator.goTo(this.state.page);
+    return this;
   }
 
   public remove(): void {

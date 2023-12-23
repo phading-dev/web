@@ -2,9 +2,12 @@ import { SCHEME } from "../../common/color_scheme";
 import {
   createAccountIcon,
   createArrowIcon,
+  createHistogramIcon,
   createHomeIcon,
+  createPaymentIcon,
   createPlusIcon,
   createReplyIcon,
+  createSecurityIcon,
   createShuffleIcon,
   createUploadIcon,
 } from "../../common/icons";
@@ -64,5 +67,29 @@ export function createUploadMenuItem(): MenuItem {
     createUploadIcon(SCHEME.neutral1),
     `1rem`,
     LOCALIZED_TEXT.uploadLabel
+  );
+}
+
+export function createSecuritySettingsMenuItem(): MenuItem {
+  return MenuItem.create(
+    createSecurityIcon(SCHEME.neutral1),
+    `1rem`,
+    LOCALIZED_TEXT.securitySettingsLabel
+  );
+}
+
+export function createPaymentMethodsMenuIcon(): MenuItem {
+  return MenuItem.create(
+    createPaymentIcon(SCHEME.neutral1),
+    `1rem`,
+    LOCALIZED_TEXT.paymentMethodsLabel
+  );
+}
+
+export function createUsageReportsMenuItem(): MenuItem {
+  return MenuItem.create(
+    createHistogramIcon(SCHEME.neutral1),
+    `1rem`,
+    LOCALIZED_TEXT.usageReportsLabel
   );
 }

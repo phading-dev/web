@@ -116,6 +116,15 @@ export default class Text {
   get uploadLabel() {
     return `Upload`;
   }
+  get securitySettingsLabel() {
+    return `Security settings`;
+  }
+  get paymentMethodsLabel() {
+    return `Payment methods`;
+  }
+  get usageReportsLabel() {
+    return `Usage reports`;
+  }
   get chatAppName() {
     return `Chat`;
   }
@@ -399,10 +408,10 @@ export default class Text {
     return `Failed to add payment method. Please try again later.`;
   }
   get updatePaymentMethodTitle() {
-    return `Update payment method`
+    return `Update payment method`;
   }
   get updatePaymentMethodExpiresLabel() {
-    return `Expires`
+    return `Expires`;
   }
   get cardIsSavedAsLabel() {
     return `Saved as`;
@@ -420,6 +429,6 @@ export default class Text {
     return `Delete`;
   }
   get deletePaymentMethodFailure() {
-    return `Failed to delete the payment method. Please try again later.`
+    return `Failed to delete the payment method. Please try again later.`;
   }
 }

@@ -1,0 +1,38 @@
+[{
+  "name": "Page",
+  "enum": {
+    "values": [{
+      "name": "PROFILE",
+      "value": 1
+    }, {
+      "name": "SECURITY",
+      "value": 2
+    }, {
+      "name": "PAYMENT_METHODS",
+      "value": 3
+    }, {
+      "name": "USAGE_REPORTS",
+      "value": 4
+    }]
+  }
+}, {
+  "name": "AccountPageState",
+  "message": {
+    "fields": [{
+      "name": "page",
+      "type": "Page"
+    }, {
+      "name": "profilePageState",
+      "type": "ProfilePageState",
+      "import": "./profile_page/state"
+    }, {
+      "name": "securityPageState",
+      "type": "SecurityPageState",
+      "import": "./security_page/state"
+    }, {
+      "name": "usageReportsPageState",
+      "type": "UsageReportsPageState",
+      "import": "./usage_reports_page/state"
+    }]
+  }
+}]
