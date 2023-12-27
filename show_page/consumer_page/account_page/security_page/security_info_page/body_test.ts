@@ -4,7 +4,7 @@ import {
   GET_ACCOUNT_TYPE_REQUEST_BODY,
   GET_AUTH_SETTINGS,
   GetAuthSettingsResponse,
-} from "@phading/user_service_interface/interface";
+} from "@phading/user_service_interface/self/web/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";

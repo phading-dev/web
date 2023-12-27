@@ -7,11 +7,11 @@ import { MenuItem } from "../../../../../common/menu_item/body";
 import { createBackMenuItem } from "../../../../../common/menu_item/factory";
 import { USERNAME_LENGTH_LIMIT } from "../../../../../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { updateUsername } from "@phading/user_service_interface/client_requests";
+import { updateUsername } from "@phading/user_service_interface/self/web/client_requests";
 import {
   UpdateUsernameRequestBody,
   UpdateUsernameResponse,
-} from "@phading/user_service_interface/interface";
+} from "@phading/user_service_interface/self/web/interface";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 

@@ -39,13 +39,13 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@phading/billing_service_interface": "^0.2.5",
+    "@phading/billing_service_interface": "^0.3.0",
     "@phading/constants": "^0.1.0",
-    "@phading/consumer_product_interaction_service_interface": "^0.0.5",
-    "@phading/product_service_interface": "^0.0.2",
+    "@phading/product_meter_service_interface": "^0.1.1",
+    "@phading/product_service_interface": "^0.2.2",
     "@phading/tale_service_interface": "^0.1.2",
-    "@phading/user_service_interface": "^0.10.0",
-    "@phading/user_session_service_interface": "^0.2.0",
+    "@phading/user_service_interface": "^0.12.0",
+    "@phading/user_session_service_interface": "^0.3.0",
     "@selfage/closest_locale_finder": "^1.0.1",
     "@selfage/element": "^3.3.3",
     "@selfage/message": "^3.1.7",

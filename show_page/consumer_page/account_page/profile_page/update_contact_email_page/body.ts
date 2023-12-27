@@ -8,14 +8,14 @@ import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import { MenuItem } from "../../../../../common/menu_item/body";
 import { createBackMenuItem } from "../../../../../common/menu_item/factory";
 import { CONTACT_EMAIL_LENGTH_LIMIT } from "../../../../../common/user_limits";
-import { updateContactEmail } from "@phading/user_service_interface/client_requests";
+import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
+import { updateAccount } from "@phading/user_service_interface/self/web/client_requests";
 import {
-  UpdateContactEmailRequestBody,
-  UpdateContactEmailResponse,
-} from "@phading/user_service_interface/interface";
+  UpdateAccountRequestBody,
+  UpdateAccountResponse,
+} from "@phading/user_service_interface/self/web/interface";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
-import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 
 export interface UpdateContactEmailPage {
   on(event: "back", listener: () => void): this;
@@ -29,16 +29,16 @@ export class UpdateContactEmailPage extends EventEmitter {
   }
 
   private backMenuItem_: MenuItem;
-  private emailInput_: VerticalTextInputWithErrorMsg<UpdateContactEmailRequestBody>;
+  private emailInput_: VerticalTextInputWithErrorMsg<UpdateAccountRequestBody>;
   private inputFormPage_: InputFormPage<
-    UpdateContactEmailRequestBody,
-    UpdateContactEmailResponse
+    UpdateAccountRequestBody,
+    UpdateAccountResponse
   >;
 
   public constructor(private userServiceClient: WebServiceClient) {
     super();
     let emailInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<UpdateContactEmailRequestBody>
+      VerticalTextInputWithErrorMsg<UpdateAccountRequestBody>
     >();
     this.inputFormPage_ = InputFormPage.create(
       LOCALIZED_TEXT.updateContactEmailTitle,
@@ -88,9 +88,9 @@ export class UpdateContactEmailPage extends EventEmitter {
   }
 
   private updateContactEmail(
-    request: UpdateContactEmailRequestBody
-  ): Promise<UpdateContactEmailResponse> {
-    return updateContactEmail(this.userServiceClient, request);
+    request: UpdateAccountRequestBody
+  ): Promise<UpdateAccountResponse> {
+    return updateAccount(this.userServiceClient, request);
   }
 
   private postUpdateContactEmail(error?: Error): string {

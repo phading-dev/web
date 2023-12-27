@@ -9,11 +9,11 @@ import { MenuItem } from "../../../../../common/menu_item/body";
 import { createBackMenuItem } from "../../../../../common/menu_item/factory";
 import { NATURAL_NAME_LENGTH_LIMIT } from "../../../../../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { updateNaturalName } from "@phading/user_service_interface/client_requests";
+import { updateAccount } from "@phading/user_service_interface/self/web/client_requests";
 import {
-  UpdateNaturalNameRequestBody,
-  UpdateNaturalNameResponse,
-} from "@phading/user_service_interface/interface";
+  UpdateAccountRequestBody,
+  UpdateAccountResponse,
+} from "@phading/user_service_interface/self/web/interface";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
@@ -29,16 +29,16 @@ export class UpdateNaturalNamePage extends EventEmitter {
   }
 
   private backMenuItem_: MenuItem;
-  private naturalNameInput_: VerticalTextInputWithErrorMsg<UpdateNaturalNameRequestBody>;
+  private naturalNameInput_: VerticalTextInputWithErrorMsg<UpdateAccountRequestBody>;
   private inputFormPage_: InputFormPage<
-    UpdateNaturalNameRequestBody,
-    UpdateNaturalNameResponse
+    UpdateAccountRequestBody,
+    UpdateAccountResponse
   >;
 
   public constructor(private userServiceClient: WebServiceClient) {
     super();
     let naturalNameInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<UpdateNaturalNameRequestBody>
+      VerticalTextInputWithErrorMsg<UpdateAccountRequestBody>
     >();
     this.inputFormPage_ = InputFormPage.create(
       LOCALIZED_TEXT.updateNaturalNameTitle,
@@ -88,9 +88,9 @@ export class UpdateNaturalNamePage extends EventEmitter {
   }
 
   private updateNaturalName(
-    request: UpdateNaturalNameRequestBody
-  ): Promise<UpdateNaturalNameResponse> {
-    return updateNaturalName(this.userServiceClient, request);
+    request: UpdateAccountRequestBody
+  ): Promise<UpdateAccountResponse> {
+    return updateAccount(this.userServiceClient, request);
   }
 
   private postUpdateNaturalName(error?: Error): string {

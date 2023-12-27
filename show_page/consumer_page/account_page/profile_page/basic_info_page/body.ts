@@ -7,7 +7,7 @@ import {
 } from "../../../../../common/page_style";
 import { TextContentButton } from "../../../../../common/text_content_button";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { getSubjectAccount } from "@phading/user_service_interface/client_requests";
+import { getAccount } from "@phading/user_service_interface/self/web/client_requests";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -53,7 +53,7 @@ export class BasicInfoPag extends EventEmitter {
   }
 
   private async load(): Promise<void> {
-    let account = (await getSubjectAccount(this.userServiceClient, {})).account;
+    let account = (await getAccount(this.userServiceClient, {})).account;
 
     let avatarContainerRef = new Ref<HTMLDivElement>();
     let avatarUpdateHintRef = new Ref<HTMLDivElement>();

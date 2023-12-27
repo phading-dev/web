@@ -13,7 +13,7 @@ import {
   PAGE_STYLE,
 } from "../../../../../common/page_style";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { uploadAvatar } from "@phading/user_service_interface/client_requests";
+import { uploadAccountAvatar } from "@phading/user_service_interface/self/web/client_requests";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -252,7 +252,7 @@ export class UpdateAvatarPage extends EventEmitter {
   private async uploadAvatar(): Promise<void> {
     this.uploadStatusText.style.visibility = "hidden";
     let blob = await this.imageCropper_.export();
-    await uploadAvatar(this.userServiceClient, blob);
+    await uploadAccountAvatar(this.userServiceClient, blob);
   }
 
   private postUploadAvatar(error?: Error): void {

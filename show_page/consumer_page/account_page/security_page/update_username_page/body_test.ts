@@ -4,7 +4,7 @@ import {
   UPDATE_USERNAME,
   UPDATE_USERNAME_REQUEST_BODY,
   UpdateUsernameResponse,
-} from "@phading/user_service_interface/interface";
+} from "@phading/user_service_interface/self/web/interface";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";

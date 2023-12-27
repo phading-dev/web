@@ -1,5 +1,5 @@
 import { SCHEME } from "../../../../../common/color_scheme";
-import { CardBrand } from "@phading/billing_service_interface/payment_method_masked";
+import { CardBrand } from "@phading/billing_service_interface/web/payment_method_masked";
 import { E } from "@selfage/element/factory";
 
 export function createDefaultCardIcon(): SVGSVGElement {

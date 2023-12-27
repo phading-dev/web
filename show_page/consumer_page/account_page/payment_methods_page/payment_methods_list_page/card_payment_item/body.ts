@@ -5,11 +5,11 @@ import { LOCALIZED_TEXT } from "../../../../../../common/locales/localized_text"
 import { createCardBrandIcon } from "../../common/card_brand_icons";
 import { getCardBrandName } from "../../common/card_brand_name";
 import { CARD_BORDER_RADIUS } from "../common/styles";
-import { PaymentMethodMasked } from "@phading/billing_service_interface/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/payment_method_priority";
+import { PaymentMethodMasked } from "@phading/billing_service_interface/web/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
 import { E } from "@selfage/element/factory";
 
-export interface CardPaymentCard {
+export interface CardPaymentItem {
   on(
     event: "update",
     listener: (paymentMethod: PaymentMethodMasked) => void
@@ -17,9 +17,9 @@ export interface CardPaymentCard {
 }
 
 // A card-like UI component for card-type payment method.
-export class CardPaymentCard extends EventEmitter {
-  public static create(paymentMethod: PaymentMethodMasked): CardPaymentCard {
-    return new CardPaymentCard(() => Date.now(), paymentMethod);
+export class CardPaymentItem extends EventEmitter {
+  public static create(paymentMethod: PaymentMethodMasked): CardPaymentItem {
+    return new CardPaymentItem(() => Date.now(), paymentMethod);
   }
 
   private body_: HTMLDivElement;

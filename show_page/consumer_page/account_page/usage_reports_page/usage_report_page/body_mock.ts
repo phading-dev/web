@@ -1,5 +1,5 @@
 import { UsageReportPage } from "./body";
-import { GetPlaytimeMeterReportResponse } from "@phading/consumer_product_interaction_service_interface/interface";
+import { GetPlaytimeMeterReportResponse } from "@phading/product_meter_service_interface/consumer/web/interface";
 import { AppType } from "@phading/product_service_interface/app_type";
 import { WebServiceClient } from "@selfage/web_service_client";
 

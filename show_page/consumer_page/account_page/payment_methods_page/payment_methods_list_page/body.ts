@@ -8,13 +8,13 @@ import {
 } from "../../../../../common/page_style";
 import { BILLING_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { AddPaymentMethodButton } from "./add_payment_method_button";
-import { CardPaymentCard } from "./card_payment_card/body";
+import { CardPaymentItem } from "./card_payment_item/body";
 import {
   createStripeSessionToAddPaymentMethod,
   listPaymentMethods,
-} from "@phading/billing_service_interface/client_requests";
-import { CreateStripeSessionToAddPaymentMethodResponse } from "@phading/billing_service_interface/interface";
-import { PaymentMethodMasked } from "@phading/billing_service_interface/payment_method_masked";
+} from "@phading/billing_service_interface/web/client_requests";
+import { CreateStripeSessionToAddPaymentMethodResponse } from "@phading/billing_service_interface/web/interface";
+import { PaymentMethodMasked } from "@phading/billing_service_interface/web/payment_method_masked";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -33,38 +33,38 @@ export class PaymentMethodsListPage extends EventEmitter {
   public static create(): PaymentMethodsListPage {
     return new PaymentMethodsListPage(
       window,
-      CardPaymentCard.create,
+      CardPaymentItem.create,
       BILLING_SERVICE_CLIENT
     );
   }
 
   private body_: HTMLDivElement;
-  private container: HTMLDivElement;
-  private cards = new Array<CardPaymentCard>();
+  private card: HTMLDivElement;
+  private items = new Array<CardPaymentItem>();
   private addPaymentMethodButton_: BlockingButton;
   private addErrorMsg: HTMLDivElement;
   private response: CreateStripeSessionToAddPaymentMethodResponse;
 
   public constructor(
     private window: Window,
-    private createCardPaymentCard: (
+    private createCardPaymentItem: (
       paymentMethod: PaymentMethodMasked
-    ) => CardPaymentCard,
+    ) => CardPaymentItem,
     private billingServiceClient: WebServiceClient
   ) {
     super();
-    let containerRef = new Ref<HTMLDivElement>();
+    let cardRef = new Ref<HTMLDivElement>();
     this.body_ = E.div(
       {
         class: "payment-methods-list",
         style: PAGE_STYLE,
       },
-      E.divRef(containerRef, {
-        class: "payment-methods-list-container",
+      E.divRef(cardRef, {
+        class: "payment-methods-list-card",
         style: `${MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 1.5rem;`,
       })
     );
-    this.container = containerRef.val;
+    this.card = cardRef.val;
 
     this.load();
   }
@@ -73,7 +73,7 @@ export class PaymentMethodsListPage extends EventEmitter {
     let response = await listPaymentMethods(this.billingServiceClient, {});
     let addPaymentMethodButtonRef = new Ref<BlockingButton>();
     let addErrorMsgRef = new Ref<HTMLDivElement>();
-    this.container.append(
+    this.card.append(
       E.div(
         {
           class: "payment-methods-list-title",
@@ -81,7 +81,7 @@ export class PaymentMethodsListPage extends EventEmitter {
         },
         E.text(LOCALIZED_TEXT.paymentMethodsListTitle)
       ),
-      ...this.createPaymentMethodCards(response.paymentMethods),
+      ...this.createPaymentMethodItems(response.paymentMethods),
       assign(
         addPaymentMethodButtonRef,
         AddPaymentMethodButton.create().enable().show()
@@ -107,20 +107,20 @@ export class PaymentMethodsListPage extends EventEmitter {
     this.emit("loaded");
   }
 
-  private createPaymentMethodCards(
+  private createPaymentMethodItems(
     paymentMethods: Array<PaymentMethodMasked>
   ): Array<HTMLDivElement> {
-    let cardBodies = new Array<HTMLDivElement>();
+    let itemBodies = new Array<HTMLDivElement>();
     for (let paymentMethod of paymentMethods) {
       // For now we only have the card-type payment method.
-      let card = this.createCardPaymentCard(paymentMethod).on(
+      let item = this.createCardPaymentItem(paymentMethod).on(
         "update",
         (paymentMethod) => this.emit("update", paymentMethod)
       );
-      this.cards.push(card);
-      cardBodies.push(card.body);
+      this.items.push(item);
+      itemBodies.push(item.body);
     }
-    return cardBodies;
+    return itemBodies;
   }
 
   private async startRedirectingToAddPaymentMethod(): Promise<void> {
@@ -156,8 +156,8 @@ export class PaymentMethodsListPage extends EventEmitter {
   }
 
   // Visible for testing
-  public get paymentMethodCards() {
-    return this.cards;
+  public get paymentMethodItems() {
+    return this.items;
   }
   public get addPaymentMethodButton() {
     return this.addPaymentMethodButton_;

@@ -2,10 +2,10 @@ import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
 import { BasicInfoPag } from "./body";
 import {
-  GET_SUBJECT_ACCOUNT,
-  GET_SUBJECT_ACCOUNT_REQUEST_BODY,
-  GetSubjectAccountResponse,
-} from "@phading/user_service_interface/interface";
+  GET_ACCOUNT,
+  GET_ACCOUNT_REQUEST_BODY,
+  GetAccountResponse,
+} from "@phading/user_service_interface/self/web/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -21,28 +21,20 @@ TEST_RUNNER.run({
       private cut: BasicInfoPag;
       public async execute() {
         // Prepare
+        let requestCaptured: any;
         this.cut = new BasicInfoPag(
           new (class extends WebServiceClient {
             public constructor() {
               super(undefined, undefined);
             }
             public async send(request: any): Promise<any> {
-              assertThat(
-                request.descriptor,
-                eq(GET_SUBJECT_ACCOUNT),
-                "service"
-              );
-              assertThat(
-                request.body,
-                eqMessage({}, GET_SUBJECT_ACCOUNT_REQUEST_BODY),
-                "request body"
-              );
+              requestCaptured = request;
               return {
                 account: {
                   avatarLargePath: userImage,
                   naturalName: "Some name",
                 },
-              } as GetSubjectAccountResponse;
+              } as GetAccountResponse;
             }
           })()
         );
@@ -52,6 +44,12 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
+        assertThat(requestCaptured.descriptor, eq(GET_ACCOUNT), "service");
+        assertThat(
+          requestCaptured.body,
+          eqMessage({}, GET_ACCOUNT_REQUEST_BODY),
+          "request body"
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/basic_info_page_name_only.png"),
           path.join(__dirname, "/golden/basic_info_page_name_only.png"),
@@ -109,16 +107,6 @@ TEST_RUNNER.run({
               super(undefined, undefined);
             }
             public async send(request: any): Promise<any> {
-              assertThat(
-                request.descriptor,
-                eq(GET_SUBJECT_ACCOUNT),
-                "service"
-              );
-              assertThat(
-                request.body,
-                eqMessage({}, GET_SUBJECT_ACCOUNT_REQUEST_BODY),
-                "request body"
-              );
               return {
                 account: {
                   avatarLargePath: userImage,
@@ -127,7 +115,7 @@ TEST_RUNNER.run({
                   description:
                     "long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long",
                 },
-              } as GetSubjectAccountResponse;
+              } as GetAccountResponse;
             }
           })()
         );
@@ -163,7 +151,7 @@ TEST_RUNNER.run({
                   avatarLargePath: userImage,
                   naturalName: "Some name",
                 },
-              } as GetSubjectAccountResponse;
+              } as GetAccountResponse;
             }
           })()
         );
@@ -197,7 +185,7 @@ TEST_RUNNER.run({
                   avatarLargePath: userImage,
                   naturalName: "Some name",
                 },
-              } as GetSubjectAccountResponse;
+              } as GetAccountResponse;
             }
           })()
         );
@@ -231,7 +219,7 @@ TEST_RUNNER.run({
                   avatarLargePath: userImage,
                   naturalName: "Some name",
                 },
-              } as GetSubjectAccountResponse;
+              } as GetAccountResponse;
             }
           })()
         );

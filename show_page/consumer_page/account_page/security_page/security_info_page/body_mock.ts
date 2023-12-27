@@ -1,5 +1,5 @@
 import { SecurityInfoPage } from "./body";
-import { GetAuthSettingsResponse } from "@phading/user_service_interface/interface";
+import { GetAuthSettingsResponse } from "@phading/user_service_interface/self/web/interface";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export class SecurityInfoPageMock extends SecurityInfoPage {

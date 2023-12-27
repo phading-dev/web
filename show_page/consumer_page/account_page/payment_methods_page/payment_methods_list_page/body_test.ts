@@ -1,6 +1,6 @@
 import path = require("path");
 import { PaymentMethodsListPage } from "./body";
-import { CardPaymentCardMock } from "./card_payment_card/body_mock";
+import { CardPaymentItemMock } from "./card_payment_item/body_mock";
 import {
   CREATE_STRIPE_SESSION_TO_ADD_PAYMENT_METHOD,
   CREATE_STRIPE_SESSION_TO_ADD_PAYMENT_METHOD_REQUEST_BODY,
@@ -8,13 +8,13 @@ import {
   LIST_PAYMENT_METHODS,
   LIST_PAYMENT_METHODS_REQUEST_BODY,
   ListPaymentMethodsResponse,
-} from "@phading/billing_service_interface/interface";
+} from "@phading/billing_service_interface/web/interface";
 import {
   CardBrand,
   PAYMENT_METHOD_MASKED,
   PaymentMethodMasked,
-} from "@phading/billing_service_interface/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/payment_method_priority";
+} from "@phading/billing_service_interface/web/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -45,7 +45,7 @@ TEST_RUNNER.run({
             return {
               paymentMethods: [
                 {
-                  id: "id1",
+                  paymentMethodId: "id1",
                   priority: PaymentMethodPriority.PRIMARY,
                   card: {
                     brand: CardBrand.AMEX,
@@ -55,7 +55,7 @@ TEST_RUNNER.run({
                   },
                 },
                 {
-                  id: "id2",
+                  paymentMethodId: "id2",
                   priority: PaymentMethodPriority.BACKUP,
                   card: {
                     brand: CardBrand.DINERS,
@@ -65,7 +65,7 @@ TEST_RUNNER.run({
                   },
                 },
                 {
-                  id: "id3",
+                  paymentMethodId: "id3",
                   priority: PaymentMethodPriority.NORMAL,
                   card: {
                     brand: CardBrand.DISCOVER,
@@ -80,7 +80,7 @@ TEST_RUNNER.run({
         })();
         this.cut = new PaymentMethodsListPage(
           windowMock as any,
-          (paymentMethod) => new CardPaymentCardMock(paymentMethod),
+          (paymentMethod) => new CardPaymentItemMock(paymentMethod),
           serviceClientMock
         );
 
@@ -114,10 +114,10 @@ TEST_RUNNER.run({
         });
 
         // Execute
-        this.cut.paymentMethodCards[1].emit(
+        this.cut.paymentMethodItems[1].emit(
           "update",
           {
-            id: "id2",
+            paymentMethodId: "id2",
             priority: PaymentMethodPriority.BACKUP,
             card: {
               brand: CardBrand.DINERS,
@@ -134,7 +134,7 @@ TEST_RUNNER.run({
           paymentMethodCaptured,
           eqMessage(
             {
-              id: "id2",
+              paymentMethodId: "id2",
               priority: PaymentMethodPriority.BACKUP,
               card: {
                 brand: CardBrand.DINERS,

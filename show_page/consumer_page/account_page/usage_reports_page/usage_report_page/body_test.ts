@@ -4,7 +4,7 @@ import {
   GET_PLAYTIME_METER_REPORT,
   GET_PLAYTIME_METER_REPORT_REQUEST_BODY,
   GetPlaytimeMeterReportResponse,
-} from "@phading/consumer_product_interaction_service_interface/interface";
+} from "@phading/product_meter_service_interface/consumer/web/interface";
 import { AppType } from "@phading/product_service_interface/app_type";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";

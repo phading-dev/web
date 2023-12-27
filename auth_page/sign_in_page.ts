@@ -8,11 +8,11 @@ import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
 import { USER_SERVICE_CLIENT } from "../common/web_service_client";
 import { SWITCH_TEXT_STYLE } from "./styles";
-import { signIn } from "@phading/user_service_interface/client_requests";
+import { signIn } from "@phading/user_service_interface/self/web/client_requests";
 import {
   SignInRequestBody,
   SignInResponse,
-} from "@phading/user_service_interface/interface";
+} from "@phading/user_service_interface/self/web/interface";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";

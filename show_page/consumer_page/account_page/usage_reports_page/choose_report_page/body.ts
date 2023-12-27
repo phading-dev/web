@@ -8,9 +8,9 @@ import {
   MEDIUM_CARD_STYLE,
   PAGE_STYLE,
 } from "../../../../../common/page_style";
-import { CONSUMER_PRODUCT_INTERACTION_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { listHistoryPlaytimeMeterReports } from "@phading/consumer_product_interaction_service_interface/client_requests";
-import { PlaytimeMeterReportRange } from "@phading/consumer_product_interaction_service_interface/playtime_meter_report_range";
+import { PRODUCT_METER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
+import { listHistoryPlaytimeMeterReports } from "@phading/product_meter_service_interface/consumer/web/client_requests";
+import { PlaytimeMeterReportRange } from "@phading/product_meter_service_interface/consumer/web/playtime_meter_report";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -23,7 +23,7 @@ export interface ChooseReportPage {
 
 export class ChooseReportPage extends EventEmitter {
   public static create(): ChooseReportPage {
-    return new ChooseReportPage(CONSUMER_PRODUCT_INTERACTION_SERVICE_CLIENT);
+    return new ChooseReportPage(PRODUCT_METER_SERVICE_CLIENT);
   }
 
   public body: HTMLDivElement;
@@ -34,9 +34,7 @@ export class ChooseReportPage extends EventEmitter {
   public historyRangeButtons: Array<HTMLDivElement>;
   private card: HTMLDivElement;
 
-  public constructor(
-    private consumerProductInteractionServiceClient: WebServiceClient
-  ) {
+  public constructor(private webServiceClient: WebServiceClient) {
     super();
     let cardRef = new Ref<HTMLDivElement>();
     this.body = E.div(
@@ -60,7 +58,7 @@ export class ChooseReportPage extends EventEmitter {
 
   private async load(): Promise<void> {
     let response = await listHistoryPlaytimeMeterReports(
-      this.consumerProductInteractionServiceClient,
+      this.webServiceClient,
       {}
     );
 

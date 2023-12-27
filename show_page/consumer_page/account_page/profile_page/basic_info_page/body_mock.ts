@@ -1,6 +1,6 @@
 import userImage = require("./test_data/user_image.jpg");
 import { BasicInfoPag } from "./body";
-import { GetSubjectAccountResponse } from "@phading/user_service_interface/interface";
+import { GetAccountResponse } from "@phading/user_service_interface/self/web/interface";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export class BasicInfoPagMock extends BasicInfoPag {
@@ -17,7 +17,7 @@ export class BasicInfoPagMock extends BasicInfoPag {
               contactEmail: "my@gmail.com",
               naturalName: "First Second",
             },
-          } as GetSubjectAccountResponse;
+          } as GetAccountResponse;
         }
       })()
     );

@@ -1,11 +1,11 @@
 import path = require("path");
-import { CardPaymentCard } from "./body";
+import { CardPaymentItem } from "./body";
 import {
   CardBrand,
   PAYMENT_METHOD_MASKED,
   PaymentMethodMasked,
-} from "@phading/billing_service_interface/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/payment_method_priority";
+} from "@phading/billing_service_interface/web/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -13,7 +13,7 @@ import { assertThat } from "@selfage/test_matcher";
 import "../../../../../../common/normalize_body";
 
 class CardBrandTestCase implements TestCase {
-  private cut: CardPaymentCard;
+  private cut: CardPaymentItem;
   public constructor(
     public name: string,
     private priority: PaymentMethodPriority,
@@ -27,8 +27,8 @@ class CardBrandTestCase implements TestCase {
     let timeEpochInMillisecond = 1701505138000; // 2023-12-02
 
     // Execute
-    this.cut = new CardPaymentCard(() => timeEpochInMillisecond, {
-      id: "id1",
+    this.cut = new CardPaymentItem(() => timeEpochInMillisecond, {
+      paymentMethodId: "id1",
       priority: this.priority,
       card: {
         brand: this.cardBrand,
@@ -63,7 +63,7 @@ class CardBrandTestCase implements TestCase {
       paymentMethodCaptured,
       eqMessage(
         {
-          id: "id1",
+          paymentMethodId: "id1",
           priority: this.priority,
           card: {
             brand: this.cardBrand,
@@ -83,7 +83,7 @@ class CardBrandTestCase implements TestCase {
 }
 
 TEST_RUNNER.run({
-  name: "CardPaymentCard",
+  name: "CardPaymentItem",
   cases: [
     new CardBrandTestCase(
       "Amex",
@@ -151,14 +151,14 @@ TEST_RUNNER.run({
     ),
     new (class CardBrandTestCase implements TestCase {
       public name = "CardExpired";
-      private cut: CardPaymentCard;
+      private cut: CardPaymentItem;
       public async execute() {
         // Prepare
         let timeEpochInMillisecond = 1701505138000; // 2023-12-02
 
         // Execute
-        this.cut = new CardPaymentCard(() => timeEpochInMillisecond, {
-          id: "id1",
+        this.cut = new CardPaymentItem(() => timeEpochInMillisecond, {
+          paymentMethodId: "id1",
           priority: PaymentMethodPriority.NORMAL,
           card: {
             brand: CardBrand.AMEX,
@@ -193,7 +193,7 @@ TEST_RUNNER.run({
           paymentMethodCaptured,
           eqMessage(
             {
-              id: "id1",
+              paymentMethodId: "id1",
               priority: PaymentMethodPriority.NORMAL,
               card: {
                 brand: CardBrand.AMEX,

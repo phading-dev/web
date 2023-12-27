@@ -1,10 +1,10 @@
 import path = require("path");
 import { UpdateNaturalNamePage } from "./body";
 import {
-  UPDATE_NATURAL_NAME,
-  UPDATE_NATURAL_NAME_REQUEST_BODY,
-  UpdateNaturalNameResponse,
-} from "@phading/user_service_interface/interface";
+  UPDATE_ACCOUNT,
+  UPDATE_ACCOUNT_REQUEST_BODY,
+  UpdateAccountResponse,
+} from "@phading/user_service_interface/self/web/interface";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
@@ -46,7 +46,7 @@ TEST_RUNNER.run({
         await setViewport(1000, 600);
         let requestCaptured: any;
         let error: Error;
-        let response: UpdateNaturalNameResponse;
+        let response: UpdateAccountResponse;
 
         // Execute
         this.cut = new UpdateNaturalNamePage(
@@ -106,18 +106,14 @@ TEST_RUNNER.run({
         );
 
         // Verify
-        assertThat(
-          requestCaptured.descriptor,
-          eq(UPDATE_NATURAL_NAME),
-          "service"
-        );
+        assertThat(requestCaptured.descriptor, eq(UPDATE_ACCOUNT), "service");
         assertThat(
           requestCaptured.body,
           eqMessage(
             {
               naturalName: "First second",
             },
-            UPDATE_NATURAL_NAME_REQUEST_BODY
+            UPDATE_ACCOUNT_REQUEST_BODY
           ),
           "request body"
         );

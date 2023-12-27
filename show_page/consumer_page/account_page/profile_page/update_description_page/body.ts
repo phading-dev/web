@@ -9,11 +9,11 @@ import { MenuItem } from "../../../../../common/menu_item/body";
 import { createBackMenuItem } from "../../../../../common/menu_item/factory";
 import { DESCRIPTION_LENGTH_LIMIT } from "../../../../../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { updateDescription } from "@phading/user_service_interface/client_requests";
+import { updateAccount } from "@phading/user_service_interface/self/web/client_requests";
 import {
-  UpdateDescriptionRequestBody,
-  UpdateDescriptionResponse,
-} from "@phading/user_service_interface/interface";
+  UpdateAccountRequestBody,
+  UpdateAccountResponse,
+} from "@phading/user_service_interface/self/web/interface";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
@@ -29,16 +29,16 @@ export class UpdateDescriptionPage extends EventEmitter {
   }
 
   private backMenuItem_: MenuItem;
-  private descriptionInput_: TextAreaInputWithErrorMsg<UpdateDescriptionRequestBody>;
+  private descriptionInput_: TextAreaInputWithErrorMsg<UpdateAccountRequestBody>;
   private inputFormPage_: InputFormPage<
-    UpdateDescriptionRequestBody,
-    UpdateDescriptionResponse
+    UpdateAccountRequestBody,
+    UpdateAccountResponse
   >;
 
   public constructor(private userServiceClient: WebServiceClient) {
     super();
     let descriptionInputRef = new Ref<
-      TextAreaInputWithErrorMsg<UpdateDescriptionRequestBody>
+      TextAreaInputWithErrorMsg<UpdateAccountRequestBody>
     >();
     this.inputFormPage_ = InputFormPage.create(
       LOCALIZED_TEXT.updateDescriptionTitle,
@@ -85,9 +85,9 @@ export class UpdateDescriptionPage extends EventEmitter {
   }
 
   private updateDescription(
-    requset: UpdateDescriptionRequestBody
-  ): Promise<UpdateDescriptionResponse> {
-    return updateDescription(this.userServiceClient, requset);
+    requset: UpdateAccountRequestBody
+  ): Promise<UpdateAccountResponse> {
+    return updateAccount(this.userServiceClient, requset);
   }
 
   private postUpdateDescription(error?: Error): string {

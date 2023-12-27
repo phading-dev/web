@@ -1,10 +1,10 @@
 import path = require("path");
 import { UpdateDescriptionPage } from "./body";
 import {
-  UPDATE_DESCRIPTION,
-  UPDATE_DESCRIPTION_REQUEST_BODY,
-  UpdateDescriptionResponse,
-} from "@phading/user_service_interface/interface";
+  UPDATE_ACCOUNT,
+  UPDATE_ACCOUNT_REQUEST_BODY,
+  UpdateAccountResponse,
+} from "@phading/user_service_interface/self/web/interface";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
@@ -46,7 +46,7 @@ TEST_RUNNER.run({
         await setViewport(1000, 600);
         let requestCaptured: any;
         let error: Error;
-        let response: UpdateDescriptionResponse;
+        let response: UpdateAccountResponse;
 
         // Execute
         this.cut = new UpdateDescriptionPage(
@@ -109,18 +109,14 @@ TEST_RUNNER.run({
         );
 
         // Verify
-        assertThat(
-          requestCaptured.descriptor,
-          eq(UPDATE_DESCRIPTION),
-          "service"
-        );
+        assertThat(requestCaptured.descriptor, eq(UPDATE_ACCOUNT), "service");
         assertThat(
           requestCaptured.body,
           eqMessage(
             {
               description: "some helpful description",
             },
-            UPDATE_DESCRIPTION_REQUEST_BODY
+            UPDATE_ACCOUNT_REQUEST_BODY
           ),
           "request body"
         );

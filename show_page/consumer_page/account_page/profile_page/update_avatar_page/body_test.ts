@@ -2,7 +2,7 @@ import nonImageFile = require("./test_data/non_image.bin");
 import wideImage = require("./test_data/wide.jpeg");
 import path = require("path");
 import { UpdateAvatarPage } from "./body";
-import { UploadAvatarResponse } from "@phading/user_service_interface/interface";
+import { UploadAccountAvatarResponse } from "@phading/user_service_interface/self/web/interface";
 import { E } from "@selfage/element/factory";
 import {
   setViewport,
@@ -176,7 +176,7 @@ TEST_RUNNER.run({
             path.join(__dirname, "/update_avatar_page_uploaded_image.png"),
             toBeSent
           );
-          return {} as UploadAvatarResponse;
+          return {} as UploadAccountAvatarResponse;
         };
 
         // Execute

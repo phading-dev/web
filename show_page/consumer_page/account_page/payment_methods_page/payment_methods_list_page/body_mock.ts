@@ -1,15 +1,15 @@
 import { PaymentMethodsListPage } from "./body";
-import { CardPaymentCardMock } from "./card_payment_card/body_mock";
-import { ListPaymentMethodsResponse } from "@phading/billing_service_interface/interface";
-import { CardBrand } from "@phading/billing_service_interface/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/payment_method_priority";
+import { CardPaymentItemMock } from "./card_payment_item/body_mock";
+import { ListPaymentMethodsResponse } from "@phading/billing_service_interface/web/interface";
+import { CardBrand } from "@phading/billing_service_interface/web/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export class PaymentMethodsListPageMock extends PaymentMethodsListPage {
   public constructor() {
     super(
       undefined,
-      (paymentMethod) => new CardPaymentCardMock(paymentMethod),
+      (paymentMethod) => new CardPaymentItemMock(paymentMethod),
       new (class extends WebServiceClient {
         public constructor() {
           super(undefined, undefined);
@@ -18,7 +18,7 @@ export class PaymentMethodsListPageMock extends PaymentMethodsListPage {
           return {
             paymentMethods: [
               {
-                id: "id1",
+                paymentMethodId: "id1",
                 priority: PaymentMethodPriority.PRIMARY,
                 card: {
                   brand: CardBrand.AMEX,
@@ -28,7 +28,7 @@ export class PaymentMethodsListPageMock extends PaymentMethodsListPage {
                 },
               },
               {
-                id: "id2",
+                paymentMethodId: "id2",
                 priority: PaymentMethodPriority.BACKUP,
                 card: {
                   brand: CardBrand.DINERS,
@@ -38,7 +38,7 @@ export class PaymentMethodsListPageMock extends PaymentMethodsListPage {
                 },
               },
               {
-                id: "id3",
+                paymentMethodId: "id3",
                 priority: PaymentMethodPriority.NORMAL,
                 card: {
                   brand: CardBrand.DISCOVER,

@@ -6,7 +6,7 @@ import {
 } from "../../../../../common/page_style";
 import { TextContentButton } from "../../../../../common/text_content_button";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { getAuthSettings } from "@phading/user_service_interface/client_requests";
+import { getAuthSettings } from "@phading/user_service_interface/self/web/client_requests";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";

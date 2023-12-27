@@ -7,12 +7,12 @@ import {
   MEDIUM_CARD_STYLE,
   PAGE_STYLE,
 } from "../../../../../common/page_style";
-import { CONSUMER_PRODUCT_INTERACTION_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { getPlaytimeMeterReport } from "@phading/consumer_product_interaction_service_interface/client_requests";
+import { PRODUCT_METER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
+import { getPlaytimeMeterReport } from "@phading/product_meter_service_interface/consumer/web/client_requests";
 import {
   PlaytimeMeterPerApp,
   PlaytimeMeterReport,
-} from "@phading/consumer_product_interaction_service_interface/playtime_meter_report";
+} from "@phading/product_meter_service_interface/consumer/web/playtime_meter_report";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -24,10 +24,7 @@ export interface UsageReportPage {
 
 export class UsageReportPage extends EventEmitter {
   public static create(reportId?: string): UsageReportPage {
-    return new UsageReportPage(
-      CONSUMER_PRODUCT_INTERACTION_SERVICE_CLIENT,
-      reportId
-    );
+    return new UsageReportPage(PRODUCT_METER_SERVICE_CLIENT, reportId);
   }
 
   private static LABEL_WIDTH = "5rem";
@@ -38,7 +35,7 @@ export class UsageReportPage extends EventEmitter {
   private card: HTMLDivElement;
 
   public constructor(
-    private consumerProductInteractionServiceClient: WebServiceClient,
+    private webServiceClient: WebServiceClient,
     private reportId?: string
   ) {
     super();
@@ -60,12 +57,9 @@ export class UsageReportPage extends EventEmitter {
 
   private async load(): Promise<void> {
     let playtimeMeterReport = (
-      await getPlaytimeMeterReport(
-        this.consumerProductInteractionServiceClient,
-        {
-          reportId: this.reportId,
-        }
-      )
+      await getPlaytimeMeterReport(this.webServiceClient, {
+        reportId: this.reportId,
+      })
     ).playtimeMeterReport;
 
     let seeOtherButtonRef = new Ref<HTMLDivElement>();

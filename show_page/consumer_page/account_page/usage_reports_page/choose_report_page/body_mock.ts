@@ -1,5 +1,5 @@
 import { ChooseReportPage } from "./body";
-import { ListHistoryPlaytimeMeterReportsResponse } from "@phading/consumer_product_interaction_service_interface/interface";
+import { ListHistoryPlaytimeMeterReportsResponse } from "@phading/product_meter_service_interface/consumer/web/interface";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export class ChooseReportPageMock extends ChooseReportPage {
