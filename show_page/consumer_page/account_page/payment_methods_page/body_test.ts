@@ -5,8 +5,8 @@ import { UpdatePaymentMethodPageMock } from "./update_payment_method_page/body_m
 import {
   CardBrand,
   PaymentMethodMasked,
-} from "@phading/billing_service_interface/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/payment_method_priority";
+} from "@phading/billing_service_interface/web/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
 import { E } from "@selfage/element/factory";
 import {
   deleteFile,

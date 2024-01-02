@@ -44,7 +44,6 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
     >();
     this.inputFormPage_ = InputFormPage.create(
       LOCALIZED_TEXT.updateRecoveryEmailTitle,
-      LOCALIZED_TEXT.updateButtonLabel,
       [
         assign(
           newRecoveryEmailInputRef,
@@ -78,6 +77,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
         ).body,
       ],
       [newRecoveryEmailInputRef.val, currentPasswordInputRef.val],
+      LOCALIZED_TEXT.updateButtonLabel,
       (request) => this.updateRecoveryEmail(request),
       (response, error) => this.postUpdateRecoveryEmail(error),
       {}

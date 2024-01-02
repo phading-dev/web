@@ -24,6 +24,7 @@ TEST_RUNNER.run({
           "Input",
           "width: 50rem;",
           {},
+          "",
           (request, value) => {
             request.username = value;
           },
@@ -112,14 +113,16 @@ TEST_RUNNER.run({
         this.followingLine.remove();
       }
     })(),
-    {
-      name: "FillInRequest",
-      execute() {
-        // Prepare
-        let cut = TextAreaInputWithErrorMsg.create<Request>(
+    new (class implements TestCase {
+      public name = "DefaultValue_FillInRequest";
+      private cut: TextAreaInputWithErrorMsg<Request>;
+      public async execute() {
+        // Execute
+        this.cut = TextAreaInputWithErrorMsg.create<Request>(
           "Label",
           "",
           { type: "text" },
+          "123",
           (request, value) => {
             request.username = value;
           },
@@ -127,15 +130,28 @@ TEST_RUNNER.run({
             return { valid: true };
           }
         );
-        cut.value = "123";
+        document.body.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/text_area_input_default_value.png"),
+          path.join(__dirname, "/golden/text_area_input_default_value.png"),
+          path.join(__dirname, "/text_area_input_default_value_diff.png"),
+          { fullPage: true }
+        );
+
+        // Prepare
         let request: Request = {};
 
         // Execute
-        cut.fillInRequest(request);
+        this.cut.fillInRequest(request);
 
         // Verify
         assertThat(request.username, eq("123"), "username filled in");
-      },
-    },
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
   ],
 });

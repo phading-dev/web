@@ -4,7 +4,7 @@ import {
   MEDIUM_CARD_STYLE,
   PAGE_STYLE,
 } from "../../../../../common/page_style";
-import { TextContentButton } from "../../../../../common/text_content_button";
+import { TextValuesGroup } from "../../../../../common/text_values_group";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { getAuthSettings } from "@phading/user_service_interface/self/web/client_requests";
 import { E } from "@selfage/element/factory";
@@ -25,9 +25,9 @@ export class SecurityInfoPage extends EventEmitter {
 
   private body_: HTMLDivElement;
   private card: HTMLDivElement;
-  private username_: TextContentButton;
-  private recoveryEmail_: TextContentButton;
-  private password_: TextContentButton;
+  private username_: TextValuesGroup;
+  private recoveryEmail_: TextValuesGroup;
+  private password_: TextValuesGroup;
 
   public constructor(private userServiceClient: WebServiceClient) {
     super();
@@ -39,7 +39,7 @@ export class SecurityInfoPage extends EventEmitter {
       },
       E.divRef(cardRef, {
         class: "security-info-card",
-        style: `${MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 3rem;`,
+        style: `${MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
       })
     );
     this.card = cardRef.val;
@@ -50,33 +50,36 @@ export class SecurityInfoPage extends EventEmitter {
   private async load(): Promise<void> {
     let response = await getAuthSettings(this.userServiceClient, {});
 
-    let usernameRef = new Ref<TextContentButton>();
-    let recoveryEmailRef = new Ref<TextContentButton>();
-    let passwordRef = new Ref<TextContentButton>();
+    let usernameRef = new Ref<TextValuesGroup>();
+    let recoveryEmailRef = new Ref<TextValuesGroup>();
+    let passwordRef = new Ref<TextValuesGroup>();
     this.card.append(
       assign(
         usernameRef,
-        TextContentButton.create(
-          LOCALIZED_TEXT.usernameLabel,
-          response.authSettings.username,
-          "width: 100%;"
-        )
+        TextValuesGroup.create([
+          {
+            label: LOCALIZED_TEXT.usernameLabel,
+            value: response.authSettings.username,
+          },
+        ])
       ).body,
       assign(
         recoveryEmailRef,
-        TextContentButton.create(
-          LOCALIZED_TEXT.recoveryEmailLabel,
-          response.authSettings.recoveryEmail,
-          "width: 100%"
-        )
+        TextValuesGroup.create([
+          {
+            label: LOCALIZED_TEXT.recoveryEmailLabel,
+            value: response.authSettings.recoveryEmail,
+          },
+        ])
       ).body,
       assign(
         passwordRef,
-        TextContentButton.create(
-          LOCALIZED_TEXT.passwordLabel,
-          "Update password",
-          "width: 100%"
-        )
+        TextValuesGroup.create([
+          {
+            label: LOCALIZED_TEXT.passwordLabel,
+            value: "Update password",
+          },
+        ])
       ).body
     );
     this.username_ = usernameRef.val;

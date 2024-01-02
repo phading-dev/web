@@ -2,14 +2,14 @@ import EventEmitter = require("events");
 import { AddBodiesFn } from "../../../../common/add_bodies_fn";
 import { PageNavigator } from "../../../../common/page_navigator";
 import { BasicInfoPag } from "./basic_info_page/body";
-import { Page, ProfilePageState } from "./state";
+import { UpdateAccountInfoPage } from "./update_account_info/body";
 import { UpdateAvatarPage } from "./update_avatar_page/body";
-import { UpdateContactEmailPage } from "./update_contact_email_page/body";
-import { UpdateDescriptionPage } from "./update_description_page/body";
-import { UpdateNaturalNamePage } from "./update_natural_name/body";
+import { Account } from "@phading/user_service_interface/self/web/account";
 
-export interface ProfilePage {
-  on(event: "newState", listener: (newState: ProfilePageState) => void): this;
+enum Page {
+  BASIC_INFO = 1,
+  UPDATE_AVATAR = 2,
+  UPDATE_ACCOUNT = 3,
 }
 
 export class ProfilePage extends EventEmitter {
@@ -20,28 +20,24 @@ export class ProfilePage extends EventEmitter {
     return new ProfilePage(
       BasicInfoPag.create,
       UpdateAvatarPage.create,
-      UpdateNaturalNamePage.create,
-      UpdateContactEmailPage.create,
-      UpdateDescriptionPage.create,
+      UpdateAccountInfoPage.create,
       appendBodies,
       prependMenuBodies
     );
   }
 
-  private state: ProfilePageState;
   private basicInfoPage_: BasicInfoPag;
   private updateAvatarPage_: UpdateAvatarPage;
-  private updateNaturalNamePage_: UpdateNaturalNamePage;
-  private updateContactEmailPage_: UpdateContactEmailPage;
-  private updateDescriptionPage_: UpdateDescriptionPage;
+  private updateAccountInfoPage_: UpdateAccountInfoPage;
   private pageNavigator: PageNavigator<Page>;
+  private accountInfo: Account;
 
   public constructor(
     private createBasicInfoPage: () => BasicInfoPag,
     private createUpdateAvatarPage: () => UpdateAvatarPage,
-    private createUpdateNaturalNamePage: () => UpdateNaturalNamePage,
-    private createUpdateContactEmailPage: () => UpdateContactEmailPage,
-    private createUpdateDescriptionPage: () => UpdateDescriptionPage,
+    private createUpdateAccountInfoPage: (
+      accountInfo: Account
+    ) => UpdateAccountInfoPage,
     private appendBodies: AddBodiesFn,
     private prependMenuBodies: AddBodiesFn
   ) {
@@ -50,96 +46,51 @@ export class ProfilePage extends EventEmitter {
       (page) => this.addPage(page),
       (page) => this.removePage(page)
     );
+    this.pageNavigator.goTo(Page.BASIC_INFO);
   }
 
   private addPage(page: Page): void {
     switch (page) {
-      case Page.BasicInfo:
+      case Page.BASIC_INFO:
         this.basicInfoPage_ = this.createBasicInfoPage()
-          .on("updateAvatar", () => {
-            this.updateState({ page: Page.UpdateAvatar });
-            this.emit("newState", this.state);
-          })
-          .on("updateNaturalName", () => {
-            this.updateState({ page: Page.UpdateNaturalName });
-            this.emit("newState", this.state);
-          })
-          .on("updateContactEmail", () => {
-            this.updateState({ page: Page.UpdateContactEmail });
-            this.emit("newState", this.state);
-          })
-          .on("updateDescription", () => {
-            this.updateState({ page: Page.UpdateDescription });
-            this.emit("newState", this.state);
+          .on("updateAvatar", () => this.pageNavigator.goTo(Page.UPDATE_AVATAR))
+          .on("updateAccountInfo", (accountInfo) => {
+            this.accountInfo = accountInfo;
+            this.pageNavigator.goTo(Page.UPDATE_ACCOUNT);
           });
         this.appendBodies(this.basicInfoPage_.body);
         break;
-      case Page.UpdateAvatar:
+      case Page.UPDATE_AVATAR:
         this.updateAvatarPage_ = this.createUpdateAvatarPage()
-          .on("back", () => this.updateStateToBasicInfo())
-          .on("updated", () => this.updateStateToBasicInfo());
+          .on("back", () => this.pageNavigator.goTo(Page.BASIC_INFO))
+          .on("updated", () => this.pageNavigator.goTo(Page.BASIC_INFO));
         this.appendBodies(this.updateAvatarPage_.body);
         this.prependMenuBodies(this.updateAvatarPage_.backMenuBody);
         break;
-      case Page.UpdateNaturalName:
-        this.updateNaturalNamePage_ = this.createUpdateNaturalNamePage()
-          .on("back", () => this.updateStateToBasicInfo())
-          .on("updated", () => this.updateStateToBasicInfo());
-        this.appendBodies(this.updateNaturalNamePage_.body);
-        this.prependMenuBodies(this.updateNaturalNamePage_.menuBody);
-        break;
-      case Page.UpdateContactEmail:
-        this.updateContactEmailPage_ = this.createUpdateContactEmailPage()
-          .on("back", () => this.updateStateToBasicInfo())
-          .on("updated", () => this.updateStateToBasicInfo());
-        this.appendBodies(this.updateContactEmailPage_.body);
-        this.prependMenuBodies(this.updateContactEmailPage_.menuBody);
-        break;
-      case Page.UpdateDescription:
-        this.updateDescriptionPage_ = this.createUpdateDescriptionPage()
-          .on("back", () => this.updateStateToBasicInfo())
-          .on("updated", () => this.updateStateToBasicInfo());
-        this.appendBodies(this.updateDescriptionPage_.body);
-        this.prependMenuBodies(this.updateDescriptionPage_.menuBody);
+      case Page.UPDATE_ACCOUNT:
+        this.updateAccountInfoPage_ = this.createUpdateAccountInfoPage(
+          this.accountInfo
+        )
+          .on("back", () => this.pageNavigator.goTo(Page.BASIC_INFO))
+          .on("updated", () => this.pageNavigator.goTo(Page.BASIC_INFO));
+        this.appendBodies(this.updateAccountInfoPage_.body);
+        this.prependMenuBodies(this.updateAccountInfoPage_.menuBody);
         break;
     }
   }
 
   private removePage(page: Page): void {
     switch (page) {
-      case Page.BasicInfo:
+      case Page.BASIC_INFO:
         this.basicInfoPage_.remove();
         break;
-      case Page.UpdateAvatar:
+      case Page.UPDATE_AVATAR:
         this.updateAvatarPage_.remove();
         break;
-      case Page.UpdateNaturalName:
-        this.updateNaturalNamePage_.remove();
-        break;
-      case Page.UpdateContactEmail:
-        this.updateContactEmailPage_.remove();
-        break;
-      case Page.UpdateDescription:
-        this.updateDescriptionPage_.remove();
+      case Page.UPDATE_ACCOUNT:
+        this.updateAccountInfoPage_.remove();
         break;
     }
-  }
-
-  private updateStateToBasicInfo(): void {
-    this.updateState({ page: Page.BasicInfo });
-    this.emit("newState", this.state);
-  }
-
-  public updateState(newState?: ProfilePageState): this {
-    if (!newState) {
-      newState = {};
-    }
-    if (!newState.page) {
-      newState.page = Page.BasicInfo;
-    }
-    this.state = newState;
-    this.pageNavigator.goTo(this.state.page);
-    return this;
   }
 
   public remove(): void {
@@ -153,13 +104,7 @@ export class ProfilePage extends EventEmitter {
   public get updateAvatarPage() {
     return this.updateAvatarPage_;
   }
-  public get updateNaturalNamePage() {
-    return this.updateNaturalNamePage_;
-  }
-  public get updateContactEmailPage() {
-    return this.updateContactEmailPage_;
-  }
-  public get updateDescriptionPage() {
-    return this.updateDescriptionPage_;
+  public get updateAccountInfoPage() {
+    return this.updateAccountInfoPage_;
   }
 }

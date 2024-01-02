@@ -44,7 +44,6 @@ export class UpdateUsernamePage extends EventEmitter {
     >();
     this.inputFormPage_ = InputFormPage.create(
       LOCALIZED_TEXT.updateUsernameTitle,
-      LOCALIZED_TEXT.updateButtonLabel,
       [
         assign(
           newUsernameInputRef,
@@ -78,6 +77,7 @@ export class UpdateUsernamePage extends EventEmitter {
         ).body,
       ],
       [newUsernameInputRef.val, currentPasswordInputRef.val],
+      LOCALIZED_TEXT.updateButtonLabel,
       (request) => this.updateUsername(request),
       (response, error) => this.postUpdateUsername(response, error),
       {}

@@ -2,6 +2,10 @@ import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
 import { BasicInfoPag } from "./body";
 import {
+  ACCOUNT,
+  Account,
+} from "@phading/user_service_interface/self/web/account";
+import {
   GET_ACCOUNT,
   GET_ACCOUNT_REQUEST_BODY,
   GetAccountResponse,
@@ -136,7 +140,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "UpdateNaturalName";
+      public name = "UpdateAccountInfo";
       private cut: BasicInfoPag;
       public async execute() {
         // Prepare
@@ -156,82 +160,27 @@ TEST_RUNNER.run({
           })()
         );
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
-        let updateNaturalName = false;
-        this.cut.on("updateNaturalName", () => (updateNaturalName = true));
-
-        // Execute
-        this.cut.naturalName.click();
-
-        // Verify
-        assertThat(updateNaturalName, eq(true), "update natural name");
-      }
-      public tearDown() {
-        this.cut.remove();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "UpdateContactEmail";
-      private cut: BasicInfoPag;
-      public async execute() {
-        // Prepare
-        this.cut = new BasicInfoPag(
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(request: any): Promise<any> {
-              return {
-                account: {
-                  avatarLargePath: userImage,
-                  naturalName: "Some name",
-                },
-              } as GetAccountResponse;
-            }
-          })()
+        let accountCaptured: Account;
+        this.cut.on(
+          "updateAccountInfo",
+          (account) => (accountCaptured = account)
         );
-        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
-        let updateContactEmail = false;
-        this.cut.on("updateContactEmail", () => (updateContactEmail = true));
 
         // Execute
-        this.cut.contactEmail.click();
+        this.cut.infoValuesGroup.click();
 
         // Verify
-        assertThat(updateContactEmail, eq(true), "update contact email");
-      }
-      public tearDown() {
-        this.cut.remove();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "UpdateDescription";
-      private cut: BasicInfoPag;
-      public async execute() {
-        // Prepare
-        this.cut = new BasicInfoPag(
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(request: any): Promise<any> {
-              return {
-                account: {
-                  avatarLargePath: userImage,
-                  naturalName: "Some name",
-                },
-              } as GetAccountResponse;
-            }
-          })()
+        assertThat(
+          accountCaptured,
+          eqMessage(
+            {
+              avatarLargePath: userImage,
+              naturalName: "Some name",
+            },
+            ACCOUNT
+          ),
+          "account info"
         );
-        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
-        let updateDescription = false;
-        this.cut.on("updateDescription", () => (updateDescription = true));
-
-        // Execute
-        this.cut.description.click();
-
-        // Verify
-        assertThat(updateDescription, eq(true), "update description");
       }
       public tearDown() {
         this.cut.remove();

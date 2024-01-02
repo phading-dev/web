@@ -119,23 +119,13 @@ export class AccountPage extends EventEmitter {
         this.profilePage_ = this.createProfilePage(
           this.appendBodies,
           this.prependMenuBodies
-        )
-          .on("newState", (newState) => {
-            this.state.profilePageState = newState;
-            this.emit("newState", this.state);
-          })
-          .updateState(this.state.profilePageState);
+        );
         break;
       case Page.SECURITY:
         this.securityPage_ = this.createSecurityPage(
           this.appendBodies,
           this.prependMenuBodies
-        )
-          .on("newState", (newState) => {
-            this.state.securityPageState = newState;
-            this.emit("newState", this.state);
-          })
-          .updateState(this.state.securityPageState);
+        );
         break;
       case Page.PAYMENT_METHODS:
         this.paymentMethodsPage_ = this.createPaymentMethodsPage(
@@ -176,12 +166,6 @@ export class AccountPage extends EventEmitter {
 
   private updatePage(page: Page): void {
     switch (page) {
-      case Page.PROFILE:
-        this.profilePage_.updateState(this.state.profilePageState);
-        break;
-      case Page.SECURITY:
-        this.securityPage_.updateState(this.state.securityPageState);
-        break;
       case Page.USAGE_REPORTS:
         this.usageReportsPage_.updateState(this.state.usageReportsPageState);
         break;

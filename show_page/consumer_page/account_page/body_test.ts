@@ -3,9 +3,7 @@ import { MenuItem } from "../../../common/menu_item/body";
 import { AccountPage } from "./body";
 import { PaymentMethodsPageMock } from "./payment_methods_page/body_mock";
 import { ProfilePageMock } from "./profile_page/body_mock";
-import { Page as ProfilePage } from "./profile_page/state";
 import { SecurityPageMock } from "./security_page/body_mock";
-import { Page as SecurityPage } from "./security_page/state";
 import { AccountPageState, Page } from "./state";
 import { UsageReportsPageMock } from "./usage_reports_page/body_mock";
 import { Page as UsageReportsPage } from "./usage_reports_page/state";
@@ -133,12 +131,9 @@ TEST_RUNNER.run({
       path.join(__dirname, "/account_page_go_to_account_diff.png"),
       {
         page: Page.PROFILE,
-        profilePageState: {
-          page: ProfilePage.UpdateAvatar,
-        },
       },
       path.join(__dirname, "/account_page_update_account.png"),
-      path.join(__dirname, "/golden/account_page_update_account.png"),
+      path.join(__dirname, "/golden/account_page_go_to_account.png"),
       path.join(__dirname, "/account_page_update_account_diff.png")
     ),
     new NavigationTestCase(
@@ -150,12 +145,9 @@ TEST_RUNNER.run({
       path.join(__dirname, "/account_page_go_to_security_settings_diff.png"),
       {
         page: Page.SECURITY,
-        securityPageState: {
-          page: SecurityPage.UpdatePassword,
-        },
       },
       path.join(__dirname, "/account_page_update_security_settings.png"),
-      path.join(__dirname, "/golden/account_page_update_security_settings.png"),
+      path.join(__dirname, "/golden/account_page_go_to_security_settings.png"),
       path.join(__dirname, "/account_page_update_security_settings_diff.png")
     ),
     new NavigationTestCase(
@@ -167,9 +159,6 @@ TEST_RUNNER.run({
       path.join(__dirname, "/account_page_go_to_payment_methods_diff.png"),
       {
         page: Page.PAYMENT_METHODS,
-        securityPageState: {
-          page: SecurityPage.UpdatePassword,
-        },
       },
       path.join(__dirname, "/account_page_update_payment_methods.png"),
       path.join(__dirname, "/golden/account_page_go_to_payment_methods.png"),

@@ -1,6 +1,4 @@
 import { EnumDescriptor, MessageDescriptor } from '@selfage/message/descriptor';
-import { ProfilePageState, PROFILE_PAGE_STATE } from './profile_page/state';
-import { SecurityPageState, SECURITY_PAGE_STATE } from './security_page/state';
 import { UsageReportsPageState, USAGE_REPORTS_PAGE_STATE } from './usage_reports_page/state';
 
 export enum Page {
@@ -34,8 +32,6 @@ export let PAGE: EnumDescriptor<Page> = {
 
 export interface AccountPageState {
   page?: Page,
-  profilePageState?: ProfilePageState,
-  securityPageState?: SecurityPageState,
   usageReportsPageState?: UsageReportsPageState,
 }
 
@@ -45,14 +41,6 @@ export let ACCOUNT_PAGE_STATE: MessageDescriptor<AccountPageState> = {
     {
       name: 'page',
       enumType: PAGE,
-    },
-    {
-      name: 'profilePageState',
-      messageType: PROFILE_PAGE_STATE,
-    },
-    {
-      name: 'securityPageState',
-      messageType: SECURITY_PAGE_STATE,
     },
     {
       name: 'usageReportsPageState',

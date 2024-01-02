@@ -47,10 +47,9 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new InputFormPage<Request, Response>(
           "A title",
-          "Update",
           [input.body],
           [input],
-          {},
+          "Update",
           async (request) => {
             requestSubmitted = request;
             if (callError) {
@@ -67,7 +66,8 @@ TEST_RUNNER.run({
             } else {
               return "";
             }
-          }
+          },
+          {}
         );
         document.body.append(this.cut.body);
 
@@ -139,6 +139,96 @@ TEST_RUNNER.run({
           path.join(__dirname, "/input_form_page_submitted.png"),
           path.join(__dirname, "/golden/input_form_page_valid.png"),
           path.join(__dirname, "/input_form_page_submitted_diff.png")
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "SecondaryDeleteButton_DeleteFailed_DeleteSucceeded";
+      private cut: InputFormPage<Request, Response>;
+      public async execute() {
+        // Prepare
+        await setViewport(1000, 600);
+        let input = VerticalTextInputWithErrorMsg.create<Request>(
+          "Input",
+          "",
+          { type: "text" },
+          (request, value) => {},
+          (value) => {
+            return { valid: false };
+          }
+        );
+        let deleteError: Error;
+
+        // Execute
+        this.cut = new InputFormPage<Request, Response>(
+          "A title",
+          [input.body],
+          [input],
+          "Update",
+          async (request) => {
+            return {};
+          },
+          (response, error) => {
+            return "";
+          },
+          {}
+        ).addSecondaryButton(
+          "Delete",
+          async () => {
+            if (deleteError) {
+              throw deleteError;
+            }
+          },
+          (error) => {
+            if (error) {
+              return "Failed to delete";
+            } else {
+              return "";
+            }
+          }
+        );
+        document.body.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_delete_button.png"),
+          path.join(__dirname, "/golden/input_form_page_delete_button.png"),
+          path.join(__dirname, "/input_form_page_delete_button_diff.png")
+        );
+
+        // Prepare
+        deleteError = new Error("Fake error");
+
+        // Execute
+        this.cut.clickSecondaryButton();
+        await new Promise<void>((resolve) =>
+          this.cut.once("secondaryActionError", resolve)
+        );
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_delete_error.png"),
+          path.join(__dirname, "/golden/input_form_page_delete_error.png"),
+          path.join(__dirname, "/input_form_page_delete_error_diff.png")
+        );
+
+        // Cleanup
+        deleteError = undefined;
+
+        // Execute
+        this.cut.clickSecondaryButton();
+        await new Promise<void>((resolve) =>
+          this.cut.once("secondaryActionSuccess", resolve)
+        );
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_delete_success.png"),
+          path.join(__dirname, "/golden/input_form_page_delete_success.png"),
+          path.join(__dirname, "/input_form_page_delete_success_diff.png")
         );
       }
       public tearDown() {

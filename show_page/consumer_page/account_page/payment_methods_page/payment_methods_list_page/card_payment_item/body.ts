@@ -105,7 +105,7 @@ export class CardPaymentItem extends EventEmitter {
       E.div(
         {
           class: "card-payment-card-expansion-icon",
-          style: `align-self: center; height: 1.6rem; color: ${SCHEME.neutral1}; transform: rotate(180deg);`,
+          style: `align-self: center; height: 1.6rem; transform: rotate(180deg);`,
         },
         createArrowIcon(SCHEME.neutral1)
       )

@@ -8,10 +8,10 @@ import {
   UPDATE_PAYMENT_METHOD_REQUEST_BODY,
   UpdatePaymentMethodRequestBody,
   UpdatePaymentMethodResponse,
-} from "@phading/billing_service_interface/interface";
-import { CardBrand } from "@phading/billing_service_interface/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/payment_method_priority";
-import { CardUpdates } from "@phading/billing_service_interface/payment_method_updates";
+} from "@phading/billing_service_interface/web/interface";
+import { CardBrand } from "@phading/billing_service_interface/web/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
+import { CardUpdates } from "@phading/billing_service_interface/web/payment_method_updates";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
@@ -27,6 +27,9 @@ class ExpDateParsingTestCase implements TestCase {
     public name: string,
     private expMonthValue: string,
     private expYearValue: string,
+    private actualFile: string,
+    private expectedFile: string,
+    private diffFile: string,
     private expectedCard?: CardUpdates
   ) {}
   public async execute() {
@@ -42,11 +45,13 @@ class ExpDateParsingTestCase implements TestCase {
       }
     })();
     this.cut = new UpdatePaymentMethodPage(webServiceClientMock, {
-      id: "id1",
+      paymentMethodId: "id1",
       priority: PaymentMethodPriority.BACKUP,
       card: {
         brand: CardBrand.AMEX,
         lastFourDigits: "1234",
+        expMonth: 9,
+        expYear: 2023,
       },
     });
     document.body.append(this.cut.body);
@@ -54,18 +59,27 @@ class ExpDateParsingTestCase implements TestCase {
 
     // Execute
     this.cut.expMonthInput.value = this.expMonthValue;
-    this.cut.expMonthInput.dispatchEvent(new Event("input"));
+    this.cut.expMonthInput.dispatchInputEvent();
     this.cut.expYearInput.value = this.expYearValue;
-    this.cut.expYearInput.dispatchEvent(new Event("input"));
+    this.cut.expYearInput.dispatchInputEvent();
 
     // Verify
-    this.cut.updateButton.click();
-    await new Promise<void>((resolve) => this.cut.once("updated", resolve));
-    assertThat(
-      requestBodyCaptured.paymentMethodUpdates.card,
-      eqMessage(this.expectedCard, UPDATE_PAYMENT_METHOD_REQUEST_BODY),
-      "exp date"
+    await asyncAssertScreenshot(
+      this.actualFile,
+      this.expectedFile,
+      this.diffFile
     );
+
+    // Verify
+    if (this.expectedCard) {
+      this.cut.inputFormPage.submit();
+      await new Promise<void>((resolve) => this.cut.once("updated", resolve));
+      assertThat(
+        requestBodyCaptured.paymentMethodUpdates.card,
+        eqMessage(this.expectedCard, UPDATE_PAYMENT_METHOD_REQUEST_BODY),
+        "exp date"
+      );
+    }
   }
   public tearDown() {
     this.cut.remove();
@@ -99,11 +113,13 @@ TEST_RUNNER.run({
           }
         })();
         this.cut = new UpdatePaymentMethodPage(webServiceClientMock, {
-          id: "id1",
+          paymentMethodId: "id1",
           priority: PaymentMethodPriority.BACKUP,
           card: {
             brand: CardBrand.AMEX,
             lastFourDigits: "1234",
+            expMonth: 9,
+            expYear: 2023,
           },
         });
 
@@ -123,9 +139,9 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.expMonthInput.value = "12";
-        this.cut.expMonthInput.dispatchEvent(new Event("input"));
+        this.cut.expMonthInput.dispatchInputEvent();
         this.cut.expYearInput.value = "2020";
-        this.cut.expYearInput.dispatchEvent(new Event("input"));
+        this.cut.expYearInput.dispatchInputEvent();
 
         // Verify
         await asyncAssertScreenshot(
@@ -199,7 +215,7 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        this.cut.updateButton.click();
+        this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) =>
           this.cut.once("updateError", resolve)
         );
@@ -215,7 +231,7 @@ TEST_RUNNER.run({
           eqMessage(
             {
               paymentMethodUpdates: {
-                id: "id1",
+                paymentMethodId: "id1",
                 priority: PaymentMethodPriority.BACKUP,
                 card: { expMonth: 12, expYear: 2020 },
               },
@@ -242,7 +258,7 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        this.cut.updateButton.click();
+        this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) => this.cut.once("updated", resolve));
 
         // Verify
@@ -277,11 +293,13 @@ TEST_RUNNER.run({
           }
         })();
         this.cut = new UpdatePaymentMethodPage(webServiceClientMock, {
-          id: "id1",
+          paymentMethodId: "id1",
           priority: PaymentMethodPriority.BACKUP,
           card: {
             brand: CardBrand.AMEX,
             lastFourDigits: "1234",
+            expMonth: 9,
+            expYear: 2023,
           },
         });
 
@@ -297,7 +315,7 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        this.cut.deleteButton.click();
+        this.cut.inputFormPage.clickSecondaryButton();
         await new Promise<void>((resolve) =>
           this.cut.once("deleteError", resolve)
         );
@@ -312,7 +330,7 @@ TEST_RUNNER.run({
           requestCaptured.body,
           eqMessage(
             {
-              id: "id1",
+              paymentMethodId: "id1",
             },
             DELETE_PAYMENT_METHOD_REQUEST_BODY
           ),
@@ -336,7 +354,7 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        this.cut.deleteButton.click();
+        this.cut.inputFormPage.clickSecondaryButton();
         await new Promise<void>((resolve) => this.cut.once("deleted", resolve));
 
         // Verify
@@ -359,15 +377,114 @@ TEST_RUNNER.run({
         this.cut.remove();
       }
     })(),
-    new ExpDateParsingTestCase("ExpMonthNan", "ss", "2020", undefined),
-    new ExpDateParsingTestCase("ExpMonthTooSmall", "0", "2020", undefined),
-    new ExpDateParsingTestCase("ExpMonthTooLarge", "13", "2020", undefined),
-    new ExpDateParsingTestCase("ExpYearNan", "12", "ss", undefined),
-    new ExpDateParsingTestCase("ExpYearTooSmall", "12", "0", undefined),
-    new ExpDateParsingTestCase("ExpDateValid", "12", "2020", {
-      expMonth: 12,
-      expYear: 2020,
-    }),
+    new ExpDateParsingTestCase(
+      "ExpMonthNan",
+      "ss",
+      "2020",
+      path.join(__dirname, "/update_payment_method_page_exp_month_nan.png"),
+      path.join(
+        __dirname,
+        "/golden/update_payment_method_page_exp_month_nan.png"
+      ),
+      path.join(__dirname, "/update_payment_method_page_exp_month_nan_diff.png")
+    ),
+    new ExpDateParsingTestCase(
+      "ExpMonthTooSmall",
+      "0",
+      "2020",
+      path.join(
+        __dirname,
+        "/update_payment_method_page_exp_month_too_small.png"
+      ),
+      path.join(
+        __dirname,
+        "/golden/update_payment_method_page_exp_month_too_small.png"
+      ),
+      path.join(
+        __dirname,
+        "/update_payment_method_page_exp_month_too_small_diff.png"
+      )
+    ),
+    new ExpDateParsingTestCase(
+      "ExpMonthTooLarge",
+      "13",
+      "2020",
+      path.join(
+        __dirname,
+        "/update_payment_method_page_exp_month_too_large.png"
+      ),
+      path.join(
+        __dirname,
+        "/golden/update_payment_method_page_exp_month_too_large.png"
+      ),
+      path.join(
+        __dirname,
+        "/update_payment_method_page_exp_month_too_large_diff.png"
+      )
+    ),
+    new ExpDateParsingTestCase(
+      "ExpYearNan",
+      "12",
+      "ss",
+      path.join(__dirname, "/update_payment_method_page_exp_year_nan.png"),
+      path.join(
+        __dirname,
+        "/golden/update_payment_method_page_exp_year_nan.png"
+      ),
+      path.join(__dirname, "/update_payment_method_page_exp_year_nan_diff.png")
+    ),
+    new ExpDateParsingTestCase(
+      "ExpYearTooSmall",
+      "12",
+      "0",
+      path.join(
+        __dirname,
+        "/update_payment_method_page_exp_year_too_small.png"
+      ),
+      path.join(
+        __dirname,
+        "/golden/update_payment_method_page_exp_year_too_small.png"
+      ),
+      path.join(
+        __dirname,
+        "/update_payment_method_page_exp_year_too_small_diff.png"
+      )
+    ),
+    new ExpDateParsingTestCase(
+      "ExpYearTooLarge",
+      "12",
+      "10000",
+      path.join(
+        __dirname,
+        "/update_payment_method_page_exp_year_too_large.png"
+      ),
+      path.join(
+        __dirname,
+        "/golden/update_payment_method_page_exp_year_too_large.png"
+      ),
+      path.join(
+        __dirname,
+        "/update_payment_method_page_exp_year_too_large_diff.png"
+      )
+    ),
+    new ExpDateParsingTestCase(
+      "ExpDateValid",
+      "1",
+      "2020",
+      path.join(__dirname, "/update_payment_method_page_exp_date_valid.png"),
+      path.join(
+        __dirname,
+        "/golden/update_payment_method_page_exp_date_valid.png"
+      ),
+      path.join(
+        __dirname,
+        "/update_payment_method_page_exp_date_valid_diff.png"
+      ),
+      {
+        expMonth: 1,
+        expYear: 2020,
+      }
+    ),
     new (class implements TestCase {
       public name = "Back";
       private cut: UpdatePaymentMethodPage;
@@ -379,11 +496,13 @@ TEST_RUNNER.run({
           }
         })();
         this.cut = new UpdatePaymentMethodPage(webServiceClientMock, {
-          id: "id1",
+          paymentMethodId: "id1",
           priority: PaymentMethodPriority.BACKUP,
           card: {
             brand: CardBrand.AMEX,
             lastFourDigits: "1234",
+            expMonth: 9,
+            expYear: 2023,
           },
         });
         document.body.append(this.cut.body);

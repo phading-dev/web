@@ -2,7 +2,7 @@ import { AddBodiesFn } from "../../../../common/add_bodies_fn";
 import { PageNavigator } from "../../../../common/page_navigator";
 import { PaymentMethodsListPage } from "./payment_methods_list_page/body";
 import { UpdatePaymentMethodPage } from "./update_payment_method_page/body";
-import { PaymentMethodMasked } from "@phading/billing_service_interface/payment_method_masked";
+import { PaymentMethodMasked } from "@phading/billing_service_interface/web/payment_method_masked";
 
 enum Page {
   LIST = 1,

@@ -1,10 +1,8 @@
 import { AddBodiesFn } from "../../../../common/add_bodies_fn";
 import { BasicInfoPagMock } from "./basic_info_page/body_mock";
 import { ProfilePage } from "./body";
+import { UpdateAccountInfoPageMock } from "./update_account_info/body_mock";
 import { UpdateAvatarPageMock } from "./update_avatar_page/body_mock";
-import { UpdateContactEmailPageMock } from "./update_contact_email_page/body_mock";
-import { UpdateDescriptionPageMock } from "./update_description_page/body_mock";
-import { UpdateNaturalNamePageMock } from "./update_natural_name/body_mock";
 
 export class ProfilePageMock extends ProfilePage {
   public constructor(
@@ -14,9 +12,7 @@ export class ProfilePageMock extends ProfilePage {
     super(
       () => new BasicInfoPagMock(),
       () => new UpdateAvatarPageMock(),
-      () => new UpdateNaturalNamePageMock(),
-      () => new UpdateContactEmailPageMock(),
-      () => new UpdateDescriptionPageMock(),
+      (accountInfo) => new UpdateAccountInfoPageMock(accountInfo),
       appendBodies,
       prependMenuBodies
     );

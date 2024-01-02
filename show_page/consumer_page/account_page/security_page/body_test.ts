@@ -1,12 +1,10 @@
 import path = require("path");
 import { SecurityPage } from "./body";
 import { SecurityInfoPageMock } from "./security_info_page/body_mock";
-import { Page, SECURITY_PAGE_STATE, SecurityPageState } from "./state";
 import { UpdatePasswordPageMock } from "./update_password_page/body_mock";
 import { UpdateRecoveryEmailPageMock } from "./update_recovery_email_page/body_mock";
 import { UpdateUsernamePageMock } from "./update_username_page/body_mock";
 import { E } from "@selfage/element/factory";
-import { eqMessage } from "@selfage/message/test_matcher";
 import {
   deleteFile,
   screenshot,
@@ -14,7 +12,6 @@ import {
 } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
-import { assertThat } from "@selfage/test_matcher";
 import "../../../../common/normalize_body";
 
 let menuContainer: HTMLDivElement;
@@ -26,7 +23,6 @@ class NavigateForwardAndBack implements TestCase {
     private click: (cut: SecurityPage) => void,
     private emitBack: (cut: SecurityPage) => void,
     private emitUpdated: (cut: SecurityPage) => void,
-    private goToPage: Page,
     private goToPageActualFile: string,
     private goToPageExpectedFile: string,
     private goToPageDiffFile: string,
@@ -47,25 +43,12 @@ class NavigateForwardAndBack implements TestCase {
       (...bodies) => document.body.append(...bodies),
       (...bodies) => menuContainer.append(...bodies)
     );
-    let state: SecurityPageState;
-    this.cut.on("newState", (newState) => (state = newState));
-    this.cut.updateState();
     await screenshot(path.join(__dirname, "/security_page_baseline.png"));
 
     // Execute
     this.click(this.cut);
 
     // Verify
-    assertThat(
-      state,
-      eqMessage(
-        {
-          page: this.goToPage,
-        },
-        SECURITY_PAGE_STATE
-      ),
-      "go to page"
-    );
     await asyncAssertScreenshot(
       this.goToPageActualFile,
       this.goToPageExpectedFile,
@@ -76,16 +59,6 @@ class NavigateForwardAndBack implements TestCase {
     this.emitBack(this.cut);
 
     // Verify
-    assertThat(
-      state,
-      eqMessage(
-        {
-          page: Page.Info,
-        },
-        SECURITY_PAGE_STATE
-      ),
-      "back from page"
-    );
     await asyncAssertScreenshot(
       this.backActualFile,
       path.join(__dirname, "/security_page_baseline.png"),
@@ -99,16 +72,6 @@ class NavigateForwardAndBack implements TestCase {
     this.emitUpdated(this.cut);
 
     // Verify
-    assertThat(
-      state,
-      eqMessage(
-        {
-          page: Page.Info,
-        },
-        SECURITY_PAGE_STATE
-      ),
-      "updated from page"
-    );
     await asyncAssertScreenshot(
       this.updatedActualFile,
       path.join(__dirname, "/security_page_baseline.png"),
@@ -143,6 +106,8 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(1000, 800);
+
+        // Execute
         this.cut = new SecurityPage(
           () => new SecurityInfoPageMock(),
           () => new UpdatePasswordPageMock(),
@@ -152,65 +117,11 @@ TEST_RUNNER.run({
           (...bodies) => menuContainer.append(...bodies)
         );
 
-        // Execute
-        this.cut.updateState();
-
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/security_page_default.png"),
           path.join(__dirname, "/golden/security_page_default.png"),
           path.join(__dirname, "/security_page_default_diff.png")
-        );
-
-        // Execute
-        this.cut.updateState({
-          page: Page.Info,
-        });
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/security_page_info.png"),
-          path.join(__dirname, "/golden/security_page_default.png"),
-          path.join(__dirname, "/security_page_info_diff.png")
-        );
-
-        // Execute
-        this.cut.updateState({
-          page: Page.UpdatePassword,
-        });
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/security_page_update_password.png"),
-          path.join(__dirname, "/golden/security_page_update_password.png"),
-          path.join(__dirname, "/security_page_update_password_diff.png")
-        );
-
-        // Execute
-        this.cut.updateState({
-          page: Page.UpdateRecoveryEmail,
-        });
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/security_page_update_recovery_email.png"),
-          path.join(
-            __dirname,
-            "/golden/security_page_update_recovery_email.png"
-          ),
-          path.join(__dirname, "/security_page_update_recovery_email_diff.png")
-        );
-
-        // Execute
-        this.cut.updateState({
-          page: Page.UpdateUsername,
-        });
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/security_page_update_username.png"),
-          path.join(__dirname, "/golden/security_page_update_username.png"),
-          path.join(__dirname, "/security_page_update_username_diff.png")
         );
       }
       public tearDown() {
@@ -222,7 +133,6 @@ TEST_RUNNER.run({
       (cut) => cut.securityInfoPage.password.click(),
       (cut) => cut.updatePasswordPage.emit("back"),
       (cut) => cut.updatePasswordPage.emit("updated"),
-      Page.UpdatePassword,
       path.join(__dirname, "/security_page_go_to_update_password.png"),
       path.join(__dirname, "/golden/security_page_go_to_update_password.png"),
       path.join(__dirname, "/security_page_go_to_update_password_diff.png"),
@@ -236,7 +146,6 @@ TEST_RUNNER.run({
       (cut) => cut.securityInfoPage.recoveryEmail.click(),
       (cut) => cut.updateRecoveryEmailPage.emit("back"),
       (cut) => cut.updateRecoveryEmailPage.emit("updated"),
-      Page.UpdateRecoveryEmail,
       path.join(__dirname, "/security_page_go_to_update_recovery_email.png"),
       path.join(
         __dirname,
@@ -268,7 +177,6 @@ TEST_RUNNER.run({
       (cut) => cut.securityInfoPage.username.click(),
       (cut) => cut.updateUsernamePage.emit("back"),
       (cut) => cut.updateUsernamePage.emit("updated"),
-      Page.UpdateUsername,
       path.join(__dirname, "/security_page_go_to_update_username.png"),
       path.join(__dirname, "/golden/security_page_go_to_update_username.png"),
       path.join(__dirname, "/security_page_go_to_update_username_diff.png"),

@@ -48,7 +48,6 @@ export class SignInPage extends EventEmitter {
     let switchToSignUpButtonRef = new Ref<HTMLDivElement>();
     this.inputFormPage_ = InputFormPage.create(
       LOCALIZED_TEXT.signInTitle,
-      LOCALIZED_TEXT.signInButtonLabel,
       [
         assign(
           usernameInputRef,
@@ -90,6 +89,7 @@ export class SignInPage extends EventEmitter {
         ),
       ],
       [usernameInputRef.val, passwordInputRef.val],
+      LOCALIZED_TEXT.signInButtonLabel,
       (request) => this.signIn(request),
       (response, error) => this.postSignIn(response, error),
       {}

@@ -17,7 +17,8 @@ export class TextAreaInputWithErrorMsg<Request>
   public static create<Request>(
     label: string,
     customStyle: string,
-    otherInputAttributes: ElementAttributeMap = {},
+    otherInputAttributes: ElementAttributeMap,
+    value: string,
     fillInRequestFn: (request: Request, value: string) => void,
     validateFn: (value: string) => Promise<ValidationResult> | ValidationResult
   ): TextAreaInputWithErrorMsg<Request> {
@@ -25,6 +26,7 @@ export class TextAreaInputWithErrorMsg<Request>
       label,
       customStyle,
       otherInputAttributes,
+      value,
       fillInRequestFn,
       validateFn
     );
@@ -39,6 +41,7 @@ export class TextAreaInputWithErrorMsg<Request>
     label: string,
     customStyle: string,
     otherInputAttributes: ElementAttributeMap,
+    value: string,
     private fillInRequestFn: (request: Request, value: string) => void,
     private validateFn: (
       value: string
@@ -62,12 +65,16 @@ export class TextAreaInputWithErrorMsg<Request>
       E.div({
         style: `height: 1rem;`,
       }),
-      E.textareaRef(inputRef, {
-        class: "text-input-input",
-        style: `${BASIC_INPUT_STYLE} width: 100%;`,
-        rows: "3",
-        ...otherInputAttributes,
-      }),
+      E.textareaRef(
+        inputRef,
+        {
+          class: "text-input-input",
+          style: `${BASIC_INPUT_STYLE} width: 100%;`,
+          rows: "3",
+          ...otherInputAttributes,
+        },
+        E.text(value)
+      ),
       E.div({
         style: `height: .5rem;`,
       }),

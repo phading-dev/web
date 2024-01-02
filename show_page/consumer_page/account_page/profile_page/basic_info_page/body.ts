@@ -5,8 +5,9 @@ import {
   MEDIUM_CARD_STYLE,
   PAGE_STYLE,
 } from "../../../../../common/page_style";
-import { TextContentButton } from "../../../../../common/text_content_button";
+import { TextValuesGroup } from "../../../../../common/text_values_group";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
+import { Account } from "@phading/user_service_interface/self/web/account";
 import { getAccount } from "@phading/user_service_interface/self/web/client_requests";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -16,9 +17,7 @@ export interface BasicInfoPag {
   on(event: "loaded", listener: () => void): this;
   on(event: "avatarUpdateHintTransitionEnded", listener: () => void): this;
   on(event: "updateAvatar", listener: () => void): this;
-  on(event: "updateNaturalName", listener: () => void): this;
-  on(event: "updateContactEmail", listener: () => void): this;
-  on(event: "updateDescription", listener: () => void): this;
+  on(event: "updateAccountInfo", listener: (account: Account) => void): this;
 }
 
 export class BasicInfoPag extends EventEmitter {
@@ -27,12 +26,10 @@ export class BasicInfoPag extends EventEmitter {
   }
 
   private body_: HTMLDivElement;
-  private avatarContainer_: HTMLDivElement;
-  private naturalName_: TextContentButton;
-  private contactEmail_: TextContentButton;
-  private description_: TextContentButton;
   private card: HTMLDivElement;
+  private avatarContainer_: HTMLDivElement;
   private avatarUpdateHint: HTMLDivElement;
+  private infoValuesGroup_: TextValuesGroup;
 
   public constructor(private userServiceClient: WebServiceClient) {
     super();
@@ -57,9 +54,7 @@ export class BasicInfoPag extends EventEmitter {
 
     let avatarContainerRef = new Ref<HTMLDivElement>();
     let avatarUpdateHintRef = new Ref<HTMLDivElement>();
-    let naturalNameRef = new Ref<TextContentButton>();
-    let contactEmailRef = new Ref<TextContentButton>();
-    let descriptionRef = new Ref<TextContentButton>();
+    let infoValuesGroupRef = new Ref<TextValuesGroup>();
     this.card.append(
       E.divRef(
         avatarContainerRef,
@@ -88,35 +83,26 @@ export class BasicInfoPag extends EventEmitter {
         )
       ),
       assign(
-        naturalNameRef,
-        TextContentButton.create(
-          LOCALIZED_TEXT.naturalNameLabel,
-          account.naturalName,
-          "width: 100%;"
-        )
-      ).body,
-      assign(
-        contactEmailRef,
-        TextContentButton.create(
-          LOCALIZED_TEXT.contactEmailLabel,
-          account.contactEmail,
-          "width: 100%;"
-        )
-      ).body,
-      assign(
-        descriptionRef,
-        TextContentButton.create(
-          LOCALIZED_TEXT.accountDescriptionLabel,
-          account.description,
-          "width: 100%;"
-        )
+        infoValuesGroupRef,
+        TextValuesGroup.create([
+          {
+            label: LOCALIZED_TEXT.naturalNameLabel,
+            value: account.naturalName,
+          },
+          {
+            label: LOCALIZED_TEXT.contactEmailLabel,
+            value: account.contactEmail,
+          },
+          {
+            label: LOCALIZED_TEXT.accountDescriptionLabel,
+            value: account.description,
+          },
+        ])
       ).body
     );
     this.avatarContainer_ = avatarContainerRef.val;
     this.avatarUpdateHint = avatarUpdateHintRef.val;
-    this.naturalName_ = naturalNameRef.val;
-    this.contactEmail_ = contactEmailRef.val;
-    this.description_ = descriptionRef.val;
+    this.infoValuesGroup_ = infoValuesGroupRef.val;
 
     this.hideChangeAvatarHint();
     this.avatarContainer_.addEventListener("mouseenter", () =>
@@ -131,9 +117,9 @@ export class BasicInfoPag extends EventEmitter {
     this.avatarUpdateHint.addEventListener("transitionend", () =>
       this.emit("avatarUpdateHintTransitionEnded")
     );
-    this.naturalName_.on("action", () => this.emit("updateNaturalName"));
-    this.contactEmail_.on("action", () => this.emit("updateContactEmail"));
-    this.description_.on("action", () => this.emit("updateDescription"));
+    this.infoValuesGroup_.on("action", () =>
+      this.emit("updateAccountInfo", account)
+    );
     this.emit("loaded");
   }
 
@@ -157,13 +143,7 @@ export class BasicInfoPag extends EventEmitter {
   public get avatarContainer() {
     return this.avatarContainer_;
   }
-  public get naturalName() {
-    return this.naturalName_;
-  }
-  public get contactEmail() {
-    return this.contactEmail_;
-  }
-  public get description() {
-    return this.description_;
+  public get infoValuesGroup() {
+    return this.infoValuesGroup_;
   }
 }

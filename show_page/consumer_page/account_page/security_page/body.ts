@@ -2,13 +2,15 @@ import EventEmitter = require("events");
 import { AddBodiesFn } from "../../../../common/add_bodies_fn";
 import { PageNavigator } from "../../../../common/page_navigator";
 import { SecurityInfoPage } from "./security_info_page/body";
-import { Page, SecurityPageState } from "./state";
 import { UpdatePasswordPage } from "./update_password_page/body";
 import { UpdateRecoveryEmailPage } from "./update_recovery_email_page/body";
 import { UpdateUsernamePage } from "./update_username_page/body";
 
-export interface SecurityPage {
-  on(event: "newState", listener: (newState: SecurityPageState) => void): this;
+enum Page {
+  INFO = 1,
+  UPDATE_PASSWORD = 2,
+  UPDATE_RECOVERY_EMAIL = 3,
+  UPDATE_USERNAME = 4,
 }
 
 export class SecurityPage extends EventEmitter {
@@ -26,7 +28,6 @@ export class SecurityPage extends EventEmitter {
     );
   }
 
-  private state: SecurityPageState;
   private securityInfoPage_: SecurityInfoPage;
   private updatePasswordPage_: UpdatePasswordPage;
   private updateRecoveryEmailPage_: UpdateRecoveryEmailPage;
@@ -46,80 +47,42 @@ export class SecurityPage extends EventEmitter {
       (page) => this.addPage(page),
       (page) => this.removePage(page)
     );
+    this.pageNavigator.goTo(Page.INFO);
   }
 
   private addPage(page: Page): void {
     switch (page) {
-      case Page.Info:
+      case Page.INFO:
         this.securityInfoPage_ = this.createSecurityInfoPagee()
-          .on("updatePassword", () => {
-            this.updateState({
-              page: Page.UpdatePassword,
-            });
-            this.emit("newState", this.state);
-          })
-          .on("updateRecoveryEmail", () => {
-            this.updateState({
-              page: Page.UpdateRecoveryEmail,
-            });
-            this.emit("newState", this.state);
-          })
-          .on("updateUsername", () => {
-            this.updateState({
-              page: Page.UpdateUsername,
-            });
-            this.emit("newState", this.state);
-          });
+          .on("updatePassword", () =>
+            this.pageNavigator.goTo(Page.UPDATE_PASSWORD)
+          )
+          .on("updateRecoveryEmail", () =>
+            this.pageNavigator.goTo(Page.UPDATE_RECOVERY_EMAIL)
+          )
+          .on("updateUsername", () =>
+            this.pageNavigator.goTo(Page.UPDATE_USERNAME)
+          );
         this.appendBodies(this.securityInfoPage_.body);
         break;
-      case Page.UpdatePassword:
+      case Page.UPDATE_PASSWORD:
         this.updatePasswordPage_ = this.createUpdatePasswordPage()
-          .on("back", () => {
-            this.updateState({
-              page: Page.Info,
-            });
-            this.emit("newState", this.state);
-          })
-          .on("updated", () => {
-            this.updateState({
-              page: Page.Info,
-            });
-            this.emit("newState", this.state);
-          });
+          .on("back", () => this.pageNavigator.goTo(Page.INFO))
+          .on("updated", () => this.pageNavigator.goTo(Page.INFO));
         this.appendBodies(this.updatePasswordPage_.body);
         this.prependMenuBodies(this.updatePasswordPage_.menuBody);
         break;
-      case Page.UpdateRecoveryEmail:
+      case Page.UPDATE_RECOVERY_EMAIL:
         this.updateRecoveryEmailPage_ = this.createUpdateRecoveryEmailPage()
-          .on("back", () => {
-            this.updateState({
-              page: Page.Info,
-            });
-            this.emit("newState", this.state);
-          })
-          .on("updated", () => {
-            this.updateState({
-              page: Page.Info,
-            });
-            this.emit("newState", this.state);
-          });
+          .on("back", () => this.pageNavigator.goTo(Page.INFO))
+          .on("updated", () => this.pageNavigator.goTo(Page.INFO));
         this.appendBodies(this.updateRecoveryEmailPage_.body);
         this.prependMenuBodies(this.updateRecoveryEmailPage_.menuBody);
         break;
-      case Page.UpdateUsername:
+      case Page.UPDATE_USERNAME:
         this.updateUsernamePage_ = this.createUpdateUsernamePage()
-          .on("back", () => {
-            this.updateState({
-              page: Page.Info,
-            });
-            this.emit("newState", this.state);
-          })
-          .on("updated", () => {
-            this.updateState({
-              page: Page.Info,
-            });
-            this.emit("newState", this.state);
-          });
+          .on("back", () => this.pageNavigator.goTo(Page.INFO))
+          .on("updated", () => this.pageNavigator.goTo(Page.INFO));
         this.appendBodies(this.updateUsernamePage_.body);
         this.prependMenuBodies(this.updateUsernamePage_.menuBody);
         break;
@@ -128,31 +91,19 @@ export class SecurityPage extends EventEmitter {
 
   private removePage(page: Page): void {
     switch (page) {
-      case Page.Info:
+      case Page.INFO:
         this.securityInfoPage_.remove();
         break;
-      case Page.UpdatePassword:
+      case Page.UPDATE_PASSWORD:
         this.updatePasswordPage_.remove();
         break;
-      case Page.UpdateRecoveryEmail:
+      case Page.UPDATE_RECOVERY_EMAIL:
         this.updateRecoveryEmailPage_.remove();
         break;
-      case Page.UpdateUsername:
+      case Page.UPDATE_USERNAME:
         this.updateUsernamePage_.remove();
         break;
     }
-  }
-
-  public updateState(newState?: SecurityPageState): this {
-    if (!newState) {
-      newState = {};
-    }
-    if (!newState.page) {
-      newState.page = Page.Info;
-    }
-    this.state = newState;
-    this.pageNavigator.goTo(this.state.page);
-    return this;
   }
 
   public remove(): void {

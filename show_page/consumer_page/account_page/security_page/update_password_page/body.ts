@@ -49,7 +49,6 @@ export class UpdatePasswordPage extends EventEmitter {
     >();
     this.inputFormPage_ = InputFormPage.create(
       LOCALIZED_TEXT.updatePasswordTitle,
-      LOCALIZED_TEXT.updateButtonLabel,
       [
         assign(
           newPasswordInputRef,
@@ -100,6 +99,7 @@ export class UpdatePasswordPage extends EventEmitter {
         newPasswordRepeatInputRef.val,
         currentPasswordInputRef.val,
       ],
+      LOCALIZED_TEXT.updateButtonLabel,
       (request) => this.updatePassword(request),
       (response, error) => this.postUpdatePassword(error),
       {}
