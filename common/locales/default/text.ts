@@ -326,10 +326,10 @@ export default class Text {
   get prevImageLabel() {
     return `Previous`;
   }
-  get noMoreTales() {
+  get noMoreContent() {
     return `You have reached the end of universe`;
   }
-  get tryLoadingTalesLabel() {
+  get tryReloadLabel() {
     return `Try reload`;
   }
   get likeUserLabel() {

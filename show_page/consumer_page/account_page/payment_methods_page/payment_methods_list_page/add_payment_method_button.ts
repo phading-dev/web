@@ -36,7 +36,7 @@ export class AddPaymentMethodButton extends BlockingButton {
   }
 
   protected disableOverride(): void {
-    this.container.style.borderColor = SCHEME.neutral2;
-    this.icon.style.stroke = SCHEME.neutral2;
+    this.container.style.borderColor = SCHEME.neutral3;
+    this.icon.style.stroke = SCHEME.neutral3;
   }
 }

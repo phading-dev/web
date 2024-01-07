@@ -23,7 +23,7 @@ export class LightScheme {
   get neutral0() {
     return GREY_20;
   }
-  // SVG icons & borders.
+  // SVG icons & borders. Hinted texts.
   get neutral1() {
     return GREY_50;
   }
@@ -31,7 +31,7 @@ export class LightScheme {
   get neutral1Translucent() {
     return GREY_50_TRANSLUCENT;
   }
-  // Hinted & disabled texts. Hinted SVG icons & borders.
+  // Hinted SVG icons & borders. Disabled texts.
   get neutral2() {
     return GREY_80;
   }
