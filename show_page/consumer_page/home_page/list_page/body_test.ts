@@ -9,7 +9,7 @@ import {
 } from "@phading/product_recommendation_service_interface/consumer/show_app/web/interface";
 import { ShowSnapshot } from "@phading/product_service_interface/consumer/show_app/show";
 import { Counter } from "@selfage/counter";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
+import { screenshot, setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -192,6 +192,87 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
+      public name = "Loading";
+      private cut: ListPage;
+      public async execute() {
+        // Prepare
+        await setViewport(900, 800);
+        let webServiceClientMock = new (class extends WebServiceClient {
+          private counter = new Counter<string>();
+          public constructor() {
+            super(undefined, undefined);
+          }
+          public async send(): Promise<RecommendShowsResponse> {
+            switch (this.counter.increment("send")) {
+              case 1:
+                let shows = new Array<ShowSnapshot>();
+                for (let i = 0; i < 3; i++) {
+                  shows.push(createShowSnapshot(`id${i}`));
+                }
+                return {
+                  shows,
+                };
+              case 2:
+                return {
+                  shows: [],
+                };
+              default:
+                throw new Error("Not expected");
+            }
+          }
+        })();
+        this.cut = new ListPage(ShowItem.create, webServiceClientMock);
+        document.body.append(this.cut.body);
+        await new Promise<void>((resolve) => this.cut.on("loadedAll", resolve));
+        await screenshot(
+          path.join(__dirname, "/list_page_loaded_baseline.png")
+        );
+
+        let resolverFn: () => void;
+        webServiceClientMock.send =
+          async (): Promise<RecommendShowsResponse> => {
+            await new Promise<void>((resolve) => (resolverFn = resolve));
+            return {
+              shows: [],
+            };
+          };
+
+        // Execute
+        this.cut.tryReloadButton.click();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/list_page_loading.png"),
+          path.join(__dirname, "/golden/list_page_loading.png"),
+          path.join(__dirname, "/list_page_loading_diff.png"),
+          {
+            excludedAreas: [
+              {
+                x: 0,
+                width: 900,
+                y: 620,
+                height: 40,
+              },
+            ],
+          }
+        );
+
+        // Execute
+        resolverFn();
+        await new Promise<void>((resolve) => this.cut.on("loadedAll", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/list_page_loaded.png"),
+          path.join(__dirname, "/list_page_loaded_baseline.png"),
+          path.join(__dirname, "/list_page_loaded_diff.png"),
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
       public name = "Long_ScrollToLoadMore";
       private cut: ListPage;
       public async execute() {
@@ -238,7 +319,7 @@ TEST_RUNNER.run({
           };
 
         // Execute
-        window.scrollBy(0, 150);
+        window.scrollBy(0, 200);
         await new Promise<void>((resolve) => this.cut.on("loaded", resolve));
 
         // Verify
@@ -261,7 +342,7 @@ TEST_RUNNER.run({
           };
 
         // Execute
-        window.scrollBy(0, 650);
+        window.scrollBy(0, 600);
         await new Promise<void>((resolve) => this.cut.on("loaded", resolve));
 
         // Verify

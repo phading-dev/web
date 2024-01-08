@@ -81,7 +81,7 @@ export class ListPage extends EventEmitter {
             loadingIconRef,
             {
               class: "list-shows-loading-icon",
-              style: `height: 3rem;`,
+              style: `height: 3rem; padding .5rem; box-sizing: border-box;`,
             },
             createLoadIcon(SCHEME.neutral1)
           )
@@ -185,5 +185,8 @@ export class ListPage extends EventEmitter {
   // Visible for testing
   public get showItems() {
     return this.showItems_;
+  }
+  public get tryReloadButton() {
+    return this.tryReloadButton_;
   }
 }
