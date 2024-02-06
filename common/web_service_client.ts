@@ -11,3 +11,6 @@ export let PRODUCT_METER_SERVICE_CLIENT = WebServiceClient.create(
 export let PRODUCT_RECOMMENDATION_SERVICE_CLIENT = WebServiceClient.create(
   LOCAL_SESSION_STORAGE
 );
+export let COMMENT_SERVICE_CLIENT = WebServiceClient.create(
+  LOCAL_SESSION_STORAGE
+);

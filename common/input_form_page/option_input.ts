@@ -1,5 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
+import { FONT_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -28,7 +29,7 @@ export class OptionButton<ValueType> extends EventEmitter {
     this.container = E.div(
       {
         class: "option-button",
-        style: `flex: 0 0 auto; display: flex; justify-content: center; align-items: center; padding: .8rem 1.2rem; font-size: 1.4rem; border: .1rem solid; border-radius: .5rem; cursor: pointer; ${customStyle}`,
+        style: `flex: 0 0 auto; display: flex; justify-content: center; align-items: center; padding: .8rem 1.2rem; font-size: ${FONT_M}rem; border: .1rem solid; border-radius: .5rem; cursor: pointer; ${customStyle}`,
       },
       E.text(label)
     );
@@ -104,7 +105,7 @@ export class OptionInput<ValueType, Request>
       E.div(
         {
           class: "options-input-label",
-          style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(label)
       ),

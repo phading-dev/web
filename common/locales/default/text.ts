@@ -413,4 +413,22 @@ export default class Text {
   get deletePaymentMethodFailure() {
     return `Failed to delete the payment method. Please try again later.`;
   }
+  get likeButtonLabel() {
+    return `Like`;
+  }
+  get likedButtonLabel() {
+    return `Liked`;
+  }
+  get dislikeButtonLabel() {
+    return `Dislike`;
+  }
+  get dislikedButtonLabel() {
+    return `Disliked`;
+  }
+  get commentButtonLabel() {
+    return `Comment`;
+  }
+  get commentInputPlaceholder() {
+    return `What's on your mind`;
+  }
 }

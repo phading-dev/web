@@ -1,12 +1,13 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
+import { FONT_M, FONT_S } from "../sizes";
 import { InputField } from "./input_field";
 import { E, ElementAttributeMap } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
 export let NULLIFIED_INPUT_STYLE = `padding: 0; margin: 0; outline: none; border: 0; font-family: initial; background-color: initial;`;
 // Missing border-color.
-export let BASIC_INPUT_STYLE = `${NULLIFIED_INPUT_STYLE} font-size: 1.4rem; line-height: 2rem; color: ${SCHEME.neutral0}; border-bottom: .1rem solid;`;
+export let BASIC_INPUT_STYLE = `${NULLIFIED_INPUT_STYLE} font-size: ${FONT_M}rem; line-height: 140%; color: ${SCHEME.neutral0}; border-bottom: .1rem solid;`;
 
 export interface ValidationResult {
   valid: boolean;
@@ -58,7 +59,7 @@ export class VerticalTextInputWithErrorMsg<Request>
       E.div(
         {
           class: "text-input-label",
-          style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(label)
       ),
@@ -77,7 +78,7 @@ export class VerticalTextInputWithErrorMsg<Request>
         errorMsgRef,
         {
           class: "text-input-error-label",
-          style: `align-self: flex-end; font-size: 1.2rem; color: ${SCHEME.error0};`,
+          style: `align-self: flex-end; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
         },
         E.text("1")
       )

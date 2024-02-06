@@ -86,7 +86,7 @@ export class ShowItem extends EventEmitter {
           }),
           E.div(
             {
-              class: "show-item-metadata-column",
+              class: "show-item-publisher-name",
               style: `flex: 1 0 0; font-size: 1.2rem; line-height: 1.6rem; max-height: 3.2rem; color: ${SCHEME.neutral0}; overflow: hidden;`,
             },
             E.text(show.publisher.naturalName)

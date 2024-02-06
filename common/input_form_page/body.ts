@@ -6,6 +6,7 @@ import {
   TextBlockingButton,
 } from "../blocking_button";
 import { MEDIUM_CARD_STYLE, PAGE_STYLE } from "../page_style";
+import { FONT_L, FONT_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -73,7 +74,7 @@ export class InputFormPage<Request, Response> extends EventEmitter {
         E.div(
           {
             class: "input-form-title",
-            style: `align-self: center; font-size: 1.6rem; color: ${SCHEME.neutral0};`,
+            style: `align-self: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(title)
         ),
@@ -93,7 +94,7 @@ export class InputFormPage<Request, Response> extends EventEmitter {
           actionErrorRef,
           {
             class: "input-form-action-error",
-            style: `visibility: hidden; align-self: flex-end; font-size: 1.4rem; color: ${SCHEME.error0};`,
+            style: `visibility: hidden; align-self: flex-end; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
           },
           E.text("1")
         )

@@ -1,6 +1,7 @@
 import EventEmitter = require("events");
 import { BUTTON_BORDER_RADIUS, NULLIFIED_BUTTON_STYLE } from "./button_styles";
 import { SCHEME } from "./color_scheme";
+import { FONT_M } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
@@ -19,31 +20,42 @@ export interface IconButton {
 export class IconButton extends EventEmitter {
   public static create(
     customButtonStyle: string,
-    svgElement: SVGSVGElement,
+    iconElement: Element,
     position: TooltipPosition,
-    text: string
+    text: string,
+    customEnable: () => void = () => {},
+    customDisable: () => void = () => {}
   ): IconButton {
-    return new IconButton(customButtonStyle, svgElement, position, text);
+    return new IconButton(
+      customButtonStyle,
+      iconElement,
+      position,
+      text,
+      customEnable,
+      customDisable
+    );
   }
 
-  private container: HTMLElement;
+  private container: HTMLButtonElement;
   private tooltip: HTMLDivElement;
   private displayStyle: string;
 
   public constructor(
     customButtonStyle: string,
-    svgElement: SVGSVGElement,
+    iconElement: Element,
     position: TooltipPosition,
-    text: string
+    text: string,
+    private customEnable: () => void,
+    private customDisable: () => void
   ) {
     super();
     let tooltipRef = new Ref<HTMLDivElement>();
     this.container = E.button(
       {
         class: "icon-button",
-        style: `${NULLIFIED_BUTTON_STYLE} position: relative; cursor: pointer; ${customButtonStyle}`,
+        style: `${NULLIFIED_BUTTON_STYLE} position: relative; ${customButtonStyle}`,
       },
-      svgElement,
+      iconElement,
       E.divRef(
         tooltipRef,
         {
@@ -53,7 +65,7 @@ export class IconButton extends EventEmitter {
         E.div(
           {
             class: "icon-button-tooltip-background",
-            style: `background-color: ${SCHEME.neutral4}; border: .1rem solid ${SCHEME.neutral2}; border-radius: ${BUTTON_BORDER_RADIUS}; padding: .6rem 1rem; color: ${SCHEME.neutral0}; font-size: 1.4rem; white-space: nowrap;`,
+            style: `background-color: ${SCHEME.neutral4}; box-shadow: 0 0 .3rem ${SCHEME.neutral1}; border-radius: ${BUTTON_BORDER_RADIUS}; padding: .6rem 1rem; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; white-space: nowrap;`,
           },
           E.text(text)
         )
@@ -93,8 +105,8 @@ export class IconButton extends EventEmitter {
     this.tooltip.addEventListener("transitionend", () =>
       this.emit("tooltipShowed")
     );
-    this.container.addEventListener("mouseenter", () => this.showTootlip());
-    this.container.addEventListener("mouseleave", () => this.hideTooltip());
+    this.container.addEventListener("pointerenter", () => this.showTootlip());
+    this.container.addEventListener("pointercancel", () => this.hideTooltip());
     this.container.addEventListener("click", () => this.emit("action"));
   }
 
@@ -111,6 +123,20 @@ export class IconButton extends EventEmitter {
 
   public get body() {
     return this.container;
+  }
+
+  public enable(): this {
+    this.container.disabled = false;
+    this.container.style.cursor = "pointer";
+    this.customEnable();
+    return this;
+  }
+
+  public disable(): this {
+    this.container.disabled = true;
+    this.container.style.cursor = "not-allowed";
+    this.customDisable();
+    return this;
   }
 
   public show(): this {
@@ -130,5 +156,11 @@ export class IconButton extends EventEmitter {
   // Visible for testing
   public click(): void {
     this.container.click();
+  }
+  public hover(): void {
+    this.container.dispatchEvent(new PointerEvent("pointerenter"));
+  }
+  public leave(): void {
+    this.container.dispatchEvent(new PointerEvent("pointercancel"));
   }
 }

@@ -1,5 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
+import { FONT_L, ICON_M } from "../sizes";
 import { E } from "@selfage/element/factory";
 
 export interface MenuItem {
@@ -25,7 +26,7 @@ export class MenuItem extends EventEmitter {
     this.container = E.div(
       {
         class: "menu-item",
-        style: `display: flex; flex-flow: row nowrap; align-items: center; height: ${MenuItem.MENU_ITEM_LENGTH}rem; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral2}; border-radius: ${MenuItem.MENU_ITEM_LENGTH}rem; background-color: ${SCHEME.neutral4}; transition: width .3s .5s linear; overflow: hidden; cursor: pointer;`,
+        style: `display: flex; flex-flow: row nowrap; align-items: center; height: ${ICON_M}rem; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral2}; border-radius: ${ICON_M}rem; background-color: ${SCHEME.neutral4}; transition: width .3s .5s linear; overflow: hidden; cursor: pointer;`,
       },
       E.div(
         {
@@ -37,7 +38,7 @@ export class MenuItem extends EventEmitter {
       E.div(
         {
           class: "menu-item-label",
-          style: `margin: 0 1rem 0 .5rem; font-size: 1.6rem; line-height: ${MenuItem.MENU_ITEM_LENGTH}rem; color: ${SCHEME.neutral0};`,
+          style: `margin: 0 1rem 0 .5rem; font-size: ${FONT_L}rem; line-height: ${ICON_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(label)
       )

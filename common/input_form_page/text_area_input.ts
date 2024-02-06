@@ -1,5 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
+import { FONT_M, FONT_S } from "../sizes";
 import { InputField } from "./input_field";
 import { BASIC_INPUT_STYLE } from "./text_input";
 import { E, ElementAttributeMap } from "@selfage/element/factory";
@@ -58,7 +59,7 @@ export class TextAreaInputWithErrorMsg<Request>
       E.div(
         {
           class: "text-input-label",
-          style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(label)
       ),
@@ -69,7 +70,7 @@ export class TextAreaInputWithErrorMsg<Request>
         inputRef,
         {
           class: "text-input-input",
-          style: `${BASIC_INPUT_STYLE} width: 100%;`,
+          style: `${BASIC_INPUT_STYLE} line-height: 120%; width: 100%;`,
           rows: "3",
           ...otherInputAttributes,
         },
@@ -82,7 +83,7 @@ export class TextAreaInputWithErrorMsg<Request>
         errorMsgRef,
         {
           class: "text-input-error-label",
-          style: `align-self: flex-end; font-size: 1.2rem; color: ${SCHEME.error0};`,
+          style: `align-self: flex-end; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
         },
         E.text("1")
       )

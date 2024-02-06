@@ -1,6 +1,7 @@
 import EventEmitter = require("events");
 import { SCHEME } from "./color_scheme";
 import { createArrowIcon } from "./icons";
+import { FONT_M, ICON_XS } from "./sizes";
 import { E } from "@selfage/element/factory";
 
 export interface TextValue {
@@ -39,7 +40,7 @@ export class TextValuesGroup extends EventEmitter {
       E.div(
         {
           class: "text-values-group-edit-icon",
-          style: `flex: 0 0 auto; height: 1.6rem; transform: rotate(180deg);`,
+          style: `flex: 0 0 auto; height: ${ICON_XS}rem; transform: rotate(180deg);`,
         },
         createArrowIcon(SCHEME.neutral1)
       )
@@ -62,14 +63,14 @@ export class TextValuesGroup extends EventEmitter {
           E.div(
             {
               class: "text-content-label",
-              style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(textValue.label)
           ),
           E.div(
             {
               class: "text-content-value",
-              style: `width: 100%; line-height: 2rem; font-size: 1.4rem; ${
+              style: `width: 100%; line-height: 2rem; font-size: ${FONT_M}rem; ${
                 textValue.value ? "" : "height: 2rem;"
               } color: ${SCHEME.neutral0}; border-bottom: .1rem solid ${
                 SCHEME.neutral1

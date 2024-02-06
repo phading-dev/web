@@ -5,6 +5,7 @@ import {
   MEDIUM_CARD_STYLE,
   PAGE_STYLE,
 } from "../../../../../common/page_style";
+import { AVATAR_M, FONT_M } from "../../../../../common/sizes";
 import { TextValuesGroup } from "../../../../../common/text_values_group";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { Account } from "@phading/user_service_interface/self/web/account";
@@ -60,7 +61,7 @@ export class BasicInfoPag extends EventEmitter {
         avatarContainerRef,
         {
           class: "basic-info-avatar",
-          style: `align-self: center; position: relative; height: 10rem; width: 10rem; border-radius: 10rem; overflow: hidden; cursor: pointer;`,
+          style: `align-self: center; position: relative; height: ${AVATAR_M}rem; width: ${AVATAR_M}rem; border-radius: ${AVATAR_M}rem; overflow: hidden; cursor: pointer;`,
         },
         E.image({
           class: "basic-info-avatar-image",
@@ -76,7 +77,7 @@ export class BasicInfoPag extends EventEmitter {
           E.div(
             {
               class: `basic-info-avatar-update-hint-label`,
-              style: `font-size: 1.4rem; color: ${SCHEME.neutral4};`,
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral4};`,
             },
             E.text(LOCALIZED_TEXT.changeAvatarLabel)
           )

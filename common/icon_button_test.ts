@@ -8,8 +8,10 @@ import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import "./normalize_body";
 
+let container: HTMLDivElement;
+
 class RenderOversizeCentering implements TestCase {
-  private container: HTMLDivElement;
+  private cut: IconButton;
   public constructor(
     public name: string,
     private position: TooltipPosition,
@@ -19,23 +21,21 @@ class RenderOversizeCentering implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    let cut = new IconButton(
-      `width: 1rem; height: 1rem;`,
+    this.cut = new IconButton(
+      `width: 2rem; height: 1rem;`,
       createCommentIcon(SCHEME.neutral1),
       this.position,
-      "some text"
+      "some text",
+      () => {},
+      () => {}
     ).show();
-    this.container = E.div(
-      {
-        style: `display: inline-block; background-color: red; margin: 10rem;`,
-      },
-      cut.body
-    );
-    document.body.append(this.container);
+    container.append(this.cut.body);
 
     // Execute
-    cut.body.dispatchEvent(new MouseEvent("mouseenter"));
-    await new Promise<void>((resolve) => cut.once("tooltipShowed", resolve));
+    this.cut.hover();
+    await new Promise<void>((resolve) =>
+      this.cut.once("tooltipShowed", resolve)
+    );
 
     // Verify
     await asyncAssertScreenshot(
@@ -46,12 +46,12 @@ class RenderOversizeCentering implements TestCase {
     );
   }
   public tearDown() {
-    this.container.remove();
+    this.cut.remove();
   }
 }
 
 class RenderCenteringWithin implements TestCase {
-  private container: HTMLDivElement;
+  private cut: IconButton;
   public constructor(
     public name: string,
     private position: TooltipPosition,
@@ -61,23 +61,21 @@ class RenderCenteringWithin implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    let cut = new IconButton(
-      `width: 12rem; height: 12rem;`,
+    this.cut = new IconButton(
+      `width: 20rem; height: 12rem;`,
       createCommentIcon(SCHEME.neutral1),
       this.position,
-      "some text"
+      "some text",
+      () => {},
+      () => {}
     ).show();
-    this.container = E.div(
-      {
-        style: `display: inline-block; background-color: red; margin: 10rem;`,
-      },
-      cut.body
-    );
-    document.body.append(this.container);
+    container.append(this.cut.body);
 
     // Execute
-    cut.body.dispatchEvent(new MouseEvent("mouseenter"));
-    await new Promise<void>((resolve) => cut.once("tooltipShowed", resolve));
+    this.cut.hover();
+    await new Promise<void>((resolve) =>
+      this.cut.once("tooltipShowed", resolve)
+    );
 
     // Verify
     await asyncAssertScreenshot(
@@ -88,12 +86,23 @@ class RenderCenteringWithin implements TestCase {
     );
   }
   public tearDown() {
-    this.container.remove();
+    this.cut.remove();
   }
 }
 
 TEST_RUNNER.run({
   name: "IconButtonTest",
+  environment: {
+    setUp() {
+      container = E.div({
+        style: `display: inline-block; background-color: red; margin: 10rem;`,
+      });
+      document.body.append(container);
+    },
+    tearDown() {
+      container.remove();
+    },
+  },
   cases: [
     new RenderOversizeCentering(
       "RenderOversizeTop",
@@ -151,6 +160,40 @@ TEST_RUNNER.run({
       path.join(__dirname, "/golden/icon_button_within_left.png"),
       path.join(__dirname, "/icon_button_within_left_diff.png")
     ),
+    new (class implements TestCase {
+      public name = "PointerLeft";
+      private cut: IconButton;
+      public async execute() {
+        // Prepare
+        this.cut = new IconButton(
+          `width: 12rem; height: 12rem;`,
+          createCommentIcon(SCHEME.neutral1),
+          TooltipPosition.BOTTOM,
+          "some text",
+          () => {},
+          () => {}
+        ).show();
+        container.append(this.cut.body);
+        this.cut.hover();
+        await new Promise<void>((resolve) =>
+          this.cut.once("tooltipShowed", resolve)
+        );
+
+        // Execute
+        this.cut.leave();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/icon_button_left.png"),
+          path.join(__dirname, "/golden/icon_button_left.png"),
+          path.join(__dirname, "/icon_button_left_diff.png"),
+          { fullPage: true }
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
     {
       name: "Action",
       execute: () => {
@@ -159,7 +202,9 @@ TEST_RUNNER.run({
           `width: 12rem; height: 12rem;`,
           createCommentIcon(SCHEME.neutral1),
           TooltipPosition.BOTTOM,
-          "some text"
+          "some text",
+          () => {},
+          () => {}
         ).show();
         let clicked = false;
         cut.on("action", () => (clicked = true));

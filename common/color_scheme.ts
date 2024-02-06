@@ -2,8 +2,8 @@ let TRANSPARENT = "transparent";
 let GREY_20 = "rgb(50, 50, 50)";
 let GREY_50 = "rgb(128, 128, 128)";
 let GREY_50_TRANSLUCENT = "rgb(128, 128, 128, .5)";
-let GREY_80 = "rgb(200, 200, 200)";
-let GREY_90 = "rgb(230, 230, 230)";
+let GREY_75 = "rgb(191, 191, 191)";
+let GREY_85 = "rgb(217, 217, 217)";
 let WHITE = "white";
 let BLUE_50 = "rgb(0, 170, 255)";
 let BLUE_65 = "rgb(77, 195, 255)";
@@ -23,7 +23,7 @@ export class LightScheme {
   get neutral0() {
     return GREY_20;
   }
-  // SVG icons & borders. Hinted texts.
+  // SVG icons & borders. Hinted texts. Box shadow
   get neutral1() {
     return GREY_50;
   }
@@ -33,11 +33,11 @@ export class LightScheme {
   }
   // Hinted SVG icons & borders. Disabled texts.
   get neutral2() {
-    return GREY_80;
+    return GREY_75;
   }
   // Overall Background color. Disabled SVG icons & borders.
   get neutral3() {
-    return GREY_90;
+    return GREY_85;
   }
   // Main background color for cards and popups.
   get neutral4() {
@@ -67,10 +67,10 @@ export class LightScheme {
   get heart() {
     return RED_50;
   }
-  get thumbUp() {
-    return BLUE_50;
-  }
   get anger() {
+    return RED_50;
+  }
+  get progress() {
     return RED_50;
   }
 }

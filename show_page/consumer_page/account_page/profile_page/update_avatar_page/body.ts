@@ -12,6 +12,7 @@ import {
   MEDIUM_CARD_STYLE,
   PAGE_STYLE,
 } from "../../../../../common/page_style";
+import { AVATAR_M, AVATAR_S } from "../../../../../common/sizes";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { uploadAccountAvatar } from "@phading/user_service_interface/self/web/client_requests";
 import { E } from "@selfage/element/factory";
@@ -30,16 +31,13 @@ export class UpdateAvatarPage extends EventEmitter {
     return new UpdateAvatarPage(USER_SERVICE_CLIENT);
   }
 
-  private static LARGE_IMAGE_LENGTH = 160;
-  private static SMALL_IMAGE_LENGTH = 50;
-
   private body_: HTMLDivElement;
   private backMenuItem_: MenuItem;
   private chooseFileButton_: OutlineBlockingButton;
   private uploadButton_: FilledBlockingButton;
   private imageCropper_: ImageCropper;
   private loadErrorText: HTMLDivElement;
-  private previewLargeCanvas: HTMLCanvasElement;
+  private previewMediumCanvas: HTMLCanvasElement;
   private previewSmallCanvas: HTMLCanvasElement;
   private uploadStatusText: HTMLDivElement;
 
@@ -48,7 +46,7 @@ export class UpdateAvatarPage extends EventEmitter {
     let chooseFileButtonRef = new Ref<OutlineBlockingButton>();
     let loadErrorTextRef = new Ref<HTMLDivElement>();
     let imageCropperRef = new Ref<ImageCropper>();
-    let previewLargeCanvasRef = new Ref<HTMLCanvasElement>();
+    let previewMediumCanvasRef = new Ref<HTMLCanvasElement>();
     let previewSmallCanvasRef = new Ref<HTMLCanvasElement>();
     let uploadButtonRef = new Ref<FilledBlockingButton>();
     let uploadStatusTextRef = new Ref<HTMLDivElement>();
@@ -97,25 +95,25 @@ export class UpdateAvatarPage extends EventEmitter {
           },
           E.div(
             {
-              class: "update-avatar-preview-large-container",
+              class: "update-avatar-preview-medium-container",
               style: `display: flex; flex-flow: column nowrap; align-items: center; gap: 2rem;`,
             },
             E.div(
               {
-                class: "update-avatar-preview-large-cap",
-                style: `position: relative; width: ${UpdateAvatarPage.LARGE_IMAGE_LENGTH}px; height: ${UpdateAvatarPage.LARGE_IMAGE_LENGTH}px; border-radius: ${UpdateAvatarPage.LARGE_IMAGE_LENGTH}px; border: .1rem solid ${SCHEME.neutral1}; overflow: hidden;`,
+                class: "update-avatar-preview-medium-cap",
+                style: `position: relative; width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: ${AVATAR_M}rem; border: .1rem solid ${SCHEME.neutral1}; overflow: hidden;`,
               },
-              E.canvasRef(previewLargeCanvasRef, {
-                class: "update-avatar-preview-large-canvas",
+              E.canvasRef(previewMediumCanvasRef, {
+                class: "update-avatar-preview-medium-canvas",
                 style: `position: absolute;`,
               })
             ),
             E.div(
               {
-                class: "update-avatar-preview-large-label",
+                class: "update-avatar-preview-medium-label",
                 style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
               },
-              E.text("160 x 160")
+              E.text(`${AVATAR_M * 10} x ${AVATAR_M * 10}`)
             )
           ),
           E.div(
@@ -126,7 +124,7 @@ export class UpdateAvatarPage extends EventEmitter {
             E.div(
               {
                 class: "update-avatar-preview-small-cap",
-                style: `position: relative; width: ${UpdateAvatarPage.SMALL_IMAGE_LENGTH}px; height: ${UpdateAvatarPage.SMALL_IMAGE_LENGTH}px; border-radius: ${UpdateAvatarPage.SMALL_IMAGE_LENGTH}px; border: .1rem solid ${SCHEME.neutral1}; overflow: hidden;`,
+                style: `position: relative; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: ${AVATAR_S}rem; border: .1rem solid ${SCHEME.neutral1}; overflow: hidden;`,
               },
               E.canvasRef(previewSmallCanvasRef, {
                 class: "change-vatar-preview-small-canvas",
@@ -138,7 +136,7 @@ export class UpdateAvatarPage extends EventEmitter {
                 class: "update-avatar-preview-small-label",
                 style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
               },
-              E.text("50 x 50")
+              E.text(`${AVATAR_S * 10} x ${AVATAR_S * 10}`)
             )
           )
         ),
@@ -161,7 +159,7 @@ export class UpdateAvatarPage extends EventEmitter {
     this.chooseFileButton_ = chooseFileButtonRef.val;
     this.loadErrorText = loadErrorTextRef.val;
     this.imageCropper_ = imageCropperRef.val;
-    this.previewLargeCanvas = previewLargeCanvasRef.val;
+    this.previewMediumCanvas = previewMediumCanvasRef.val;
     this.previewSmallCanvas = previewSmallCanvasRef.val;
     this.uploadButton_ = uploadButtonRef.val;
     this.uploadStatusText = uploadStatusTextRef.val;
@@ -200,9 +198,9 @@ export class UpdateAvatarPage extends EventEmitter {
       return;
     }
 
-    this.previewLargeCanvas.width = this.imageCropper_.canvas.width;
-    this.previewLargeCanvas.height = this.imageCropper_.canvas.height;
-    this.previewLargeCanvas
+    this.previewMediumCanvas.width = this.imageCropper_.canvas.width;
+    this.previewMediumCanvas.height = this.imageCropper_.canvas.height;
+    this.previewMediumCanvas
       .getContext("2d")
       .drawImage(this.imageCropper_.canvas, 0, 0);
     this.previewSmallCanvas.width = this.imageCropper_.canvas.width;
@@ -215,38 +213,30 @@ export class UpdateAvatarPage extends EventEmitter {
   }
 
   private preview(): void {
-    this.previewLargeCanvas.style.width = `${
-      (this.imageCropper_.canvas.width / this.imageCropper_.sWidth) *
-      UpdateAvatarPage.LARGE_IMAGE_LENGTH
-    }px`;
-    this.previewLargeCanvas.style.height = `${
-      (this.imageCropper_.canvas.height / this.imageCropper_.sHeight) *
-      UpdateAvatarPage.LARGE_IMAGE_LENGTH
-    }px`;
-    this.previewLargeCanvas.style.left = `-${
-      (this.imageCropper_.sx / this.imageCropper_.sWidth) *
-      UpdateAvatarPage.LARGE_IMAGE_LENGTH
-    }px`;
-    this.previewLargeCanvas.style.top = `-${
-      (this.imageCropper_.sy / this.imageCropper_.sHeight) *
-      UpdateAvatarPage.LARGE_IMAGE_LENGTH
-    }px`;
+    this.previewMediumCanvas.style.width = `${
+      (this.imageCropper_.canvas.width / this.imageCropper_.sWidth) * AVATAR_M
+    }rem`;
+    this.previewMediumCanvas.style.height = `${
+      (this.imageCropper_.canvas.height / this.imageCropper_.sHeight) * AVATAR_M
+    }rem`;
+    this.previewMediumCanvas.style.left = `-${
+      (this.imageCropper_.sx / this.imageCropper_.sWidth) * AVATAR_M
+    }rem`;
+    this.previewMediumCanvas.style.top = `-${
+      (this.imageCropper_.sy / this.imageCropper_.sHeight) * AVATAR_M
+    }rem`;
     this.previewSmallCanvas.style.width = `${
-      (this.imageCropper_.canvas.width / this.imageCropper_.sWidth) *
-      UpdateAvatarPage.SMALL_IMAGE_LENGTH
-    }px`;
+      (this.imageCropper_.canvas.width / this.imageCropper_.sWidth) * AVATAR_S
+    }rem`;
     this.previewSmallCanvas.style.height = `${
-      (this.imageCropper_.canvas.height / this.imageCropper_.sHeight) *
-      UpdateAvatarPage.SMALL_IMAGE_LENGTH
-    }px`;
+      (this.imageCropper_.canvas.height / this.imageCropper_.sHeight) * AVATAR_S
+    }rem`;
     this.previewSmallCanvas.style.left = `-${
-      (this.imageCropper_.sx / this.imageCropper_.sWidth) *
-      UpdateAvatarPage.SMALL_IMAGE_LENGTH
-    }px`;
+      (this.imageCropper_.sx / this.imageCropper_.sWidth) * AVATAR_S
+    }rem`;
     this.previewSmallCanvas.style.top = `-${
-      (this.imageCropper_.sy / this.imageCropper_.sHeight) *
-      UpdateAvatarPage.SMALL_IMAGE_LENGTH
-    }px`;
+      (this.imageCropper_.sy / this.imageCropper_.sHeight) * AVATAR_S
+    }rem`;
   }
 
   private async uploadAvatar(): Promise<void> {
