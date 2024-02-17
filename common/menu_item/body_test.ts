@@ -32,7 +32,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.body.dispatchEvent(new MouseEvent("mouseover"));
+        this.cut.hover();
         await new Promise<void>((resolve) =>
           this.cut.once("transitionEnded", resolve)
         );
@@ -46,7 +46,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.body.dispatchEvent(new MouseEvent("mouseleave"));
+        this.cut.leave();
         await new Promise<void>((resolve) =>
           this.cut.once("transitionEnded", resolve)
         );

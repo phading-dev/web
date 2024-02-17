@@ -4,9 +4,14 @@ import { IconButton, TooltipPosition } from "./icon_button";
 import { createFilledThumbUpIcon } from "./icons";
 import { LOCALIZED_TEXT } from "./locales/localized_text";
 import { ICON_S } from "./sizes";
-import { Liking } from "@phading/comment_service_interface/show_app/comment";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
+
+export enum Liking {
+  NEUTRAL = 1,
+  LIKE = 2,
+  DISLIKE = 3,
+}
 
 export interface LikeDislikeButtons {
   on(event: "like", listener: (liking: Liking) => Promise<void>): this;
@@ -22,7 +27,7 @@ export class LikeDislikeButtons extends EventEmitter {
     return new LikeDislikeButtons(containerStyle, iconPadding, tooltipPosition);
   }
 
-  private container: HTMLDivElement;
+  private body_: HTMLDivElement;
   private thumbUpButton_: IconButton;
   private thumbUpedButton_: IconButton;
   private thumbDownButton_: IconButton;
@@ -43,9 +48,9 @@ export class LikeDislikeButtons extends EventEmitter {
     let thumbDownIconRef = new Ref<SVGSVGElement>();
     let thumbDownedButtonRef = new Ref<IconButton>();
     let thumbDownedIconRef = new Ref<SVGSVGElement>();
-    this.container = E.div(
+    this.body_ = E.div(
       {
-        class: "like-dislike-buttons-container",
+        class: "like-dislike-buttons",
         style: containerStyle,
       },
       assign(
@@ -186,11 +191,11 @@ export class LikeDislikeButtons extends EventEmitter {
   }
 
   public get body() {
-    return this.container;
+    return this.body_;
   }
 
   public remove(): void {
-    this.container.remove();
+    this.body_.remove();
   }
 
   // Visible for testing

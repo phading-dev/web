@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../../../common/color_scheme";
-import { HIDE_DELAY } from "../../../../../common/delays";
+import { HoverObserver, Mode } from "../../../../../common/hover_observer";
 import { TooltipPosition } from "../../../../../common/icon_button";
 import { LikeDislikeButtons } from "../../../../../common/like_dislike_buttons";
 import {
@@ -28,22 +28,19 @@ export interface CommentEntry {
 
 export class CommentEntry extends EventEmitter {
   public static create(comment: Comment): CommentEntry {
-    return new CommentEntry(
-      COMMENT_SERVICE_CLIENT,
-      (callback, delay) => window.setTimeout(callback, delay),
-      (id) => window.clearTimeout(id),
-      comment
-    );
+    return new CommentEntry(COMMENT_SERVICE_CLIENT, comment);
+  }
+
+  public static createMock(comment: Comment): CommentEntry {
+    return new CommentEntry(undefined, comment);
   }
 
   private body_: HTMLDivElement;
   private likeDislikeButtons_: LikeDislikeButtons;
-  private hideTimeoutId: number;
+  private hoverObserver: HoverObserver;
 
   public constructor(
     private webServiceClient: WebServiceClient,
-    private setTimeout: (callback: () => void, delay: number) => number,
-    private clearTimeout: (id: number) => void,
     private comment: Comment
   ) {
     super();
@@ -92,9 +89,12 @@ export class CommentEntry extends EventEmitter {
     this.likeDislikeButtons_ = likeDislikeButtonsRef.val;
 
     this.hideActions();
-    this.body_.addEventListener("pointerenter", () => this.showActions());
-    this.body_.addEventListener("pointermove", () => this.showActions());
-    this.body_.addEventListener("pointerleave", () => this.hideActions());
+    this.hoverObserver = HoverObserver.create(
+      this.body_,
+      Mode.DELAY_HOVER_DELAY_LEAVE
+    )
+      .on("hover", () => this.showActions())
+      .on("leave", () => this.hideActions());
     this.likeDislikeButtons_.on("like", (liking) => this.likeComment(liking));
     this.likeDislikeButtons_.on("postLike", () => this.emit("postLike"));
     this.likeDislikeButtons_.body.addEventListener("transitionend", () =>
@@ -104,18 +104,9 @@ export class CommentEntry extends EventEmitter {
 
   private showActions(): void {
     this.likeDislikeButtons_.body.style.height = `${ICON_S + 0.2}rem`;
-    if (this.hideTimeoutId) {
-      this.clearTimeout(this.hideTimeoutId);
-      this.hideTimeoutId = undefined;
-    }
-    this.hideTimeoutId = this.setTimeout(() => this.hideActions(), HIDE_DELAY);
   }
 
   private hideActions(): void {
-    if (this.hideTimeoutId) {
-      this.clearTimeout(this.hideTimeoutId);
-      this.hideTimeoutId = undefined;
-    }
     this.likeDislikeButtons_.body.style.height = "0";
   }
 
@@ -139,9 +130,9 @@ export class CommentEntry extends EventEmitter {
     return this.likeDislikeButtons_;
   }
   public hover(): void {
-    this.body_.dispatchEvent(new PointerEvent("pointerenter"));
+    this.hoverObserver.emit("hover");
   }
   public leave(): void {
-    this.body_.dispatchEvent(new PointerEvent("pointerleave"));
+    this.hoverObserver.emit("leave");
   }
 }

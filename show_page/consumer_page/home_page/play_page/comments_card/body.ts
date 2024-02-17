@@ -33,6 +33,10 @@ export class CommentsCard extends EventEmitter {
     );
   }
 
+  public static createMock(showId: string): CommentsCard {
+    return new CommentsCard(undefined, CommentEntry.createMock, showId);
+  }
+
   private static NUM_COMMENTS_LIMIT = 500;
 
   private body_: HTMLDivElement;

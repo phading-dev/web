@@ -9,11 +9,7 @@ import {
 } from "@phading/comment_service_interface/show_app/web/interface";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
-import {
-  deleteFile,
-  screenshot,
-  setViewport,
-} from "@selfage/puppeteer_test_executor_api";
+import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -53,8 +49,6 @@ TEST_RUNNER.run({
               return {};
             }
           })(),
-          () => 0,
-          () => {},
           {
             commentId: "id1",
             author: {
@@ -126,13 +120,23 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/comment_entry_disliked.png"),
           path.join(__dirname, "/comment_entry_disliked_diff.png")
         );
+
+        // Execute
+        this.cut.leave();
+
+        // Prepare
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/comment_entry_hide_actions.png"),
+          path.join(__dirname, "/golden/comment_entry_default.png"),
+          path.join(__dirname, "/comment_entry_hide_actions_diff.png")
+        );
       }
       public tearDown() {
         this.cut.remove();
       }
     })(),
     new (class implements TestCase {
-      public name = "LongContent";
+      public name = "LongContentAsPublisher";
       private cut: CommentEntry;
       public async execute() {
         // Prepare
@@ -143,8 +147,6 @@ TEST_RUNNER.run({
               super(undefined, undefined);
             }
           })(),
-          () => 0,
-          () => {},
           {
             author: {
               naturalName:
@@ -154,6 +156,7 @@ TEST_RUNNER.run({
             content:
               "Some some content Some some content Some some content Some some content Some some content",
             liking: Liking.NEUTRAL,
+            isThePublisher: true,
           }
         );
 
@@ -176,103 +179,15 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/comment_entry_long_show_actions.png"),
           path.join(__dirname, "/comment_entry_long_show_actions_diff.png")
         );
-      }
-      public tearDown() {
-        this.cut.remove();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "Hover_Leave";
-      private cut: CommentEntry;
-      public async execute() {
-        // Prepare
-        await setViewport(300, 200);
-        let callbackCaptured: any;
-        let delayCaptured: any;
-        let timeoutId = 1;
-        let idCaptured: number;
-        this.cut = new CommentEntry(
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-          })(),
-          (callback, delay) => {
-            callbackCaptured = callback;
-            delayCaptured = delay;
-            return timeoutId;
-          },
-          (id) => {
-            idCaptured = id;
-          },
-          {
-            author: {
-              naturalName: "First Second",
-              avatarSmallPath: userImage,
-            },
-            content: "Some some content",
-            liking: Liking.NEUTRAL,
-          }
-        );
-        container.append(this.cut.body);
-        await screenshot(
-          path.join(__dirname, "/comment_entry_hover_leave_baseline.png")
-        );
-
-        // Execute
-        this.cut.hover();
-        await new Promise<void>((resolve) =>
-          this.cut.once("actionsTransitionEnded", resolve)
-        );
-
-        // Execute
-        assertThat(delayCaptured, eq(3000), "delay");
 
         // Execute
         this.cut.leave();
-        await new Promise<void>((resolve) =>
-          this.cut.once("actionsTransitionEnded", resolve)
-        );
-
-        // Verify
-        assertThat(idCaptured, eq(1), "cancelled timeout 1");
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/comment_entry_hide_actions.png"),
-          path.join(__dirname, "/comment_entry_hover_leave_baseline.png"),
-          path.join(__dirname, "/comment_entry_hide_actions_diff.png")
-        );
 
         // Prepare
-        timeoutId = 2;
-        this.cut.hover();
-        await new Promise<void>((resolve) =>
-          this.cut.once("actionsTransitionEnded", resolve)
-        );
-        timeoutId = 3;
-
-        // Execute
-        this.cut.body.dispatchEvent(new PointerEvent("pointermove"));
-
-        // Verify
-        assertThat(idCaptured, eq(2), "cancelled timeout 2");
-
-        // Execute
-        callbackCaptured();
-        await new Promise<void>((resolve) =>
-          this.cut.once("actionsTransitionEnded", resolve)
-        );
-
-        // Verify
-        assertThat(idCaptured, eq(3), "cancelled timeout 3");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/comment_entry_auto_hide_actions.png"),
-          path.join(__dirname, "/comment_entry_hover_leave_baseline.png"),
-          path.join(__dirname, "/comment_entry_auto_hide_actions_diff.png")
-        );
-
-        // Cleanup
-        await deleteFile(
-          path.join(__dirname, "/comment_entry_hover_leave_baseline.png")
+          path.join(__dirname, "/comment_entry_long_hide_actions.png"),
+          path.join(__dirname, "/golden/comment_entry_long.png"),
+          path.join(__dirname, "/comment_entry_long_hide_actions_diff.png")
         );
       }
       public tearDown() {

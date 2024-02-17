@@ -1,7 +1,7 @@
 import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
 import { CommentsCard } from "./body";
-import { CommentEntryMock } from "./comment_entry_mock";
+import { CommentEntry } from "./comment_entry";
 import {
   COMMENT,
   Comment,
@@ -65,7 +65,7 @@ TEST_RUNNER.run({
               super(undefined, undefined);
             }
           })(),
-          (comment) => new CommentEntryMock(comment),
+          CommentEntry.createMock,
           "id1"
         );
 
@@ -153,7 +153,7 @@ TEST_RUNNER.run({
               super(undefined, undefined);
             }
           })(),
-          (comment) => new CommentEntryMock(comment),
+          CommentEntry.createMock,
           "id1"
         );
 
@@ -239,7 +239,7 @@ TEST_RUNNER.run({
               super(undefined, undefined);
             }
           })(),
-          (comment) => new CommentEntryMock(comment),
+          CommentEntry.createMock,
           "id1"
         ).changeToPortrait();
         container.append(this.cut.body);
@@ -281,7 +281,7 @@ TEST_RUNNER.run({
         })();
         this.cut = new CommentsCard(
           webServiceClientMock,
-          (comment) => new CommentEntryMock(comment),
+          CommentEntry.createMock,
           "id1"
         )
           .changeToPortrait()

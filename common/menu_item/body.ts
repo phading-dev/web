@@ -1,5 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
+import { HoverObserver, Mode } from "../hover_observer";
 import { FONT_L, ICON_M } from "../sizes";
 import { E } from "@selfage/element/factory";
 
@@ -17,16 +18,17 @@ export class MenuItem extends EventEmitter {
     return new MenuItem(icon, padding, label);
   }
 
-  public static MENU_ITEM_LENGTH = 5; // rem
+  public static MENU_ITEM_LENGTH = ICON_M; // rem
 
-  private container: HTMLDivElement;
+  private body_: HTMLDivElement;
+  private hoverObserver: HoverObserver;
 
   public constructor(icon: Element, padding: string, label: string) {
     super();
-    this.container = E.div(
+    this.body_ = E.div(
       {
         class: "menu-item",
-        style: `display: flex; flex-flow: row nowrap; align-items: center; height: ${ICON_M}rem; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral2}; border-radius: ${ICON_M}rem; background-color: ${SCHEME.neutral4}; transition: width .3s .5s linear; overflow: hidden; cursor: pointer;`,
+        style: `display: flex; flex-flow: row nowrap; align-items: center; height: ${MenuItem.MENU_ITEM_LENGTH}rem; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral2}; border-radius: ${MenuItem.MENU_ITEM_LENGTH}rem; background-color: ${SCHEME.neutral4}; transition: width .3s .5s linear; overflow: hidden; cursor: pointer;`,
       },
       E.div(
         {
@@ -38,39 +40,49 @@ export class MenuItem extends EventEmitter {
       E.div(
         {
           class: "menu-item-label",
-          style: `margin: 0 1rem 0 .5rem; font-size: ${FONT_L}rem; line-height: ${ICON_M}rem; color: ${SCHEME.neutral0};`,
+          style: `margin: 0 1rem 0 .5rem; font-size: ${FONT_L}rem; line-height: ${MenuItem.MENU_ITEM_LENGTH}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(label)
       )
     );
     this.collapse();
 
-    this.container.addEventListener("transitionend", () =>
+    this.hoverObserver = HoverObserver.create(
+      this.body_,
+      Mode.DELAY_HOVER_DELAY_LEAVE
+    )
+      .on("hover", () => this.expand())
+      .on("leave", () => this.collapse());
+    this.body_.addEventListener("transitionend", () =>
       this.emit("transitionEnded")
     );
-    this.container.addEventListener("mouseover", () => this.expand());
-    this.container.addEventListener("mouseleave", () => this.collapse());
-    this.container.addEventListener("click", () => this.emit("action"));
+    this.body_.addEventListener("click", () => this.emit("action"));
   }
 
   private expand(): void {
-    this.container.style.width = `${this.container.scrollWidth}px`;
+    this.body_.style.width = `${this.body_.scrollWidth}px`;
   }
 
   private collapse(): void {
-    this.container.style.width = `${MenuItem.MENU_ITEM_LENGTH}rem`;
+    this.body_.style.width = `${MenuItem.MENU_ITEM_LENGTH}rem`;
   }
 
   public get body() {
-    return this.container;
+    return this.body_;
   }
 
   public remove(): void {
-    this.container.remove();
+    this.body_.remove();
   }
 
   // Visible for testing
   public click(): void {
-    this.container.click();
+    this.body_.click();
+  }
+  public hover(): void {
+    this.hoverObserver.emit("hover");
+  }
+  public leave(): void {
+    this.hoverObserver.emit("leave");
   }
 }

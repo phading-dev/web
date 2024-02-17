@@ -1,6 +1,7 @@
 import EventEmitter = require("events");
 import { BUTTON_BORDER_RADIUS, NULLIFIED_BUTTON_STYLE } from "./button_styles";
 import { SCHEME } from "./color_scheme";
+import { HoverObserver, Mode } from "./hover_observer";
 import { FONT_M } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -36,9 +37,10 @@ export class IconButton extends EventEmitter {
     );
   }
 
-  private container: HTMLButtonElement;
+  private body_: HTMLButtonElement;
   private tooltip: HTMLDivElement;
   private displayStyle: string;
+  private hoverObserver: HoverObserver;
 
   public constructor(
     customButtonStyle: string,
@@ -50,7 +52,7 @@ export class IconButton extends EventEmitter {
   ) {
     super();
     let tooltipRef = new Ref<HTMLDivElement>();
-    this.container = E.button(
+    this.body_ = E.button(
       {
         class: "icon-button",
         style: `${NULLIFIED_BUTTON_STYLE} position: relative; ${customButtonStyle}`,
@@ -72,7 +74,7 @@ export class IconButton extends EventEmitter {
       )
     );
     this.tooltip = tooltipRef.val;
-    this.displayStyle = this.container.style.display;
+    this.displayStyle = this.body_.style.display;
 
     switch (position) {
       case TooltipPosition.TOP:
@@ -102,12 +104,16 @@ export class IconButton extends EventEmitter {
     }
     this.hideTooltip();
 
+    this.hoverObserver = HoverObserver.create(
+      this.body_,
+      Mode.HOVER_DELAY_LEAVE
+    )
+      .on("hover", () => this.showTootlip())
+      .on("leave", () => this.hideTooltip());
     this.tooltip.addEventListener("transitionend", () =>
       this.emit("tooltipShowed")
     );
-    this.container.addEventListener("pointerenter", () => this.showTootlip());
-    this.container.addEventListener("pointercancel", () => this.hideTooltip());
-    this.container.addEventListener("click", () => this.emit("action"));
+    this.body_.addEventListener("click", () => this.emit("action"));
   }
 
   private showTootlip(): void {
@@ -122,45 +128,45 @@ export class IconButton extends EventEmitter {
   }
 
   public get body() {
-    return this.container;
+    return this.body_;
   }
 
   public enable(): this {
-    this.container.disabled = false;
-    this.container.style.cursor = "pointer";
+    this.body_.disabled = false;
+    this.body_.style.cursor = "pointer";
     this.customEnable();
     return this;
   }
 
   public disable(): this {
-    this.container.disabled = true;
-    this.container.style.cursor = "not-allowed";
+    this.body_.disabled = true;
+    this.body_.style.cursor = "not-allowed";
     this.customDisable();
     return this;
   }
 
   public show(): this {
-    this.container.style.display = this.displayStyle;
+    this.body_.style.display = this.displayStyle;
     return this;
   }
 
   public hide(): this {
-    this.container.style.display = "none";
+    this.body_.style.display = "none";
     return this;
   }
 
   public remove(): void {
-    this.container.remove();
+    this.body_.remove();
   }
 
   // Visible for testing
   public click(): void {
-    this.container.click();
+    this.body_.click();
   }
   public hover(): void {
-    this.container.dispatchEvent(new PointerEvent("pointerenter"));
+    this.hoverObserver.emit("hover");
   }
   public leave(): void {
-    this.container.dispatchEvent(new PointerEvent("pointercancel"));
+    this.hoverObserver.emit("leave");
   }
 }
