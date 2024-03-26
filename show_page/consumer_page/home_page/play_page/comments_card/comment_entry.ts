@@ -7,7 +7,6 @@ import {
   AVATAR_S,
   FONT_M,
   FONT_S,
-  ICON_S,
   LINE_HEIGHT_M,
 } from "../../../../../common/sizes";
 import { COMMENT_SERVICE_CLIENT } from "../../../../../common/web_service_client";
@@ -16,14 +15,16 @@ import {
   Comment,
   Liking,
 } from "@phading/comment_service_interface/show_app/comment";
-import { likeComment } from "@phading/comment_service_interface/show_app/web/client_requests";
+import {
+  getCommentLiking,
+  likeComment,
+} from "@phading/comment_service_interface/show_app/web/client_requests";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface CommentEntry {
   on(event: "postLike", listener: () => void): this;
-  on(event: "actionsTransitionEnded", listener: () => void): this;
 }
 
 export class CommentEntry extends EventEmitter {
@@ -38,6 +39,7 @@ export class CommentEntry extends EventEmitter {
   private body_: HTMLDivElement;
   private likeDislikeButtons_: LikeDislikeButtons;
   private hoverObserver: HoverObserver;
+  private liking: Liking;
 
   public constructor(
     private webServiceClient: WebServiceClient,
@@ -80,10 +82,10 @@ export class CommentEntry extends EventEmitter {
       assign(
         likeDislikeButtonsRef,
         LikeDislikeButtons.create(
-          `width: 100%; padding: 0 1rem; box-sizing: border-box; position: absolute; left: 0; bottom: 100%; background-color: ${SCHEME.neutral4}; transition: height .3s linear; overflow: hidden; display: flex; flex-flow: row nowrap; justify-content: flex-end; gap: .5rem; z-index: 1;`,
+          `width: 100%; box-sizing: border-box; padding: 0 ${CONTAINER_PADDING_LEFT_RIGHT}rem; position: absolute; left: 0; bottom: 100%; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: row nowrap; justify-content: flex-end; gap: .5rem;`,
           0.7,
           TooltipPosition.LEFT
-        ).enable(comment.liking)
+        ).disable()
       ).body
     );
     this.likeDislikeButtons_ = likeDislikeButtonsRef.val;
@@ -97,17 +99,20 @@ export class CommentEntry extends EventEmitter {
       .on("leave", () => this.hideActions());
     this.likeDislikeButtons_.on("like", (liking) => this.likeComment(liking));
     this.likeDislikeButtons_.on("postLike", () => this.emit("postLike"));
-    this.likeDislikeButtons_.body.addEventListener("transitionend", () =>
-      this.emit("actionsTransitionEnded")
-    );
   }
 
-  private showActions(): void {
-    this.likeDislikeButtons_.body.style.height = `${ICON_S + 0.2}rem`;
+  private async showActions(): Promise<void> {
+    this.likeDislikeButtons_.show();
+    if (!this.liking) {
+      let response = await getCommentLiking(this.webServiceClient, {
+        commentId: this.comment.commentId,
+      });
+      this.likeDislikeButtons_.enable(response.liking);
+    }
   }
 
   private hideActions(): void {
-    this.likeDislikeButtons_.body.style.height = "0";
+    this.likeDislikeButtons_.hide();
   }
 
   private async likeComment(liking: Liking): Promise<void> {

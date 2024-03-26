@@ -33,6 +33,7 @@ export class LikeDislikeButtons extends EventEmitter {
   private thumbDownButton_: IconButton;
   private thumbDownedButton_: IconButton;
   private liking: Liking;
+  private displayStyle: string;
 
   public constructor(
     containerStyle: string,
@@ -131,41 +132,15 @@ export class LikeDislikeButtons extends EventEmitter {
     this.thumbDownButton_ = thumbDownButtonRef.val;
     this.thumbDownedButton_ = thumbDownedButtonRef.val;
 
+    this.setLiking(Liking.NEUTRAL);
+    this.displayStyle = this.body_.style.display;
     this.thumbUpButton_.on("action", () => this.handleLike(Liking.LIKE));
     this.thumbUpedButton_.on("action", () => this.handleLike(Liking.NEUTRAL));
     this.thumbDownButton_.on("action", () => this.handleLike(Liking.DISLIKE));
     this.thumbDownedButton_.on("action", () => this.handleLike(Liking.NEUTRAL));
   }
 
-  private async handleLike(newLiking: Liking): Promise<void> {
-    this.disable();
-    try {
-      await Promise.all(
-        this.listeners("like").map((callback) => callback(newLiking))
-      );
-    } catch (e) {
-      console.log(e);
-      this.enable(this.liking);
-      this.emit("postLike", e);
-      return;
-    }
-    this.enable(newLiking);
-    this.emit("postLike");
-  }
-
-  private disable(): void {
-    this.thumbUpButton_.disable();
-    this.thumbUpedButton_.disable();
-    this.thumbDownButton_.disable();
-    this.thumbDownedButton_.disable();
-  }
-
-  public enable(liking: Liking): this {
-    this.thumbUpButton_.enable();
-    this.thumbUpedButton_.enable();
-    this.thumbDownButton_.enable();
-    this.thumbDownedButton_.enable();
-
+  private setLiking(liking: Liking): void {
     this.liking = liking;
     switch (liking) {
       case Liking.NEUTRAL:
@@ -187,6 +162,38 @@ export class LikeDislikeButtons extends EventEmitter {
         this.thumbDownedButton_.show();
         break;
     }
+  }
+
+  private async handleLike(newLiking: Liking): Promise<void> {
+    this.disable();
+    try {
+      await Promise.all(
+        this.listeners("like").map((callback) => callback(newLiking))
+      );
+    } catch (e) {
+      console.log(e);
+      this.enable(this.liking);
+      this.emit("postLike", e);
+      return;
+    }
+    this.enable(newLiking);
+    this.emit("postLike");
+  }
+
+  public disable(): this {
+    this.thumbUpButton_.disable();
+    this.thumbUpedButton_.disable();
+    this.thumbDownButton_.disable();
+    this.thumbDownedButton_.disable();
+    return this;
+  }
+
+  public enable(liking: Liking): this {
+    this.thumbUpButton_.enable();
+    this.thumbUpedButton_.enable();
+    this.thumbDownButton_.enable();
+    this.thumbDownedButton_.enable();
+    this.setLiking(liking);
     return this;
   }
 
@@ -196,6 +203,16 @@ export class LikeDislikeButtons extends EventEmitter {
 
   public remove(): void {
     this.body_.remove();
+  }
+
+  public show(): this {
+    this.body_.style.display = this.displayStyle;
+    return this;
+  }
+
+  public hide(): this {
+    this.body_.style.display = "none";
+    return this;
   }
 
   // Visible for testing

@@ -3,9 +3,11 @@ import path = require("path");
 import { CommentEntry } from "./comment_entry";
 import { Liking } from "@phading/comment_service_interface/show_app/comment";
 import {
+  GET_COMMENT_LIKING,
+  GET_COMMENT_LIKING_REQUEST_BODY,
+  GetCommentLikingResponse,
   LIKE_COMMENT,
   LIKE_COMMENT_REQUEST_BODY,
-  LikeCommentResponse,
 } from "@phading/comment_service_interface/show_app/web/interface";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
@@ -39,14 +41,15 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(300, 200);
         let requestCaptured: any;
+        let responseToReturn: any;
         this.cut = new CommentEntry(
           new (class extends WebServiceClient {
             public constructor() {
               super(undefined, undefined);
             }
-            public async send(request: any): Promise<LikeCommentResponse> {
+            public async send(request: any): Promise<any> {
               requestCaptured = request;
-              return {};
+              return responseToReturn;
             }
           })(),
           {
@@ -56,7 +59,6 @@ TEST_RUNNER.run({
               avatarSmallPath: userImage,
             },
             content: "Some some content",
-            liking: Liking.NEUTRAL,
           }
         );
 
@@ -70,10 +72,30 @@ TEST_RUNNER.run({
           path.join(__dirname, "/comment_entry_default_diff.png")
         );
 
+        // Prepare
+        responseToReturn = {
+          liking: Liking.NEUTRAL,
+        } as GetCommentLikingResponse;
+
         // Execute
         this.cut.hover();
 
         // Verify
+        assertThat(
+          requestCaptured.descriptor,
+          eq(GET_COMMENT_LIKING),
+          "get liking service"
+        );
+        assertThat(
+          requestCaptured.body,
+          eqMessage(
+            {
+              commentId: "id1",
+            },
+            GET_COMMENT_LIKING_REQUEST_BODY
+          ),
+          "get liking request"
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/comment_entry_show_actions.png"),
           path.join(__dirname, "/golden/comment_entry_show_actions.png"),
@@ -103,7 +125,11 @@ TEST_RUNNER.run({
         );
 
         // Verify
-        assertThat(requestCaptured.descriptor, eq(LIKE_COMMENT), "service");
+        assertThat(
+          requestCaptured.descriptor,
+          eq(LIKE_COMMENT),
+          "like comment service"
+        );
         assertThat(
           requestCaptured.body,
           eqMessage(
@@ -113,7 +139,7 @@ TEST_RUNNER.run({
             },
             LIKE_COMMENT_REQUEST_BODY
           ),
-          "request body"
+          "like comment request"
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/comment_entry_disliked.png"),
@@ -146,6 +172,11 @@ TEST_RUNNER.run({
             public constructor() {
               super(undefined, undefined);
             }
+            public async send(): Promise<GetCommentLikingResponse> {
+              return {
+                liking: Liking.NEUTRAL,
+              };
+            }
           })(),
           {
             author: {
@@ -155,7 +186,6 @@ TEST_RUNNER.run({
             },
             content:
               "Some some content Some some content Some some content Some some content Some some content",
-            liking: Liking.NEUTRAL,
             isThePublisher: true,
           }
         );

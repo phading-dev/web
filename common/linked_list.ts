@@ -18,8 +18,8 @@ export class LinkedList<T> {
   private reduceSize = (): void => {
     this.size--;
   };
-  private start = new LinkedNode<T>(this.reduceSize);
-  private end = new LinkedNode<T>(this.reduceSize);
+  private head = new LinkedNode<T>(this.reduceSize);
+  private tail = new LinkedNode<T>(this.reduceSize);
 
   public constructor() {
     this.clear();
@@ -27,24 +27,24 @@ export class LinkedList<T> {
 
   public pushBack(value: T): LinkedNode<T> {
     let node = new LinkedNode(this.reduceSize, value);
-    let prev = this.end.prev;
+    let prev = this.tail.prev;
     prev.next = node;
     node.prev = prev;
-    this.end.prev = node;
-    node.next = this.end;
+    this.tail.prev = node;
+    node.next = this.tail;
     this.size++;
     return node;
   }
 
   public popFront(): T {
-    let ret = this.start.next;
+    let ret = this.head.next;
     ret.remove();
     return ret.value;
   }
 
   public clear(): void {
-    this.start.next = this.end;
-    this.end.prev = this.start;
+    this.head.next = this.tail;
+    this.tail.prev = this.head;
     this.size = 0;
   }
 
@@ -53,19 +53,19 @@ export class LinkedList<T> {
   }
 
   public forEach(callback: (arg: T) => void): void {
-    for (let it = this.start.next; it !== this.end; it = it.next) {
+    for (let it = this.head.next; it !== this.tail; it = it.next) {
       callback(it.value);
     }
   }
 
   public forEachReverse(callback: (arg: T) => void): void {
-    for (let it = this.end.prev; it !== this.start; it = it.prev) {
+    for (let it = this.tail.prev; it !== this.head; it = it.prev) {
       callback(it.value);
     }
   }
 
   public forEachNode(callback: (arg: LinkedNode<T>) => void): void {
-    for (let it = this.start.next; it !== this.end; ) {
+    for (let it = this.head.next; it !== this.tail; ) {
       let current = it;
       it = it.next;
       callback(current);
@@ -73,7 +73,7 @@ export class LinkedList<T> {
   }
 
   public forEachNodeReverse(callback: (arg: LinkedNode<T>) => void): void {
-    for (let it = this.end.prev; it !== this.start; ) {
+    for (let it = this.tail.prev; it !== this.head; ) {
       let current = it;
       it = it.prev;
       callback(current);
