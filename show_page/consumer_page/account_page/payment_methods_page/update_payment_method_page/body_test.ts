@@ -92,7 +92,9 @@ TEST_RUNNER.run({
   name: "UpdatePaymentMethodPageTest",
   environment: {
     setUp: () => {
-      menuBodyContainer = E.div({});
+      menuBodyContainer = E.div({
+        style: "position: fixed;"
+      });
       document.body.append(menuBodyContainer);
     },
     tearDown: () => {

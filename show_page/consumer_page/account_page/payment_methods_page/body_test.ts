@@ -17,7 +17,7 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import "../../../../common/normalize_body";
 
-let menBodyContainer: HTMLDivElement;
+let menuBodyContainer: HTMLDivElement;
 
 class NavigateToUpdateAndBack implements TestCase {
   public constructor(public name: string, private eventName: string) {}
@@ -29,7 +29,7 @@ class NavigateToUpdateAndBack implements TestCase {
       () => new PaymentMethodsListPageMock(),
       (paymentMethod) => new UpdatePaymentMethodPageMock(paymentMethod),
       (...bodies) => document.body.append(...bodies),
-      (...bodies) => menBodyContainer.append(...bodies)
+      (...bodies) => menuBodyContainer.append(...bodies)
     );
     await screenshot(
       path.join(__dirname, "/payment_methods_page_baseline.png")
@@ -70,13 +70,13 @@ TEST_RUNNER.run({
   name: "PaymentMethodsPageTest",
   environment: {
     setUp: () => {
-      menBodyContainer = E.div({
-        style: "display: fixed; left: 0; top: 0;",
+      menuBodyContainer = E.div({
+        style: "position: fixed;",
       });
-      document.body.append(menBodyContainer);
+      document.body.append(menuBodyContainer);
     },
     tearDown: () => {
-      menBodyContainer.remove();
+      menuBodyContainer.remove();
     },
   },
   cases: [
@@ -92,7 +92,7 @@ TEST_RUNNER.run({
           () => new PaymentMethodsListPageMock(),
           (paymentMethod) => new UpdatePaymentMethodPageMock(paymentMethod),
           (...bodies) => document.body.append(...bodies),
-          (...bodies) => menBodyContainer.append(...bodies)
+          (...bodies) => menuBodyContainer.append(...bodies)
         );
 
         // Verify

@@ -1,6 +1,6 @@
 let GREY_95 = "rgb(242,242,242)";
 let GREY_85 = "rgb(217,217,217)";
-let GREY_50 = "rgb(128,128,128)";
+let GREY_30 = "rgb(77,77,77)";
 let GREY_20 = "rgb(51,51,51)";
 let GREY_10 = "rgb(26,26,26)";
 let GREY_10_TRANSLUCENT = "rgb(26,26,26,.5)";
@@ -27,7 +27,7 @@ export class DarkScheme {
   }
   // Disabled. Contrasted.
   get neutral2() {
-    return GREY_50;
+    return GREY_30;
   }
   // Overall Background color.
   get neutral3() {

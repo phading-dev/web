@@ -8,6 +8,7 @@ import {
   MEDIUM_CARD_STYLE,
   PAGE_STYLE,
 } from "../../../../../common/page_style";
+import { FONT_L } from "../../../../../common/sizes";
 import { PRODUCT_METER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { listHistoryPlaytimeMeterReports } from "@phading/product_meter_service_interface/consumer/web/client_requests";
 import { PlaytimeMeterReportRange } from "@phading/product_meter_service_interface/consumer/web/playtime_meter_report";
@@ -69,7 +70,7 @@ export class ChooseReportPage extends EventEmitter {
       E.div(
         {
           class: "choose-report-title",
-          style: `font-size: 1.6rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(LOCALIZED_TEXT.chooseReportTitle)
       ),

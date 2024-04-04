@@ -72,12 +72,12 @@ export class BasicInfoPag extends EventEmitter {
           avatarUpdateHintRef,
           {
             class: "basic-info-avatar-update-hint-background",
-            style: `position: absolute; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; bottom: 0; left: 0; height: 0; width: 100%; transition: height .2s; overflow: hidden; background-color: ${SCHEME.neutral1Translucent};`,
+            style: `position: absolute; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; bottom: 0; left: 0; height: 0; width: 100%; transition: height .2s; overflow: hidden; background-color: ${SCHEME.neutral4Translucent};`,
           },
           E.div(
             {
               class: `basic-info-avatar-update-hint-label`,
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral4};`,
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.changeAvatarLabel)
           )

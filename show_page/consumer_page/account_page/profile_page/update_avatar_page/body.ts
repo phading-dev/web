@@ -12,7 +12,7 @@ import {
   MEDIUM_CARD_STYLE,
   PAGE_STYLE,
 } from "../../../../../common/page_style";
-import { AVATAR_M, AVATAR_S } from "../../../../../common/sizes";
+import { AVATAR_M, AVATAR_S, FONT_M } from "../../../../../common/sizes";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { uploadAccountAvatar } from "@phading/user_service_interface/self/web/client_requests";
 import { E } from "@selfage/element/factory";
@@ -70,7 +70,7 @@ export class UpdateAvatarPage extends EventEmitter {
           loadErrorTextRef,
           {
             class: "update-avatar-image-load-error",
-            style: `visibility: hidden; font-size: 1.4rem; color: ${SCHEME.error0};`,
+            style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
           },
           E.text("1")
         ),
@@ -84,7 +84,7 @@ export class UpdateAvatarPage extends EventEmitter {
         E.div(
           {
             class: "update-avatar-preview-label",
-            style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.previewAvatarLabel)
         ),
@@ -111,7 +111,7 @@ export class UpdateAvatarPage extends EventEmitter {
             E.div(
               {
                 class: "update-avatar-preview-medium-label",
-                style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
               },
               E.text(`${AVATAR_M * 10} x ${AVATAR_M * 10}`)
             )
@@ -134,7 +134,7 @@ export class UpdateAvatarPage extends EventEmitter {
             E.div(
               {
                 class: "update-avatar-preview-small-label",
-                style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
               },
               E.text(`${AVATAR_S * 10} x ${AVATAR_S * 10}`)
             )
@@ -150,7 +150,7 @@ export class UpdateAvatarPage extends EventEmitter {
           uploadStatusTextRef,
           {
             class: "update-avatar-upload-status-text",
-            style: `visibility: hidden; font-size: 1.4rem; color: ${SCHEME.error0};`,
+            style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
           },
           E.text("1")
         )

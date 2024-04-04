@@ -16,6 +16,7 @@ import {
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
+import { FONT_L, FONT_M } from "../../../../../common/sizes";
 
 export interface UsageReportPage {
   on(event: "loaded", listener: () => void): this;
@@ -67,7 +68,7 @@ export class UsageReportPage extends EventEmitter {
       E.div(
         {
           class: "usage-report-title",
-          style: `font-size: 1.6rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(UsageReportPage.createTitle(playtimeMeterReport))
       ),
@@ -82,14 +83,14 @@ export class UsageReportPage extends EventEmitter {
         E.div(
           {
             class: "usage-report-sum-label",
-            style: `flex: 0 0 ${UsageReportPage.LABEL_WIDTH}; font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+            style: `flex: 0 0 ${UsageReportPage.LABEL_WIDTH}; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.usageSumLabel)
         ),
         E.div(
           {
             class: "usage-report-sum-value",
-            style: `flex: 1 0 0; font-size: 1.4rem; color: ${SCHEME.neutral0}; text-align: center;`,
+            style: `flex: 1 0 0; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
           },
           E.text(`${playtimeMeterReport.totalPlaytime}`)
         )
@@ -149,7 +150,7 @@ export class UsageReportPage extends EventEmitter {
           E.div(
             {
               class: "usage-report-app-name",
-              style: `flex: 0 0 ${UsageReportPage.LABEL_WIDTH}; font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+              style: `flex: 0 0 ${UsageReportPage.LABEL_WIDTH}; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(getAppName(playtimeMeterPerApp.appType))
           ),
@@ -165,7 +166,7 @@ export class UsageReportPage extends EventEmitter {
             E.div(
               {
                 class: "usage-report-usage-value",
-                style: `position: relative; font-size: 1.4rem; width: ${percentOfMostPlaytime}%; line-height: 2rem; text-align: center; color: ${SCHEME.neutral0};`,
+                style: `position: relative; font-size: ${FONT_M}rem; width: ${percentOfMostPlaytime}%; line-height: 2rem; text-align: center; color: ${SCHEME.neutral0};`,
               },
               E.text(`${playtimeMeterPerApp.playtime}`)
             )

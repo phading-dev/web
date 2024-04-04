@@ -6,6 +6,7 @@ import {
   MEDIUM_CARD_STYLE,
   PAGE_STYLE,
 } from "../../../../../common/page_style";
+import { FONT_L, FONT_S } from "../../../../../common/sizes";
 import { BILLING_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { AddPaymentMethodButton } from "./add_payment_method_button";
 import { CardPaymentItem } from "./card_payment_item/body";
@@ -77,7 +78,7 @@ export class PaymentMethodsListPage extends EventEmitter {
       E.div(
         {
           class: "payment-methods-list-title",
-          style: `font-size: 1.6rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(LOCALIZED_TEXT.paymentMethodsListTitle)
       ),
@@ -90,7 +91,7 @@ export class PaymentMethodsListPage extends EventEmitter {
         addErrorMsgRef,
         {
           class: "payment-methods-list-add-error",
-          style: `font-size: 1.2rem; color: ${SCHEME.error0}; visibility: hidden;`,
+          style: `font-size: ${FONT_S}rem; color: ${SCHEME.error0}; visibility: hidden;`,
         },
         E.text("1")
       )

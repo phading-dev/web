@@ -2,6 +2,7 @@ import EventEmitter = require("events");
 import { SCHEME } from "../../../../../../common/color_scheme";
 import { createArrowIcon } from "../../../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../../../common/locales/localized_text";
+import { FONT_M, FONT_S } from "../../../../../../common/sizes";
 import { createCardBrandIcon } from "../../common/card_brand_icons";
 import { getCardBrandName } from "../../common/card_brand_name";
 import { CARD_BORDER_RADIUS } from "../common/styles";
@@ -72,7 +73,7 @@ export class CardPaymentItem extends EventEmitter {
           E.div(
             {
               class: "card-payment-card-digits",
-              style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
               `${getCardBrandName(cardMasked.brand)} •••• ${
@@ -83,7 +84,7 @@ export class CardPaymentItem extends EventEmitter {
           E.div(
             {
               class: "card-payment-card-priority",
-              style: `font-size: 1.4rem; color: ${SCHEME.neutral0}; font-weight: bold;`,
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: bold;`,
             },
             E.text(this.getPrioirtyString(paymentMethod.priority))
           )
@@ -91,7 +92,7 @@ export class CardPaymentItem extends EventEmitter {
         E.div(
           {
             class: "card-payment-card-expiration",
-            style: `font-size: 1.2rem; color: ${
+            style: `font-size: ${FONT_S}rem; color: ${
               isCardExpired ? SCHEME.error0 : SCHEME.neutral0
             };`,
           },

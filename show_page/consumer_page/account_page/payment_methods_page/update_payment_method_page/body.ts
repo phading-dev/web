@@ -8,6 +8,7 @@ import {
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import { MenuItem } from "../../../../../common/menu_item/body";
 import { createBackMenuItem } from "../../../../../common/menu_item/factory";
+import { FONT_M } from "../../../../../common/sizes";
 import { BILLING_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { createCardBrandIcon } from "../common/card_brand_icons";
 import { getCardBrandName } from "../common/card_brand_name";
@@ -82,7 +83,7 @@ export class UpdatePaymentMethodPage extends EventEmitter {
           E.div(
             {
               class: "update-payment-method-card-brand-digits",
-              style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
               `${getCardBrandName(paymentMethod.card.brand)} •••• ${
@@ -99,7 +100,7 @@ export class UpdatePaymentMethodPage extends EventEmitter {
           E.div(
             {
               class: "update-payment-method-card-expiration-label",
-              style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.updatePaymentMethodExpiresLabel)
           ),
@@ -182,7 +183,8 @@ export class UpdatePaymentMethodPage extends EventEmitter {
   private updatePaymentMethod(
     request: UpdatePaymentMethodRequestBody
   ): Promise<UpdatePaymentMethodResponse> {
-    request.paymentMethodUpdates.paymentMethodId = this.paymentMethod.paymentMethodId;
+    request.paymentMethodUpdates.paymentMethodId =
+      this.paymentMethod.paymentMethodId;
     return updatePaymentMethod(this.webServiceClient, request);
   }
 
