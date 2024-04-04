@@ -5,6 +5,9 @@ export let USER_SERVICE_CLIENT = WebServiceClient.create(LOCAL_SESSION_STORAGE);
 export let BILLING_SERVICE_CLIENT = WebServiceClient.create(
   LOCAL_SESSION_STORAGE
 );
+export let PRODUCT_SERVICE_CLIENT = WebServiceClient.create(
+  LOCAL_SESSION_STORAGE
+);
 export let PRODUCT_METER_SERVICE_CLIENT = WebServiceClient.create(
   LOCAL_SESSION_STORAGE
 );

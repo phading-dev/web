@@ -59,7 +59,7 @@ export class ImageCropper extends EventEmitter {
         },
         E.divRef(leftColumnRef, {
           class: "avatar-canvas-left-column",
-          style: `height: 100%; background-color: ${SCHEME.neutral1Translucent};`,
+          style: `height: 100%; background-color: ${SCHEME.neutral4Translucent};`,
         }),
         E.divRef(
           midColumnRef,
@@ -69,7 +69,7 @@ export class ImageCropper extends EventEmitter {
           },
           E.divRef(midTopBlockRef, {
             class: "avatar-canvas-mid-top-block",
-            style: `width: 100%; background-color: ${SCHEME.neutral1Translucent};`,
+            style: `width: 100%; background-color: ${SCHEME.neutral4Translucent};`,
           }),
           E.divRef(
             midMidBlockRef,
@@ -100,12 +100,12 @@ export class ImageCropper extends EventEmitter {
           ),
           E.divRef(midBottmBlockRef, {
             class: "avatar-canvas-mid-bottom-block",
-            style: `width: 100%; background-color: ${SCHEME.neutral1Translucent};`,
+            style: `width: 100%; background-color: ${SCHEME.neutral4Translucent};`,
           })
         ),
         E.divRef(rightColumnRef, {
           class: "avatar-canvas-right-column",
-          style: `height: 100%; background-color: ${SCHEME.neutral1Translucent};`,
+          style: `height: 100%; background-color: ${SCHEME.neutral4Translucent};`,
         })
       )
     );

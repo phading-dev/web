@@ -35,7 +35,10 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/text_values_group_default.png"),
           path.join(__dirname, "/golden/text_values_group_default.png"),
-          path.join(__dirname, "/text_values_group_default_diff.png")
+          path.join(__dirname, "/text_values_group_default_diff.png"),
+          {
+            threshold: .001
+          }
         );
 
         // Prepare

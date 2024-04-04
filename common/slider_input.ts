@@ -80,7 +80,7 @@ export class SliderInput extends EventEmitter {
     this.filler = fillerRef.val;
     this.cursor = cursorRef.val;
 
-    this.setRatio(initValue / (this.range.end - this.range.start));
+    this.setValue(initValue);
     this.body_.addEventListener("pointerdown", (event) =>
       this.startMoving(event)
     );
@@ -125,6 +125,10 @@ export class SliderInput extends EventEmitter {
 
   private stopMoving(): void {
     this.isMoving = false;
+  }
+
+  public setValue(value: number): void {
+    this.setRatio(value / (this.range.end - this.range.start));
   }
 
   public get body() {

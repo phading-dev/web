@@ -135,7 +135,10 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/slider_input_moving_3.png"),
           path.join(__dirname, "/golden/slider_input_moving_3.png"),
-          path.join(__dirname, "/slider_input_moving_3_diff.png")
+          path.join(__dirname, "/slider_input_moving_3_diff.png"),
+          {
+            threshold: 0.001,
+          }
         );
 
         // Execute
@@ -157,7 +160,10 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/slider_input_pointer_out.png"),
           path.join(__dirname, "/golden/slider_input_moving_3.png"),
-          path.join(__dirname, "/slider_input_pointer_out_diff.png")
+          path.join(__dirname, "/slider_input_pointer_out_diff.png"),
+          {
+            threshold: 0.001,
+          }
         );
       }
       public tearDown() {
@@ -256,7 +262,10 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/slider_input_vertical_moving_3.png"),
           path.join(__dirname, "/golden/slider_input_vertical_moving_3.png"),
-          path.join(__dirname, "/slider_input_vertical_moving_3_diff.png")
+          path.join(__dirname, "/slider_input_vertical_moving_3_diff.png"),
+          {
+            threshold: 0.001,
+          }
         );
       }
       public tearDown() {

@@ -1,65 +1,59 @@
-let TRANSPARENT = "transparent";
-let GREY_20 = "rgb(50, 50, 50)";
-let GREY_50 = "rgb(128, 128, 128)";
-let GREY_50_TRANSLUCENT = "rgb(128, 128, 128, .5)";
-let GREY_75 = "rgb(191, 191, 191)";
-let GREY_85 = "rgb(217, 217, 217)";
-let WHITE = "white";
-let BLUE_50 = "rgb(0, 170, 255)";
-let BLUE_65 = "rgb(77, 195, 255)";
-let BLUE_85 = "rgb(179, 229, 255)";
-let RED_50 = "rgb(255, 0,0)";
-let LOGO_BLUE = "rgb(0, 174, 239)";
-let LOGO_ORANGE = "rgb(255, 180, 80)";
+let GREY_95 = "rgb(242,242,242)";
+let GREY_85 = "rgb(217,217,217)";
+let GREY_50 = "rgb(128,128,128)";
+let GREY_20 = "rgb(51,51,51)";
+let GREY_10 = "rgb(26,26,26)";
+let GREY_10_TRANSLUCENT = "rgb(26,26,26,.5)";
+let BLUE_60 = "rgb(51,187,255)";
+let BLUE_50 = "rgb(0,170,255)";
+let BLUE_20 = "rgb(0,68,102)";
+let RED_50 = "rgb(255,0,0)";
+let ORANGE_60 = "rgb(255,167,51)";
 
-export class LightScheme {
+export class DarkScheme {
   get logoOrange() {
-    return LOGO_ORANGE;
+    return ORANGE_60;
   }
   get logoBlue() {
-    return LOGO_BLUE;
+    return BLUE_60;
   }
-  // Texts.
+  // Main.
   get neutral0() {
-    return GREY_20;
+    return GREY_95;
   }
-  // SVG icons & borders. Hinted texts. Box shadow
+  // Borders. Shadow. Filled.
   get neutral1() {
-    return GREY_50;
-  }
-  // Modal background.
-  get neutral1Translucent() {
-    return GREY_50_TRANSLUCENT;
-  }
-  // Hinted SVG icons & borders. Disabled texts.
-  get neutral2() {
-    return GREY_75;
-  }
-  // Overall Background color. Disabled SVG icons & borders.
-  get neutral3() {
     return GREY_85;
   }
-  // Main background color for cards and popups.
-  get neutral4() {
-    return WHITE;
+  // Disabled. Contrasted.
+  get neutral2() {
+    return GREY_50;
   }
-  get transparent() {
-    return TRANSPARENT;
+  // Overall Background color.
+  get neutral3() {
+    return GREY_20;
+  }
+  // Main card background color.
+  get neutral4() {
+    return GREY_10;
+  }
+  get neutral4Translucent() {
+    return GREY_10_TRANSLUCENT;
   }
   // Texts.
   get primary0() {
-    return BLUE_50;
+    return BLUE_60;
   }
-  // Borders, background and SVG icons.
+  // Borders. Filled.
   get primary1() {
-    return BLUE_65;
+    return BLUE_50;
   }
   // Disabled background.
   get primary2() {
-    return BLUE_85;
+    return BLUE_20;
   }
   get primaryContrast0() {
-    return WHITE;
+    return GREY_95;
   }
   get error0() {
     return RED_50;
@@ -75,4 +69,4 @@ export class LightScheme {
   }
 }
 
-export let SCHEME: LightScheme = new LightScheme();
+export let SCHEME: DarkScheme = new DarkScheme();

@@ -139,11 +139,9 @@ export class VerticalTextInputWithErrorMsg<Request>
   public set value(value: string) {
     this.input.value = value;
   }
-
   public dispatchInput(): void {
     this.input.dispatchEvent(new Event("input"));
   }
-
   public dispatchEnter(): void {
     this.input.dispatchEvent(new KeyboardEvent("keydown", { code: "Enter" }));
   }

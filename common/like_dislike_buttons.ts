@@ -58,14 +58,14 @@ export class LikeDislikeButtons extends EventEmitter {
         thumbUpButtonRef,
         IconButton.create(
           `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: ${iconPadding}rem; box-sizing: border-box;`,
-          assign(thumbUpIconRef, createFilledThumbUpIcon(SCHEME.neutral2)),
+          assign(thumbUpIconRef, createFilledThumbUpIcon(SCHEME.neutral1)),
           tooltipPosition,
           LOCALIZED_TEXT.likeButtonLabel,
           () => {
-            thumbUpIconRef.val.style.fill = SCHEME.neutral2;
+            thumbUpIconRef.val.style.fill = SCHEME.neutral1;
           },
           () => {
-            thumbUpIconRef.val.style.fill = SCHEME.neutral3;
+            thumbUpIconRef.val.style.fill = SCHEME.neutral2;
           }
         )
       ).body,
@@ -80,7 +80,7 @@ export class LikeDislikeButtons extends EventEmitter {
             thumbUpedIconRef.val.style.fill = SCHEME.primary1;
           },
           () => {
-            thumbUpedIconRef.val.style.fill = SCHEME.neutral3;
+            thumbUpedIconRef.val.style.fill = SCHEME.neutral2;
           }
         )
       ).body,
@@ -91,17 +91,17 @@ export class LikeDislikeButtons extends EventEmitter {
           assign(
             thumbDownIconRef,
             createFilledThumbUpIcon(
-              SCHEME.neutral2,
+              SCHEME.neutral1,
               `transform: rotate(180deg);`
             )
           ),
           tooltipPosition,
           LOCALIZED_TEXT.dislikeButtonLabel,
           () => {
-            thumbDownIconRef.val.style.fill = SCHEME.neutral2;
+            thumbDownIconRef.val.style.fill = SCHEME.neutral1;
           },
           () => {
-            thumbDownIconRef.val.style.fill = SCHEME.neutral3;
+            thumbDownIconRef.val.style.fill = SCHEME.neutral2;
           }
         )
       ).body,
@@ -122,7 +122,7 @@ export class LikeDislikeButtons extends EventEmitter {
             thumbDownedIconRef.val.style.fill = SCHEME.primary1;
           },
           () => {
-            thumbDownedIconRef.val.style.fill = SCHEME.neutral3;
+            thumbDownedIconRef.val.style.fill = SCHEME.neutral2;
           }
         )
       ).body

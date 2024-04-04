@@ -171,7 +171,10 @@ export function createThumbUpIcon(color: string): SVGSVGElement {
   );
 }
 
-export function createFilledThumbUpIcon(color: string, customStyle = ""): SVGSVGElement {
+export function createFilledThumbUpIcon(
+  color: string,
+  customStyle = ""
+): SVGSVGElement {
   return E.svg(
     {
       class: "filled-thumb-up-icon",
@@ -359,7 +362,7 @@ export function createPaymentIcon(color: string): SVGSVGElement {
 export function createSecurityIcon(color: string): SVGSVGElement {
   return E.svg(
     {
-      class: "payment-icon",
+      class: "security-icon",
       style: `height: 100%; fill: ${color};`,
       viewBox: "2 2 20 20",
     },
@@ -369,8 +372,8 @@ export function createSecurityIcon(color: string): SVGSVGElement {
   );
 }
 
-export function createLoadIcon(color: string): SVGSVGElement {
-  return E.svg(
+export function createLoadingIcon(color: string): SVGSVGElement {
+  let svg = E.svg(
     {
       class: "load-icon",
       style: `height: 100%; fill: ${color};`,
@@ -380,6 +383,21 @@ export function createLoadIcon(color: string): SVGSVGElement {
       d: `M336.954,87.494C318.821,59.1,293.251,36.318,263.01,21.613l-13.119,26.979c52.77,25.661,85.551,78.029,85.551,136.669  c0,83.744-68.131,151.874-151.874,151.874S31.694,269.005,31.694,185.262c0-49.847,24.899-96.439,65.042-124.571L149.7,113.91V0  H36.335l38.953,39.14C57.727,52.164,42.557,68.287,30.582,86.871c-18.898,29.33-28.888,63.352-28.888,98.391  c0,100.286,81.588,181.874,181.874,181.874s181.874-81.588,181.874-181.874C365.442,150.485,355.59,116.678,336.954,87.494z`,
     })
   );
+  svg.animate(
+    [
+      {
+        transform: "rotate(0deg)",
+      },
+      {
+        transform: "rotate(360deg)",
+      },
+    ],
+    {
+      duration: 2000,
+      iterations: Infinity,
+    }
+  );
+  return svg;
 }
 
 export function createPlayIcon(color: string): SVGSVGElement {
@@ -398,7 +416,7 @@ export function createPlayIcon(color: string): SVGSVGElement {
 export function createPlayNextIcon(color: string): SVGSVGElement {
   return E.svg(
     {
-      class: "play-icon",
+      class: "play-next-icon",
       style: `height: 100%; fill: ${color};`,
       viewBox: "4 6.4 11.2 11.2",
     },
@@ -411,7 +429,7 @@ export function createPlayNextIcon(color: string): SVGSVGElement {
 export function createFastForwardIcon(color: string): SVGSVGElement {
   return E.svg(
     {
-      class: "play-icon",
+      class: "fast-forward-icon",
       style: `height: 100%; fill: ${color};`,
       viewBox: "4 3.4 17.2 17.2",
     },
@@ -421,10 +439,36 @@ export function createFastForwardIcon(color: string): SVGSVGElement {
   );
 }
 
-export function createLoopIcon(color: string): SVGSVGElement {
+export function createSkipForwardIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "skip-forward-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "1 6.4 11.2 11.2",
+    },
+    E.path({
+      d: `M1 6.4 v11.2 h1.6 v-11.2z  M4.788 17.444A.5.5 0 0 1 4 17.035V6.965a.5.5 0 0 1 .788-.409l7.133 5.036a.5.5 0 0 1 0 .816l-7.133 5.036z`,
+    })
+  );
+}
+
+export function createPauseIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "play-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 5.5 21 21",
+    },
+    E.path({
+      d: `M0 6.563v18.875c0 0.531 0.438 0.969 0.969 0.969h6.625c0.5 0 0.906-0.438 0.906-0.969v-18.875c0-0.531-0.406-0.969-0.906-0.969h-6.625c-0.531 0-0.969 0.438-0.969 0.969zM12.281 6.563v18.875c0 0.531 0.438 0.969 0.938 0.969h6.625c0.531 0 0.969-0.438 0.969-0.969v-18.875c0-0.531-0.438-0.969-0.969-0.969h-6.625c-0.5 0-0.938 0.438-0.938 0.969z`,
+    })
+  );
+}
+
+export function createLoopingIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "loop-icon",
       style: `height: 100%; fill: ${color};`,
       viewBox: "0 -.5 8 8",
     },
@@ -434,10 +478,23 @@ export function createLoopIcon(color: string): SVGSVGElement {
   );
 }
 
+export function createNotLoopingIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "loop-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 -2 8 8",
+    },
+    E.path({
+      d: `M6 0v1h-5c-.55 0-1 .45-1 1v1h1v-1h5v1l2-1.5-2-1.5z`,
+    })
+  );
+}
+
 export function createVolumeFullIcon(color: string): SVGSVGElement {
   return E.svg(
     {
-      class: "play-icon",
+      class: "volume-icon",
       style: `height: 100%; fill: ${color};`,
       viewBox: "0 0 512 512",
     },
@@ -450,7 +507,7 @@ export function createVolumeFullIcon(color: string): SVGSVGElement {
 export function createVolumeLowIcon(color: string): SVGSVGElement {
   return E.svg(
     {
-      class: "play-icon",
+      class: "volume-low-icon",
       style: `height: 100%; fill: ${color};`,
       viewBox: "0 0 512 512",
     },
@@ -463,7 +520,7 @@ export function createVolumeLowIcon(color: string): SVGSVGElement {
 export function createVolumeMutedIcon(color: string): SVGSVGElement {
   return E.svg(
     {
-      class: "play-icon",
+      class: "volume-muted-icon",
       style: `height: 100%; fill: ${color};`,
       viewBox: "0 0 512 512",
     },
@@ -476,7 +533,7 @@ export function createVolumeMutedIcon(color: string): SVGSVGElement {
 export function createDanmakuIcon(color: string): SVGSVGElement {
   return E.svg(
     {
-      class: "play-icon",
+      class: "danmaku-icon",
       style: `height: 100%; fill: ${color};`,
       viewBox: "0 0 200 200",
     },
@@ -486,10 +543,23 @@ export function createDanmakuIcon(color: string): SVGSVGElement {
   );
 }
 
+export function createNoDanmakuIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "no-danmaku-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 0 200 200",
+    },
+    E.path({
+      d: `M69 17 L98 17 L98 80 L69 80 z  M120 17 L149 17 L149 80 L120 80 z  M171 17 L200 17 L200 80 L171 80 z  M20 120 L49 120 L49 183 L20 183 z  M71 120 L100 120 L100 183 L71 183 z  M122 120 L151 120 L151 183 L122 183 z`,
+    })
+  );
+}
+
 export function createSettingsIcon(color: string): SVGSVGElement {
   return E.svg(
     {
-      class: "play-icon",
+      class: "settings-icon",
       style: `height: 100%; fill: ${color};`,
       viewBox: "0 0 200 200",
     },
