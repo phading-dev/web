@@ -51,7 +51,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.mouseenter();
+        this.cut.hover();
 
         // Verify
         await asyncAssertScreenshot(
@@ -64,7 +64,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.mouseleave();
+        this.cut.leave();
 
         // Verify
         await asyncAssertScreenshot(
@@ -100,7 +100,7 @@ TEST_RUNNER.run({
           },
         });
         document.body.append(this.cut.body);
-        this.cut.mouseenter();
+        this.cut.hover();
 
         // Verify
         await asyncAssertScreenshot(

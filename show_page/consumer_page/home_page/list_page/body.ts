@@ -1,9 +1,10 @@
 import EventEmitter = require("events");
 import { FILLED_BUTTON_STYLE } from "../../../../common/button_styles";
 import { SCHEME } from "../../../../common/color_scheme";
-import { createLoadIcon } from "../../../../common/icons";
+import { createLoadingIcon } from "../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { LARGE_CARD_STYLE, PAGE_STYLE } from "../../../../common/page_style";
+import { FONT_M } from "../../../../common/sizes";
 import { PRODUCT_RECOMMENDATION_SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { ShowItem } from "./show_item";
 import { recommendShows } from "@phading/product_recommendation_service_interface/consumer/show_app/web/client_requests";
@@ -65,7 +66,7 @@ export class ListPage extends EventEmitter {
           E.div(
             {
               class: "list-shows-end-of-loading",
-              style: `font-size: 1.4rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.noMoreContent)
           ),
@@ -83,7 +84,7 @@ export class ListPage extends EventEmitter {
               class: "list-shows-loading-icon",
               style: `height: 3rem; padding .5rem; box-sizing: border-box;`,
             },
-            createLoadIcon(SCHEME.neutral1)
+            createLoadingIcon(SCHEME.neutral1)
           )
         )
       )
@@ -93,20 +94,6 @@ export class ListPage extends EventEmitter {
     this.tryReloadButton_ = tryReloadButtonRef.val;
     this.loadingIcon = loadingIconRef.val;
 
-    this.loadingIcon.animate(
-      [
-        {
-          transform: "rotate(0deg)",
-        },
-        {
-          transform: "rotate(360deg)",
-        },
-      ],
-      {
-        duration: 2000,
-        iterations: Infinity,
-      }
-    );
     this.tryReloadButton_.addEventListener("click", () => this.loadMore());
     this.loadingObserver = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {

@@ -9,7 +9,11 @@ import {
 } from "@phading/product_recommendation_service_interface/consumer/show_app/web/interface";
 import { ShowSnapshot } from "@phading/product_service_interface/consumer/show_app/show";
 import { Counter } from "@selfage/counter";
-import { screenshot, setViewport } from "@selfage/puppeteer_test_executor_api";
+import {
+  deleteFile,
+  screenshot,
+  setViewport,
+} from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -265,7 +269,12 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/list_page_loaded.png"),
           path.join(__dirname, "/list_page_loaded_baseline.png"),
-          path.join(__dirname, "/list_page_loaded_diff.png"),
+          path.join(__dirname, "/list_page_loaded_diff.png")
+        );
+
+        // Cleanup
+        await deleteFile(
+          path.join(__dirname, "/list_page_loaded_baseline.png")
         );
       }
       public tearDown() {
@@ -347,7 +356,7 @@ TEST_RUNNER.run({
 
         // Verify
         for (let item of this.cut.showItems) {
-          item.mouseenter();
+          item.hover();
           break;
         }
         await asyncAssertScreenshot(

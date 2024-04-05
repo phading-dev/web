@@ -1,5 +1,8 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../../common/color_scheme";
+import { HoverObserver, Mode } from "../../../../common/hover_observer";
+import { FONT_M, FONT_S, LINE_HEIGHT_M } from "../../../../common/sizes";
+import { formatSecondsAsHHMMSS } from "../../../../common/timestamp_formatter";
 import { ShowSnapshot } from "@phading/product_service_interface/consumer/show_app/show";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -15,8 +18,11 @@ export class ShowItem extends EventEmitter {
   }
 
   private body_: HTMLDivElement;
+  private clickCapturer: HTMLDivElement;
+  private contentMetadata: HTMLDivElement;
   private userContainer_: HTMLDivElement;
   private coverImage: HTMLImageElement;
+  private hoverObserver: HoverObserver;
 
   public constructor(show: ShowSnapshot) {
     super();
@@ -26,6 +32,8 @@ export class ShowItem extends EventEmitter {
       day: "numeric",
     });
 
+    let clickCapturerRef = new Ref<HTMLDivElement>();
+    let contentMetadataRef = new Ref<HTMLDivElement>();
     let userContainerRef = new Ref<HTMLDivElement>();
     let coverImageRef = new Ref<HTMLImageElement>();
     this.body_ = E.div(
@@ -33,19 +41,26 @@ export class ShowItem extends EventEmitter {
         class: "show-item",
         style: `flex: 0 0 auto; width: 35.2rem; aspect-ratio: 16/9;; border: .1rem solid ${SCHEME.neutral1}; border-radius: .5rem; overflow: hidden; position: relative; cursor: pointer;`,
       },
+      E.divRef(clickCapturerRef, {
+        class: "show-item-click-capturer",
+        style: `position: absolute; left: 0; top: 0; width: 100%; height: 100%;`,
+      }),
       E.div(
         {
           class: "show-item-metadata",
           style: `width: 100%; height: 100%; padding: 2rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; justify-content: space-between;`,
         },
-        E.div(
+        E.divRef(
+          contentMetadataRef,
           {
             class: "show-item-content-metadata",
           },
           E.div(
             {
               class: "show-item-title",
-              style: `font-size: 1.4rem; line-height: 1.6rem; max-height: 9.6rem; color: ${SCHEME.neutral0}; overflow: hidden;`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; max-height: ${
+                LINE_HEIGHT_M * 6
+              }rem; color: ${SCHEME.neutral0}; overflow: hidden;`,
             },
             E.text(show.name)
           ),
@@ -60,16 +75,16 @@ export class ShowItem extends EventEmitter {
             E.div(
               {
                 class: "show-item-published-time",
-                style: `font-size: 1.2rem; color: ${SCHEME.neutral1};`,
+                style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral1};`,
               },
               E.text(dateFormatter.format(new Date(show.publishedTime * 1000)))
             ),
             E.div(
               {
                 class: "show-item-length",
-                style: `font-size: 1.2rem; color: ${SCHEME.neutral1};`,
+                style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral1};`,
               },
-              E.text(ShowItem.formatLength(show.length))
+              E.text(formatSecondsAsHHMMSS(show.length))
             )
           )
         ),
@@ -99,27 +114,29 @@ export class ShowItem extends EventEmitter {
         src: show.coverImagePath,
       })
     );
+    this.clickCapturer = clickCapturerRef.val;
+    this.contentMetadata = contentMetadataRef.val;
     this.userContainer_ = userContainerRef.val;
     this.coverImage = coverImageRef.val;
 
-    this.body_.addEventListener("click", () => this.emit("play", show.showId));
-    this.userContainer_.addEventListener("click", (event) => {
-      event.stopPropagation();
-      this.emit("focusUser", show.publisher.accountId);
-    });
-    this.body_.addEventListener("mouseenter", () => this.hideCoverImage());
-    this.body_.addEventListener("mouseleave", () => this.showCoverImage());
-  }
-
-  private static formatLength(length: number): string {
-    let secondsStr = (length % 60).toString().padStart(2, "0");
-    let minutesStr = (Math.floor(length / 60) % 60).toString().padStart(2, "0");
-    let hours = Math.floor(length / 60 / 60);
-    if (hours == 0) {
-      return `${minutesStr}:${secondsStr}`;
-    } else {
-      return `${hours.toString().padStart(2, "0")}:${minutesStr}:${secondsStr}`;
-    }
+    this.hoverObserver = HoverObserver.create(
+      this.body_,
+      Mode.DELAY_HOVER_DELAY_LEAVE
+    )
+      .on("hover", () => this.hideCoverImage())
+      .on("leave", () => this.showCoverImage());
+    this.clickCapturer.addEventListener("click", () =>
+      this.emit("play", show.showId)
+    );
+    this.contentMetadata.addEventListener("click", () =>
+      this.emit("play", show.showId)
+    );
+    this.coverImage.addEventListener("click", () =>
+      this.emit("play", show.showId)
+    );
+    this.userContainer_.addEventListener("click", () =>
+      this.emit("focusUser", show.publisher.accountId)
+    );
   }
 
   private hideCoverImage(): void {
@@ -140,15 +157,15 @@ export class ShowItem extends EventEmitter {
 
   // Visible for testing
   public click(): void {
-    this.body_.click();
+    this.clickCapturer.click();
   }
   public clickUser(): void {
     this.userContainer_.click();
   }
-  public mouseenter(): void {
-    this.body_.dispatchEvent(new MouseEvent("mouseenter"));
+  public hover(): void {
+    this.hoverObserver.emit("hover");
   }
-  public mouseleave(): void {
-    this.body_.dispatchEvent(new MouseEvent("mouseleave"));
+  public leave(): void {
+    this.hoverObserver.emit("leave");
   }
 }
