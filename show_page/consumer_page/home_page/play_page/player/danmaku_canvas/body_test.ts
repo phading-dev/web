@@ -49,7 +49,7 @@ TEST_RUNNER.run({
   environment: {
     setUp() {
       container = E.div({
-        style: `width: 100vw; height: 100vh;`,
+        style: `width: 100vw; height: 100vh; background-color: white;`,
       });
       document.body.append(container);
     },
@@ -82,6 +82,7 @@ TEST_RUNNER.run({
             allElementsMock.push(element);
             return element;
           },
+          0,
           settings
         );
         container.append(this.cut.body);
@@ -105,7 +106,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.play();
-        this.cut.add(createMultipleComments(elementCount, 10));
+        this.cut.add(createMultipleComments(elementCount, 13));
         this.cut.pause();
 
         // Verify
@@ -123,10 +124,10 @@ TEST_RUNNER.run({
         allElementsMock[0].emit("occupyEnded");
         allElementsMock[2].pausedPosX = -200;
         allElementsMock[2].emit("occupyEnded");
-        allElementsMock[8].pausedPosX = -200;
-        allElementsMock[8].emit("occupyEnded");
+        allElementsMock[11].pausedPosX = -200;
+        allElementsMock[11].emit("occupyEnded");
         this.cut.play();
-        this.cut.add(createMultipleComments(elementCount, 14));
+        this.cut.add(createMultipleComments(elementCount, 17));
         this.cut.pause();
 
         // Verify
@@ -145,9 +146,9 @@ TEST_RUNNER.run({
         // Execute
         allElementsMock[0].emit("displayEnded");
         allElementsMock[2].emit("displayEnded");
-        allElementsMock[8].emit("displayEnded");
-        allElementsMock[11].emit("occupyEnded");
         allElementsMock[11].emit("displayEnded");
+        allElementsMock[14].emit("occupyEnded");
+        allElementsMock[14].emit("displayEnded");
 
         // Verify
         await asyncAssertScreenshot(
@@ -179,7 +180,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.play();
-        this.cut.add(createMultipleComments(elementCount, 20));
+        this.cut.add(createMultipleComments(elementCount, 22));
         this.cut.pause();
 
         // Verify
@@ -207,6 +208,7 @@ TEST_RUNNER.run({
           () => 0,
           (danmakuSettigns, comment) =>
             new DanmakuElementMock(pausedPosX, danmakuSettigns, comment),
+          0,
           settings
         );
         container.append(this.cut.body);
@@ -250,7 +252,7 @@ TEST_RUNNER.run({
       private cut: DanmakuCanvas;
       public async execute() {
         // Prepare
-        await setViewport(400, 380);
+        await setViewport(400, 300);
         let elementCount = new Ref<number>();
         elementCount.val = 0;
         let randomNum: number;
@@ -272,6 +274,7 @@ TEST_RUNNER.run({
             allElementsMock.push(element);
             return element;
           },
+          0,
           settings
         );
         container.append(this.cut.body);
@@ -353,6 +356,7 @@ TEST_RUNNER.run({
             allElementsMock.push(element);
             return element;
           },
+          80,
           settings
         );
         container.append(this.cut.body);
@@ -419,6 +423,7 @@ TEST_RUNNER.run({
           () => 0,
           (danmakuSettigns, comment) =>
             new DanmakuElementMock(pausedPosX, danmakuSettigns, comment),
+          80,
           settings
         );
         container.append(this.cut.body);

@@ -19,6 +19,14 @@ import "../../../../../../common/normalize_body";
 
 TEST_RUNNER.run({
   name: "DanmakuElement",
+  environment: {
+    setUp() {
+      document.body.style.backgroundColor = "white";
+    },
+    tearDown() {
+      document.body.style.backgroundColor = "";
+    },
+  },
   cases: [
     new (class implements TestCase {
       public name = "Play_Pause_Play";

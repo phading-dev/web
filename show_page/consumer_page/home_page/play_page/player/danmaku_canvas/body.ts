@@ -1,3 +1,4 @@
+import EventEmitter = require("events");
 import { LinkedList, LinkedNode } from "../../../../../../common/linked_list";
 import { DanmakuElement } from "./element";
 import { Comment } from "@phading/comment_service_interface/show_app/comment";
@@ -6,19 +7,27 @@ import {
   DistributionStyle,
 } from "@phading/product_service_interface/consumer/show_app/player_settings";
 import { E } from "@selfage/element/factory";
+import { Ref } from "@selfage/ref";
 
-export class DanmakuCanvas {
-  public static create(danmakuSettigns: DanmakuSettings): DanmakuCanvas {
+export interface DanmakuCanvas {
+  on(event: "passThroughClick", listener: () => void): this;
+}
+
+export class DanmakuCanvas extends EventEmitter {
+  public static create(
+    reservedBottomMargin: number /* px */,
+    danmakuSettigns: DanmakuSettings
+  ): DanmakuCanvas {
     return new DanmakuCanvas(
       () => Math.random(),
       DanmakuElement.create,
+      reservedBottomMargin,
       danmakuSettigns
     );
   }
 
-  private static FIXED_BOTTOM_MARGIN = 80;
-
   private body_: HTMLDivElement;
+  private clickCapturer: HTMLDivElement;
   private width: number;
   private height: number;
   private playing: boolean;
@@ -31,16 +40,29 @@ export class DanmakuCanvas {
       danmakuSettings: DanmakuSettings,
       comment: Comment
     ) => DanmakuElement,
+    private reservedBottomMargin: number /* px */,
     private danmakuSettigns: DanmakuSettings
   ) {
-    this.body_ = E.div({
-      class: "danmaku-canvas",
-      style: `width: 100%; height: 100%; position: relative; overflow: hidden;`,
-    });
+    super();
+    let clickCapturerRef = new Ref<HTMLDivElement>();
+    this.body_ = E.div(
+      {
+        class: "danmaku-canvas",
+        style: `width: 100%; height: 100%; position: relative; overflow: hidden;`,
+      },
+      E.divRef(clickCapturerRef, {
+        class: "danmaku-canvas-click-capturer",
+        style: `position: absolute; left: 0; top: 0; width: 100%; height: 100%;`,
+      })
+    );
+    this.clickCapturer = clickCapturerRef.val;
 
     this.pause();
     new ResizeObserver((entries) => this.getNewSize(entries[0])).observe(
       this.body_
+    );
+    this.clickCapturer.addEventListener("click", () =>
+      this.emit("passThroughClick")
     );
   }
 
@@ -78,7 +100,7 @@ export class DanmakuCanvas {
     this.body_.append(element.body);
 
     let elementHeight = element.getOffsetHeight();
-    let reducedHeight = this.height - DanmakuCanvas.FIXED_BOTTOM_MARGIN;
+    let reducedHeight = this.height - this.reservedBottomMargin;
     let startY = Math.floor(this.danmakuSettigns.topMargin * reducedHeight);
     let endY =
       reducedHeight -
