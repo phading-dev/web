@@ -19,7 +19,7 @@ export class HoverObserver extends EventEmitter {
       (callback, delay) => window.setTimeout(callback, delay),
       (id) => window.clearTimeout(id),
       anchorElement,
-      mode
+      mode,
     );
   }
 
@@ -33,7 +33,7 @@ export class HoverObserver extends EventEmitter {
     private setTimeout: (callback: () => void, delay: number) => number,
     private clearTimeout: (id: number) => void,
     private anchorElement: HTMLElement,
-    mode: Mode
+    mode: Mode,
   ) {
     super();
     this.anchorElement.addEventListener("pointerover", () => this.hover());
@@ -64,7 +64,7 @@ export class HoverObserver extends EventEmitter {
       if (!this.showTimeoutId) {
         this.showTimeoutId = this.setTimeout(
           () => this.hoverImmediate(),
-          SHOW_DELAY
+          SHOW_DELAY,
         );
       }
     } else {

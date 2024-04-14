@@ -1,62 +1,93 @@
 import { HoverObserver, Mode } from "./hover_observer";
 import { E } from "@selfage/element/factory";
-import { TEST_RUNNER } from "@selfage/puppeteer_test_runner";
-import { assertThat, eq } from "@selfage/test_matcher";
+import {
+  keyboardDown,
+  mouseDown,
+  mouseMove,
+  setViewport,
+  touchEnd,
+  touchMove,
+  touchStart,
+} from "@selfage/puppeteer_test_executor_api";
+import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
+import { Ref } from "@selfage/ref";
+import { assertThat, eq, eqArray } from "@selfage/test_matcher";
+import "./normalize_body";
 
 TEST_RUNNER.run({
   name: "HoverObserverTest",
   cases: [
-    {
-      name: "Over_Move_Down_DelayedHide_Keydown_DelayedHide",
-      execute: async () => {
+    new (class implements TestCase {
+      public name = "MouseMoveOver_Move_Down_DelayedHide_Keydown_DelayedHide";
+      private anchorElement: HTMLDivElement;
+      public async execute() {
         // Prepare
-        let anchorElement = E.div({});
+        await setViewport(400, 400);
+        let inputRef = new Ref<HTMLInputElement>();
+        this.anchorElement = E.div(
+          {
+            style: `margin: 10rem; width: 20rem; height: 20rem; background-color: black;`,
+          },
+          E.inputRef(inputRef, {}),
+        );
+        document.body.append(this.anchorElement);
+
         let timeoutCounter = 0;
         let callbackCaptured: () => void;
         let delayCaptured: number;
-        let idClearedCaptured: number;
-        let detector = new HoverObserver(
+        let idClearedCaptured = new Array<number>();
+        let observer = new HoverObserver(
           (callback, delay) => {
             callbackCaptured = callback;
             delayCaptured = delay;
             return ++timeoutCounter;
           },
           (id) => {
-            idClearedCaptured = id;
+            idClearedCaptured.push(id);
           },
-          anchorElement,
-          Mode.HOVER_DELAY_LEAVE
+          this.anchorElement,
+          Mode.HOVER_DELAY_LEAVE,
         );
         let showedTimes = 0;
-        detector.on("hover", () => {
+        observer.on("hover", () => {
           ++showedTimes;
         });
         let hiddenTimes = 0;
-        detector.on("leave", () => {
+        observer.on("leave", () => {
           ++hiddenTimes;
         });
 
         // Execute
-        anchorElement.dispatchEvent(new Event("pointerover"));
+        await mouseMove(101, 101, 1);
 
         // Verify
         assertThat(showedTimes, eq(1), "over and showed once");
         assertThat(delayCaptured, eq(3000), "delayed");
-        assertThat(idClearedCaptured, eq(undefined), "nothing to clear");
+        assertThat(
+          idClearedCaptured,
+          eqArray([eq(undefined), eq(1)]),
+          "cleared 1",
+        );
+
+        // Prepare
+        idClearedCaptured.length = 0;
 
         // Execute
-        anchorElement.dispatchEvent(new Event("pointermove"));
+        await mouseMove(102, 102, 1);
 
         // Verify
         assertThat(showedTimes, eq(1), "moved but not show again");
-        assertThat(idClearedCaptured, eq(1), "cleared 1");
+        assertThat(idClearedCaptured, eqArray([eq(2)]), "cleared 2");
+
+        // Prepare
+        idClearedCaptured.length = 0;
 
         // Execute
-        anchorElement.dispatchEvent(new Event("pointerdown"));
+        await mouseDown();
 
         // Verify
         assertThat(showedTimes, eq(1), "downed but not show again");
-        assertThat(idClearedCaptured, eq(2), "cleared 2");
+        assertThat(idClearedCaptured, eqArray([eq(3)]), "cleared 3");
 
         // Execute
         callbackCaptured();
@@ -64,31 +95,49 @@ TEST_RUNNER.run({
         // Verify
         assertThat(hiddenTimes, eq(1), "hide once");
 
+        // Prepare
+        idClearedCaptured.length = 0;
+
         // Execute
-        anchorElement.dispatchEvent(new Event("keydown"));
+        inputRef.val.focus();
+        await keyboardDown("A");
 
         // Verify
         assertThat(showedTimes, eq(2), "key down and show again");
         assertThat(delayCaptured, eq(3000), "delayed");
-        assertThat(idClearedCaptured, eq(3), "cleared 3");
+        assertThat(idClearedCaptured, eqArray([eq(4)]), "cleared 4");
 
         // Execute
         callbackCaptured();
 
         // Verify
         assertThat(hiddenTimes, eq(2), "hide twice");
-      },
-    },
-    {
-      name: "Over_Out_Over_Move_DelayedShow_Down_DelayedHide_Keydown_DelayedShow_DelayedHide",
-      execute: async () => {
+      }
+      public tearDown() {
+        this.anchorElement.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name =
+        "TouchStart_End_NotShowed_Start_Move_DelayedShow_Move_DelayedHide_Keydown_DelayedShow_DelayedHide";
+      private anchorElement: HTMLDivElement;
+      public async execute() {
         // Prepare
-        let anchorElement = E.div({});
+        await setViewport(400, 400);
+        let inputRef = new Ref<HTMLInputElement>();
+        this.anchorElement = E.div(
+          {
+            style: `margin: 10rem; width: 20rem; height: 20rem; background-color: black;`,
+          },
+          E.inputRef(inputRef, {}),
+        );
+        document.body.append(this.anchorElement);
+
         let timeoutCounter = 0;
         let callbackCaptured: () => void;
         let delayCaptured: number;
         let idClearedCaptured: number;
-        let detector = new HoverObserver(
+        let observer = new HoverObserver(
           (callback, delay) => {
             callbackCaptured = callback;
             delayCaptured = delay;
@@ -97,33 +146,33 @@ TEST_RUNNER.run({
           (id) => {
             idClearedCaptured = id;
           },
-          anchorElement,
-          Mode.DELAY_HOVER_DELAY_LEAVE
+          this.anchorElement,
+          Mode.DELAY_HOVER_DELAY_LEAVE,
         );
         let showedTimes = 0;
-        detector.on("hover", () => {
+        observer.on("hover", () => {
           ++showedTimes;
         });
         let hiddenTimes = 0;
-        detector.on("leave", () => {
+        observer.on("leave", () => {
           ++hiddenTimes;
         });
 
         // Execute
-        anchorElement.dispatchEvent(new Event("pointerover"));
+        await touchStart(101, 101);
 
         // Verify
         assertThat(showedTimes, eq(0), "not showed");
         assertThat(delayCaptured, eq(1000), "delayed");
 
         // Execute
-        anchorElement.dispatchEvent(new Event("pointerout"));
+        await touchEnd();
 
         // Verify
         assertThat(idClearedCaptured, eq(1), "cleared show");
 
         // Execute
-        anchorElement.dispatchEvent(new Event("pointerover"));
+        await touchStart(102, 102);
 
         // Verify
         assertThat(showedTimes, eq(0), "not showed yet");
@@ -131,7 +180,7 @@ TEST_RUNNER.run({
         assertThat(timeoutCounter, eq(2), "new timeout");
 
         // Execute
-        anchorElement.dispatchEvent(new Event("pointermove"));
+        await touchMove(103, 103);
 
         // Verify
         assertThat(showedTimes, eq(0), "not showed yet 2");
@@ -145,10 +194,10 @@ TEST_RUNNER.run({
         assertThat(timeoutCounter, eq(3), "timeout to hide");
 
         // Execute
-        anchorElement.dispatchEvent(new Event("pointerdown"));
+        await touchMove(104, 104);
 
         // Verify
-        assertThat(showedTimes, eq(1), "downed but not show again");
+        assertThat(showedTimes, eq(1), "moved but not show again");
         assertThat(idClearedCaptured, eq(3), "clear 3");
         assertThat(timeoutCounter, eq(4), "timeout 2 to hide");
 
@@ -159,7 +208,8 @@ TEST_RUNNER.run({
         assertThat(hiddenTimes, eq(1), "hide once");
 
         // Execute
-        anchorElement.dispatchEvent(new Event("keydown"));
+        inputRef.val.focus();
+        await keyboardDown("A");
         callbackCaptured();
 
         // Verify
@@ -172,7 +222,10 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(hiddenTimes, eq(2), "hide twice");
-      },
-    },
+      }
+      public tearDown() {
+        this.anchorElement.remove();
+      }
+    })(),
   ],
 });
