@@ -23,7 +23,7 @@ export class SliderInput extends EventEmitter {
     length: number, // rem,
     customStyle: string,
     range: Range,
-    initValue = 0
+    initValue = 0,
   ): SliderInput {
     return new SliderInput(orientation, length, customStyle, range, initValue);
   }
@@ -38,7 +38,7 @@ export class SliderInput extends EventEmitter {
     length: number, // rem
     customStyle: string,
     private range: Range,
-    initValue: number
+    initValue: number,
   ) {
     super();
     let fillerRef = new Ref<HTMLDivElement>();
@@ -47,8 +47,8 @@ export class SliderInput extends EventEmitter {
       {
         class: "slider-input",
         style: `display: inline-block; padding: ${
-          orientation === Orientation.HORIZONTAL ? ".3rem 0" : "0 .3rem"
-        }; cursor: pointer; ${customStyle}`,
+          orientation === Orientation.HORIZONTAL ? "1rem 0" : "0 1rem"
+        }; cursor: pointer; touch-action: none; ${customStyle}`,
       },
       E.div(
         {
@@ -74,23 +74,26 @@ export class SliderInput extends EventEmitter {
           style: `position: absolute; height: .8rem; width: .8rem; border-radius: .8rem; ${
             orientation === Orientation.HORIZONTAL ? "top" : "left"
           }: -.3rem; background-color: ${SCHEME.neutral1};`,
-        })
-      )
+        }),
+      ),
     );
     this.filler = fillerRef.val;
     this.cursor = cursorRef.val;
 
     this.setValue(initValue);
     this.body_.addEventListener("pointerdown", (event) =>
-      this.startMoving(event)
+      this.startMoving(event),
     );
     this.body_.addEventListener("pointermove", (event) => this.moving(event));
-    this.body_.addEventListener("pointerup", () => this.stopMoving());
-    this.body_.addEventListener("pointerout", () => this.stopMoving());
+    this.body_.addEventListener("pointerup", (event) => this.stopMoving(event));
+    this.body_.addEventListener("pointerout", (event) =>
+      this.stopMoving(event),
+    );
   }
 
   private startMoving(event: PointerEvent): void {
     this.isMoving = true;
+    this.body_.setPointerCapture(event.pointerId);
     this.setPosition(event);
   }
 
@@ -98,9 +101,12 @@ export class SliderInput extends EventEmitter {
     let rect = this.body_.getBoundingClientRect();
     let ratio: number;
     if (this.orientation === Orientation.HORIZONTAL) {
-      ratio = (event.screenX - rect.x) / rect.width;
+      ratio = Math.max(0, Math.min(1, (event.clientX - rect.x) / rect.width));
     } else {
-      ratio = 1 - (event.screenY - rect.y) / rect.height;
+      ratio = Math.max(
+        0,
+        Math.min(1, 1 - (event.clientY - rect.y) / rect.height),
+      );
     }
     this.setRatio(ratio);
     this.emit("change", ratio * (this.range.end - this.range.start));
@@ -123,8 +129,9 @@ export class SliderInput extends EventEmitter {
     this.setPosition(event);
   }
 
-  private stopMoving(): void {
+  private stopMoving(event: PointerEvent): void {
     this.isMoving = false;
+    this.body_.releasePointerCapture(event.pointerId);
   }
 
   public setValue(value: number): void {

@@ -426,11 +426,11 @@ export function createPlayNextIcon(color: string): SVGSVGElement {
   );
 }
 
-export function createFastForwardIcon(color: string): SVGSVGElement {
+export function createFastForwardIcon(color: string, customStyle: string = ""): SVGSVGElement {
   return E.svg(
     {
       class: "fast-forward-icon",
-      style: `height: 100%; fill: ${color};`,
+      style: `height: 100%; fill: ${color}; ${customStyle}`,
       viewBox: "4 3.4 17.2 17.2",
     },
     E.path({
@@ -439,11 +439,11 @@ export function createFastForwardIcon(color: string): SVGSVGElement {
   );
 }
 
-export function createSkipForwardIcon(color: string): SVGSVGElement {
+export function createSkipForwardIcon(color: string, customStyle: string = ""): SVGSVGElement {
   return E.svg(
     {
       class: "skip-forward-icon",
-      style: `height: 100%; fill: ${color};`,
+      style: `height: 100%; fill: ${color}; ${customStyle}`,
       viewBox: "1 6.4 11.2 11.2",
     },
     E.path({

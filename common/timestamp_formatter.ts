@@ -1,5 +1,5 @@
 export function formatSecondsAsHHMMSS(seconds: number): string {
-  let roundedSeconds = Math.round(seconds);
+  let roundedSeconds = Math.floor(seconds);
   let secondsStr = (roundedSeconds % 60).toString().padStart(2, "0");
   let minutesStr = (Math.floor(roundedSeconds / 60) % 60)
     .toString()

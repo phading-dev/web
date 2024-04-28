@@ -25,7 +25,7 @@ export class IconButton extends EventEmitter {
     position: TooltipPosition,
     text: string,
     customEnable: () => void = () => {},
-    customDisable: () => void = () => {}
+    customDisable: () => void = () => {},
   ): IconButton {
     return new IconButton(
       customButtonStyle,
@@ -33,7 +33,7 @@ export class IconButton extends EventEmitter {
       position,
       text,
       customEnable,
-      customDisable
+      customDisable,
     );
   }
 
@@ -48,7 +48,7 @@ export class IconButton extends EventEmitter {
     position: TooltipPosition,
     text: string,
     private customEnable: () => void,
-    private customDisable: () => void
+    private customDisable: () => void,
   ) {
     super();
     let tooltipRef = new Ref<HTMLDivElement>();
@@ -62,16 +62,16 @@ export class IconButton extends EventEmitter {
         tooltipRef,
         {
           class: "icon-button-tooltip",
-          style: `position: absolute; justify-content: center; align-items: center; transition: opacity .3s 1s linear;`,
+          style: `position: absolute; justify-content: center; align-items: center; transition: opacity .3s linear;`,
         },
         E.div(
           {
             class: "icon-button-tooltip-background",
             style: `background-color: ${SCHEME.neutral4}; box-shadow: 0 0 .3rem ${SCHEME.neutral1}; border-radius: ${BUTTON_BORDER_RADIUS}; padding: .6rem 1rem; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; white-space: nowrap;`,
           },
-          E.text(text)
-        )
-      )
+          E.text(text),
+        ),
+      ),
     );
     this.tooltip = tooltipRef.val;
     this.displayStyle = this.body_.style.display;
@@ -106,12 +106,12 @@ export class IconButton extends EventEmitter {
 
     this.hoverObserver = HoverObserver.create(
       this.body_,
-      Mode.HOVER_DELAY_LEAVE
+      Mode.DELAY_HOVER_DELAY_LEAVE,
     )
       .on("hover", () => this.showTootlip())
       .on("leave", () => this.hideTooltip());
     this.tooltip.addEventListener("transitionend", () =>
-      this.emit("tooltipShowed")
+      this.emit("tooltipShowed"),
     );
     this.body_.addEventListener("click", () => this.emit("action"));
   }

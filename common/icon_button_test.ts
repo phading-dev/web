@@ -17,7 +17,7 @@ class RenderOversizeCentering implements TestCase {
     private position: TooltipPosition,
     private screenshotPath: string,
     private screenshotGoldenPath: string,
-    private screenshotDiffPath: string
+    private screenshotDiffPath: string,
   ) {}
   public async execute() {
     // Prepare
@@ -27,14 +27,14 @@ class RenderOversizeCentering implements TestCase {
       this.position,
       "some text",
       () => {},
-      () => {}
+      () => {},
     ).show();
     container.append(this.cut.body);
 
     // Execute
     this.cut.hover();
     await new Promise<void>((resolve) =>
-      this.cut.once("tooltipShowed", resolve)
+      this.cut.once("tooltipShowed", resolve),
     );
 
     // Verify
@@ -42,7 +42,7 @@ class RenderOversizeCentering implements TestCase {
       this.screenshotPath,
       this.screenshotGoldenPath,
       this.screenshotDiffPath,
-      { fullPage: true }
+      { fullPage: true },
     );
   }
   public tearDown() {
@@ -57,7 +57,7 @@ class RenderCenteringWithin implements TestCase {
     private position: TooltipPosition,
     private screenshotPath: string,
     private screenshotGoldenPath: string,
-    private screenshotDiffPath: string
+    private screenshotDiffPath: string,
   ) {}
   public async execute() {
     // Prepare
@@ -67,14 +67,14 @@ class RenderCenteringWithin implements TestCase {
       this.position,
       "some text",
       () => {},
-      () => {}
+      () => {},
     ).show();
     container.append(this.cut.body);
 
     // Execute
     this.cut.hover();
     await new Promise<void>((resolve) =>
-      this.cut.once("tooltipShowed", resolve)
+      this.cut.once("tooltipShowed", resolve),
     );
 
     // Verify
@@ -82,7 +82,7 @@ class RenderCenteringWithin implements TestCase {
       this.screenshotPath,
       this.screenshotGoldenPath,
       this.screenshotDiffPath,
-      { fullPage: true }
+      { fullPage: true },
     );
   }
   public tearDown() {
@@ -109,56 +109,56 @@ TEST_RUNNER.run({
       TooltipPosition.TOP,
       path.join(__dirname, "/icon_button_oversize_top.png"),
       path.join(__dirname, "/golden/icon_button_oversize_top.png"),
-      path.join(__dirname, "/icon_button_oversize_top_diff.png")
+      path.join(__dirname, "/icon_button_oversize_top_diff.png"),
     ),
     new RenderOversizeCentering(
       "RenderOversizeRight",
       TooltipPosition.RIGHT,
       path.join(__dirname, "/icon_button_oversize_right.png"),
       path.join(__dirname, "/golden/icon_button_oversize_right.png"),
-      path.join(__dirname, "/icon_button_oversize_right_diff.png")
+      path.join(__dirname, "/icon_button_oversize_right_diff.png"),
     ),
     new RenderOversizeCentering(
       "RenderOversizeBottom",
       TooltipPosition.BOTTOM,
       path.join(__dirname, "/icon_button_oversize_bottom.png"),
       path.join(__dirname, "/golden/icon_button_oversize_bottom.png"),
-      path.join(__dirname, "/icon_button_oversize_bottom_diff.png")
+      path.join(__dirname, "/icon_button_oversize_bottom_diff.png"),
     ),
     new RenderOversizeCentering(
       "RenderOversizeLeft",
       TooltipPosition.LEFT,
       path.join(__dirname, "/icon_button_oversize_left.png"),
       path.join(__dirname, "/golden/icon_button_oversize_left.png"),
-      path.join(__dirname, "/icon_button_oversize_left_diff.png")
+      path.join(__dirname, "/icon_button_oversize_left_diff.png"),
     ),
     new RenderCenteringWithin(
       "RenderWithinTop",
       TooltipPosition.TOP,
       path.join(__dirname, "/icon_button_within_top.png"),
       path.join(__dirname, "/golden/icon_button_within_top.png"),
-      path.join(__dirname, "/icon_button_within_top_diff.png")
+      path.join(__dirname, "/icon_button_within_top_diff.png"),
     ),
     new RenderCenteringWithin(
       "RenderWithinRight",
       TooltipPosition.RIGHT,
       path.join(__dirname, "/icon_button_within_right.png"),
       path.join(__dirname, "/golden/icon_button_within_right.png"),
-      path.join(__dirname, "/icon_button_within_right_diff.png")
+      path.join(__dirname, "/icon_button_within_right_diff.png"),
     ),
     new RenderCenteringWithin(
       "RenderWithinBottom",
       TooltipPosition.BOTTOM,
       path.join(__dirname, "/icon_button_within_bottom.png"),
       path.join(__dirname, "/golden/icon_button_within_bottom.png"),
-      path.join(__dirname, "/icon_button_within_bottom_diff.png")
+      path.join(__dirname, "/icon_button_within_bottom_diff.png"),
     ),
     new RenderCenteringWithin(
       "RenderWithinLeft",
       TooltipPosition.LEFT,
       path.join(__dirname, "/icon_button_within_left.png"),
       path.join(__dirname, "/golden/icon_button_within_left.png"),
-      path.join(__dirname, "/icon_button_within_left_diff.png")
+      path.join(__dirname, "/icon_button_within_left_diff.png"),
     ),
     new (class implements TestCase {
       public name = "PointerLeft";
@@ -171,12 +171,12 @@ TEST_RUNNER.run({
           TooltipPosition.BOTTOM,
           "some text",
           () => {},
-          () => {}
+          () => {},
         ).show();
         container.append(this.cut.body);
         this.cut.hover();
         await new Promise<void>((resolve) =>
-          this.cut.once("tooltipShowed", resolve)
+          this.cut.once("tooltipShowed", resolve),
         );
 
         // Execute
@@ -187,7 +187,7 @@ TEST_RUNNER.run({
           path.join(__dirname, "/icon_button_left.png"),
           path.join(__dirname, "/golden/icon_button_left.png"),
           path.join(__dirname, "/icon_button_left_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
       }
       public tearDown() {
@@ -204,7 +204,7 @@ TEST_RUNNER.run({
           TooltipPosition.BOTTOM,
           "some text",
           () => {},
-          () => {}
+          () => {},
         ).show();
         let clicked = false;
         cut.on("action", () => (clicked = true));
