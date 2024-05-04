@@ -431,4 +431,55 @@ export default class Text {
   get commentInputPlaceholder() {
     return `What's on your mind`;
   }
+  get playButtonLabel() {
+    return `Play`;
+  }
+  get pauseButtonLabel() {
+    return `Pause`;
+  }
+  get showCommentButtonLabel() {
+    return `Show comment`;
+  }
+  get prevShowButtonLabel() {
+    return `Previous`
+  }
+  get nextShowButtonLabel() {
+    return `Next`;
+  }
+  get speedDownButtonLabel() {
+    return `Speed down`
+  }
+  get speedUpButtonLabel() {
+    return `Speed up`
+  }
+  get skipBackwardButtonLabel() {
+    return `Jump backwards`
+  }
+  get skipForwardButtonLabel() {
+    return `Jump forwards`
+  }
+  get volumeButtonLabel() {
+    return `Volume`;
+  }
+  get volumeMutedButtonLabel() {
+    return `Muted`;
+  }
+  get noLoopingButtonlabel() {
+    return `No looping`
+  }
+  get loopingButtonLabel() {
+    return `Looping`;
+  }
+  get danmakuButtonLabel() {
+    return `Scrolling`;
+  }
+  get noDanmakuButtonLabel() {
+    return `No scrolling`;
+  }
+  get playerSettingsButtonLabel() {
+    return `Settings`;
+  }
+  get moreShowInfoButtonLabel() {
+    return `More info`;
+  }
 }

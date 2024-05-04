@@ -86,9 +86,6 @@ export class SliderInput extends EventEmitter {
     );
     this.body_.addEventListener("pointermove", (event) => this.moving(event));
     this.body_.addEventListener("pointerup", (event) => this.stopMoving(event));
-    this.body_.addEventListener("pointerout", (event) =>
-      this.stopMoving(event),
-    );
   }
 
   private startMoving(event: PointerEvent): void {
