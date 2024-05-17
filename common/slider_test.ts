@@ -1,5 +1,5 @@
 import path = require("path");
-import { Orientation, SliderInput } from "./slider_input";
+import { Orientation, Slider } from "./slider";
 import {
   mouseDown,
   mouseMove,
@@ -16,7 +16,7 @@ import { assertThat, eq } from "@selfage/test_matcher";
 import "./normalize_body";
 
 TEST_RUNNER.run({
-  name: "SliderInputTest",
+  name: "SliderTest",
   environment: {
     setUp: () => {
       document.body.style.margin = "2rem";
@@ -28,19 +28,18 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name = "Horizontal_TouchMove_TouchMoveTo0_TouchMoveTo100";
-      private cut: SliderInput;
+      private cut: Slider;
       public async execute() {
         // Prepare
         await setViewport(200, 200);
         let valueCaptured: number;
-        this.cut = new SliderInput(
+        this.cut = new Slider(
           Orientation.HORIZONTAL,
-          10,
+          `10rem`,
+          `1rem`,
+          0,
+          100,
           "",
-          {
-            start: 0,
-            end: 100,
-          },
           10,
         ).on("change", (value) => (valueCaptured = value));
 
@@ -49,9 +48,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_horizontal.png"),
-          path.join(__dirname, "/golden/slider_input_horizontal.png"),
-          path.join(__dirname, "/slider_input_horizontal_diff.png"),
+          path.join(__dirname, "/slider_horizontal.png"),
+          path.join(__dirname, "/golden/slider_horizontal.png"),
+          path.join(__dirname, "/slider_horizontal_diff.png"),
         );
 
         // Execute
@@ -60,9 +59,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(valueCaptured, eq(5), "value 1");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_started_moving.png"),
-          path.join(__dirname, "/golden/slider_input_started_moving.png"),
-          path.join(__dirname, "/slider_input_started_moving_diff.png"),
+          path.join(__dirname, "/slider_started_moving.png"),
+          path.join(__dirname, "/golden/slider_started_moving.png"),
+          path.join(__dirname, "/slider_started_moving_diff.png"),
         );
 
         // Execute
@@ -71,9 +70,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(valueCaptured, eq(60), "value 2");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_moving.png"),
-          path.join(__dirname, "/golden/slider_input_moving.png"),
-          path.join(__dirname, "/slider_input_moving_diff.png"),
+          path.join(__dirname, "/slider_moving.png"),
+          path.join(__dirname, "/golden/slider_moving.png"),
+          path.join(__dirname, "/slider_moving_diff.png"),
         );
 
         // Execute
@@ -82,9 +81,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(valueCaptured, eq(0), "value 3");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_moving_to_0.png"),
-          path.join(__dirname, "/golden/slider_input_moving_to_0.png"),
-          path.join(__dirname, "/slider_input_moving_to_0_diff.png"),
+          path.join(__dirname, "/slider_moving_to_0.png"),
+          path.join(__dirname, "/golden/slider_moving_to_0.png"),
+          path.join(__dirname, "/slider_moving_to_0_diff.png"),
         );
 
         // Execute
@@ -93,9 +92,9 @@ TEST_RUNNER.run({
         // Verify
         await touchTap(25, 5);
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_moving_to_0_ended.png"),
-          path.join(__dirname, "/golden/slider_input_moving_to_0.png"),
-          path.join(__dirname, "/slider_input_moving_to_0_ended_diff.png"),
+          path.join(__dirname, "/slider_moving_to_0_ended.png"),
+          path.join(__dirname, "/golden/slider_moving_to_0.png"),
+          path.join(__dirname, "/slider_moving_to_0_ended_diff.png"),
         );
 
         // Execute
@@ -106,9 +105,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(valueCaptured, eq(100), "value 5");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_moving_to_100.png"),
-          path.join(__dirname, "/golden/slider_input_moving_to_100.png"),
-          path.join(__dirname, "/slider_input_moving_to_100_diff.png"),
+          path.join(__dirname, "/slider_moving_to_100.png"),
+          path.join(__dirname, "/golden/slider_moving_to_100.png"),
+          path.join(__dirname, "/slider_moving_to_100_diff.png"),
           {
             threshold: 0.001,
           },
@@ -120,19 +119,18 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name = "Vertical_MouseMove_MouseMoveTo0_MouseMoveTo100";
-      private cut: SliderInput;
+      private cut: Slider;
       public async execute() {
         // Prepare
         await setViewport(200, 200);
         let valueCaptured: number;
-        this.cut = new SliderInput(
+        this.cut = new Slider(
           Orientation.VERTICAL,
-          10,
+          `10rem`,
+          `1rem`,
+          0,
+          100,
           "",
-          {
-            start: 0,
-            end: 100,
-          },
           10,
         ).on("change", (value) => (valueCaptured = value));
 
@@ -141,9 +139,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_vertical.png"),
-          path.join(__dirname, "/golden/slider_input_vertical.png"),
-          path.join(__dirname, "/slider_input_vertical_diff.png"),
+          path.join(__dirname, "/slider_vertical.png"),
+          path.join(__dirname, "/golden/slider_vertical.png"),
+          path.join(__dirname, "/slider_vertical_diff.png"),
         );
 
         // Execute
@@ -151,9 +149,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_vertical_not_moved.png"),
-          path.join(__dirname, "/golden/slider_input_vertical.png"),
-          path.join(__dirname, "/slider_input_vertical_not_moved_diff.png"),
+          path.join(__dirname, "/slider_vertical_not_moved.png"),
+          path.join(__dirname, "/golden/slider_vertical.png"),
+          path.join(__dirname, "/slider_vertical_not_moved_diff.png"),
         );
 
         // Execute
@@ -162,15 +160,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(valueCaptured, eq(95), "value 1");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_vertical_started_moving.png"),
-          path.join(
-            __dirname,
-            "/golden/slider_input_vertical_started_moving.png",
-          ),
-          path.join(
-            __dirname,
-            "/slider_input_vertical_started_moving_diff.png",
-          ),
+          path.join(__dirname, "/slider_vertical_started_moving.png"),
+          path.join(__dirname, "/golden/slider_vertical_started_moving.png"),
+          path.join(__dirname, "/slider_vertical_started_moving_diff.png"),
         );
 
         // Execute
@@ -179,9 +171,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(valueCaptured, eq(80), "value 2");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_vertical_moving.png"),
-          path.join(__dirname, "/golden/slider_input_vertical_moving.png"),
-          path.join(__dirname, "/slider_input_vertical_moving_diff.png"),
+          path.join(__dirname, "/slider_vertical_moving.png"),
+          path.join(__dirname, "/golden/slider_vertical_moving.png"),
+          path.join(__dirname, "/slider_vertical_moving_diff.png"),
         );
 
         // Execute
@@ -190,9 +182,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(valueCaptured, eq(0), "value 3");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_vertical_moving_to_0.png"),
-          path.join(__dirname, "/golden/slider_input_vertical_moving_to_0.png"),
-          path.join(__dirname, "/slider_input_vertical_moving_to_0_diff.png"),
+          path.join(__dirname, "/slider_vertical_moving_to_0.png"),
+          path.join(__dirname, "/golden/slider_vertical_moving_to_0.png"),
+          path.join(__dirname, "/slider_vertical_moving_to_0_diff.png"),
         );
 
         // Execute
@@ -201,9 +193,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_vertical_up_not_moved.png"),
-          path.join(__dirname, "/golden/slider_input_vertical_moving_to_0.png"),
-          path.join(__dirname, "/slider_input_vertical_up_not_moved_diff.png"),
+          path.join(__dirname, "/slider_vertical_up_not_moved.png"),
+          path.join(__dirname, "/golden/slider_vertical_moving_to_0.png"),
+          path.join(__dirname, "/slider_vertical_up_not_moved_diff.png"),
         );
 
         // Execute
@@ -213,12 +205,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(valueCaptured, eq(100), "value 4");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/slider_input_vertical_moving_to_100.png"),
-          path.join(
-            __dirname,
-            "/golden/slider_input_vertical_moving_to_100.png",
-          ),
-          path.join(__dirname, "/slider_input_vertical_moving_to_100_diff.png"),
+          path.join(__dirname, "/slider_vertical_moving_to_100.png"),
+          path.join(__dirname, "/golden/slider_vertical_moving_to_100.png"),
+          path.join(__dirname, "/slider_vertical_moving_to_100_diff.png"),
           {
             threshold: 0.001,
           },
