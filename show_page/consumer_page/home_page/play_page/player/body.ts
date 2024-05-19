@@ -21,7 +21,7 @@ import {
 import { LikeDislikeButtons } from "../../../../../common/like_dislike_buttons";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import { FONT_M, ICON_L, ICON_M, ICON_S } from "../../../../../common/sizes";
-import { Orientation, SliderInput } from "../../../../../common/slider_input";
+import { Orientation, Slider } from "../../../../../common/slider";
 import { formatSecondsAsHHMMSS } from "../../../../../common/timestamp_formatter";
 import { PRODUCT_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { DanmakuCanvas } from "./danmaku_canvas/body";
@@ -72,39 +72,39 @@ export class Player extends EventEmitter {
   private static OPACITY_TRANSITION = `transition: opacity .3s linear;`;
 
   private body_: HTMLDivElement;
-  private video_: HTMLVideoElement;
-  private loadingIcon: HTMLDivElement;
-  private playingIcon: HTMLDivElement;
-  private pausedIcon: HTMLDivElement;
-  private danmakuCanvas: DanmakuCanvas;
-  private topButtonsContainer: HTMLDivElement;
-  private noLoopButton_: IconButton;
-  private loopButton_: IconButton;
-  private danmakuButton_: IconButton;
-  private noDanmakuButton_: IconButton;
-  private settingsButton_: IconButton;
-  private rightButtonsContainer: HTMLDivElement;
-  private volumeSlider: SliderInput;
-  private volumeButton_: IconButton;
-  private volumeMutedButton_: IconButton;
-  private likeDislikeButtons_: LikeDislikeButtons;
-  private commentButton_: IconButton;
-  private bottomButtonsContainer: HTMLDivElement;
-  private progressBar: HTMLDivElement;
-  private progressBarBuffer: HTMLDivElement;
-  private progressBarFiller: HTMLDivElement;
-  private pointedTimestamp: HTMLDivElement;
-  private currentTimeText: HTMLDivElement;
-  private skipBackwardButton_: IconButton;
-  private speedDownButton_: IconButton;
-  private currentPlaybackSpeed: HTMLDivElement;
-  private speedUpButton_: IconButton;
-  private skipForwardButton_: IconButton;
-  private durationText: HTMLDivElement;
-  private moreInfoButton_: IconButton;
-  private bottomProgressBar: HTMLDivElement;
-  private bottomProgressBarBuffer: HTMLDivElement;
-  private bottomProgressBarFiller: HTMLDivElement;
+  private video_ = new Ref<HTMLVideoElement>();
+  private loadingIcon = new Ref<HTMLDivElement>();
+  private playingIcon = new Ref<HTMLDivElement>();
+  private pausedIcon = new Ref<HTMLDivElement>();
+  private danmakuCanvas = new Ref<DanmakuCanvas>();
+  private topButtonsContainer = new Ref<HTMLDivElement>();
+  private noLoopButton_ = new Ref<IconButton>();
+  private loopButton_ = new Ref<IconButton>();
+  private danmakuButton_ = new Ref<IconButton>();
+  private noDanmakuButton_ = new Ref<IconButton>();
+  private settingsButton_ = new Ref<IconButton>();
+  private rightButtonsContainer = new Ref<HTMLDivElement>();
+  private volumeSlider = new Ref<Slider>();
+  private volumeButton_ = new Ref<IconButton>();
+  private volumeMutedButton_ = new Ref<IconButton>();
+  private likeDislikeButtons_ = new Ref<LikeDislikeButtons>();
+  private commentButton_ = new Ref<IconButton>();
+  private bottomButtonsContainer = new Ref<HTMLDivElement>();
+  private progressBar = new Ref<HTMLDivElement>();
+  private progressBarBuffer = new Ref<HTMLDivElement>();
+  private progressBarFiller = new Ref<HTMLDivElement>();
+  private pointedTimestamp = new Ref<HTMLDivElement>();
+  private currentTimeText = new Ref<HTMLDivElement>();
+  private skipBackwardButton_ = new Ref<IconButton>();
+  private speedDownButton_ = new Ref<IconButton>();
+  private currentPlaybackSpeed = new Ref<HTMLDivElement>();
+  private speedUpButton_ = new Ref<IconButton>();
+  private skipForwardButton_ = new Ref<IconButton>();
+  private durationText = new Ref<HTMLDivElement>();
+  private moreInfoButton_ = new Ref<IconButton>();
+  private bottomProgressBar = new Ref<HTMLDivElement>();
+  private bottomProgressBarBuffer = new Ref<HTMLDivElement>();
+  private bottomProgressBarFiller = new Ref<HTMLDivElement>();
   private hoverObserver: HoverObserver;
   private updateProgressId: number;
   private playbackSpeedIndex: number;
@@ -123,53 +123,20 @@ export class Player extends EventEmitter {
     private show: Show,
   ) {
     super();
-    let videoRef = new Ref<HTMLVideoElement>();
-    let loadingIconRef = new Ref<HTMLDivElement>();
-    let playingIconRef = new Ref<HTMLDivElement>();
-    let pausedIconRef = new Ref<HTMLDivElement>();
-    let danmakuCanvasRef = new Ref<DanmakuCanvas>();
-    let topButtonsContainerRef = new Ref<HTMLDivElement>();
-    let noLoopButtonRef = new Ref<IconButton>();
-    let loopButtonRef = new Ref<IconButton>();
-    let danmakuButtonRef = new Ref<IconButton>();
-    let noDanmakuButtonRef = new Ref<IconButton>();
-    let settingsButtonRef = new Ref<IconButton>();
-    let rightButtonsContainerRef = new Ref<HTMLDivElement>();
-    let volumeSliderRef = new Ref<SliderInput>();
-    let volumeButtonRef = new Ref<IconButton>();
-    let volumeMutedButtonRef = new Ref<IconButton>();
-    let likeDislikeButtonsRef = new Ref<LikeDislikeButtons>();
-    let commentButtonRef = new Ref<IconButton>();
-    let bottomButtonsContainerRef = new Ref<HTMLDivElement>();
-    let progressBarRef = new Ref<HTMLDivElement>();
-    let progressBarBufferRef = new Ref<HTMLDivElement>();
-    let progressBarFillerRef = new Ref<HTMLDivElement>();
-    let pointedTimestampRef = new Ref<HTMLDivElement>();
-    let currentTimeTextRef = new Ref<HTMLDivElement>();
-    let skipBackwardButtonRef = new Ref<IconButton>();
-    let speedDownButtonRef = new Ref<IconButton>();
     let speedDownIconRef = new Ref<SVGSVGElement>();
-    let currentPlaybackSpeedRef = new Ref<HTMLDivElement>();
-    let speedUpButtonRef = new Ref<IconButton>();
     let speedUpIconRef = new Ref<SVGSVGElement>();
-    let skipForwardButtonRef = new Ref<IconButton>();
-    let durationTextRef = new Ref<HTMLDivElement>();
-    let moreInfoButtonRef = new Ref<IconButton>();
-    let bottomProgressBarRef = new Ref<HTMLDivElement>();
-    let bottomProgressBarBufferRef = new Ref<HTMLDivElement>();
-    let bottomProgressBarFillerRef = new Ref<HTMLDivElement>();
     this.body_ = E.div(
       {
         class: "player",
         style: `position: relative; width: 100vw; height: 100vh; background-color: ${SCHEME.neutral4};`,
       },
-      E.videoRef(videoRef, {
+      E.videoRef(this.video_, {
         class: "player-video",
         style: `width: 100%; height: 100%; object-fit: contain;`,
         src: this.show.videoPath,
       }),
       E.divRef(
-        loadingIconRef,
+        this.loadingIcon,
         {
           class: "player-video-loading-icon",
           style: `position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto; width: ${ICON_L}rem; height: ${ICON_L}rem; ${Player.OPACITY_TRANSITION});`,
@@ -177,7 +144,7 @@ export class Player extends EventEmitter {
         createLoadingIcon(SCHEME.neutral1),
       ),
       E.divRef(
-        playingIconRef,
+        this.playingIcon,
         {
           class: "player-video-playing-icon",
           style: `position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto; width: ${ICON_M}rem; height: ${ICON_M}rem; opacity: 0;`,
@@ -185,7 +152,7 @@ export class Player extends EventEmitter {
         createPlayIcon(SCHEME.neutral1),
       ),
       E.divRef(
-        pausedIconRef,
+        this.pausedIcon,
         {
           class: "player-video-paused-icon",
           style: `position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto; width: ${ICON_M}rem; height: ${ICON_M}rem; opacity: 0;`,
@@ -193,20 +160,20 @@ export class Player extends EventEmitter {
         createPauseIcon(SCHEME.neutral1),
       ),
       assign(
-        danmakuCanvasRef,
+        this.danmakuCanvas,
         this.createDanmakuCanvas(
           Player.RESERVED_BOTTOM_MARGIN,
           this.playerSettings.danmakuSettings,
         ),
       ).body,
       E.divRef(
-        topButtonsContainerRef,
+        this.topButtonsContainer,
         {
           class: "player-top-buttons-container",
           style: `position: absolute; top: 0; right: 0; box-sizing: border-box; padding: .5rem ${Player.EDGE_PADDING}rem 2rem; display: flex; flex-flow: row nowrap; align-items: center; gap: 2rem; ${Player.OPACITY_TRANSITION} `,
         },
         assign(
-          noLoopButtonRef,
+          this.noLoopButton_,
           IconButton.create(
             `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .5rem; box-sizing: border-box;`,
             createNotLoopingIcon(SCHEME.neutral1),
@@ -215,7 +182,7 @@ export class Player extends EventEmitter {
           ).enable(),
         ).body,
         assign(
-          loopButtonRef,
+          this.loopButton_,
           IconButton.create(
             `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .4rem; box-sizing: border-box;`,
             createLoopingIcon(SCHEME.neutral1),
@@ -224,7 +191,7 @@ export class Player extends EventEmitter {
           ).enable(),
         ).body,
         assign(
-          danmakuButtonRef,
+          this.danmakuButton_,
           IconButton.create(
             `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .4rem; box-sizing: border-box;`,
             createDanmakuIcon(SCHEME.neutral1),
@@ -233,7 +200,7 @@ export class Player extends EventEmitter {
           ).enable(),
         ).body,
         assign(
-          noDanmakuButtonRef,
+          this.noDanmakuButton_,
           IconButton.create(
             `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .4rem; box-sizing: border-box;`,
             createNoDanmakuIcon(SCHEME.neutral1),
@@ -242,7 +209,7 @@ export class Player extends EventEmitter {
           ).enable(),
         ).body,
         assign(
-          settingsButtonRef,
+          this.settingsButton_,
           IconButton.create(
             `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .3rem; box-sizing: border-box;`,
             createSettingsIcon(SCHEME.neutral1),
@@ -252,20 +219,17 @@ export class Player extends EventEmitter {
         ).body,
       ),
       E.divRef(
-        rightButtonsContainerRef,
+        this.rightButtonsContainer,
         {
           class: "player-right-buttons-container",
           style: `position: absolute; right: 0; bottom: 10rem; padding: 0 ${Player.EDGE_PADDING}rem; display: flex; flex-flow: column nowrap; align-items: center; gap: 2rem; ${Player.OPACITY_TRANSITION}`,
         },
         assign(
-          volumeSliderRef,
-          SliderInput.create(Orientation.VERTICAL, 7, "", {
-            start: 0,
-            end: 1,
-          }),
+          this.volumeSlider,
+          Slider.create(Orientation.VERTICAL, `7rem`, `1rem`, 0, 1, ""),
         ).body,
         assign(
-          volumeButtonRef,
+          this.volumeButton_,
           IconButton.create(
             `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .1rem; box-sizing: border-box;`,
             createVolumeFullIcon(SCHEME.neutral1),
@@ -274,7 +238,7 @@ export class Player extends EventEmitter {
           ).enable(),
         ).body,
         assign(
-          volumeMutedButtonRef,
+          this.volumeMutedButton_,
           IconButton.create(
             `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .1rem; box-sizing: border-box;`,
             createVolumeMutedIcon(SCHEME.neutral1),
@@ -283,7 +247,7 @@ export class Player extends EventEmitter {
           ).enable(),
         ).body,
         assign(
-          likeDislikeButtonsRef,
+          this.likeDislikeButtons_,
           LikeDislikeButtons.create(
             `display: flex; flex-flow: column nowrap; gap: 2rem;`,
             0.3,
@@ -291,7 +255,7 @@ export class Player extends EventEmitter {
           ).enable(show.liking),
         ).body,
         assign(
-          commentButtonRef,
+          this.commentButton_,
           IconButton.create(
             `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .3rem; box-sizing: border-box;`,
             createCommentIcon(SCHEME.neutral1),
@@ -301,13 +265,13 @@ export class Player extends EventEmitter {
         ).body,
       ),
       E.divRef(
-        bottomButtonsContainerRef,
+        this.bottomButtonsContainer,
         {
           class: "player-bottom-buttons-container",
           style: `position: absolute; bottom: 0; left: 0; width: 100%; display: flex; flex-flow: column nowrap; ${Player.OPACITY_TRANSITION}`,
         },
         E.divRef(
-          progressBarRef,
+          this.progressBar,
           {
             class: "player-progress-bar",
             style: `position: relative; width: 100%; height: 1rem; box-sizing: border-box; transition: padding .2s linear; touch-action: none;`,
@@ -317,16 +281,16 @@ export class Player extends EventEmitter {
               class: "player-progress-background",
               style: `position: relative; height: 100%; width: 100%; background-color: ${SCHEME.neutral2};`,
             },
-            E.divRef(progressBarBufferRef, {
+            E.divRef(this.progressBarBuffer, {
               class: "player-progress-bar-buffer",
               style: `height: 100%; width: 0; background-color: ${SCHEME.neutral1};`,
             }),
-            E.divRef(progressBarFillerRef, {
+            E.divRef(this.progressBarFiller, {
               class: "player-progress-bar-filler",
               style: `position: absolute; top: 0; left: 0; height: 100%; width: 0; background-color: ${SCHEME.primary1};`,
             }),
           ),
-          E.divRef(pointedTimestampRef, {
+          E.divRef(this.pointedTimestamp, {
             class: "player-pointed-timestamp",
             style: `position: absolute; bottom: 100%; padding-bottom: .5rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           }),
@@ -340,7 +304,7 @@ export class Player extends EventEmitter {
             style: `width: 100%; padding: 0 ${Player.EDGE_PADDING}rem; box-sizing: border-box; display: flex; flex-flow: row nowrap; justify-content: space-between; align-items: center; gap: 2rem;`,
           },
           E.divRef(
-            currentTimeTextRef,
+            this.currentTimeText,
             {
               class: "player-video-current-time",
               style: `color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem;`,
@@ -348,7 +312,7 @@ export class Player extends EventEmitter {
             E.text(formatSecondsAsHHMMSS(0)),
           ),
           assign(
-            skipBackwardButtonRef,
+            this.skipBackwardButton_,
             IconButton.create(
               `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .7rem; box-sizing: border-box;`,
               createSkipForwardIcon(
@@ -365,7 +329,7 @@ export class Player extends EventEmitter {
               style: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: .5rem;`,
             },
             assign(
-              speedDownButtonRef,
+              this.speedDownButton_,
               IconButton.create(
                 `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .5rem; box-sizing: border-box;`,
                 assign(
@@ -385,12 +349,12 @@ export class Player extends EventEmitter {
                 },
               ),
             ).body,
-            E.divRef(currentPlaybackSpeedRef, {
+            E.divRef(this.currentPlaybackSpeed, {
               class: "player-current-playback-speed",
               style: `color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; width: 4rem; text-align: center;`,
             }),
             assign(
-              speedUpButtonRef,
+              this.speedUpButton_,
               IconButton.create(
                 `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .5rem; box-sizing: border-box;`,
                 assign(
@@ -412,7 +376,7 @@ export class Player extends EventEmitter {
             ).body,
           ),
           assign(
-            skipForwardButtonRef,
+            this.skipForwardButton_,
             IconButton.create(
               `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .7rem; box-sizing: border-box;`,
               createSkipForwardIcon(SCHEME.neutral1),
@@ -421,7 +385,7 @@ export class Player extends EventEmitter {
             ).enable(),
           ).body,
           E.divRef(
-            durationTextRef,
+            this.durationText,
             {
               class: "player-video-length",
               style: `color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem;`,
@@ -433,7 +397,7 @@ export class Player extends EventEmitter {
           style: "height: .5rem;",
         }),
         assign(
-          moreInfoButtonRef,
+          this.moreInfoButton_,
           IconButton.create(
             `width: 100%; display: flex; flex-flow: row nowrap; justify-content: center;`,
             E.div(
@@ -448,55 +412,21 @@ export class Player extends EventEmitter {
         ).body,
       ),
       E.divRef(
-        bottomProgressBarRef,
+        this.bottomProgressBar,
         {
           class: "player-bottom-progress-bar",
           style: `position: absolute; bottom: 0; left: 0; width: 100%; height: .2rem; background-color: ${SCHEME.neutral2}; ${Player.OPACITY_TRANSITION}`,
         },
-        E.divRef(bottomProgressBarBufferRef, {
+        E.divRef(this.bottomProgressBarBuffer, {
           class: "player-buttom-progress-bar-buffer",
           style: `height: 100%; width: 0; background-color: ${SCHEME.neutral1};`,
         }),
-        E.divRef(bottomProgressBarFillerRef, {
+        E.divRef(this.bottomProgressBarFiller, {
           class: "player-buttom-progress-bar-filler",
           style: `position: absolute; top: 0; left: 0; height: 100%; width: 0; background-color: ${SCHEME.primary1};`,
         }),
       ),
     );
-    this.video_ = videoRef.val;
-    this.loadingIcon = loadingIconRef.val;
-    this.playingIcon = playingIconRef.val;
-    this.pausedIcon = pausedIconRef.val;
-    this.danmakuCanvas = danmakuCanvasRef.val;
-    this.topButtonsContainer = topButtonsContainerRef.val;
-    this.noLoopButton_ = noLoopButtonRef.val;
-    this.loopButton_ = loopButtonRef.val;
-    this.danmakuButton_ = danmakuButtonRef.val;
-    this.noDanmakuButton_ = noDanmakuButtonRef.val;
-    this.settingsButton_ = settingsButtonRef.val;
-    this.rightButtonsContainer = rightButtonsContainerRef.val;
-    this.volumeSlider = volumeSliderRef.val;
-    this.volumeButton_ = volumeButtonRef.val;
-    this.volumeMutedButton_ = volumeMutedButtonRef.val;
-    this.likeDislikeButtons_ = likeDislikeButtonsRef.val;
-    this.commentButton_ = commentButtonRef.val;
-    this.bottomButtonsContainer = bottomButtonsContainerRef.val;
-    this.progressBar = progressBarRef.val;
-    this.progressBarBuffer = progressBarBufferRef.val;
-    this.progressBarFiller = progressBarFillerRef.val;
-    this.pointedTimestamp = pointedTimestampRef.val;
-    this.currentTimeText = currentTimeTextRef.val;
-    this.skipBackwardButton_ = skipBackwardButtonRef.val;
-    this.speedDownButton_ = speedDownButtonRef.val;
-    this.currentPlaybackSpeed = currentPlaybackSpeedRef.val;
-    this.speedUpButton_ = speedUpButtonRef.val;
-    this.skipForwardButton_ = skipForwardButtonRef.val;
-    this.durationText = durationTextRef.val;
-    this.moreInfoButton_ = moreInfoButtonRef.val;
-    this.bottomProgressBar = bottomProgressBarRef.val;
-    this.bottomProgressBarBuffer = bottomProgressBarBufferRef.val;
-    this.bottomProgressBarFiller = bottomProgressBarFillerRef.val;
-
     this.hideAllActions();
     this.hideLoadingIcon();
     this.leaveProgressBar();
@@ -509,102 +439,111 @@ export class Player extends EventEmitter {
     )
       .on("hover", () => this.showAllActions())
       .on("leave", () => this.hideAllActions());
-    this.video_.addEventListener("loadedmetadata", () => this.setDuration());
-    this.video_.addEventListener("durationchange", () => this.setDuration());
-    this.video_.addEventListener("progress", () => this.updateBufferProgress());
-    this.video_.addEventListener("canplaythrough", () =>
+    this.video_.val.addEventListener("loadedmetadata", () =>
+      this.setDuration(),
+    );
+    this.video_.val.addEventListener("durationchange", () =>
+      this.setDuration(),
+    );
+    this.video_.val.addEventListener("progress", () =>
+      this.updateBufferProgress(),
+    );
+    this.video_.val.addEventListener("canplaythrough", () =>
       this.updateBufferCompleted(),
     );
-    this.video_.addEventListener("playing", () => this.isPlaying());
-    this.video_.addEventListener("pause", () => this.isPaused());
-    this.video_.addEventListener("ended", () => this.isEnded());
-    this.video_.addEventListener("waiting", () => this.isLoading());
-    this.danmakuCanvas.on("passThroughClick", () => this.toggleVideoPlay());
-    this.volumeButton_.on("action", () => this.mute());
-    this.volumeMutedButton_.on("action", () => this.unmute());
-    this.volumeSlider.on("change", (value) => this.setVolume(value));
-    this.likeDislikeButtons_.on("like", (liking) => this.likeShow(liking));
-    this.commentButton_.on("action", () => this.emit("showComments"));
-    this.progressBar.addEventListener("pointerover", (event) =>
+    this.video_.val.addEventListener("playing", () => this.isPlaying());
+    this.video_.val.addEventListener("pause", () => this.isPaused());
+    this.video_.val.addEventListener("ended", () => this.isEnded());
+    this.video_.val.addEventListener("waiting", () => this.isLoading());
+    this.danmakuCanvas.val.on("passThroughClick", () => this.toggleVideoPlay());
+    this.volumeButton_.val.on("action", () => this.mute());
+    this.volumeMutedButton_.val.on("action", () => this.unmute());
+    this.volumeSlider.val.on("change", (value) => this.setVolume(value));
+    this.likeDislikeButtons_.val.on("like", (liking) => this.likeShow(liking));
+    this.commentButton_.val.on("action", () => this.emit("showComments"));
+    this.progressBar.val.addEventListener("pointerover", (event) =>
       this.hoverProgressBar(event),
     );
-    this.progressBar.addEventListener("pointerdown", (event) =>
+    this.progressBar.val.addEventListener("pointerdown", (event) =>
       this.startSeekingNewPosition(event),
     );
-    this.progressBar.addEventListener("pointermove", (event) =>
+    this.progressBar.val.addEventListener("pointermove", (event) =>
       this.moveToSeekNewPosition(event),
     );
-    this.progressBar.addEventListener("pointerup", (event) =>
+    this.progressBar.val.addEventListener("pointerup", (event) =>
       this.stopSeeking(event),
     );
-    this.progressBar.addEventListener("pointerout", () =>
+    this.progressBar.val.addEventListener("pointerout", () =>
       this.leaveProgressBar(),
     );
-    this.speedDownButton_.on("action", () => this.speedDownOnce());
-    this.speedUpButton_.on("action", () => this.speedUpOnce());
-    this.skipBackwardButton_.on("action", () => this.skipBackward());
-    this.skipForwardButton_.on("action", () => this.skipForward());
-    this.noLoopButton_.on("action", () => this.startLooping());
-    this.loopButton_.on("action", () => this.stopLooping());
-    this.danmakuButton_.on("action", () => this.disableDanmaku());
-    this.noDanmakuButton_.on("action", () => this.enableDanmaku());
-    this.settingsButton_.on("action", () => this.emit("showSettings"));
-    this.moreInfoButton_.on("action", () => this.emit("showMoreInfo"));
+    this.speedDownButton_.val.on("action", () => this.speedDownOnce());
+    this.speedUpButton_.val.on("action", () => this.speedUpOnce());
+    this.skipBackwardButton_.val.on("action", () => this.skipBackward());
+    this.skipForwardButton_.val.on("action", () => this.skipForward());
+    this.noLoopButton_.val.on("action", () => this.startLooping());
+    this.loopButton_.val.on("action", () => this.stopLooping());
+    this.danmakuButton_.val.on("action", () => this.disableDanmaku());
+    this.noDanmakuButton_.val.on("action", () => this.enableDanmaku());
+    this.settingsButton_.val.on("action", () => this.emit("showSettings"));
+    this.moreInfoButton_.val.on("action", () => this.emit("showMoreInfo"));
   }
 
   private showAllActions(): void {
-    this.topButtonsContainer.style.opacity = `1`;
-    this.rightButtonsContainer.style.opacity = `1`;
-    this.bottomButtonsContainer.style.opacity = `1`;
-    this.bottomProgressBar.style.opacity = `0`;
+    this.topButtonsContainer.val.style.opacity = `1`;
+    this.rightButtonsContainer.val.style.opacity = `1`;
+    this.bottomButtonsContainer.val.style.opacity = `1`;
+    this.bottomProgressBar.val.style.opacity = `0`;
   }
 
   private hideAllActions(): void {
-    this.topButtonsContainer.style.opacity = `0`;
-    this.rightButtonsContainer.style.opacity = `0`;
-    this.bottomButtonsContainer.style.opacity = `0`;
-    this.bottomProgressBar.style.opacity = `1`;
+    this.topButtonsContainer.val.style.opacity = `0`;
+    this.rightButtonsContainer.val.style.opacity = `0`;
+    this.bottomButtonsContainer.val.style.opacity = `0`;
+    this.bottomProgressBar.val.style.opacity = `1`;
   }
 
   private showLoadingIcon(): void {
-    this.loadingIcon.style.opacity = `1`;
+    this.loadingIcon.val.style.opacity = `1`;
   }
 
   private hideLoadingIcon(): void {
-    this.loadingIcon.style.opacity = `0`;
+    this.loadingIcon.val.style.opacity = `0`;
   }
 
   private setDuration(): void {
-    this.duration = this.video_.duration;
-    this.durationText.textContent = formatSecondsAsHHMMSS(this.video_.duration);
+    this.duration = this.video_.val.duration;
+    this.durationText.val.textContent = formatSecondsAsHHMMSS(
+      this.video_.val.duration,
+    );
   }
 
   private updateBufferProgress(): void {
     if (this.duration === 0) {
       return;
     }
-    let currentTime = this.video_.currentTime;
-    for (let i = 0; i < this.video_.buffered.length; i++) {
+    let currentTime = this.video_.val.currentTime;
+    for (let i = 0; i < this.video_.val.buffered.length; i++) {
       if (
-        this.video_.buffered.start(i) <= currentTime &&
-        this.video_.buffered.end(i) >= currentTime
+        this.video_.val.buffered.start(i) <= currentTime &&
+        this.video_.val.buffered.end(i) >= currentTime
       ) {
-        let percentage = (this.video_.buffered.end(i) / this.duration) * 100;
-        this.progressBarBuffer.style.width = `${percentage}%`;
-        this.bottomProgressBarBuffer.style.width = `${percentage}%`;
+        let percentage =
+          (this.video_.val.buffered.end(i) / this.duration) * 100;
+        this.progressBarBuffer.val.style.width = `${percentage}%`;
+        this.bottomProgressBarBuffer.val.style.width = `${percentage}%`;
         break;
       }
     }
   }
 
   private updateBufferCompleted(): void {
-    this.progressBarBuffer.style.width = `100%`;
-    this.bottomProgressBarBuffer.style.width = `100%`;
+    this.progressBarBuffer.val.style.width = `100%`;
+    this.bottomProgressBarBuffer.val.style.width = `100%`;
     this.emit("canplaythrough");
   }
 
   private isPlaying(): void {
-    this.danmakuCanvas.play();
+    this.danmakuCanvas.val.play();
     this.clearTimeout(this.updateProgressId);
     this.updateProgressContinuously();
     this.hideLoadingIcon();
@@ -620,19 +559,19 @@ export class Player extends EventEmitter {
 
   private updateProgress(): void {
     if (this.duration === 0) {
-      this.progressBarFiller.style.width = `0`;
-      this.bottomProgressBarFiller.style.width = `0`;
+      this.progressBarFiller.val.style.width = `0`;
+      this.bottomProgressBarFiller.val.style.width = `0`;
     } else {
-      let currentTime = this.video_.currentTime;
+      let currentTime = this.video_.val.currentTime;
       let percentage = (currentTime / this.duration) * 100;
-      this.progressBarFiller.style.width = `${percentage}%`;
-      this.bottomProgressBarFiller.style.width = `${percentage}%`;
-      this.currentTimeText.textContent = formatSecondsAsHHMMSS(currentTime);
+      this.progressBarFiller.val.style.width = `${percentage}%`;
+      this.bottomProgressBarFiller.val.style.width = `${percentage}%`;
+      this.currentTimeText.val.textContent = formatSecondsAsHHMMSS(currentTime);
     }
   }
 
   private isPaused(): void {
-    this.danmakuCanvas.pause();
+    this.danmakuCanvas.val.pause();
     this.clearTimeout(this.updateProgressId);
     this.updateProgress();
     this.hideLoadingIcon();
@@ -644,17 +583,17 @@ export class Player extends EventEmitter {
   }
 
   private isLoading(): void {
-    this.danmakuCanvas.pause();
+    this.danmakuCanvas.val.pause();
     this.showLoadingIcon();
   }
 
   private toggleVideoPlay(): void {
-    if (this.video_.paused) {
-      this.video_.play();
-      this.animateStatusIcon(this.playingIcon);
+    if (this.video_.val.paused) {
+      this.video_.val.play();
+      this.animateStatusIcon(this.playingIcon.val);
     } else {
-      this.video_.pause();
-      this.animateStatusIcon(this.pausedIcon);
+      this.video_.val.pause();
+      this.animateStatusIcon(this.pausedIcon.val);
     }
   }
 
@@ -670,35 +609,35 @@ export class Player extends EventEmitter {
   }
 
   private hoverProgressBar(event: PointerEvent): void {
-    this.progressBar.style.paddingTop = `0`;
+    this.progressBar.val.style.paddingTop = `0`;
     this.setPointedTimestamp(event);
-    this.pointedTimestamp.style.display = `block`;
+    this.pointedTimestamp.val.style.display = `block`;
   }
 
   private setPointedTimestamp(event: PointerEvent): number {
-    let rect = this.progressBar.getBoundingClientRect();
+    let rect = this.progressBar.val.getBoundingClientRect();
     let ratio = Math.min(1, Math.max(0, (event.clientX - rect.x) / rect.width));
     let timestamp = ratio * this.duration;
     if (ratio < 0.5) {
-      this.pointedTimestamp.style.left = `${ratio * 100}%`;
-      this.pointedTimestamp.style.right = ``;
+      this.pointedTimestamp.val.style.left = `${ratio * 100}%`;
+      this.pointedTimestamp.val.style.right = ``;
     } else {
-      this.pointedTimestamp.style.left = ``;
-      this.pointedTimestamp.style.right = `${(1 - ratio) * 100}%`;
+      this.pointedTimestamp.val.style.left = ``;
+      this.pointedTimestamp.val.style.right = `${(1 - ratio) * 100}%`;
     }
-    this.pointedTimestamp.textContent = formatSecondsAsHHMMSS(timestamp);
+    this.pointedTimestamp.val.textContent = formatSecondsAsHHMMSS(timestamp);
     return timestamp;
   }
 
   private startSeekingNewPosition(event: PointerEvent): void {
     let timestamp = this.setPointedTimestamp(event);
     this.isSeeking = true;
-    this.progressBar.setPointerCapture(event.pointerId);
+    this.progressBar.val.setPointerCapture(event.pointerId);
     this.seekNewPosition(timestamp);
   }
 
   private seekNewPosition(timestamp: number): void {
-    this.video_.currentTime = timestamp;
+    this.video_.val.currentTime = timestamp;
     this.updateProgress();
   }
 
@@ -715,23 +654,23 @@ export class Player extends EventEmitter {
       return;
     }
     this.isSeeking = false;
-    this.progressBar.releasePointerCapture(event.pointerId);
+    this.progressBar.val.releasePointerCapture(event.pointerId);
   }
 
   private leaveProgressBar(): void {
-    this.progressBar.style.paddingTop = `.8rem`;
-    this.pointedTimestamp.style.display = `none`;
+    this.progressBar.val.style.paddingTop = `.8rem`;
+    this.pointedTimestamp.val.style.display = `none`;
   }
 
   private skipBackward(): void {
-    this.video_.currentTime = Math.max(0, this.video_.currentTime - 5);
+    this.video_.val.currentTime = Math.max(0, this.video_.val.currentTime - 5);
     this.updateProgress();
   }
 
   private skipForward(): void {
-    this.video_.currentTime = Math.min(
+    this.video_.val.currentTime = Math.min(
       this.duration,
-      this.video_.currentTime + 5,
+      this.video_.val.currentTime + 5,
     );
     this.updateProgress();
   }
@@ -745,30 +684,31 @@ export class Player extends EventEmitter {
       this.playbackSpeedIndex = Player.NORMAL_PLAYBACK_SPEED_INDEX;
     }
     if (this.playbackSpeedIndex <= 0) {
-      this.speedDownButton_.disable();
+      this.speedDownButton_.val.disable();
     } else {
-      this.speedDownButton_.enable();
+      this.speedDownButton_.val.enable();
     }
     if (this.playbackSpeedIndex >= Player.PLAYBACK_SPEEDS.length - 1) {
-      this.speedUpButton_.disable();
+      this.speedUpButton_.val.disable();
     } else {
-      this.speedUpButton_.enable();
+      this.speedUpButton_.val.enable();
     }
-    this.currentPlaybackSpeed.textContent = `${
+    this.currentPlaybackSpeed.val.textContent = `${
       Player.PLAYBACK_SPEEDS[this.playbackSpeedIndex]
     }x`;
-    this.video_.playbackRate = Player.PLAYBACK_SPEEDS[this.playbackSpeedIndex];
+    this.video_.val.playbackRate =
+      Player.PLAYBACK_SPEEDS[this.playbackSpeedIndex];
 
     // Volume & muted
-    this.volumeSlider.setValue(this.playerSettings.videoSettings.volume);
+    this.volumeSlider.val.setValue(this.playerSettings.videoSettings.volume);
     if (this.playerSettings.videoSettings.muted) {
-      this.video_.volume = 0;
-      this.volumeButton_.hide();
-      this.volumeMutedButton_.show();
+      this.video_.val.volume = 0;
+      this.volumeButton_.val.hide();
+      this.volumeMutedButton_.val.show();
     } else {
-      this.video_.volume = this.playerSettings.videoSettings.volume;
-      this.volumeButton_.show();
-      this.volumeMutedButton_.hide();
+      this.video_.val.volume = this.playerSettings.videoSettings.volume;
+      this.volumeButton_.val.show();
+      this.volumeMutedButton_.val.hide();
     }
   }
 
@@ -813,15 +753,15 @@ export class Player extends EventEmitter {
   }
 
   private startLooping(): void {
-    this.video_.loop = true;
-    this.noLoopButton_.hide();
-    this.loopButton_.show();
+    this.video_.val.loop = true;
+    this.noLoopButton_.val.hide();
+    this.loopButton_.val.show();
   }
 
   private stopLooping(): void {
-    this.video_.loop = false;
-    this.noLoopButton_.show();
-    this.loopButton_.hide();
+    this.video_.val.loop = false;
+    this.noLoopButton_.val.show();
+    this.loopButton_.val.hide();
   }
 
   private disableDanmaku(): void {
@@ -843,13 +783,13 @@ export class Player extends EventEmitter {
 
   private applyDanmakuSettings(): void {
     if (this.playerSettings.danmakuSettings.enable) {
-      this.danmakuButton_.show();
-      this.noDanmakuButton_.hide();
+      this.danmakuButton_.val.show();
+      this.noDanmakuButton_.val.hide();
     } else {
-      this.danmakuButton_.hide();
-      this.noDanmakuButton_.show();
+      this.danmakuButton_.val.hide();
+      this.noDanmakuButton_.val.show();
     }
-    this.danmakuCanvas.updateSettings();
+    this.danmakuCanvas.val.updateSettings();
   }
 
   private saveDanmakuSettings(): void {
@@ -868,7 +808,7 @@ export class Player extends EventEmitter {
   }
 
   public addDanmaku(comments: Array<Comment>): void {
-    this.danmakuCanvas.add(comments);
+    this.danmakuCanvas.val.add(comments);
   }
 
   public get body() {
@@ -877,54 +817,54 @@ export class Player extends EventEmitter {
 
   public remove(): void {
     this.body_.remove();
-    this.danmakuCanvas.remove();
+    this.danmakuCanvas.val.remove();
   }
 
   // Visible for testing
   public get video() {
-    return this.video_;
+    return this.video_.val;
   }
   public get skipBackwardButton() {
-    return this.skipBackwardButton_;
+    return this.skipBackwardButton_.val;
   }
   public get skipForwardButton() {
-    return this.skipForwardButton_;
+    return this.skipForwardButton_.val;
   }
   public get speedDownButton() {
-    return this.speedDownButton_;
+    return this.speedDownButton_.val;
   }
   public get speedUpbutton() {
-    return this.speedUpButton_;
+    return this.speedUpButton_.val;
   }
   public get noLoopButton() {
-    return this.noLoopButton_;
+    return this.noLoopButton_.val;
   }
   public get loopButton() {
-    return this.loopButton_;
+    return this.loopButton_.val;
   }
   public get danmakuButton() {
-    return this.danmakuButton_;
+    return this.danmakuButton_.val;
   }
   public get noDanmakuButton() {
-    return this.noDanmakuButton_;
+    return this.noDanmakuButton_.val;
   }
   public get settingsButton() {
-    return this.settingsButton_;
+    return this.settingsButton_.val;
   }
   public get volumeButton() {
-    return this.volumeButton_;
+    return this.volumeButton_.val;
   }
   public get volumeMutedButton() {
-    return this.volumeMutedButton_;
+    return this.volumeMutedButton_.val;
   }
   public get likeDislikeButtons() {
-    return this.likeDislikeButtons_;
+    return this.likeDislikeButtons_.val;
   }
   public get commentButton() {
-    return this.commentButton_;
+    return this.commentButton_.val;
   }
   public get moreInfoButton() {
-    return this.moreInfoButton_;
+    return this.moreInfoButton_.val;
   }
   public showActions(): void {
     this.hoverObserver.emit("hover");

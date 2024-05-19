@@ -66,12 +66,12 @@ export class DropdownList<T> extends EventEmitter {
     return new DropdownList(optionEntries, value, customStyle);
   }
 
-  private selectedKind_: T;
-  private body_: HTMLDivElement;
-  private selectedOption_ = new Ref<HTMLDivElement>();
-  private selectedOptionText_ = new Ref<HTMLDivElement>();
+  public selectedKind: T;
+  public body: HTMLDivElement;
+  public selectedOption = new Ref<HTMLDivElement>();
+  private selectedOptionText = new Ref<HTMLDivElement>();
   private optionList = new Ref<HTMLDivElement>();
-  private dropdownEntries_: Array<DropdownEntry<T>>;
+  public dropdownEntries: Array<DropdownEntry<T>>;
 
   public constructor(
     private optionEntries: Array<OptionEntry<T>>,
@@ -79,21 +79,21 @@ export class DropdownList<T> extends EventEmitter {
     customStyle: string,
   ) {
     super();
-    this.dropdownEntries_ = optionEntries.map((optionEntry) =>
+    this.dropdownEntries = optionEntries.map((optionEntry) =>
       DropdownEntry.create(optionEntry),
     );
-    this.body_ = E.div(
+    this.body = E.div(
       {
         class: "dropdown-list-container",
         style: `position: relative; cursor: pointer; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customStyle}`,
       },
       E.divRef(
-        this.selectedOption_,
+        this.selectedOption,
         {
           class: "dropdown-list-selected-option",
           style: `display: flex; flex-flow: row nowrap; justify-content: space-between; align-items: center; gap: .4rem; padding: 0 .4rem;`,
         },
-        E.divRef(this.selectedOptionText_, {
+        E.divRef(this.selectedOptionText, {
           class: "dropdown-list-selected-option-text",
           style: `padding: .4rem 0; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         }),
@@ -108,29 +108,29 @@ export class DropdownList<T> extends EventEmitter {
           class: "dropdown-list-option-list",
           style: `position: absolute; background-color: ${SCHEME.neutral4}; width: 100%;`,
         },
-        ...this.dropdownEntries_.map((dropdownEntry) => dropdownEntry.body),
+        ...this.dropdownEntries.map((dropdownEntry) => dropdownEntry.body),
       ),
     );
     this.setValue(value);
 
-    this.dropdownEntries_.forEach((dropdownEntry) => {
+    this.dropdownEntries.forEach((dropdownEntry) => {
       dropdownEntry.on("select", (value) => this.selectValue(value));
     });
-    this.body_.addEventListener("click", () => this.toggleOptionList());
+    this.body.addEventListener("click", () => this.toggleOptionList());
   }
 
   public setValue(value: T): void {
     let optionEntry = this.optionEntries.find(
       (option) => option.kind === value,
     );
-    this.selectedKind_ = optionEntry.kind;
-    this.selectedOptionText_.val.textContent = optionEntry.localizedMsg;
+    this.selectedKind = optionEntry.kind;
+    this.selectedOptionText.val.textContent = optionEntry.localizedMsg;
     this.optionList.val.style.display = "none";
   }
 
   private selectValue(value: T): void {
     this.setValue(value);
-    this.emit("select", this.selectedKind_);
+    this.emit("select", this.selectedKind);
   }
 
   private toggleOptionList(): void {
@@ -141,19 +141,7 @@ export class DropdownList<T> extends EventEmitter {
     }
   }
 
-  public get body() {
-    return this.body_;
-  }
-
   public remove(): void {
-    return this.body_.remove();
-  }
-
-  // Visible for testing
-  public get selectedOption() {
-    return this.selectedOption_.val;
-  }
-  public get dropdownEntries() {
-    return this.dropdownEntries_;
+    return this.body.remove();
   }
 }

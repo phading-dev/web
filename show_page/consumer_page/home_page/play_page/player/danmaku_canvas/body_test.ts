@@ -16,11 +16,11 @@ import "../../../../../../common/normalize_body";
 let SETTINGS: DanmakuSettings = {
   enable: true,
   distributionStyle: DistributionStyle.RANDOM,
-  density: 1,
+  density: 100,
   topMargin: 0,
   bottomMargin: 0,
   fontSize: 18,
-  opacity: 0.8,
+  opacity: 80,
   speed: 100,
   fontFamily: "cursive",
 };
@@ -230,7 +230,7 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        settings.opacity = 0.5;
+        settings.opacity = 50;
         settings.fontSize = 12;
 
         // Execute
@@ -261,7 +261,7 @@ TEST_RUNNER.run({
         let settings: DanmakuSettings = {
           ...SETTINGS,
           distributionStyle: DistributionStyle.TOP_DOWN,
-          density: 0.5,
+          density: 50,
         };
         this.cut = new DanmakuCanvas(
           () => randomNum,
@@ -342,8 +342,8 @@ TEST_RUNNER.run({
         let settings: DanmakuSettings = {
           ...SETTINGS,
           distributionStyle: DistributionStyle.TOP_DOWN,
-          topMargin: 0.2,
-          bottomMargin: 0.2,
+          topMargin: 20,
+          bottomMargin: 20,
         };
         this.cut = new DanmakuCanvas(
           () => randomNum,
@@ -416,8 +416,8 @@ TEST_RUNNER.run({
         let pausedPosX: number;
         let settings: DanmakuSettings = {
           ...SETTINGS,
-          topMargin: 0.5,
-          bottomMargin: 0.5,
+          topMargin: 50,
+          bottomMargin: 50,
         };
         this.cut = new DanmakuCanvas(
           () => 0,

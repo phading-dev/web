@@ -3,8 +3,8 @@ import { DropdownList } from "./dropdown_list";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
-import "./normalize_body";
 import { assertThat, eq } from "@selfage/test_matcher";
+import "./normalize_body";
 
 enum Location {
   TOP,
@@ -16,7 +16,8 @@ TEST_RUNNER.run({
   name: "DropdownListTest",
   cases: [
     new (class implements TestCase {
-      public name = "Default";
+      public name =
+        "Default_ShowOptions_HighlightOption_SelectOption_HideOptions";
       private cut: DropdownList<Location>;
       public async execute() {
         // Prepare
@@ -37,10 +38,10 @@ TEST_RUNNER.run({
             },
           ],
           Location.MIDDLE,
-          "width: 10rem;"
+          "width: 10rem;",
         );
         let selected: Location;
-        this.cut.on('select', (value) => selected =  value);
+        this.cut.on("select", (value) => (selected = value));
 
         // Execute
         document.body.append(this.cut.body);
@@ -53,7 +54,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.selectedOption.click();
+        this.cut.selectedOption.val.click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -63,7 +64,9 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.dropdownEntries[0].body.dispatchEvent(new PointerEvent('pointerover'));
+        this.cut.dropdownEntries[0].body.dispatchEvent(
+          new PointerEvent("pointerover"),
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -73,7 +76,9 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.dropdownEntries[0].body.dispatchEvent(new PointerEvent('pointerout'));
+        this.cut.dropdownEntries[0].body.dispatchEvent(
+          new PointerEvent("pointerout"),
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -86,7 +91,7 @@ TEST_RUNNER.run({
         this.cut.dropdownEntries[2].body.click();
 
         // Verify
-        assertThat(selected, eq(Location.BOTTOM), 'selected option');
+        assertThat(selected, eq(Location.BOTTOM), "selected option");
         await asyncAssertScreenshot(
           path.join(__dirname, "/dropdown_list_select_option.png"),
           path.join(__dirname, "/golden/dropdown_list_select_option.png"),
@@ -94,7 +99,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.selectedOption.click();
+        this.cut.selectedOption.val.click();
 
         // Verify
         await asyncAssertScreenshot(

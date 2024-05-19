@@ -35,7 +35,7 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(600, 400);
         let settings: DanmakuSettings = {
-          opacity: 0.8,
+          opacity: 80,
           fontSize: 20,
           fontFamily: "cursive",
           speed: 100,
@@ -84,10 +84,10 @@ TEST_RUNNER.run({
         this.cut.setReadyToPlay(20, 600);
 
         // Verify
-        // The width of the content is 226px.
+        // The width of the content is 208px.
         assertThat(
           this.cut.body.style.transform,
-          eq("translate3d(226px, 20px, 0px)"),
+          eq("translate3d(208px, 20px, 0px)"),
           "starting transform",
         );
         assertThat(
@@ -106,17 +106,17 @@ TEST_RUNNER.run({
           eq("translate3d(-600px, 20px, 0px)"),
           "target transform",
         );
-        // (600px + 226px) / 100 (speed) = 8.26s
+        // (600px + 208px) / 100 (speed) = 8.08s
         assertThat(
           this.cut.body.style.transition,
-          eq("transform 8.26s linear 0s"),
+          eq("transform 8.08s linear 0s"),
           "transitioning",
         );
-        // 226px / 100 (speed) * 1000 = 2260 ms.
-        // (600px + 226px) / 100 (speed) * 1000 = 8260 ms.
+        // 208px / 100 (speed) * 1000 = 2080 ms.
+        // (600px + 208px) / 100 (speed) * 1000 = 8080 ms.
         assertThat(
           delayCaptured,
-          isArray([eq(2260), eq(8260)]),
+          isArray([eq(2080), eq(8080)]),
           "delay until occupy ended and display ended",
         );
 
@@ -208,7 +208,7 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(600, 400);
         let settings: DanmakuSettings = {
-          opacity: 0.8,
+          opacity: 80,
           fontSize: 20,
           fontFamily: "cursive",
           speed: 100,
@@ -293,7 +293,7 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(600, 400);
         let settings: DanmakuSettings = {
-          opacity: 0.8,
+          opacity: 80,
           fontSize: 20,
           fontFamily: "cursive",
           speed: 100,

@@ -29,7 +29,6 @@ import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq, eqAppr, le } from "@selfage/test_matcher";
 import { WebServiceClient } from "@selfage/web_service_client";
 import "../../../../../common/normalize_body";
-// import { stall } from "../../../../../common/test_helper";
 
 // Make sure every test gets its own copy.
 function createPlayerSettings(): PlayerSettings {

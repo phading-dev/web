@@ -441,22 +441,22 @@ export default class Text {
     return `Show comment`;
   }
   get prevShowButtonLabel() {
-    return `Previous`
+    return `Previous`;
   }
   get nextShowButtonLabel() {
     return `Next`;
   }
   get speedDownButtonLabel() {
-    return `Speed down`
+    return `Speed down`;
   }
   get speedUpButtonLabel() {
-    return `Speed up`
+    return `Speed up`;
   }
   get skipBackwardButtonLabel() {
-    return `Jump backwards`
+    return `Jump backwards`;
   }
   get skipForwardButtonLabel() {
-    return `Jump forwards`
+    return `Jump forwards`;
   }
   get volumeButtonLabel() {
     return `Volume`;
@@ -465,7 +465,7 @@ export default class Text {
     return `Muted`;
   }
   get noLoopingButtonlabel() {
-    return `No looping`
+    return `No looping`;
   }
   get loopingButtonLabel() {
     return `Looping`;
@@ -481,5 +481,44 @@ export default class Text {
   }
   get moreShowInfoButtonLabel() {
     return `More info`;
+  }
+  get danmakuSettingsLabel() {
+    return `Settings for scrolling comments`;
+  }
+  get danmakuEnableOption() {
+    return `Enable scrolling`;
+  }
+  get danmakuOpacityOption() {
+    return `Opacity`;
+  }
+  get danmakuSpeedOption() {
+    return `Speed`;
+  }
+  get danmakuFontSizeOption() {
+    return `Font size`;
+  }
+  get danmakuFontFamilyOption() {
+    return `Font`;
+  }
+  get danmakuDensityOption() {
+    return `Density`;
+  }
+  get danmakuTopMarginOption() {
+    return `Top margin`;
+  }
+  get danmakuBottomMarginOption() {
+    return `Bottom margin`;
+  }
+  get danmakuStackingMethodOption() {
+    return `Stacking method`;
+  }
+  get danmakuStackingRandomOption() {
+    return `Random`;
+  }
+  get danmakuStackingTopDownOption() {
+    return `Top down`;
+  }
+  get resetButtonLabel() {
+    return `Reset`;
   }
 }

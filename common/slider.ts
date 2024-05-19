@@ -129,7 +129,7 @@ export class Slider extends EventEmitter {
   }
 
   public setValue(value: number): void {
-    this.setRatio(value / (this.maxValue - this.minValue));
+    this.setRatio((value - this.minValue) / (this.maxValue - this.minValue));
   }
 
   public get body() {

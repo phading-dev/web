@@ -16,13 +16,13 @@ export interface DanmakuCanvas {
 export class DanmakuCanvas extends EventEmitter {
   public static create(
     reservedBottomMargin: number /* px */,
-    danmakuSettigns: DanmakuSettings
+    danmakuSettigns: DanmakuSettings,
   ): DanmakuCanvas {
     return new DanmakuCanvas(
       () => Math.random(),
       DanmakuElement.create,
       reservedBottomMargin,
-      danmakuSettigns
+      danmakuSettigns,
     );
   }
 
@@ -38,10 +38,10 @@ export class DanmakuCanvas extends EventEmitter {
     private random: () => number,
     private createDanmakuElement: (
       danmakuSettings: DanmakuSettings,
-      comment: Comment
+      comment: Comment,
     ) => DanmakuElement,
     private reservedBottomMargin: number /* px */,
-    private danmakuSettigns: DanmakuSettings
+    private danmakuSettigns: DanmakuSettings,
   ) {
     super();
     let clickCapturerRef = new Ref<HTMLDivElement>();
@@ -53,16 +53,16 @@ export class DanmakuCanvas extends EventEmitter {
       E.divRef(clickCapturerRef, {
         class: "danmaku-canvas-click-capturer",
         style: `position: absolute; left: 0; top: 0; width: 100%; height: 100%;`,
-      })
+      }),
     );
     this.clickCapturer = clickCapturerRef.val;
 
     this.pause();
     new ResizeObserver((entries) => this.getNewSize(entries[0])).observe(
-      this.body_
+      this.body_,
     );
     this.clickCapturer.addEventListener("click", () =>
-      this.emit("passThroughClick")
+      this.emit("passThroughClick"),
     );
   }
 
@@ -101,17 +101,20 @@ export class DanmakuCanvas extends EventEmitter {
 
     let elementHeight = element.getOffsetHeight();
     let reducedHeight = this.height - this.reservedBottomMargin;
-    let startY = Math.floor(this.danmakuSettigns.topMargin * reducedHeight);
+    let startY = Math.floor(
+      (this.danmakuSettigns.topMargin / 100) * reducedHeight,
+    );
     let endY =
       reducedHeight -
-      Math.floor(this.danmakuSettigns.bottomMargin * reducedHeight); // Exclusive
+      Math.floor((this.danmakuSettigns.bottomMargin / 100) * reducedHeight); // Exclusive
     if (endY - startY - elementHeight < 0) {
       element.remove();
       return;
     }
 
     let marginAround =
-      Math.floor(elementHeight / this.danmakuSettigns.density) - elementHeight;
+      Math.floor(elementHeight / (this.danmakuSettigns.density / 100)) -
+      elementHeight;
     let occupyScore = 0;
     let initY = this.getInitY(startY, endY, elementHeight);
     let headY = initY - marginAround;
@@ -127,7 +130,7 @@ export class DanmakuCanvas extends EventEmitter {
       occupyScore,
       elementHeight,
       startY,
-      endY
+      endY,
     );
     let posYUp = this.findPosYUpward(
       initY,
@@ -135,7 +138,7 @@ export class DanmakuCanvas extends EventEmitter {
       tailY,
       occupyScore,
       startY,
-      endY
+      endY,
     );
     if (posYDown < 0 && posYUp < 0) {
       element.remove();
@@ -158,7 +161,7 @@ export class DanmakuCanvas extends EventEmitter {
     }
     let node = this.elements.pushBack(element);
     element.once("occupyEnded", () =>
-      this.releaseOccupied(posY, elementHeight)
+      this.releaseOccupied(posY, elementHeight),
     );
     element.once("displayEnded", () => this.removeNode(node));
     element.setReadyToPlay(posY, this.width);
@@ -168,7 +171,7 @@ export class DanmakuCanvas extends EventEmitter {
   private getInitY(
     startY: number,
     endY: number,
-    elementHeight: number
+    elementHeight: number,
   ): number {
     switch (this.danmakuSettigns.distributionStyle) {
       case DistributionStyle.TOP_DOWN:
@@ -189,7 +192,7 @@ export class DanmakuCanvas extends EventEmitter {
     score: number,
     elementHeight: number,
     startY: number,
-    endY: number
+    endY: number,
   ): number {
     while (score > 0 && posY + elementHeight < endY) {
       posY++;
@@ -215,7 +218,7 @@ export class DanmakuCanvas extends EventEmitter {
     tailY: number,
     score: number,
     startY: number,
-    endY: number
+    endY: number,
   ): number {
     while (score > 0 && posY > startY) {
       posY--;

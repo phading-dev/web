@@ -26,7 +26,7 @@ export interface DanmakuElementComponent {
 export class DanmakuElement extends EventEmitter {
   public static create(
     danmakuSettings: DanmakuSettings,
-    comment: Comment
+    comment: Comment,
   ): DanmakuElement {
     return new DanmakuElement(
       COMMENT_SERVICE_CLIENT,
@@ -34,7 +34,7 @@ export class DanmakuElement extends EventEmitter {
       (id) => window.clearTimeout(id),
       (element) => window.getComputedStyle(element),
       danmakuSettings,
-      comment
+      comment,
     );
   }
 
@@ -59,7 +59,7 @@ export class DanmakuElement extends EventEmitter {
     private clearTimeout: (id: number) => void,
     private getComputedStyle: (element: HTMLElement) => CSSStyleDeclaration,
     private danmakuSettings: DanmakuSettings,
-    private comment: Comment
+    private comment: Comment,
   ) {
     super();
     let contentRef = new Ref<HTMLDivElement>();
@@ -75,16 +75,16 @@ export class DanmakuElement extends EventEmitter {
           class: "danmaku-element-content",
           style: `line-height: 1; color: ${SCHEME.neutral0}; text-shadow: -.1rem 0 .1rem ${SCHEME.neutral4}, 0 .1rem .1rem ${SCHEME.neutral4}, .1rem 0 .1rem ${SCHEME.neutral4}, 0 -.1rem .1rem ${SCHEME.neutral4};`,
         },
-        E.text(comment.content)
+        E.text(comment.content),
       ),
       assign(
         likeDislikeButtonsRef,
         LikeDislikeButtons.create(
           `position: absolute; top: 100%; right: 0; display: flex; flex-flow: row nowrap; gap: .5rem;`,
           0.5,
-          TooltipPosition.LEFT
-        ).disable()
-      ).body
+          TooltipPosition.LEFT,
+        ).disable(),
+      ).body,
     );
     this.content = contentRef.val;
     this.likeDislikeButtons_ = likeDislikeButtonsRef.val;
@@ -93,7 +93,7 @@ export class DanmakuElement extends EventEmitter {
     this.leaveToResume();
     this.hoverObserver = HoverObserver.create(
       this.body_,
-      Mode.HOVER_DELAY_LEAVE
+      Mode.HOVER_DELAY_LEAVE,
     )
       .on("hover", () => this.hoverToPause())
       .on("leave", () => this.leaveToResume());
@@ -102,15 +102,11 @@ export class DanmakuElement extends EventEmitter {
   }
 
   private render(): void {
-    this.content.style.opacity = `${this.danmakuSettings.opacity}`;
+    this.content.style.opacity = `${this.danmakuSettings.opacity / 100}`;
     this.content.style.fontSize = `${
       this.danmakuSettings.fontSize * DanmakuElement.FONT_SIZE_SCALE
     }rem`;
-    this.content.style.setProperty(
-      "font-family",
-      this.danmakuSettings.fontFamily,
-      "important"
-    );
+    this.content.style.fontFamily = this.danmakuSettings.fontFamily;
   }
 
   private leaveToResume(): void {
@@ -168,6 +164,8 @@ export class DanmakuElement extends EventEmitter {
     this.posX = this.getPosXComputed();
     this.transform(this.posX);
     this.body_.style.transition = `none`;
+    // Force reflow.
+    this.body_.offsetHeight;
   }
 
   private getPosXComputed(): number {
@@ -192,6 +190,8 @@ export class DanmakuElement extends EventEmitter {
     this.transform(this.posX);
     this.body_.style.transition = `none`;
     this.body_.style.visibility = "visible";
+    // Force reflow.
+    this.body_.offsetHeight;
   }
 
   public play(): void {
