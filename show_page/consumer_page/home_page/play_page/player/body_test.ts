@@ -3,8 +3,8 @@ import path = require("path");
 import { Player } from "./body";
 import { DanmakuCanvasMock } from "./danmaku_canvas/body_mock";
 import {
-  DistributionStyle,
   PlayerSettings,
+  StackingMethod,
 } from "@phading/product_service_interface/consumer/show_app/player_settings";
 import { Liking } from "@phading/product_service_interface/consumer/show_app/show";
 import {
@@ -40,12 +40,12 @@ function createPlayerSettings(): PlayerSettings {
     },
     danmakuSettings: {
       enable: true,
-      distributionStyle: DistributionStyle.TOP_DOWN,
-      density: 1,
+      stackingMethod: StackingMethod.TOP_DOWN,
+      density: 100,
       topMargin: 0,
       bottomMargin: 0,
       fontSize: 18,
-      opacity: 0.8,
+      opacity: 80,
       speed: 100,
       fontFamily: "cursive",
     },
@@ -1164,7 +1164,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.showActions();
-        this.cut.likeDislikeButtons.thumbUpButton.click();
+        this.cut.likeDislikeButtons.thumbUpButton.val.click();
 
         // Verify
         assertThat(requestCaptured.descriptor, eq(LIKE_SHOW), "service");

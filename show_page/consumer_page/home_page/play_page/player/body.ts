@@ -71,7 +71,7 @@ export class Player extends EventEmitter {
   private static UPDATE_PROGRESS_INTERVAL = 200; // ms
   private static OPACITY_TRANSITION = `transition: opacity .3s linear;`;
 
-  private body_: HTMLDivElement;
+  public body: HTMLDivElement;
   private video_ = new Ref<HTMLVideoElement>();
   private loadingIcon = new Ref<HTMLDivElement>();
   private playingIcon = new Ref<HTMLDivElement>();
@@ -125,7 +125,7 @@ export class Player extends EventEmitter {
     super();
     let speedDownIconRef = new Ref<SVGSVGElement>();
     let speedUpIconRef = new Ref<SVGSVGElement>();
-    this.body_ = E.div(
+    this.body = E.div(
       {
         class: "player",
         style: `position: relative; width: 100vw; height: 100vh; background-color: ${SCHEME.neutral4};`,
@@ -434,7 +434,7 @@ export class Player extends EventEmitter {
     this.applyVideoSettings();
     this.applyDanmakuSettings();
     this.hoverObserver = HoverObserver.create(
-      this.body_,
+      this.body,
       Mode.HOVER_DELAY_LEAVE,
     )
       .on("hover", () => this.showAllActions())
@@ -811,12 +811,8 @@ export class Player extends EventEmitter {
     this.danmakuCanvas.val.add(comments);
   }
 
-  public get body() {
-    return this.body_;
-  }
-
   public remove(): void {
-    this.body_.remove();
+    this.body.remove();
     this.danmakuCanvas.val.remove();
   }
 

@@ -242,7 +242,7 @@ TEST_RUNNER.run({
           };
 
         // Execute
-        this.cut.tryReloadButton.click();
+        this.cut.tryReloadButton.val.click();
 
         // Verify
         await asyncAssertScreenshot(

@@ -22,40 +22,36 @@ export class LikeDislikeButtons extends EventEmitter {
   public static create(
     containerStyle: string,
     iconPadding: number, // rem
-    tooltipPosition: TooltipPosition
+    tooltipPosition: TooltipPosition,
   ): LikeDislikeButtons {
     return new LikeDislikeButtons(containerStyle, iconPadding, tooltipPosition);
   }
 
-  private body_: HTMLDivElement;
-  private thumbUpButton_: IconButton;
-  private thumbUpedButton_: IconButton;
-  private thumbDownButton_: IconButton;
-  private thumbDownedButton_: IconButton;
+  public body: HTMLDivElement;
+  public thumbUpButton = new Ref<IconButton>();
+  public thumbUpedButton = new Ref<IconButton>();
+  public thumbDownButton = new Ref<IconButton>();
+  public thumbDownedButton = new Ref<IconButton>();
   private liking: Liking;
   private displayStyle: string;
 
   public constructor(
     containerStyle: string,
     iconPadding: number,
-    tooltipPosition: TooltipPosition
+    tooltipPosition: TooltipPosition,
   ) {
     super();
-    let thumbUpButtonRef = new Ref<IconButton>();
     let thumbUpIconRef = new Ref<SVGSVGElement>();
-    let thumbUpedButtonRef = new Ref<IconButton>();
     let thumbUpedIconRef = new Ref<SVGSVGElement>();
-    let thumbDownButtonRef = new Ref<IconButton>();
     let thumbDownIconRef = new Ref<SVGSVGElement>();
-    let thumbDownedButtonRef = new Ref<IconButton>();
     let thumbDownedIconRef = new Ref<SVGSVGElement>();
-    this.body_ = E.div(
+    this.body = E.div(
       {
         class: "like-dislike-buttons",
-        style: containerStyle,
+        style: `transition: opacity .2s; ${containerStyle}`,
       },
       assign(
-        thumbUpButtonRef,
+        this.thumbUpButton,
         IconButton.create(
           `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: ${iconPadding}rem; box-sizing: border-box;`,
           assign(thumbUpIconRef, createFilledThumbUpIcon(SCHEME.neutral1)),
@@ -66,11 +62,11 @@ export class LikeDislikeButtons extends EventEmitter {
           },
           () => {
             thumbUpIconRef.val.style.fill = SCHEME.neutral2;
-          }
-        )
+          },
+        ),
       ).body,
       assign(
-        thumbUpedButtonRef,
+        this.thumbUpedButton,
         IconButton.create(
           `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: ${iconPadding}rem; box-sizing: border-box;`,
           assign(thumbUpedIconRef, createFilledThumbUpIcon(SCHEME.primary1)),
@@ -81,19 +77,19 @@ export class LikeDislikeButtons extends EventEmitter {
           },
           () => {
             thumbUpedIconRef.val.style.fill = SCHEME.neutral2;
-          }
-        )
+          },
+        ),
       ).body,
       assign(
-        thumbDownButtonRef,
+        this.thumbDownButton,
         IconButton.create(
           `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: ${iconPadding}rem; box-sizing: border-box;`,
           assign(
             thumbDownIconRef,
             createFilledThumbUpIcon(
               SCHEME.neutral1,
-              `transform: rotate(180deg);`
-            )
+              `transform: rotate(180deg);`,
+            ),
           ),
           tooltipPosition,
           LOCALIZED_TEXT.dislikeButtonLabel,
@@ -102,19 +98,19 @@ export class LikeDislikeButtons extends EventEmitter {
           },
           () => {
             thumbDownIconRef.val.style.fill = SCHEME.neutral2;
-          }
-        )
+          },
+        ),
       ).body,
       assign(
-        thumbDownedButtonRef,
+        this.thumbDownedButton,
         IconButton.create(
           `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: ${iconPadding}rem; box-sizing: border-box;`,
           assign(
             thumbDownedIconRef,
             createFilledThumbUpIcon(
               SCHEME.primary1,
-              `transform: rotate(180deg);`
-            )
+              `transform: rotate(180deg);`,
+            ),
           ),
           tooltipPosition,
           LOCALIZED_TEXT.dislikedButtonLabel,
@@ -123,43 +119,45 @@ export class LikeDislikeButtons extends EventEmitter {
           },
           () => {
             thumbDownedIconRef.val.style.fill = SCHEME.neutral2;
-          }
-        )
-      ).body
+          },
+        ),
+      ).body,
     );
-    this.thumbUpButton_ = thumbUpButtonRef.val;
-    this.thumbUpedButton_ = thumbUpedButtonRef.val;
-    this.thumbDownButton_ = thumbDownButtonRef.val;
-    this.thumbDownedButton_ = thumbDownedButtonRef.val;
 
     this.setLiking(Liking.NEUTRAL);
-    this.displayStyle = this.body_.style.display;
-    this.thumbUpButton_.on("action", () => this.handleLike(Liking.LIKE));
-    this.thumbUpedButton_.on("action", () => this.handleLike(Liking.NEUTRAL));
-    this.thumbDownButton_.on("action", () => this.handleLike(Liking.DISLIKE));
-    this.thumbDownedButton_.on("action", () => this.handleLike(Liking.NEUTRAL));
+    this.displayStyle = this.body.style.display;
+    this.thumbUpButton.val.on("action", () => this.handleLike(Liking.LIKE));
+    this.thumbUpedButton.val.on("action", () =>
+      this.handleLike(Liking.NEUTRAL),
+    );
+    this.thumbDownButton.val.on("action", () =>
+      this.handleLike(Liking.DISLIKE),
+    );
+    this.thumbDownedButton.val.on("action", () =>
+      this.handleLike(Liking.NEUTRAL),
+    );
   }
 
   private setLiking(liking: Liking): void {
     this.liking = liking;
     switch (liking) {
       case Liking.NEUTRAL:
-        this.thumbUpButton_.show();
-        this.thumbUpedButton_.hide();
-        this.thumbDownButton_.show();
-        this.thumbDownedButton_.hide();
+        this.thumbUpButton.val.show();
+        this.thumbUpedButton.val.hide();
+        this.thumbDownButton.val.show();
+        this.thumbDownedButton.val.hide();
         break;
       case Liking.LIKE:
-        this.thumbUpButton_.hide();
-        this.thumbUpedButton_.show();
-        this.thumbDownButton_.show();
-        this.thumbDownedButton_.hide();
+        this.thumbUpButton.val.hide();
+        this.thumbUpedButton.val.show();
+        this.thumbDownButton.val.show();
+        this.thumbDownedButton.val.hide();
         break;
       case Liking.DISLIKE:
-        this.thumbUpButton_.show();
-        this.thumbUpedButton_.hide();
-        this.thumbDownButton_.hide();
-        this.thumbDownedButton_.show();
+        this.thumbUpButton.val.show();
+        this.thumbUpedButton.val.hide();
+        this.thumbDownButton.val.hide();
+        this.thumbDownedButton.val.show();
         break;
     }
   }
@@ -168,7 +166,7 @@ export class LikeDislikeButtons extends EventEmitter {
     this.disable();
     try {
       await Promise.all(
-        this.listeners("like").map((callback) => callback(newLiking))
+        this.listeners("like").map((callback) => callback(newLiking)),
       );
     } catch (e) {
       console.log(e);
@@ -181,51 +179,37 @@ export class LikeDislikeButtons extends EventEmitter {
   }
 
   public disable(): this {
-    this.thumbUpButton_.disable();
-    this.thumbUpedButton_.disable();
-    this.thumbDownButton_.disable();
-    this.thumbDownedButton_.disable();
+    this.thumbUpButton.val.disable();
+    this.thumbUpedButton.val.disable();
+    this.thumbDownButton.val.disable();
+    this.thumbDownedButton.val.disable();
     return this;
   }
 
   public enable(liking: Liking): this {
-    this.thumbUpButton_.enable();
-    this.thumbUpedButton_.enable();
-    this.thumbDownButton_.enable();
-    this.thumbDownedButton_.enable();
+    this.thumbUpButton.val.enable();
+    this.thumbUpedButton.val.enable();
+    this.thumbDownButton.val.enable();
+    this.thumbDownedButton.val.enable();
     this.setLiking(liking);
     return this;
   }
 
-  public get body() {
-    return this.body_;
-  }
-
-  public remove(): void {
-    this.body_.remove();
-  }
-
   public show(): this {
-    this.body_.style.display = this.displayStyle;
+    this.body.style.display = this.displayStyle;
+    // Force reflow.
+    this.body.offsetHeight;
+    this.body.style.opacity = "1";
     return this;
   }
 
   public hide(): this {
-    this.body_.style.display = "none";
+    this.body.style.opacity = "0";
+    this.body.style.display = "none";
     return this;
   }
 
-  // Visible for testing
-  public get thumbUpButton() {
-    return this.thumbUpButton_;
-  }
-  public get thumbUpedButton() {
-    return this.thumbUpedButton_;
-  }
-  public get thumbDownButton() {
-    return this.thumbDownButton_;
-  }
-  public get thumbDownedButton() {
-    return this.thumbDownedButton_;
+  public remove(): void {
+    this.body.remove();
   }
 }

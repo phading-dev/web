@@ -32,10 +32,6 @@ export class CommentEntry extends EventEmitter {
     return new CommentEntry(COMMENT_SERVICE_CLIENT, comment);
   }
 
-  public static createMock(comment: Comment): CommentEntry {
-    return new CommentEntry(undefined, comment);
-  }
-
   private body_: HTMLDivElement;
   private likeDislikeButtons_: LikeDislikeButtons;
   private hoverObserver: HoverObserver;

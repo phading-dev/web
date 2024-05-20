@@ -29,68 +29,60 @@ export class CommentsCard extends EventEmitter {
     return new CommentsCard(
       COMMENT_SERVICE_CLIENT,
       CommentEntry.create,
-      showId
+      showId,
     );
   }
 
-  public static createMock(showId: string): CommentsCard {
-    return new CommentsCard(undefined, CommentEntry.createMock, showId);
-  }
+  private static NUM_COMMENTS_LIMIT = 100;
 
-  private static NUM_COMMENTS_LIMIT = 500;
-
-  private body_: HTMLDivElement;
-  private commentInput_: HTMLInputElement;
-  private commentButton_: BlockingButton;
-  private scrollingArea_: HTMLDivElement;
-  private scrollToTopButton_: IconButton;
-  private commentEntries = new Set<CommentEntry>();
+  public body: HTMLDivElement;
+  public commentInput = new Ref<HTMLInputElement>();
+  public commentButton = new Ref<BlockingButton>();
+  public scrollingArea = new Ref<HTMLDivElement>();
+  public scrollToTopButton = new Ref<IconButton>();
+  public commentEntries = new Set<CommentEntry>();
   private getTimestamp: () => number;
   private postedComment: Comment;
 
   public constructor(
     private webServiceClient: WebServiceClient,
     private createCommentEntry: (comment: Comment) => CommentEntry,
-    private showId: string
+    private showId: string,
   ) {
     super();
-    let commentInputRef = new Ref<HTMLInputElement>();
-    let commentButtonRef = new Ref<BlockingButton>();
-    let scrollingAreaRef = new Ref<HTMLDivElement>();
-    let scrollToTopButtonRef = new Ref<IconButton>();
-    this.body_ = E.div(
+    this.body = E.div(
       {
         class: "comments-card",
-        style: `flex: 0 0 auto; display: flex; flex-flow: column nowrap; background-color: ${SCHEME.neutral4};`,
+        style: `width: 100%; height: 100%; display: flex; flex-flow: column nowrap; background-color: ${SCHEME.neutral4};`,
       },
       E.div(
         {
           class: "comments-card-input-box",
           style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; align-items: center; padding: .5rem ${CONTAINER_PADDING_LEFT_RIGHT}rem; box-sizing: border-box; width: 100%; gap: 1rem;`,
         },
-        E.inputRef(commentInputRef, {
+        E.inputRef(this.commentInput, {
           class: "comments-card-input",
           style: `${BASIC_INPUT_STYLE} flex: 1 0 0; line-height: 3rem; border-color: ${SCHEME.neutral1};`,
           placeholder: LOCALIZED_TEXT.commentInputPlaceholder,
         }),
         assign(
-          commentButtonRef,
+          this.commentButton,
           FilledBlockingButton.create("")
             .append(E.text(LOCALIZED_TEXT.commentButtonLabel))
-            .show()
-        ).body
+            .show(),
+        ).body,
       ),
       E.div(
         {
           class: "comments-card-list-container",
           style: `flex: 1 1 0; position: relative; display: flex; flex-flow: column nowrap;`,
         },
-        E.divRef(scrollingAreaRef, {
+        E.divRef(this.scrollingArea, {
           class: "comments-card-scrolling-area",
           style: `flex: 1 1 0; width: 100%; overflow-y: scroll;`,
         }),
         assign(
-          scrollToTopButtonRef,
+          this.scrollToTopButton,
           IconButton.create(
             `position: absolute; display: block; top: 0; left: 0; width: 100%; background-color: ${SCHEME.neutral4};`,
             E.div(
@@ -98,58 +90,54 @@ export class CommentsCard extends EventEmitter {
                 class: "comments-card-scroll-to-buttom-icon",
                 style: `margin-left: auto; margin-right: auto; width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .8rem; box-sizing: border-box; transform: rotate(90deg);`,
               },
-              createArrowWithBarIcon(SCHEME.neutral1)
+              createArrowWithBarIcon(SCHEME.neutral1),
             ),
             TooltipPosition.TOP,
-            LOCALIZED_TEXT.accountDescriptionLabel
-          ).enable()
-        ).body
-      )
+            LOCALIZED_TEXT.accountDescriptionLabel,
+          ).enable(),
+        ).body,
+      ),
     );
-    this.commentInput_ = commentInputRef.val;
-    this.commentButton_ = commentButtonRef.val;
-    this.scrollingArea_ = scrollingAreaRef.val;
-    this.scrollToTopButton_ = scrollToTopButtonRef.val;
 
     this.validateCommentInput();
     this.updateScrollButton();
-    this.commentInput_.addEventListener("input", () =>
-      this.validateCommentInput()
+    this.commentInput.val.addEventListener("input", () =>
+      this.validateCommentInput(),
     );
-    this.commentInput_.addEventListener("keydown", (event) =>
-      this.handleKeyDown(event)
+    this.commentInput.val.addEventListener("keydown", (event) =>
+      this.handleKeyDown(event),
     );
-    this.commentButton_.on("action", () => this.postComment());
-    this.commentButton_.on("postAction", (error) =>
-      this.postPostComment(error)
+    this.commentButton.val.on("action", () => this.postComment());
+    this.commentButton.val.on("postAction", (error) =>
+      this.postPostComment(error),
     );
-    this.scrollingArea_.addEventListener("scrollend", () =>
-      this.updateScrollButton()
+    this.scrollingArea.val.addEventListener("scrollend", () =>
+      this.updateScrollButton(),
     );
-    this.scrollToTopButton_.on("action", () => this.scrollToTop());
+    this.scrollToTopButton.val.on("action", () => this.scrollToTop());
   }
 
   private validateCommentInput(): void {
     if (
-      this.commentInput_.value.length > 0 &&
-      this.commentInput_.value.length <= COMMENT_LENGTH_LIMIT
+      this.commentInput.val.value.length > 0 &&
+      this.commentInput.val.value.length <= COMMENT_LENGTH_LIMIT
     ) {
-      this.commentButton_.enable();
+      this.commentButton.val.enable();
     } else {
-      this.commentButton_.disable();
+      this.commentButton.val.disable();
     }
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
     if (event.code === "Enter") {
-      this.commentButton_.click();
+      this.commentButton.val.click();
     }
   }
 
   private async postComment(): Promise<void> {
     let response = await postComment(this.webServiceClient, {
       showId: this.showId,
-      content: this.commentInput_.value,
+      content: this.commentInput.val.value,
       timestamp: this.getTimestamp(),
     });
     this.postedComment = response.comment;
@@ -161,22 +149,22 @@ export class CommentsCard extends EventEmitter {
       this.emit("commentError");
       return;
     }
-    this.commentInput.value = "";
+    this.commentInput.val.value = "";
     this.validateCommentInput();
     this.emit("commented", this.postedComment);
   }
 
   private updateScrollButton(): void {
-    if (this.scrollingArea_.scrollTop <= 0) {
-      this.scrollToTopButton_.hide();
+    if (this.scrollingArea.val.scrollTop <= 0) {
+      this.scrollToTopButton.val.hide();
     } else {
-      this.scrollToTopButton_.show();
+      this.scrollToTopButton.val.show();
     }
   }
 
   private scrollToTop(): void {
-    this.scrollingArea_.scrollTop = 0;
-    this.scrollToTopButton_.hide();
+    this.scrollingArea.val.scrollTop = 0;
+    this.scrollToTopButton.val.hide();
   }
 
   // In milliseconds
@@ -185,28 +173,15 @@ export class CommentsCard extends EventEmitter {
     return this;
   }
 
-  public changeToPortrait(): this {
-    this.body_.style.width = "40rem";
-    this.body_.style.height = "100vh";
-    return this;
-  }
-
-  public changeToLandscape(): this {
-    this.body_.style.width = "100vm";
-    this.body_.style.maxWidth = `80rem;`;
-    this.body_.style.height = "70rem";
-    return this;
-  }
-
   public addComment(comments: Array<Comment>): void {
-    let hadReachedTop = this.scrollingArea_.scrollTop === 0;
+    let hadReachedTop = this.scrollingArea.val.scrollTop === 0;
     for (let comment of comments) {
       let commentEntry = this.createCommentEntry(comment);
-      this.scrollingArea_.prepend(commentEntry.body);
+      this.scrollingArea.val.prepend(commentEntry.body);
       this.commentEntries.add(commentEntry);
     }
     if (hadReachedTop) {
-      this.scrollingArea_.scrollTop = 0;
+      this.scrollingArea.val.scrollTop = 0;
     }
 
     for (let commentEntry of this.commentEntries) {
@@ -218,28 +193,7 @@ export class CommentsCard extends EventEmitter {
     }
   }
 
-  public get body() {
-    return this.body_;
-  }
-
   public remove(): void {
-    this.body_.remove();
-  }
-
-  // Visible for testing
-  public get commentInput() {
-    return this.commentInput_;
-  }
-  public get commentButton() {
-    return this.commentButton_;
-  }
-  public get scrollingArea() {
-    return this.scrollingArea_;
-  }
-  public get scrollToTopButton() {
-    return this.scrollToTopButton_;
-  }
-  public get comments() {
-    return this.commentEntries;
+    this.body.remove();
   }
 }

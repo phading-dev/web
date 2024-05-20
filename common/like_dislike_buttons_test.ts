@@ -26,7 +26,7 @@ class SendErrorAndSent implements TestCase {
     private errorDiffFile: string,
     private successActualFile: string,
     private successExpectedFile: string,
-    private successDiffFile: string
+    private successDiffFile: string,
   ) {}
   public async execute() {
     // Prepare
@@ -34,7 +34,7 @@ class SendErrorAndSent implements TestCase {
     this.cut = new LikeDislikeButtons(
       `width: 30rem; padding: 0 1rem; box-sizing: border-box; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: row nowrap; gap: .5rem;`,
       0.7,
-      TooltipPosition.BOTTOM
+      TooltipPosition.BOTTOM,
     ).enable(this.initLiking);
 
     // Execute
@@ -44,7 +44,7 @@ class SendErrorAndSent implements TestCase {
     await asyncAssertScreenshot(
       this.initActualFile,
       this.initExpectedFile,
-      this.initDiffFile
+      this.initDiffFile,
     );
 
     // Prepare
@@ -56,7 +56,7 @@ class SendErrorAndSent implements TestCase {
     });
     let rejectFn: (error: any) => void;
     promiseToReturn = new Promise<void>(
-      (resolve, reject) => (rejectFn = reject)
+      (resolve, reject) => (rejectFn = reject),
     );
 
     // Execute
@@ -67,7 +67,7 @@ class SendErrorAndSent implements TestCase {
     await asyncAssertScreenshot(
       this.disabledActualFile,
       this.disabledExpectedFile,
-      this.disabledDiffFile
+      this.disabledDiffFile,
     );
 
     // Execute
@@ -76,7 +76,7 @@ class SendErrorAndSent implements TestCase {
     let returnedError = await new Promise<any>((resolve) =>
       this.cut.once("postLike", (error) => {
         resolve(error);
-      })
+      }),
     );
 
     // Verify
@@ -84,7 +84,7 @@ class SendErrorAndSent implements TestCase {
     await asyncAssertScreenshot(
       this.errorActualFile,
       this.initExpectedFile,
-      this.errorDiffFile
+      this.errorDiffFile,
     );
 
     // Prepare
@@ -95,7 +95,7 @@ class SendErrorAndSent implements TestCase {
     returnedError = await new Promise<any>((resolve) =>
       this.cut.once("postLike", (error) => {
         resolve(error);
-      })
+      }),
     );
 
     // Verify
@@ -103,7 +103,7 @@ class SendErrorAndSent implements TestCase {
     await asyncAssertScreenshot(
       this.successActualFile,
       this.successExpectedFile,
-      this.successDiffFile
+      this.successDiffFile,
     );
   }
   public tearDown() {
@@ -120,7 +120,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/like_dislike_buttons_neutral.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_neutral.png"),
       path.join(__dirname, "/like_dislike_buttons_neutral_diff.png"),
-      (cut) => cut.thumbUpButton,
+      (cut) => cut.thumbUpButton.val,
       Liking.LIKE,
       path.join(__dirname, "/like_dislike_buttons_disabled.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_disabled.png"),
@@ -129,7 +129,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/like_dislike_buttons_failed_to_like_diff.png"),
       path.join(__dirname, "/like_dislike_buttons_liked.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_liked.png"),
-      path.join(__dirname, "/like_dislike_buttons_liked_diff.png")
+      path.join(__dirname, "/like_dislike_buttons_liked_diff.png"),
     ),
     new SendErrorAndSent(
       "NeutralToDislike",
@@ -137,7 +137,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/like_dislike_buttons_neutral_2.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_neutral.png"),
       path.join(__dirname, "/like_dislike_buttons_neutral_2_diff.png"),
-      (cut) => cut.thumbDownButton,
+      (cut) => cut.thumbDownButton.val,
       Liking.DISLIKE,
       path.join(__dirname, "/like_dislike_buttons_disabled_2.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_disabled.png"),
@@ -145,11 +145,11 @@ TEST_RUNNER.run({
       path.join(__dirname, "/like_dislike_buttons_failed_to_dislike_2.png"),
       path.join(
         __dirname,
-        "/like_dislike_buttons_failed_to_dislike_2_diff.png"
+        "/like_dislike_buttons_failed_to_dislike_2_diff.png",
       ),
       path.join(__dirname, "/like_dislike_buttons_disliked_2.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_disliked.png"),
-      path.join(__dirname, "/like_dislike_buttons_disliked_2_diff.png")
+      path.join(__dirname, "/like_dislike_buttons_disliked_2_diff.png"),
     ),
     new SendErrorAndSent(
       "LikedToNeutral",
@@ -157,7 +157,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/like_dislike_buttons_liked_3.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_liked.png"),
       path.join(__dirname, "/like_dislike_buttons_liked_3_diff.png"),
-      (cut) => cut.thumbUpedButton,
+      (cut) => cut.thumbUpedButton.val,
       Liking.NEUTRAL,
       path.join(__dirname, "/like_dislike_buttons_disabled_3.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_disabled.png"),
@@ -166,7 +166,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/like_dislike_buttons_failed_to_unlike_3_diff.png"),
       path.join(__dirname, "/like_dislike_buttons_neutral_3.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_neutral.png"),
-      path.join(__dirname, "/like_dislike_buttons_neutral_3_diff.png")
+      path.join(__dirname, "/like_dislike_buttons_neutral_3_diff.png"),
     ),
     new SendErrorAndSent(
       "LikedToDisliked",
@@ -174,7 +174,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/like_dislike_buttons_liked_4.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_liked.png"),
       path.join(__dirname, "/like_dislike_buttons_liked_4_diff.png"),
-      (cut) => cut.thumbDownButton,
+      (cut) => cut.thumbDownButton.val,
       Liking.DISLIKE,
       path.join(__dirname, "/like_dislike_buttons_disabled_4.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_disabled.png"),
@@ -182,11 +182,11 @@ TEST_RUNNER.run({
       path.join(__dirname, "/like_dislike_buttons_failed_to_dislike_4.png"),
       path.join(
         __dirname,
-        "/like_dislike_buttons_failed_to_dislike_4_diff.png"
+        "/like_dislike_buttons_failed_to_dislike_4_diff.png",
       ),
       path.join(__dirname, "/like_dislike_buttons_disliked_4.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_disliked.png"),
-      path.join(__dirname, "/like_dislike_buttons_disliked_4_diff.png")
+      path.join(__dirname, "/like_dislike_buttons_disliked_4_diff.png"),
     ),
     new SendErrorAndSent(
       "DislikedToNeutral",
@@ -194,7 +194,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/like_dislike_buttons_disliked_5.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_disliked.png"),
       path.join(__dirname, "/like_dislike_buttons_disliked_5_diff.png"),
-      (cut) => cut.thumbDownedButton,
+      (cut) => cut.thumbDownedButton.val,
       Liking.NEUTRAL,
       path.join(__dirname, "/like_dislike_buttons_disabled_5.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_disabled.png"),
@@ -202,11 +202,11 @@ TEST_RUNNER.run({
       path.join(__dirname, "/like_dislike_buttons_failed_to_undislike_5.png"),
       path.join(
         __dirname,
-        "/like_dislike_buttons_failed_to_undislike_5_diff.png"
+        "/like_dislike_buttons_failed_to_undislike_5_diff.png",
       ),
       path.join(__dirname, "/like_dislike_buttons_neutral_5.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_neutral.png"),
-      path.join(__dirname, "/like_dislike_buttons_neutral_5_diff.png")
+      path.join(__dirname, "/like_dislike_buttons_neutral_5_diff.png"),
     ),
     new SendErrorAndSent(
       "DislikedToLiked",
@@ -214,7 +214,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/like_dislike_buttons_disliked_6.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_disliked.png"),
       path.join(__dirname, "/like_dislike_buttons_disliked_6_diff.png"),
-      (cut) => cut.thumbUpButton,
+      (cut) => cut.thumbUpButton.val,
       Liking.LIKE,
       path.join(__dirname, "/like_dislike_buttons_disabled_6.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_disabled.png"),
@@ -223,7 +223,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/like_dislike_buttons_failed_to_like_6_diff.png"),
       path.join(__dirname, "/like_dislike_buttons_liked_6.png"),
       path.join(__dirname, "/golden/like_dislike_buttons_liked.png"),
-      path.join(__dirname, "/like_dislike_buttons_liked_6_diff.png")
+      path.join(__dirname, "/like_dislike_buttons_liked_6_diff.png"),
     ),
     new (class implements TestCase {
       public name = "ShowTooltip";
@@ -234,7 +234,7 @@ TEST_RUNNER.run({
         this.cut = new LikeDislikeButtons(
           `width: 30rem; padding: 0 3rem; box-sizing: border-box; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: row nowrap; gap: .5rem;`,
           0.7,
-          TooltipPosition.BOTTOM
+          TooltipPosition.BOTTOM,
         ).enable(Liking.NEUTRAL);
         this.cut.on("like", () => {
           return Promise.resolve();
@@ -242,9 +242,9 @@ TEST_RUNNER.run({
         document.body.append(this.cut.body);
 
         // Execute
-        this.cut.thumbUpButton.hover();
+        this.cut.thumbUpButton.val.hover();
         await new Promise<void>((resolve) =>
-          this.cut.thumbUpButton.once("tooltipShowed", resolve)
+          this.cut.thumbUpButton.val.once("tooltipShowed", resolve),
         );
 
         // Verify
@@ -252,22 +252,22 @@ TEST_RUNNER.run({
           path.join(__dirname, "/like_dislike_buttons_hover_thumb_up.png"),
           path.join(
             __dirname,
-            "/golden/like_dislike_buttons_hover_thumb_up.png"
+            "/golden/like_dislike_buttons_hover_thumb_up.png",
           ),
-          path.join(__dirname, "/like_dislike_buttons_hover_thumb_up_diff.png")
+          path.join(__dirname, "/like_dislike_buttons_hover_thumb_up_diff.png"),
         );
 
         // Prepare
-        this.cut.thumbUpButton.leave();
-        this.cut.thumbUpButton.click();
+        this.cut.thumbUpButton.val.leave();
+        this.cut.thumbUpButton.val.click();
         await new Promise<void>((resolve) =>
-          this.cut.once("postLike", resolve)
+          this.cut.once("postLike", resolve),
         );
 
         // Execute
-        this.cut.thumbUpedButton.hover();
+        this.cut.thumbUpedButton.val.hover();
         await new Promise<void>((resolve) =>
-          this.cut.thumbUpedButton.once("tooltipShowed", resolve)
+          this.cut.thumbUpedButton.val.once("tooltipShowed", resolve),
         );
 
         // Verify
@@ -275,21 +275,21 @@ TEST_RUNNER.run({
           path.join(__dirname, "/like_dislike_buttons_hover_thumb_uped.png"),
           path.join(
             __dirname,
-            "/golden/like_dislike_buttons_hover_thumb_uped.png"
+            "/golden/like_dislike_buttons_hover_thumb_uped.png",
           ),
           path.join(
             __dirname,
-            "/like_dislike_buttons_hover_thumb_uped_diff.png"
-          )
+            "/like_dislike_buttons_hover_thumb_uped_diff.png",
+          ),
         );
 
         // Prepare
-        this.cut.thumbUpedButton.leave();
+        this.cut.thumbUpedButton.val.leave();
 
         // Execute
-        this.cut.thumbDownButton.hover();
+        this.cut.thumbDownButton.val.hover();
         await new Promise<void>((resolve) =>
-          this.cut.thumbDownButton.once("tooltipShowed", resolve)
+          this.cut.thumbDownButton.val.once("tooltipShowed", resolve),
         );
 
         // Verify
@@ -297,25 +297,25 @@ TEST_RUNNER.run({
           path.join(__dirname, "/like_dislike_buttons_hover_thumb_down.png"),
           path.join(
             __dirname,
-            "/golden/like_dislike_buttons_hover_thumb_down.png"
+            "/golden/like_dislike_buttons_hover_thumb_down.png",
           ),
           path.join(
             __dirname,
-            "/like_dislike_buttons_hover_thumb_down_diff.png"
-          )
+            "/like_dislike_buttons_hover_thumb_down_diff.png",
+          ),
         );
 
         // Prepare
-        this.cut.thumbDownButton.leave();
-        this.cut.thumbDownButton.click();
+        this.cut.thumbDownButton.val.leave();
+        this.cut.thumbDownButton.val.click();
         await new Promise<void>((resolve) =>
-          this.cut.once("postLike", resolve)
+          this.cut.once("postLike", resolve),
         );
 
         // Execute
-        this.cut.thumbDownedButton.hover();
+        this.cut.thumbDownedButton.val.hover();
         await new Promise<void>((resolve) =>
-          this.cut.thumbDownedButton.once("tooltipShowed", resolve)
+          this.cut.thumbDownedButton.val.once("tooltipShowed", resolve),
         );
 
         // Verify
@@ -323,12 +323,12 @@ TEST_RUNNER.run({
           path.join(__dirname, "/like_dislike_buttons_hover_thumb_downed.png"),
           path.join(
             __dirname,
-            "/golden/like_dislike_buttons_hover_thumb_downed.png"
+            "/golden/like_dislike_buttons_hover_thumb_downed.png",
           ),
           path.join(
             __dirname,
-            "/like_dislike_buttons_hover_thumb_downed_diff.png"
-          )
+            "/like_dislike_buttons_hover_thumb_downed_diff.png",
+          ),
         );
       }
       public tearDown() {

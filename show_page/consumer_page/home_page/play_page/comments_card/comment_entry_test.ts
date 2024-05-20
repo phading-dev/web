@@ -59,7 +59,7 @@ TEST_RUNNER.run({
               avatarSmallPath: userImage,
             },
             content: "Some some content",
-          }
+          },
         );
 
         // Execute
@@ -69,7 +69,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/comment_entry_default.png"),
           path.join(__dirname, "/golden/comment_entry_default.png"),
-          path.join(__dirname, "/comment_entry_default_diff.png")
+          path.join(__dirname, "/comment_entry_default_diff.png"),
         );
 
         // Prepare
@@ -84,7 +84,7 @@ TEST_RUNNER.run({
         assertThat(
           requestCaptured.descriptor,
           eq(GET_COMMENT_LIKING),
-          "get liking service"
+          "get liking service",
         );
         assertThat(
           requestCaptured.body,
@@ -92,43 +92,43 @@ TEST_RUNNER.run({
             {
               commentId: "id1",
             },
-            GET_COMMENT_LIKING_REQUEST_BODY
+            GET_COMMENT_LIKING_REQUEST_BODY,
           ),
-          "get liking request"
+          "get liking request",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/comment_entry_show_actions.png"),
           path.join(__dirname, "/golden/comment_entry_show_actions.png"),
-          path.join(__dirname, "/comment_entry_show_actions_diff.png")
+          path.join(__dirname, "/comment_entry_show_actions_diff.png"),
         );
 
         // Execute
-        this.cut.likeDislikeButtons.thumbDownButton.hover();
+        this.cut.likeDislikeButtons.thumbDownButton.val.hover();
         await new Promise<void>((resolve) =>
-          this.cut.likeDislikeButtons.thumbDownButton.once(
+          this.cut.likeDislikeButtons.thumbDownButton.val.once(
             "tooltipShowed",
-            resolve
-          )
+            resolve,
+          ),
         );
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/comment_entry_show_tooltip.png"),
           path.join(__dirname, "/golden/comment_entry_show_tooltip.png"),
-          path.join(__dirname, "/comment_entry_show_tooltip_diff.png")
+          path.join(__dirname, "/comment_entry_show_tooltip_diff.png"),
         );
 
         // Execute
-        this.cut.likeDislikeButtons.thumbDownButton.click();
+        this.cut.likeDislikeButtons.thumbDownButton.val.click();
         await new Promise<void>((resolve) =>
-          this.cut.once("postLike", resolve)
+          this.cut.once("postLike", resolve),
         );
 
         // Verify
         assertThat(
           requestCaptured.descriptor,
           eq(LIKE_COMMENT),
-          "like comment service"
+          "like comment service",
         );
         assertThat(
           requestCaptured.body,
@@ -137,14 +137,14 @@ TEST_RUNNER.run({
               commentId: "id1",
               liking: Liking.DISLIKE,
             },
-            LIKE_COMMENT_REQUEST_BODY
+            LIKE_COMMENT_REQUEST_BODY,
           ),
-          "like comment request"
+          "like comment request",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/comment_entry_disliked.png"),
           path.join(__dirname, "/golden/comment_entry_disliked.png"),
-          path.join(__dirname, "/comment_entry_disliked_diff.png")
+          path.join(__dirname, "/comment_entry_disliked_diff.png"),
         );
 
         // Execute
@@ -154,7 +154,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/comment_entry_hide_actions.png"),
           path.join(__dirname, "/golden/comment_entry_default.png"),
-          path.join(__dirname, "/comment_entry_hide_actions_diff.png")
+          path.join(__dirname, "/comment_entry_hide_actions_diff.png"),
         );
       }
       public tearDown() {
@@ -187,7 +187,7 @@ TEST_RUNNER.run({
             content:
               "Some some content Some some content Some some content Some some content Some some content",
             isThePublisher: true,
-          }
+          },
         );
 
         // Execute
@@ -197,7 +197,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/comment_entry_long.png"),
           path.join(__dirname, "/golden/comment_entry_long.png"),
-          path.join(__dirname, "/comment_entry_long_diff.png")
+          path.join(__dirname, "/comment_entry_long_diff.png"),
         );
 
         // Execute
@@ -207,7 +207,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/comment_entry_long_show_actions.png"),
           path.join(__dirname, "/golden/comment_entry_long_show_actions.png"),
-          path.join(__dirname, "/comment_entry_long_show_actions_diff.png")
+          path.join(__dirname, "/comment_entry_long_show_actions_diff.png"),
         );
 
         // Execute
@@ -217,7 +217,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/comment_entry_long_hide_actions.png"),
           path.join(__dirname, "/golden/comment_entry_long.png"),
-          path.join(__dirname, "/comment_entry_long_hide_actions_diff.png")
+          path.join(__dirname, "/comment_entry_long_hide_actions_diff.png"),
         );
       }
       public tearDown() {

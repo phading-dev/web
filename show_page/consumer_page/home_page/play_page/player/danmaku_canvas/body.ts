@@ -4,7 +4,7 @@ import { DanmakuElement } from "./element";
 import { Comment } from "@phading/comment_service_interface/show_app/comment";
 import {
   DanmakuSettings,
-  DistributionStyle,
+  StackingMethod,
 } from "@phading/product_service_interface/consumer/show_app/player_settings";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -173,10 +173,10 @@ export class DanmakuCanvas extends EventEmitter {
     endY: number,
     elementHeight: number,
   ): number {
-    switch (this.danmakuSettigns.distributionStyle) {
-      case DistributionStyle.TOP_DOWN:
+    switch (this.danmakuSettigns.stackingMethod) {
+      case StackingMethod.TOP_DOWN:
         return startY;
-      case DistributionStyle.RANDOM:
+      case StackingMethod.RANDOM:
         return (
           Math.floor(this.random() * (endY - startY - elementHeight + 1)) +
           startY

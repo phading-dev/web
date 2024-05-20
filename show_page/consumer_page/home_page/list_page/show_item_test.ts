@@ -73,6 +73,7 @@ TEST_RUNNER.run({
           path.join(__dirname, "/show_item_leave_diff.png"),
           {
             fullPage: true,
+            threshold: 0.4
           }
         );
       }

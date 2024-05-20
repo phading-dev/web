@@ -4,7 +4,7 @@ import { DanmakuElementMock } from "./element_mock";
 import { Comment } from "@phading/comment_service_interface/show_app/comment";
 import {
   DanmakuSettings,
-  DistributionStyle,
+  StackingMethod,
 } from "@phading/product_service_interface/consumer/show_app/player_settings";
 import { E } from "@selfage/element/factory";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
@@ -15,7 +15,7 @@ import "../../../../../../common/normalize_body";
 
 let SETTINGS: DanmakuSettings = {
   enable: true,
-  distributionStyle: DistributionStyle.RANDOM,
+  stackingMethod: StackingMethod.RANDOM,
   density: 100,
   topMargin: 0,
   bottomMargin: 0,
@@ -33,7 +33,7 @@ function createComment(index: number): Comment {
 
 function createMultipleComments(
   totalCount: Ref<number>,
-  upTo: number
+  upTo: number,
 ): Array<Comment> {
   let comments = new Array<Comment>();
   for (; totalCount.val < upTo; totalCount.val++) {
@@ -77,13 +77,13 @@ TEST_RUNNER.run({
             let element = new DanmakuElementMock(
               pausedPosX,
               danmakuSettigns,
-              comment
+              comment,
             );
             allElementsMock.push(element);
             return element;
           },
           0,
-          settings
+          settings,
         );
         container.append(this.cut.body);
         // Allow for resize observer to catch back
@@ -101,7 +101,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/danmaku_canvas_one_element.png"),
           path.join(__dirname, "/golden/danmaku_canvas_one_element.png"),
-          path.join(__dirname, "/danmaku_canvas_one_element_diff.png")
+          path.join(__dirname, "/danmaku_canvas_one_element_diff.png"),
         );
 
         // Execute
@@ -113,7 +113,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/danmaku_canvas_filled.png"),
           path.join(__dirname, "/golden/danmaku_canvas_filled.png"),
-          path.join(__dirname, "/danmaku_canvas_filled_diff.png")
+          path.join(__dirname, "/danmaku_canvas_filled_diff.png"),
         );
 
         // Prepare
@@ -135,12 +135,12 @@ TEST_RUNNER.run({
           path.join(__dirname, "/danmaku_canvas_occupy_eneded_and_filled.png"),
           path.join(
             __dirname,
-            "/golden/danmaku_canvas_occupy_eneded_and_filled.png"
+            "/golden/danmaku_canvas_occupy_eneded_and_filled.png",
           ),
           path.join(
             __dirname,
-            "/danmaku_canvas_occupy_eneded_and_filled_diff.png"
-          )
+            "/danmaku_canvas_occupy_eneded_and_filled_diff.png",
+          ),
         );
 
         // Execute
@@ -154,12 +154,12 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/danmaku_canvas_some_display_ended.png"),
           path.join(__dirname, "/golden/danmaku_canvas_some_display_ended.png"),
-          path.join(__dirname, "/danmaku_canvas_some_display_ended_diff.png")
+          path.join(__dirname, "/danmaku_canvas_some_display_ended_diff.png"),
         );
 
         // Prepare
         settings.enable = false;
-        settings.distributionStyle = DistributionStyle.TOP_DOWN;
+        settings.stackingMethod = StackingMethod.TOP_DOWN;
 
         // Execute
         this.cut.updateSettings();
@@ -171,12 +171,12 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/danmaku_canvas_add_when_disabled.png"),
           path.join(__dirname, "/golden/empty.png"),
-          path.join(__dirname, "/danmaku_canvas_add_when_disabled_diff.png")
+          path.join(__dirname, "/danmaku_canvas_add_when_disabled_diff.png"),
         );
 
         // Prepare
         settings.enable = true;
-        settings.distributionStyle = DistributionStyle.TOP_DOWN;
+        settings.stackingMethod = StackingMethod.TOP_DOWN;
 
         // Execute
         this.cut.play();
@@ -187,7 +187,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/danmaku_canvas_add_after_enabled.png"),
           path.join(__dirname, "/golden/danmaku_canvas_add_after_enabled.png"),
-          path.join(__dirname, "/danmaku_canvas_add_after_enabled_diff.png")
+          path.join(__dirname, "/danmaku_canvas_add_after_enabled_diff.png"),
         );
       }
       public tearDown() {
@@ -209,7 +209,7 @@ TEST_RUNNER.run({
           (danmakuSettigns, comment) =>
             new DanmakuElementMock(pausedPosX, danmakuSettigns, comment),
           0,
-          settings
+          settings,
         );
         container.append(this.cut.body);
         // Allow for resize observer to catch back
@@ -226,7 +226,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/danmaku_canvas_simple_top_down.png"),
           path.join(__dirname, "/golden/danmaku_canvas_simple_top_down.png"),
-          path.join(__dirname, "/danmaku_canvas_simple_top_down_diff.png")
+          path.join(__dirname, "/danmaku_canvas_simple_top_down_diff.png"),
         );
 
         // Prepare
@@ -240,7 +240,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/danmaku_canvas_rerender_elements.png"),
           path.join(__dirname, "/golden/danmaku_canvas_rerender_elements.png"),
-          path.join(__dirname, "/danmaku_canvas_rerender_elements_diff.png")
+          path.join(__dirname, "/danmaku_canvas_rerender_elements_diff.png"),
         );
       }
       public tearDown() {
@@ -260,7 +260,7 @@ TEST_RUNNER.run({
         let allElementsMock = new Array<DanmakuElementMock>();
         let settings: DanmakuSettings = {
           ...SETTINGS,
-          distributionStyle: DistributionStyle.TOP_DOWN,
+          stackingMethod: StackingMethod.TOP_DOWN,
           density: 50,
         };
         this.cut = new DanmakuCanvas(
@@ -269,13 +269,13 @@ TEST_RUNNER.run({
             let element = new DanmakuElementMock(
               pausedPosX,
               danmakuSettigns,
-              comment
+              comment,
             );
             allElementsMock.push(element);
             return element;
           },
           0,
-          settings
+          settings,
         );
         container.append(this.cut.body);
         // Allow for resize observer to catch back
@@ -293,9 +293,12 @@ TEST_RUNNER.run({
           path.join(__dirname, "/danmaku_canvas_half_density_top_down.png"),
           path.join(
             __dirname,
-            "/golden/danmaku_canvas_half_density_top_down.png"
+            "/golden/danmaku_canvas_half_density_top_down.png",
           ),
-          path.join(__dirname, "/danmaku_canvas_half_density_top_down_diff.png")
+          path.join(
+            __dirname,
+            "/danmaku_canvas_half_density_top_down_diff.png",
+          ),
         );
 
         // Prepare
@@ -303,7 +306,7 @@ TEST_RUNNER.run({
         allElementsMock[5].emit("displayEnded");
         allElementsMock[6].emit("occupyEnded");
         allElementsMock[6].emit("displayEnded");
-        settings.distributionStyle = DistributionStyle.RANDOM;
+        settings.stackingMethod = StackingMethod.RANDOM;
         randomNum = 0.999;
 
         // Execute
@@ -316,12 +319,12 @@ TEST_RUNNER.run({
           path.join(__dirname, "/danmaku_canvas_half_density_bottom_up.png"),
           path.join(
             __dirname,
-            "/golden/danmaku_canvas_half_density_bottom_up.png"
+            "/golden/danmaku_canvas_half_density_bottom_up.png",
           ),
           path.join(
             __dirname,
-            "/danmaku_canvas_half_density_bottom_up_diff.png"
-          )
+            "/danmaku_canvas_half_density_bottom_up_diff.png",
+          ),
         );
       }
       public tearDown() {
@@ -341,7 +344,7 @@ TEST_RUNNER.run({
         let allElementsMock = new Array<DanmakuElementMock>();
         let settings: DanmakuSettings = {
           ...SETTINGS,
-          distributionStyle: DistributionStyle.TOP_DOWN,
+          stackingMethod: StackingMethod.TOP_DOWN,
           topMargin: 20,
           bottomMargin: 20,
         };
@@ -351,13 +354,13 @@ TEST_RUNNER.run({
             let element = new DanmakuElementMock(
               pausedPosX,
               danmakuSettigns,
-              comment
+              comment,
             );
             allElementsMock.push(element);
             return element;
           },
           80,
-          settings
+          settings,
         );
         container.append(this.cut.body);
         // Allow for resize observer to catch back
@@ -374,7 +377,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/danmaku_canvas_margins_top_down.png"),
           path.join(__dirname, "/golden/danmaku_canvas_margins_top_down.png"),
-          path.join(__dirname, "/danmaku_canvas_margins_top_down_diff.png")
+          path.join(__dirname, "/danmaku_canvas_margins_top_down_diff.png"),
         );
 
         // Prepare
@@ -386,7 +389,7 @@ TEST_RUNNER.run({
         allElementsMock[6].emit("displayEnded");
         allElementsMock[7].emit("occupyEnded");
         allElementsMock[7].emit("displayEnded");
-        settings.distributionStyle = DistributionStyle.RANDOM;
+        settings.stackingMethod = StackingMethod.RANDOM;
         randomNum = 0.999;
 
         // Execute
@@ -398,7 +401,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/danmaku_canvas_margins_bottom_up.png"),
           path.join(__dirname, "/golden/danmaku_canvas_margins_bottom_up.png"),
-          path.join(__dirname, "/danmaku_canvas_margins_bottom_up_diff.png")
+          path.join(__dirname, "/danmaku_canvas_margins_bottom_up_diff.png"),
         );
       }
       public tearDown() {
@@ -424,7 +427,7 @@ TEST_RUNNER.run({
           (danmakuSettigns, comment) =>
             new DanmakuElementMock(pausedPosX, danmakuSettigns, comment),
           80,
-          settings
+          settings,
         );
         container.append(this.cut.body);
         // Allow for resize observer to catch back
@@ -441,7 +444,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/danmaku_canvas_no_room.png"),
           path.join(__dirname, "/golden/empty.png"),
-          path.join(__dirname, "/danmaku_canvas_no_room_diff.png")
+          path.join(__dirname, "/danmaku_canvas_no_room_diff.png"),
         );
       }
       public tearDown() {

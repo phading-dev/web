@@ -25,25 +25,21 @@ export class ListPage extends EventEmitter {
     return new ListPage(ShowItem.create, PRODUCT_RECOMMENDATION_SERVICE_CLIENT);
   }
 
-  private body_: HTMLDivElement;
-  private contentContainer: HTMLDivElement;
-  private loadingSection: HTMLDivElement;
-  private tryReloadButton_: HTMLDivElement;
-  private loadingIcon: HTMLDivElement;
+  public body: HTMLDivElement;
+  private contentContainer = new Ref<HTMLDivElement>();
+  private loadingSection = new Ref<HTMLDivElement>();
+  public tryReloadButton = new Ref<HTMLDivElement>();
+  private loadingIcon = new Ref<HTMLDivElement>();
   private loadingObserver: IntersectionObserver;
-  private showItems_ = new Set<ShowItem>();
+  public showItems = new Set<ShowItem>();
   private moreContentLoaded: boolean;
 
   public constructor(
     private createShowItem: (show: ShowSnapshot) => ShowItem,
-    private webServiceClient: WebServiceClient
+    private webServiceClient: WebServiceClient,
   ) {
     super();
-    let contentContainerRef = new Ref<HTMLDivElement>();
-    let loadingSectionRef = new Ref<HTMLDivElement>();
-    let tryReloadButtonRef = new Ref<HTMLDivElement>();
-    let loadingIconRef = new Ref<HTMLDivElement>();
-    this.body_ = E.div(
+    this.body = E.div(
       {
         class: "list-shows",
         style: PAGE_STYLE,
@@ -53,12 +49,12 @@ export class ListPage extends EventEmitter {
           class: "list-shows-card",
           style: `${LARGE_CARD_STYLE} display: flex; flex-flow: column nowrap; align-items: center;`,
         },
-        E.divRef(contentContainerRef, {
+        E.divRef(this.contentContainer, {
           class: "list-shows-content-container",
           style: `display: flex; flex-flow: row wrap; justify-content: space-around; gap: 2rem;`,
         }),
         E.divRef(
-          loadingSectionRef,
+          this.loadingSection,
           {
             class: "list-shows-loading-section",
             style: `display: flex; flex-flow: column nowrap; align-items: center; padding-top: 2rem; gap: 2rem;`,
@@ -68,33 +64,29 @@ export class ListPage extends EventEmitter {
               class: "list-shows-end-of-loading",
               style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
-            E.text(LOCALIZED_TEXT.noMoreContent)
+            E.text(LOCALIZED_TEXT.noMoreContent),
           ),
           E.divRef(
-            tryReloadButtonRef,
+            this.tryReloadButton,
             {
               class: "list-shows-load-button",
               style: `${FILLED_BUTTON_STYLE} background-color: ${SCHEME.primary1};`,
             },
-            E.text(LOCALIZED_TEXT.tryReloadLabel)
+            E.text(LOCALIZED_TEXT.tryReloadLabel),
           ),
           E.divRef(
-            loadingIconRef,
+            this.loadingIcon,
             {
               class: "list-shows-loading-icon",
               style: `height: 3rem; padding .5rem; box-sizing: border-box;`,
             },
-            createLoadingIcon(SCHEME.neutral1)
-          )
-        )
-      )
+            createLoadingIcon(SCHEME.neutral1),
+          ),
+        ),
+      ),
     );
-    this.contentContainer = contentContainerRef.val;
-    this.loadingSection = loadingSectionRef.val;
-    this.tryReloadButton_ = tryReloadButtonRef.val;
-    this.loadingIcon = loadingIconRef.val;
 
-    this.tryReloadButton_.addEventListener("click", () => this.loadMore());
+    this.tryReloadButton.val.addEventListener("click", () => this.loadMore());
     this.loadingObserver = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
         this.loadMore();
@@ -105,26 +97,26 @@ export class ListPage extends EventEmitter {
 
   private async loadMore(): Promise<void> {
     this.unobserveLoading();
-    this.tryReloadButton_.style.display = "none";
-    this.loadingIcon.style.display = "block";
+    this.tryReloadButton.val.style.display = "none";
+    this.loadingIcon.val.style.display = "block";
     try {
       await this.loadMoreAndTryRemoveOldContent();
     } catch (e) {
       console.log(e);
     }
     this.tryObserveLoading();
-    this.tryReloadButton_.style.display = "block";
-    this.loadingIcon.style.display = "none";
+    this.tryReloadButton.val.style.display = "block";
+    this.loadingIcon.val.style.display = "none";
   }
 
   private tryObserveLoading(): void {
     if (this.moreContentLoaded) {
-      this.loadingObserver.observe(this.loadingSection);
+      this.loadingObserver.observe(this.loadingSection.val);
     }
   }
 
   private unobserveLoading(): void {
-    this.loadingObserver.unobserve(this.loadingSection);
+    this.loadingObserver.unobserve(this.loadingSection.val);
   }
 
   public async loadMoreAndTryRemoveOldContent(): Promise<void> {
@@ -134,12 +126,12 @@ export class ListPage extends EventEmitter {
       let item = this.createShowItem(show)
         .on("play", (showId) => this.emit("play", showId))
         .on("focusUser", (accountId) => this.emit("focusUser", accountId));
-      this.contentContainer.append(item.body);
-      this.showItems_.add(item);
+      this.contentContainer.val.append(item.body);
+      this.showItems.add(item);
     }
 
     let itemsToRemove = new Array<ShowItem>();
-    for (let show of this.showItems_) {
+    for (let show of this.showItems) {
       let bottom = show.body.getBoundingClientRect().bottom;
       if (bottom < 0) {
         itemsToRemove.push(show);
@@ -149,7 +141,7 @@ export class ListPage extends EventEmitter {
     }
     for (let item of itemsToRemove) {
       item.remove();
-      this.showItems_.delete(item);
+      this.showItems.delete(item);
     }
 
     if (response.shows.length > 0) {
@@ -161,19 +153,7 @@ export class ListPage extends EventEmitter {
     }
   }
 
-  public get body() {
-    return this.body_;
-  }
-
   public remove(): void {
-    this.body_.remove();
-  }
-
-  // Visible for testing
-  public get showItems() {
-    return this.showItems_;
-  }
-  public get tryReloadButton() {
-    return this.tryReloadButton_;
+    this.body.remove();
   }
 }
