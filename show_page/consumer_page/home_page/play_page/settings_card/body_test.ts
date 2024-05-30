@@ -28,7 +28,6 @@ function createPlayerSettings(): PlayerSettings {
       density: 100,
       bottomMargin: 1,
       topMargin: 1,
-      enable: true,
       fontFamily: "Arial",
       fontSize: 25,
       stackingMethod: StackingMethod.RANDOM,
@@ -43,7 +42,7 @@ TEST_RUNNER.run({
   environment: {
     setUp: () => {
       container = E.div({
-        style: `width: 100vm; height: 100vh;`,
+        style: `width: 100vm; height: 100vh; display: flex;`,
       });
       document.body.append(container);
     },
@@ -59,9 +58,7 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(400, 600);
         let settings = createPlayerSettings();
-        this.cut = new SettingsCard(settings);
-        let updates = 0;
-        this.cut.on("update", () => updates++);
+        this.cut = new SettingsCard(settings).show();
 
         // Execute
         container.append(this.cut.body);
@@ -78,13 +75,13 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ShortWindow_ScrollDown";
+      public name = "Wide_ShortWindow_ScrollDown";
       private cut: SettingsCard;
       public async execute() {
         // Prepare
-        await setViewport(400, 400);
+        await setViewport(600, 300);
         let settings = createPlayerSettings();
-        this.cut = new SettingsCard(settings);
+        this.cut = new SettingsCard(settings).show();
 
         // Execute
         container.append(this.cut.body);
@@ -97,7 +94,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseWheel(100, 100);
+        await mouseWheel(100, 200);
 
         // Verify
         await asyncAssertScreenshot(
@@ -111,41 +108,13 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "DisableDanmaku";
-      private cut: SettingsCard;
-      public async execute() {
-        // Prepare
-        await setViewport(400, 600);
-        let settings = createPlayerSettings();
-        this.cut = new SettingsCard(settings);
-        container.append(this.cut.body);
-        let updates = 0;
-        this.cut.on("update", () => updates++);
-
-        // Execute
-        this.cut.enableOption.val.switchBarWrapper.val.click();
-
-        // Verify
-        assertThat(updates, eq(1), "1 update");
-        assertThat(settings.danmakuSettings.enable, eq(false), "disabled");
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/settings_card_danmaku_disabled.png"),
-          path.join(__dirname, "/golden/settings_card_danmaku_disabled.png"),
-          path.join(__dirname, "/settings_card_danmaku_disabled_diff.png"),
-        );
-      }
-      public async tearDown() {
-        this.cut.remove();
-      }
-    })(),
-    new (class implements TestCase {
       public name = "UpdateOpacity";
       private cut: SettingsCard;
       public async execute() {
         // Prepare
         await setViewport(400, 600);
         let settings = createPlayerSettings();
-        this.cut = new SettingsCard(settings);
+        this.cut = new SettingsCard(settings).show();
         container.append(this.cut.body);
         let updates = 0;
         this.cut.on("update", () => updates++);
@@ -169,7 +138,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseClick(199, 103);
+        await mouseClick(199, 73);
 
         // Verify
         assertThat(updates, gt(1), "more updates");
@@ -198,7 +167,7 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(400, 600);
         let settings = createPlayerSettings();
-        this.cut = new SettingsCard(settings);
+        this.cut = new SettingsCard(settings).show();
         container.append(this.cut.body);
         let updates = 0;
         this.cut.on("update", () => updates++);
@@ -219,11 +188,11 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseClick(188, 160);
+        await mouseClick(188, 130);
 
         // Verify
         assertThat(updates, gt(1), "more updates");
-        assertThat(settings.danmakuSettings.speed, eq(184), "speed slider");
+        assertThat(settings.danmakuSettings.speed, eq(185), "speed slider");
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_card_danmaku_speed_slider.png"),
           path.join(
@@ -245,7 +214,7 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(400, 600);
         let settings = createPlayerSettings();
-        this.cut = new SettingsCard(settings);
+        this.cut = new SettingsCard(settings).show();
         container.append(this.cut.body);
         let updates = 0;
         this.cut.on("update", () => updates++);
@@ -276,7 +245,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseClick(150, 220);
+        await mouseClick(150, 190);
 
         // Verify
         assertThat(updates, gt(1), "more updates");
@@ -309,7 +278,7 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(400, 600);
         let settings = createPlayerSettings();
-        this.cut = new SettingsCard(settings);
+        this.cut = new SettingsCard(settings).show();
         container.append(this.cut.body);
         let updates = 0;
         this.cut.on("update", () => updates++);
@@ -350,7 +319,7 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(400, 600);
         let settings = createPlayerSettings();
-        this.cut = new SettingsCard(settings);
+        this.cut = new SettingsCard(settings).show();
         container.append(this.cut.body);
         let updates = 0;
         this.cut.on("update", () => updates++);
@@ -374,11 +343,11 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseClick(200, 305);
+        await mouseClick(200, 275);
 
         // Verify
         assertThat(updates, gt(1), "more updates");
-        assertThat(settings.danmakuSettings.density, eq(53), "density slider");
+        assertThat(settings.danmakuSettings.density, eq(52), "density slider");
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_card_danmaku_density_slider.png"),
           path.join(
@@ -403,7 +372,7 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(400, 600);
         let settings = createPlayerSettings();
-        this.cut = new SettingsCard(settings);
+        this.cut = new SettingsCard(settings).show();
         container.append(this.cut.body);
         let updates = 0;
         this.cut.on("update", () => updates++);
@@ -434,13 +403,13 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseClick(200, 363);
+        await mouseClick(200, 333);
 
         // Verify
         assertThat(updates, gt(1), "more updates");
         assertThat(
           settings.danmakuSettings.topMargin,
-          eq(53),
+          eq(52),
           "top margin slider",
         );
         await asyncAssertScreenshot(
@@ -467,7 +436,7 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(400, 600);
         let settings = createPlayerSettings();
-        this.cut = new SettingsCard(settings);
+        this.cut = new SettingsCard(settings).show();
         container.append(this.cut.body);
         let updates = 0;
         this.cut.on("update", () => updates++);
@@ -501,13 +470,13 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseClick(200, 420);
+        await mouseClick(200, 390);
 
         // Verify
         assertThat(updates, gt(1), "more updates");
         assertThat(
           settings.danmakuSettings.bottomMargin,
-          eq(53),
+          eq(52),
           "bottom margin slider",
         );
         await asyncAssertScreenshot(
@@ -537,7 +506,7 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(400, 600);
         let settings = createPlayerSettings();
-        this.cut = new SettingsCard(settings);
+        this.cut = new SettingsCard(settings).show();
         container.append(this.cut.body);
         let updates = 0;
         this.cut.on("update", () => updates++);
@@ -576,7 +545,6 @@ TEST_RUNNER.run({
         await setViewport(400, 600);
         let settings: PlayerSettings = {
           danmakuSettings: {
-            enable: false,
             opacity: 0,
             speed: 100,
             fontSize: 10,
@@ -587,7 +555,7 @@ TEST_RUNNER.run({
             stackingMethod: StackingMethod.TOP_DOWN,
           },
         };
-        this.cut = new SettingsCard(settings);
+        this.cut = new SettingsCard(settings).show();
         container.append(this.cut.body);
         let updates = 0;
         this.cut.on("update", () => updates++);
@@ -602,7 +570,6 @@ TEST_RUNNER.run({
           eqMessage(
             {
               danmakuSettings: {
-                enable: true,
                 opacity: 80,
                 speed: 200,
                 fontSize: 25,

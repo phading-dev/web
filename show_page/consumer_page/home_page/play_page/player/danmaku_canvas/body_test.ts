@@ -105,7 +105,6 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.play();
         this.cut.add(createMultipleComments(elementCount, 13));
         this.cut.pause();
 
@@ -126,7 +125,6 @@ TEST_RUNNER.run({
         allElementsMock[2].emit("occupyEnded");
         allElementsMock[11].pausedPosX = -200;
         allElementsMock[11].emit("occupyEnded");
-        this.cut.play();
         this.cut.add(createMultipleComments(elementCount, 17));
         this.cut.pause();
 
@@ -163,7 +161,6 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.updateSettings();
-        this.cut.play();
         this.cut.add([createComment(elementCount.val++)]);
         this.cut.pause();
 
@@ -179,7 +176,6 @@ TEST_RUNNER.run({
         settings.stackingMethod = StackingMethod.TOP_DOWN;
 
         // Execute
-        this.cut.play();
         this.cut.add(createMultipleComments(elementCount, 22));
         this.cut.pause();
 
@@ -218,7 +214,6 @@ TEST_RUNNER.run({
         pausedPosX = 5;
 
         // Execute
-        this.cut.play();
         this.cut.add(createMultipleComments(elementCount, 5));
         this.cut.pause();
 
@@ -284,7 +279,6 @@ TEST_RUNNER.run({
         pausedPosX = 5;
 
         // Execute
-        this.cut.play();
         this.cut.add(createMultipleComments(elementCount, 8));
         this.cut.pause();
 
@@ -310,7 +304,6 @@ TEST_RUNNER.run({
         randomNum = 0.999;
 
         // Execute
-        this.cut.play();
         this.cut.add(createMultipleComments(elementCount, 11));
         this.cut.pause();
 
@@ -369,7 +362,6 @@ TEST_RUNNER.run({
         pausedPosX = 5;
 
         // Execute
-        this.cut.play();
         this.cut.add(createMultipleComments(elementCount, 9));
         this.cut.pause();
 
@@ -393,7 +385,6 @@ TEST_RUNNER.run({
         randomNum = 0.999;
 
         // Execute
-        this.cut.play();
         this.cut.add(createMultipleComments(elementCount, 14));
         this.cut.pause();
 
@@ -436,7 +427,6 @@ TEST_RUNNER.run({
         pausedPosX = 5;
 
         // Execute
-        this.cut.play();
         this.cut.add(createMultipleComments(elementCount, 9));
         this.cut.pause();
 

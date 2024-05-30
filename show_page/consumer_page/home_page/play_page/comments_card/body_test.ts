@@ -23,7 +23,7 @@ import {
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import { WebServiceClient } from "@selfage/web_service_client";
+import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 import "../../../../../common/normalize_body";
 
 let SAMPLE_COMMENT: Comment = {
@@ -49,7 +49,7 @@ TEST_RUNNER.run({
   environment: {
     setUp() {
       container = E.div({
-        style: "width: 100vw; height: 100vh;",
+        style: "width: 100vw; height: 100vh; display: flex;",
       });
       document.body.append(container);
     },
@@ -65,14 +65,10 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(400, 600);
         this.cut = new CommentsCard(
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-          })(),
-          CommentEntryMock.create,
+          new WebServiceClientMock(),
+          (comment) => new CommentEntryMock(comment),
           "id1",
-        );
+        ).show();
 
         // Execute
         container.append(this.cut.body);
@@ -85,7 +81,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.addComment([SAMPLE_COMMENT]);
+        this.cut.addComments([SAMPLE_COMMENT]);
 
         // Verify
         await asyncAssertScreenshot(
@@ -99,7 +95,7 @@ TEST_RUNNER.run({
         for (let i = 0; i < 10; i++) {
           comments.push(SAMPLE_COMMENT);
         }
-        this.cut.addComment(comments);
+        this.cut.addComments(comments);
 
         // Verify
         await asyncAssertScreenshot(
@@ -121,7 +117,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.addComment([SAMPLE_COMMENT]);
+        this.cut.addComments([SAMPLE_COMMENT]);
 
         // Verify
         await asyncAssertScreenshot(
@@ -152,25 +148,21 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(400, 600);
         this.cut = new CommentsCard(
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-          })(),
-          CommentEntryMock.create,
+          new WebServiceClientMock(),
+          (comment) => new CommentEntryMock(comment),
           "id1",
-        );
+        ).show();
         container.append(this.cut.body);
 
         let comments = new Array<Comment>();
         for (let i = 0; i < 100; i++) {
           comments.push(SAMPLE_COMMENT);
         }
-        this.cut.addComment(comments);
+        this.cut.addComments(comments);
         let scrollHeightBaseline = this.cut.scrollingArea.val.scrollHeight;
 
         // Execute
-        this.cut.addComment(comments);
+        this.cut.addComments(comments);
 
         // Verify
         assertThat(
@@ -190,16 +182,15 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(400, 600);
         let currentTimestamp = 123456;
-        let webServiceClientMock = new (class extends WebServiceClient {
-          public constructor() {
-            super(undefined, undefined);
-          }
-        })();
+        let webServiceClientMock =
+          new (class extends WebServiceClientMock {})();
         this.cut = new CommentsCard(
           webServiceClientMock,
-          CommentEntryMock.create,
+          (comment) => new CommentEntryMock(comment),
           "id1",
-        ).setCallbackToGetTimestamp(() => currentTimestamp);
+        )
+          .show()
+          .setCallbackToGetTimestamp(() => currentTimestamp);
         container.append(this.cut.body);
 
         // Execute

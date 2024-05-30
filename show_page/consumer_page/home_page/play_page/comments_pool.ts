@@ -1,4 +1,5 @@
 import EventEmitter = require("events");
+import { COMMENT_SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { Comment } from "@phading/comment_service_interface/show_app/comment";
 import { getComments } from "@phading/comment_service_interface/show_app/web/client_requests";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -8,13 +9,17 @@ export interface CommentsPool {
 }
 
 export class CommentsPool extends EventEmitter {
+  public static create(showId: string): CommentsPool {
+    return new CommentsPool(COMMENT_SERVICE_CLIENT, showId);
+  }
+
   private lastTimestamp: number = 0; // ms
   private comments = new Array<Comment>();
   private lastIndex = 0;
 
   public constructor(
     private webServiceClient: WebServiceClient,
-    private showId: string
+    private showId: string,
   ) {
     super();
     this.load();

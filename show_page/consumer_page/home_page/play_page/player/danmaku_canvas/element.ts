@@ -73,7 +73,7 @@ export class DanmakuElement extends EventEmitter {
         contentRef,
         {
           class: "danmaku-element-content",
-          style: `line-height: 1; color: ${SCHEME.neutral0}; text-shadow: -.1rem 0 .1rem ${SCHEME.neutral4}, 0 .1rem .1rem ${SCHEME.neutral4}, .1rem 0 .1rem ${SCHEME.neutral4}, 0 -.1rem .1rem ${SCHEME.neutral4};`,
+          style: `white-space: nowrap; line-height: 1; color: ${SCHEME.neutral0}; text-shadow: -.1rem 0 .1rem ${SCHEME.neutral4}, 0 .1rem .1rem ${SCHEME.neutral4}, .1rem 0 .1rem ${SCHEME.neutral4}, 0 -.1rem .1rem ${SCHEME.neutral4};`,
         },
         E.text(comment.content),
       ),

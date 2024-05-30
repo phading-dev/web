@@ -90,7 +90,7 @@ export class UsageReportPage extends EventEmitter {
         E.div(
           {
             class: "usage-report-sum-value",
-            style: `flex: 1 0 0; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+            style: `flex: 1 1 0; min-width: 0; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
           },
           E.text(`${playtimeMeterReport.totalPlaytime}`)
         )
@@ -157,7 +157,7 @@ export class UsageReportPage extends EventEmitter {
           E.div(
             {
               class: "usage-report-usage-bar-wrapper",
-              style: `flex: 1 0 0; height: 2rem; position: relative;`,
+              style: `flex: 1 1 0; min-width: 0; height: 2rem; position: relative;`,
             },
             E.div({
               class: "usage-report-usage-bar",

@@ -87,7 +87,8 @@ export class DanmakuCanvas extends EventEmitter {
   }
 
   public add(comments: Array<Comment>): void {
-    if (!this.danmakuSettigns.enable || !this.playing) {
+    if (!this.danmakuSettigns.enable || !this.height) {
+      // If ResizeObserver hasn't caught up, skip adding comments.
       return;
     }
     for (let comment of comments) {
@@ -165,7 +166,9 @@ export class DanmakuCanvas extends EventEmitter {
     );
     element.once("displayEnded", () => this.removeNode(node));
     element.setReadyToPlay(posY, this.width);
-    element.play();
+    if (this.playing) {
+      element.play();
+    }
   }
 
   private getInitY(

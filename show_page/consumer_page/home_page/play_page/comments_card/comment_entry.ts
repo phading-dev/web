@@ -10,7 +10,7 @@ import {
   LINE_HEIGHT_M,
 } from "../../../../../common/sizes";
 import { COMMENT_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { CONTAINER_PADDING_LEFT_RIGHT } from "./styles";
+import { CARD_SIDE_PADDING } from "../common/styles";
 import {
   Comment,
   Liking,
@@ -39,14 +39,14 @@ export class CommentEntry extends EventEmitter {
 
   public constructor(
     private webServiceClient: WebServiceClient,
-    private comment: Comment
+    private comment: Comment,
   ) {
     super();
     let likeDislikeButtonsRef = new Ref<LikeDislikeButtons>();
     this.body_ = E.div(
       {
         class: "comment-entry",
-        style: `position: relative; padding: .5rem ${CONTAINER_PADDING_LEFT_RIGHT}rem; min-height: ${AVATAR_S}rem; background-color: ${SCHEME.neutral4};`,
+        style: `position: relative; padding: .5rem ${CARD_SIDE_PADDING}rem; min-height: ${AVATAR_S}rem; background-color: ${SCHEME.neutral4};`,
       },
       E.image({
         class: "comment-entry-author-avatar",
@@ -60,36 +60,36 @@ export class CommentEntry extends EventEmitter {
             SCHEME.neutral1
           }; font-weight: ${comment.isThePublisher ? "bold" : "normal"};`,
         },
-        E.text(comment.author.naturalName)
+        E.text(comment.author.naturalName),
       ),
       E.div(
         {
           style: "white-space: pre-line",
         },
-        E.text("\n")
+        E.text("\n"),
       ),
       E.div(
         {
           class: "comment-entry-content",
           style: `display: inline; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
-        E.text(comment.content)
+        E.text(comment.content),
       ),
       assign(
         likeDislikeButtonsRef,
         LikeDislikeButtons.create(
-          `width: 100%; box-sizing: border-box; padding: 0 ${CONTAINER_PADDING_LEFT_RIGHT}rem; position: absolute; left: 0; bottom: 100%; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: row nowrap; justify-content: flex-end; gap: .5rem;`,
+          `width: 100%; box-sizing: border-box; padding: 0 ${CARD_SIDE_PADDING}rem; position: absolute; left: 0; bottom: 100%; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: row nowrap; justify-content: flex-end; gap: .5rem;`,
           0.7,
-          TooltipPosition.LEFT
-        ).disable()
-      ).body
+          TooltipPosition.LEFT,
+        ).disable(),
+      ).body,
     );
     this.likeDislikeButtons_ = likeDislikeButtonsRef.val;
 
     this.hideActions();
     this.hoverObserver = HoverObserver.create(
       this.body_,
-      Mode.DELAY_HOVER_DELAY_LEAVE
+      Mode.DELAY_HOVER_DELAY_LEAVE,
     )
       .on("hover", () => this.showActions())
       .on("leave", () => this.hideActions());

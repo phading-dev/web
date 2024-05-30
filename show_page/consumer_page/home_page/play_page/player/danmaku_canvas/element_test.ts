@@ -373,7 +373,7 @@ TEST_RUNNER.run({
         responseToReturn = {} as any;
 
         // Execute
-        this.cut.likeDislikeButtons.thumbUpedButton.click();
+        this.cut.likeDislikeButtons.thumbUpedButton.val.click();
         await new Promise<void>((resolve) =>
           this.cut.once("postLike", resolve),
         );

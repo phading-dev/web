@@ -33,7 +33,7 @@ export class TextValuesGroup extends EventEmitter {
       E.div(
         {
           class: "text-values-group-lines",
-          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+          style: `flex: 1 1 0; min-width: 0; display: flex; flex-flow: column nowrap; gap: 2rem;`,
         },
         ...this.createTextValueElement(textValues)
       ),

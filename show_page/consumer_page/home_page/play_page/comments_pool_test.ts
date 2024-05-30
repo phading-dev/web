@@ -10,7 +10,7 @@ import {
 } from "@phading/comment_service_interface/show_app/web/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER } from "@selfage/puppeteer_test_runner";
-import { assertThat, eq, eqArray } from "@selfage/test_matcher";
+import { assertThat, eq, isArray } from "@selfage/test_matcher";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 TEST_RUNNER.run({
@@ -38,10 +38,10 @@ TEST_RUNNER.run({
               };
             }
           })(),
-          "id1"
+          "id1",
         );
         await new Promise<void>((resolve) =>
-          commentsPool.once("loaded", resolve)
+          commentsPool.once("loaded", resolve),
         );
         let read1 = commentsPool.read(10);
 
@@ -53,11 +53,11 @@ TEST_RUNNER.run({
             {
               showId: "id1",
             },
-            GET_COMMENTS_REQUEST_BODY
+            GET_COMMENTS_REQUEST_BODY,
           ),
-          "request body"
+          "request body",
         );
-        assertThat(read1, eqArray([]), "read nothing");
+        assertThat(read1, isArray([]), "read nothing");
 
         // Execute
         let read2 = commentsPool.read(20);
@@ -65,15 +65,15 @@ TEST_RUNNER.run({
         // Verify
         assertThat(
           read2,
-          eqArray([eqMessage(comment, COMMENT)]),
-          "read a comment"
+          isArray([eqMessage(comment, COMMENT)]),
+          "read a comment",
         );
 
         // Execute
         let read3 = commentsPool.read(30);
 
         // Verify
-        assertThat(read3, eqArray([]), "read nothing again");
+        assertThat(read3, isArray([]), "read nothing again");
       },
     },
     {
@@ -111,22 +111,22 @@ TEST_RUNNER.run({
               };
             }
           })(),
-          "id1"
+          "id1",
         );
         await new Promise<void>((resolve) =>
-          commentsPool.once("loaded", resolve)
+          commentsPool.once("loaded", resolve),
         );
         let read1 = commentsPool.read(40);
 
         // Verify
         assertThat(
           read1,
-          eqArray([
+          isArray([
             eqMessage(comment10, COMMENT),
             eqMessage(comment20, COMMENT),
             eqMessage(comment20, COMMENT),
           ]),
-          "read 3"
+          "read 3",
         );
 
         // Execute
@@ -135,11 +135,11 @@ TEST_RUNNER.run({
         // Verify
         assertThat(
           read2,
-          eqArray([
+          isArray([
             eqMessage(comment40, COMMENT),
             eqMessage(comment45, COMMENT),
           ]),
-          "read 2"
+          "read 2",
         );
       },
     },
@@ -182,10 +182,10 @@ TEST_RUNNER.run({
               };
             }
           })(),
-          "id1"
+          "id1",
         );
         await new Promise<void>((resolve) =>
-          commentsPool.once("loaded", resolve)
+          commentsPool.once("loaded", resolve),
         );
 
         // Execute
@@ -195,13 +195,13 @@ TEST_RUNNER.run({
         // Verify
         assertThat(
           read1,
-          eqArray([
+          isArray([
             eqMessage(comment20, COMMENT),
             eqMessage(comment20, COMMENT),
             eqMessage(comment40, COMMENT),
             eqMessage(comment45, COMMENT),
           ]),
-          "read 2"
+          "read 2",
         );
 
         // Execute
@@ -211,11 +211,11 @@ TEST_RUNNER.run({
         // Verify
         assertThat(
           read2,
-          eqArray([
+          isArray([
             eqMessage(comment0, COMMENT),
             eqMessage(comment10, COMMENT),
           ]),
-          "read 2"
+          "read 2",
         );
       },
     },

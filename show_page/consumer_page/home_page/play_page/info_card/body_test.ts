@@ -23,7 +23,7 @@ TEST_RUNNER.run({
   environment: {
     setUp: () => {
       container = E.div({
-        style: `width: 100vm; height: 100vh;`,
+        style: `width: 100vm; height: 100vh; display: flex;`,
       });
       document.body.append(container);
     },
@@ -47,7 +47,7 @@ TEST_RUNNER.run({
             naturalName: "User name",
             avatarSmallPath: userImage,
           },
-        });
+        }).show();
 
         // Execute
         container.append(this.cut.body);
@@ -88,7 +88,7 @@ TEST_RUNNER.run({
             naturalName: createString("User name", 20),
             avatarSmallPath: userImage,
           },
-        });
+        }).show();
 
         // Execute
         container.append(this.cut.body);
@@ -129,16 +129,16 @@ TEST_RUNNER.run({
             naturalName: "User name",
             avatarSmallPath: userImage,
           },
-        });
+        }).show();
         container.append(this.cut.body);
-        let focusUser = false;
-        this.cut.on("focusUser", () => (focusUser = true));
+        let accountIdCaptured: string;
+        this.cut.on("focusUser", (accountId) => accountIdCaptured = accountId);
 
         // Execute
         this.cut.publisher.val.click();
 
         // Verify
-        assertThat(focusUser, eq(true), "Focus user");
+        assertThat(accountIdCaptured, eq("account1"), "Focused user");
       }
       public tearDown() {
         this.cut.remove();

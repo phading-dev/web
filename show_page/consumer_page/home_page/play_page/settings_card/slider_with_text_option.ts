@@ -72,7 +72,7 @@ export class SilderWithTextOption extends EventEmitter {
             "1rem",
             this.numberRange.minValue,
             this.numberRange.maxValue,
-            "flex: 1;",
+            "flex: 1 1 0; min-width: 0;",
             value,
           ),
         ).body,

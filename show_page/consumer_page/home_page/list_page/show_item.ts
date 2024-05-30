@@ -103,7 +103,7 @@ export class ShowItem extends EventEmitter {
           E.div(
             {
               class: "show-item-publisher-name",
-              style: `flex: 1 0 0; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 2}rem; color: ${SCHEME.neutral0}; overflow: hidden;`,
+              style: `flex: 1 1 0; min-width: 0; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 2}rem; color: ${SCHEME.neutral0}; overflow: hidden;`,
             },
             E.text(show.publisher.naturalName),
           ),

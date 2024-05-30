@@ -7,10 +7,6 @@ import { GetCommentLikingResponse } from "@phading/comment_service_interface/sho
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 export class CommentEntryMock extends CommentEntry {
-  public static create(comment: Comment): CommentEntryMock {
-    return new CommentEntryMock(comment);
-  }
-
   public constructor(comment: Comment) {
     super(
       new (class extends WebServiceClientMock {

@@ -6,7 +6,6 @@ import { FONT_L } from "../../../../../common/sizes";
 import {
   BOTTOM_MARGIN_RANGE,
   DENSITY_RANGE,
-  ENABLE_CHAT_SCROLLING_DEFAULT,
   FONT_FAMILY_DEFAULT,
   FONT_SIZE_RANGE,
   OPACITY_RANGE,
@@ -14,10 +13,10 @@ import {
   STACKING_METHOD_DEFAULT,
   TOP_MARGIN_RANGE,
 } from "../common/defaults";
+import { CARD_SIDE_PADDING } from "../common/styles";
 import { DropdownOption } from "./dropdown_option";
 import { SilderWithTextOption } from "./slider_with_text_option";
 import { INPUT_WIDTH, LABEL_STYLE } from "./styles";
-import { SwitchCheckboxOption } from "./switch_checkbox_option";
 import { TextOption } from "./text_option";
 import {
   PlayerSettings,
@@ -36,7 +35,6 @@ export class SettingsCard extends EventEmitter {
   }
 
   public body: HTMLDivElement;
-  public enableOption = new Ref<SwitchCheckboxOption>();
   public opacityOption = new Ref<SilderWithTextOption>();
   public speedOption = new Ref<SilderWithTextOption>();
   public fontSizeOption = new Ref<SilderWithTextOption>();
@@ -52,7 +50,7 @@ export class SettingsCard extends EventEmitter {
     this.body = E.div(
       {
         class: "settings-card",
-        style: `width: 100%; height: 100%; overflow-y: auto; padding: 1rem 2rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; gap: 1rem; background-color: ${SCHEME.neutral4};`,
+        style: `flex: 1 1 0; min-height: 0; width: 100%; height: 100%; overflow-y: auto; padding: 1rem ${CARD_SIDE_PADDING}rem; box-sizing: border-box; flex-flow: column nowrap; gap: 1rem;`,
       },
       E.div(
         {
@@ -61,14 +59,6 @@ export class SettingsCard extends EventEmitter {
         },
         E.text(LOCALIZED_TEXT.danmakuSettingsLabel),
       ),
-      assign(
-        this.enableOption,
-        SwitchCheckboxOption.create(
-          LOCALIZED_TEXT.danmakuEnableOption,
-          ENABLE_CHAT_SCROLLING_DEFAULT,
-          playerSetings.danmakuSettings.enable,
-        ),
-      ).body,
       assign(
         this.opacityOption,
         SilderWithTextOption.create(
@@ -166,9 +156,6 @@ export class SettingsCard extends EventEmitter {
       ),
     );
 
-    this.enableOption.val.on("update", (value) =>
-      this.updateEnableOption(value),
-    );
     this.opacityOption.val.on("update", (value) =>
       this.updateOpacityOption(value),
     );
@@ -192,11 +179,6 @@ export class SettingsCard extends EventEmitter {
       this.updateStackingMethodOption(value),
     );
     this.resetButton.val.addEventListener("click", () => this.resetSettings());
-  }
-
-  private updateEnableOption(value: boolean): void {
-    this.playerSetings.danmakuSettings.enable = value;
-    this.emit("update");
   }
 
   private updateOpacityOption(value: number): void {
@@ -240,7 +222,6 @@ export class SettingsCard extends EventEmitter {
   }
 
   private resetSettings(): void {
-    this.playerSetings.danmakuSettings.enable = this.enableOption.val.reset();
     this.playerSetings.danmakuSettings.opacity = this.opacityOption.val.reset();
     this.playerSetings.danmakuSettings.speed = this.speedOption.val.reset();
     this.playerSetings.danmakuSettings.fontSize =
@@ -255,6 +236,16 @@ export class SettingsCard extends EventEmitter {
     this.playerSetings.danmakuSettings.stackingMethod =
       this.stackingMethodOption.val.reset();
     this.emit("update");
+  }
+
+  public show(): this {
+    this.body.style.display = "flex";
+    return this;
+  }
+
+  public hide(): this {
+    this.body.style.display = "none";
+    return this;
   }
 
   public remove(): void {

@@ -10,11 +10,11 @@ import { Liking } from "@phading/product_service_interface/consumer/show_app/sho
 import {
   LIKE_SHOW,
   LIKE_SHOW_REQUEST_BODY,
-  SAVE_PLAYER_SETTINGS,
-  SAVE_PLAYER_SETTINGS_REQUEST_BODY,
 } from "@phading/product_service_interface/consumer/show_app/web/interface";
+import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
 import {
+  forceMouseUp,
   mouseClick,
   mouseDown,
   mouseMove,
@@ -26,8 +26,8 @@ import {
 } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
-import { assertThat, eq, eqAppr, le } from "@selfage/test_matcher";
-import { WebServiceClient } from "@selfage/web_service_client";
+import { assertThat, eq, eqAppr, ge, gt, le } from "@selfage/test_matcher";
+import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 import "../../../../../common/normalize_body";
 
 // Make sure every test gets its own copy.
@@ -52,21 +52,34 @@ function createPlayerSettings(): PlayerSettings {
   };
 }
 
+let container: HTMLDivElement;
+
 TEST_RUNNER.run({
   name: "PlayerTest",
+  environment: {
+    setUp: () => {
+      container = E.div({
+        style: "width: 100vw; height: 100vh; display: flex;",
+      });
+      document.body.append(container);
+    },
+    tearDown: () => {
+      container.remove();
+    },
+  },
   cases: [
     new (class implements TestCase {
-      public name = "Default_MoveToShowActions_ClickToPlay_PlayToTheEnd";
+      public name =
+        "Default_MoveToShowActions_ClickToPlay_ClickToPause_PlayToTheEnd";
       private cut: Player;
       public async execute() {
         // Prepare
         await setViewport(600, 600);
         this.cut = new Player(
-          (callback, ms) => window.setTimeout(callback, ms),
-          (id) => window.clearTimeout(id),
-          (reservedBottomMargin, danmakuSettigns) =>
-            new DanmakuCanvasMock(reservedBottomMargin, 5, danmakuSettigns),
+          window,
           undefined,
+          (reservedBottomMargin, danmakuSettigns) =>
+            new DanmakuCanvasMock(5, reservedBottomMargin, danmakuSettigns),
           createPlayerSettings(),
           {
             videoPath: mov,
@@ -75,7 +88,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        document.body.append(this.cut.body);
+        container.append(this.cut.body);
         await new Promise<void>((resolve) =>
           this.cut.once("canplaythrough", resolve),
         );
@@ -98,15 +111,27 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseClick(1, 100);
+        mouseClick(1, 100);
+        await new Promise<void>((resolve) => this.cut.on("playing", resolve));
         // Waits for roughly 1 sec.
         await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+        mouseClick(1, 100);
+        await new Promise<void>((resolve) =>
+          this.cut.on("notPlaying", resolve),
+        );
 
         // Verify
-        assertThat(this.cut.video.currentTime, eqAppr(1, 0.1), "current time");
+        assertThat(
+          this.cut.video.val.currentTime,
+          eqAppr(0.9, 0.2),
+          "current time",
+        );
 
         // Execute
-        await new Promise<void>((resolve) => this.cut.once("ended", resolve));
+        mouseClick(5, 50);
+        await new Promise<void>((resolve) =>
+          this.cut.once("notPlaying", resolve),
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -116,13 +141,14 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        // To play
-        await mouseClick(5, 5);
+        // To re-play
+        mouseClick(5, 50);
+        await new Promise<void>((resolve) => this.cut.on("playing", resolve));
 
         // Verify
         // Restarted.
         assertThat(
-          this.cut.video.currentTime,
+          this.cut.video.val.currentTime,
           le(0.1),
           "current time restarted",
         );
@@ -139,11 +165,10 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(400, 800);
         this.cut = new Player(
-          (callback, ms) => window.setTimeout(callback, ms),
-          (id) => window.clearTimeout(id),
-          (reservedBottomMargin, danmakuSettigns) =>
-            new DanmakuCanvasMock(reservedBottomMargin, 5, danmakuSettigns),
+          window,
           undefined,
+          (reservedBottomMargin, danmakuSettigns) =>
+            new DanmakuCanvasMock(5, reservedBottomMargin, danmakuSettigns),
           createPlayerSettings(),
           {
             videoPath: mov,
@@ -152,7 +177,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        document.body.append(this.cut.body);
+        container.append(this.cut.body);
         await new Promise<void>((resolve) =>
           this.cut.once("canplaythrough", resolve),
         );
@@ -176,24 +201,23 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(600, 600);
         this.cut = new Player(
-          (callback, ms) => 1,
-          (id) => {},
-          (reservedBottomMargin, danmakuSettigns) =>
-            new DanmakuCanvasMock(reservedBottomMargin, 5, danmakuSettigns),
+          window,
           undefined,
+          (reservedBottomMargin, danmakuSettigns) =>
+            new DanmakuCanvasMock(5, reservedBottomMargin, danmakuSettigns),
           createPlayerSettings(),
           {
             videoPath: mov,
             liking: Liking.NEUTRAL,
           },
         );
-        document.body.append(this.cut.body);
+        container.append(this.cut.body);
         await new Promise<void>((resolve) =>
           this.cut.once("canplaythrough", resolve),
         );
 
         // Execute
-        this.cut.skipForwardButton.click();
+        this.cut.skipForwardButton.val.click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -213,7 +237,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.skipForwardButton.click();
+        this.cut.skipForwardButton.val.click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -256,7 +280,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.skipForwardButton.click();
+        this.cut.skipForwardButton.val.click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -276,7 +300,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.skipBackwardButton.click();
+        this.cut.skipBackwardButton.val.click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -286,7 +310,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.skipBackwardButton.click();
+        this.cut.skipBackwardButton.val.click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -296,7 +320,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.skipBackwardButton.click();
+        this.cut.skipBackwardButton.val.click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -310,31 +334,29 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "MouseMove_Down_Move_MoveTo0_Up_Move";
+      public name = "ProgressBar_MouseMove_Down_Move_MoveTo0_Up_Move";
       private cut: Player;
       public async execute() {
         // Prepare
         await setViewport(600, 600);
         this.cut = new Player(
-          (callback, ms) => 1,
-          (id) => {},
-          (reservedBottomMargin, danmakuSettigns) =>
-            new DanmakuCanvasMock(reservedBottomMargin, 5, danmakuSettigns),
+          window,
           undefined,
+          (reservedBottomMargin, danmakuSettigns) =>
+            new DanmakuCanvasMock(5, reservedBottomMargin, danmakuSettigns),
           createPlayerSettings(),
           {
             videoPath: mov,
             liking: Liking.NEUTRAL,
           },
         );
-        document.body.append(this.cut.body);
+        container.append(this.cut.body);
         await new Promise<void>((resolve) =>
           this.cut.once("canplaythrough", resolve),
         );
-        // await stall(100000);
 
         // Execute
-        await mouseMove(5, 530, 1);
+        await mouseMove(5, 560, 1);
 
         // Verify
         await asyncAssertScreenshot(
@@ -344,7 +366,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseMove(30, 530, 1);
+        await mouseMove(30, 560, 1);
 
         // Verify
         await asyncAssertScreenshot(
@@ -375,7 +397,7 @@ TEST_RUNNER.run({
 
         // Execute
         await mouseUp();
-        await mouseMove(590, 530, 1);
+        await mouseMove(590, 560, 1);
 
         // Verify
         await asyncAssertScreenshot(
@@ -388,7 +410,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseMove(590, 550, 1);
+        await mouseMove(590, 530, 1);
 
         // Verify
         await asyncAssertScreenshot(
@@ -398,6 +420,7 @@ TEST_RUNNER.run({
         );
       }
       public async tearDown() {
+        await forceMouseUp();
         await mouseMove(-1, -1, 1);
         this.cut.remove();
       }
@@ -409,24 +432,23 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(600, 600);
         this.cut = new Player(
-          (callback, ms) => 1,
-          (id) => {},
-          (reservedBottomMargin, danmakuSettigns) =>
-            new DanmakuCanvasMock(reservedBottomMargin, 5, danmakuSettigns),
+          window,
           undefined,
+          (reservedBottomMargin, danmakuSettigns) =>
+            new DanmakuCanvasMock(5, reservedBottomMargin, danmakuSettigns),
           createPlayerSettings(),
           {
             videoPath: mov,
             liking: Liking.NEUTRAL,
           },
         );
-        document.body.append(this.cut.body);
+        container.append(this.cut.body);
         await new Promise<void>((resolve) =>
           this.cut.once("canplaythrough", resolve),
         );
 
         // Execute
-        await touchStart(60, 530);
+        await touchStart(60, 560);
 
         // Verify
         await asyncAssertScreenshot(
@@ -436,7 +458,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await touchMove(620, 600);
+        await touchMove(620, 640);
 
         // Verify
         await asyncAssertScreenshot(
@@ -486,53 +508,30 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(600, 600);
         let playerSettings = createPlayerSettings();
-        let requestCaptured: any;
-        let responseToSend: any;
         this.cut = new Player(
-          (callback, ms) => 1,
-          (id) => {},
+          window,
+          undefined,
           (reservedBottomMargin, danmakuSettigns) =>
-            new DanmakuCanvasMock(reservedBottomMargin, 5, danmakuSettigns),
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(request: any): Promise<any> {
-              requestCaptured = request;
-              return responseToSend;
-            }
-          })(),
+            new DanmakuCanvasMock(5, reservedBottomMargin, danmakuSettigns),
           playerSettings,
           {
             videoPath: mov,
             liking: Liking.NEUTRAL,
           },
         );
-        document.body.append(this.cut.body);
+        container.append(this.cut.body);
         await new Promise<void>((resolve) =>
           this.cut.once("canplaythrough", resolve),
         );
+        let updatedSettings = 0;
+        this.cut.on("updateSettings", () => updatedSettings++);
 
         // Execute
         this.cut.showActions();
-        this.cut.speedUpbutton.click();
+        this.cut.speedUpButton.val.click();
 
         // Verify
-        assertThat(
-          requestCaptured.descriptor,
-          eq(SAVE_PLAYER_SETTINGS),
-          "service",
-        );
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
-            {
-              playerSettings,
-            },
-            SAVE_PLAYER_SETTINGS_REQUEST_BODY,
-          ),
-          "request body",
-        );
+        assertThat(updatedSettings, eq(1), "update settings");
         assertThat(
           playerSettings.videoSettings.playbackSpeed,
           eq(1.25),
@@ -544,20 +543,14 @@ TEST_RUNNER.run({
           path.join(__dirname, "/player_speed_up_diff.png"),
         );
 
+        // Prepare
+        updatedSettings = 0;
+
         // Execute
-        this.cut.speedUpbutton.click();
+        this.cut.speedUpButton.val.click();
 
         // Verify
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
-            {
-              playerSettings,
-            },
-            SAVE_PLAYER_SETTINGS_REQUEST_BODY,
-          ),
-          "request body 2",
-        );
+        assertThat(updatedSettings, eq(1), "update settings again");
         assertThat(
           playerSettings.videoSettings.playbackSpeed,
           eq(1.5),
@@ -569,22 +562,16 @@ TEST_RUNNER.run({
           path.join(__dirname, "/player_speed_up_2_diff.png"),
         );
 
+        // Prepare
+        updatedSettings = 0;
+
         // Execute
         for (let i = 0; i < 6; i++) {
-          this.cut.speedUpbutton.click();
+          this.cut.speedUpButton.val.click();
         }
 
         // Verify
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
-            {
-              playerSettings,
-            },
-            SAVE_PLAYER_SETTINGS_REQUEST_BODY,
-          ),
-          "request body 3",
-        );
+        assertThat(updatedSettings, gt(1), "update settings multiple times");
         assertThat(
           playerSettings.videoSettings.playbackSpeed,
           eq(4),
@@ -597,36 +584,32 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseClick(5, 5);
+        mouseClick(5, 50);
         let startTime = Date.now();
-        await new Promise<void>((resolve) => this.cut.once("ended", resolve));
+        await new Promise<void>((resolve) =>
+          this.cut.once("notPlaying", resolve),
+        );
         let elapsedTime = Date.now() - startTime;
 
         // Verify
         assertThat(elapsedTime, eqAppr(2700, 0.1), "max speed playback time");
 
+        // Prepare
+        updatedSettings = 0;
+
         // Execute
         for (let i = 0; i < 11; i++) {
-          this.cut.speedDownButton.click();
+          this.cut.speedDownButton.val.click();
         }
 
         // Verify
-        // Make sure not to hide actions.
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
-            {
-              playerSettings,
-            },
-            SAVE_PLAYER_SETTINGS_REQUEST_BODY,
-          ),
-          "request body 4",
-        );
+        assertThat(updatedSettings, gt(1), "update settings multiple times");
         assertThat(
           playerSettings.videoSettings.playbackSpeed,
           eq(0.25),
           "speed 4",
         );
+        // Make sure not to hide actions.
         await mouseMove(10, 5, 1);
         await asyncAssertScreenshot(
           path.join(__dirname, "/player_speed_down_max.png"),
@@ -656,35 +639,27 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(600, 600);
         this.cut = new Player(
-          (callback, ms) => 1,
-          (id) => {},
+          window,
+          undefined,
           (reservedBottomMargin, danmakuSettigns) =>
-            new DanmakuCanvasMock(reservedBottomMargin, 5, danmakuSettigns),
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(): Promise<any> {
-              return {};
-            }
-          })(),
+            new DanmakuCanvasMock(5, reservedBottomMargin, danmakuSettigns),
           createPlayerSettings(),
           {
             videoPath: mov,
             liking: Liking.NEUTRAL,
           },
         );
-        document.body.append(this.cut.body);
+        container.append(this.cut.body);
         await new Promise<void>((resolve) =>
           this.cut.once("canplaythrough", resolve),
         );
         // 4x speed
         for (let i = 0; i < 7; i++) {
-          this.cut.speedUpbutton.click();
+          this.cut.speedUpButton.val.click();
         }
 
         // Execute
-        this.cut.noLoopButton.click();
+        this.cut.noLoopButton.val.click();
 
         // Verify
         this.cut.showActions();
@@ -695,22 +670,26 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseClick(5, 5);
-        await new Promise<void>((resolve) => setTimeout(resolve, 3000));
+        mouseClick(5, 50);
+        await new Promise<void>((resolve) =>
+          this.cut.on("notPlaying", resolve),
+        );
+        await new Promise<void>((resolve) => this.cut.on("playing", resolve));
+        mouseClick(5, 50);
+        await new Promise<void>((resolve) =>
+          this.cut.on("notPlaying", resolve),
+        );
 
         // Verify
         // Looped.
         assertThat(
-          this.cut.video.currentTime,
-          le(4),
+          this.cut.video.val.currentTime,
+          ge(0),
           "current video time in a new loop",
         );
 
-        // Prepare
-        await mouseClick(5, 5);
-
         // Execute
-        this.cut.loopButton.click();
+        this.cut.loopButton.val.click();
 
         // Verify
         this.cut.showActions();
@@ -731,11 +710,18 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseClick(5, 5);
+        mouseClick(5, 50);
 
         // Verify
-        // Vidoe can be ended.
-        await new Promise<void>((resolve) => this.cut.once("ended", resolve));
+        await new Promise<void>((resolve) =>
+          this.cut.once("notPlaying", resolve),
+        );
+        await new Promise<void>((resolve) => setTimeout(resolve, 100));
+        assertThat(
+          this.cut.video.val.currentTime,
+          gt(10),
+          "current video time stays at the end",
+        );
       }
       public async tearDown() {
         await mouseMove(-1, -1, 1);
@@ -748,55 +734,32 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(600, 600);
-        let requestCaptured: any;
-        let responseToReturn: any;
         let playerSettings = createPlayerSettings();
         this.cut = new Player(
-          (callback, ms) => 1,
-          (id) => {},
+          window,
+          undefined,
           (reservedBottomMargin, danmakuSettigns) =>
-            new DanmakuCanvasMock(reservedBottomMargin, 5, danmakuSettigns),
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(request: any): Promise<void> {
-              requestCaptured = request;
-              return responseToReturn;
-            }
-          })(),
+            new DanmakuCanvasMock(5, reservedBottomMargin, danmakuSettigns),
           playerSettings,
           {
             videoPath: mov,
             liking: Liking.NEUTRAL,
           },
         );
-        document.body.append(this.cut.body);
+        container.append(this.cut.body);
         await new Promise<void>((resolve) =>
           this.cut.once("canplaythrough", resolve),
         );
+        let updatedSettings = 0;
+        this.cut.on("updateSettings", () => updatedSettings++);
 
         // Execute
-        await mouseMove(560, 293, 1);
+        await mouseMove(570, 273, 1);
         await mouseDown();
 
         // Verify
-        assertThat(this.cut.video.volume, eqAppr(0.1), "volume 1");
-        assertThat(
-          requestCaptured.descriptor,
-          eq(SAVE_PLAYER_SETTINGS),
-          "service",
-        );
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
-            {
-              playerSettings,
-            },
-            SAVE_PLAYER_SETTINGS_REQUEST_BODY,
-          ),
-          "request body",
-        );
+        assertThat(this.cut.video.val.volume, eqAppr(0.1), "volume 1");
+        assertThat(updatedSettings, eq(1), "updated settings");
         assertThat(
           playerSettings.videoSettings.volume,
           eqAppr(0.1),
@@ -808,22 +771,16 @@ TEST_RUNNER.run({
           path.join(__dirname, "/player_volume_changing_diff.png"),
         );
 
+        // Prepare
+        updatedSettings = 0;
+
         // Execute
-        await mouseMove(300, 220, 1);
+        await mouseMove(300, 200, 1);
         await mouseUp();
 
         // Verify
-        assertThat(this.cut.video.volume, eq(1), "volume 2");
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
-            {
-              playerSettings,
-            },
-            SAVE_PLAYER_SETTINGS_REQUEST_BODY,
-          ),
-          "request body",
-        );
+        assertThat(this.cut.video.val.volume, eq(1), "volume 2");
+        assertThat(updatedSettings, gt(1), "updated settings 2");
         assertThat(
           playerSettings.videoSettings.volume,
           eqAppr(1),
@@ -835,21 +792,15 @@ TEST_RUNNER.run({
           path.join(__dirname, "/player_volume_changing_max_diff.png"),
         );
 
+        // Prepare
+        updatedSettings = 0;
+
         // Execute
-        this.cut.volumeButton.click();
+        this.cut.volumeButton.val.click();
 
         // Verify
-        assertThat(this.cut.video.volume, eq(0), "volume muted");
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
-            {
-              playerSettings,
-            },
-            SAVE_PLAYER_SETTINGS_REQUEST_BODY,
-          ),
-          "request body",
-        );
+        assertThat(this.cut.video.val.volume, eq(0), "volume muted");
+        assertThat(updatedSettings, eq(1), "updated settings 3");
         assertThat(
           playerSettings.videoSettings.muted,
           eq(true),
@@ -866,21 +817,15 @@ TEST_RUNNER.run({
           path.join(__dirname, "/player_volume_muted_diff.png"),
         );
 
+        // Prepare
+        updatedSettings = 0;
+
         // Execute
-        await mouseClick(560, 286);
+        await mouseClick(570, 266);
 
         // Verify
-        assertThat(this.cut.video.volume, eq(0), "volume remain muted");
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
-            {
-              playerSettings,
-            },
-            SAVE_PLAYER_SETTINGS_REQUEST_BODY,
-          ),
-          "request body",
-        );
+        assertThat(this.cut.video.val.volume, eq(0), "volume remain muted");
+        assertThat(updatedSettings, gt(1), "updated settings 4");
         assertThat(
           playerSettings.videoSettings.muted,
           eq(true),
@@ -897,21 +842,15 @@ TEST_RUNNER.run({
           path.join(__dirname, "/player_volume_remain_muted_diff.png"),
         );
 
+        // Prepare
+        updatedSettings = 0;
+
         // Execute
-        this.cut.volumeMutedButton.click();
+        this.cut.volumeMutedButton.val.click();
 
         // Verify
-        assertThat(this.cut.video.volume, eqAppr(0.2), "volume restored");
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
-            {
-              playerSettings,
-            },
-            SAVE_PLAYER_SETTINGS_REQUEST_BODY,
-          ),
-          "request body",
-        );
+        assertThat(this.cut.video.val.volume, eqAppr(0.2), "volume restored");
+        assertThat(updatedSettings, eq(1), "updated settings 5");
         assertThat(
           playerSettings.videoSettings.muted,
           eq(false),
@@ -929,51 +868,43 @@ TEST_RUNNER.run({
         );
       }
       public async tearDown() {
+        await forceMouseUp();
         await mouseMove(-1, -1, 1);
         this.cut.remove();
       }
     })(),
     new (class implements TestCase {
-      public name = "AddDanmaku_UpdateSettings_Disable_Reenable";
+      public name = "AddDanmaku_ApplySettings_Disable_Reenable";
       private cut: Player;
       public async execute() {
         // Prepare
         await setViewport(600, 600);
-        let requestCaptured: any;
-        let responseToReturn: any;
         let playerSettings = createPlayerSettings();
         this.cut = new Player(
-          (callback, ms) => 1,
-          (id) => {},
+          window,
+          undefined,
           (reservedBottomMargin, danmakuSettigns) =>
-            new DanmakuCanvasMock(reservedBottomMargin, 5, danmakuSettigns),
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(request: any): Promise<void> {
-              requestCaptured = request;
-              return responseToReturn;
-            }
-          })(),
+            new DanmakuCanvasMock(5, reservedBottomMargin, danmakuSettigns),
           playerSettings,
           {
             videoPath: mov,
             liking: Liking.NEUTRAL,
           },
         );
-        document.body.append(this.cut.body);
+        container.append(this.cut.body);
         await new Promise<void>((resolve) =>
           this.cut.once("canplaythrough", resolve),
         );
         // .25x speed
         for (let i = 0; i < 3; i++) {
-          this.cut.speedDownButton.click();
+          this.cut.speedDownButton.val.click();
         }
+        let updatedSettings = 0;
+        this.cut.on("updateSettings", () => updatedSettings++);
+        // Wait for DanmakuCanvas's ResizeObserver to catch up.
+        await new Promise<void>((resolve) => setTimeout(resolve, 100));
 
         // Execute
-        await mouseClick(5, 5);
-        // Only when the video is playing, we can add danmaku.
         this.cut.addDanmaku([
           {
             content: "This is some content.",
@@ -982,7 +913,12 @@ TEST_RUNNER.run({
             content: "This is some content 2.",
           },
         ]);
-        await mouseClick(5, 5);
+        mouseClick(5, 50);
+        await new Promise<void>((resolve) => this.cut.on("playing", resolve));
+        mouseClick(5, 50);
+        await new Promise<void>((resolve) =>
+          this.cut.on("notPlaying", resolve),
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -1003,29 +939,9 @@ TEST_RUNNER.run({
 
         // Execute
         playerSettings.danmakuSettings.fontFamily = "Aria";
-        this.cut.updateSettings();
+        this.cut.applySettings();
 
         // Verify
-        assertThat(
-          requestCaptured.descriptor,
-          eq(SAVE_PLAYER_SETTINGS),
-          "service",
-        );
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
-            {
-              playerSettings,
-            },
-            SAVE_PLAYER_SETTINGS_REQUEST_BODY,
-          ),
-          "request body",
-        );
-        assertThat(
-          playerSettings.danmakuSettings.fontFamily,
-          eq("Aria"),
-          "font",
-        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/player_update_danmaku_settings.png"),
           path.join(__dirname, "/golden/player_update_danmaku_settings.png"),
@@ -1043,9 +959,15 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.danmakuButton.click();
+        this.cut.danmakuButton.val.click();
 
         // Verify
+        assertThat(updatedSettings, eq(1), "updated settings");
+        assertThat(
+          playerSettings.danmakuSettings.enable,
+          eq(false),
+          "disabled danmaku",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/player_danmaku_disabled.png"),
           path.join(__dirname, "/golden/player_danmaku_disabled.png"),
@@ -1063,8 +985,6 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseClick(5, 5);
-        // Only when the video is playing, we can add danmaku.
         this.cut.addDanmaku([
           {
             content: "This is some content.",
@@ -1073,7 +993,12 @@ TEST_RUNNER.run({
             content: "This is some content 2.",
           },
         ]);
-        await mouseClick(5, 5);
+        mouseClick(5, 50);
+        await new Promise<void>((resolve) => this.cut.on("playing", resolve));
+        mouseClick(5, 50);
+        await new Promise<void>((resolve) =>
+          this.cut.on("notPlaying", resolve),
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -1092,12 +1017,19 @@ TEST_RUNNER.run({
           },
         );
 
+        // Prepare
+        updatedSettings = 0;
+
         // Execute
-        this.cut.noDanmakuButton.click();
+        this.cut.noDanmakuButton.val.click();
 
         // Verify
-        await mouseClick(5, 5);
-        // Only when the video is playing, we can add danmaku.
+        assertThat(updatedSettings, eq(1), "updated settings again");
+        assertThat(
+          playerSettings.danmakuSettings.enable,
+          eq(true),
+          "enabled danmaku",
+        );
         this.cut.addDanmaku([
           {
             content: "This is some content.",
@@ -1106,7 +1038,12 @@ TEST_RUNNER.run({
             content: "This is some content 2.",
           },
         ]);
-        await mouseClick(5, 5);
+        mouseClick(5, 50);
+        await new Promise<void>((resolve) => this.cut.on("playing", resolve));
+        mouseClick(5, 50);
+        await new Promise<void>((resolve) =>
+          this.cut.on("notPlaying", resolve),
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/player_danmaku_reenabled.png"),
           path.join(__dirname, "/golden/player_update_danmaku_settings.png"),
@@ -1137,19 +1074,15 @@ TEST_RUNNER.run({
         let requestCaptured: any;
         let responseToReturn: any;
         this.cut = new Player(
-          (callback, ms) => 1,
-          (id) => {},
-          (reservedBottomMargin, danmakuSettigns) =>
-            new DanmakuCanvasMock(reservedBottomMargin, 5, danmakuSettigns),
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
+          window,
+          new (class extends WebServiceClientMock {
             public async send(request: any): Promise<void> {
               requestCaptured = request;
               return responseToReturn;
             }
           })(),
+          (reservedBottomMargin, danmakuSettigns) =>
+            new DanmakuCanvasMock(5, reservedBottomMargin, danmakuSettigns),
           createPlayerSettings(),
           {
             showId: "id1",
@@ -1157,14 +1090,14 @@ TEST_RUNNER.run({
             liking: Liking.NEUTRAL,
           },
         );
-        document.body.append(this.cut.body);
+        container.append(this.cut.body);
         await new Promise<void>((resolve) =>
           this.cut.once("canplaythrough", resolve),
         );
 
         // Execute
         this.cut.showActions();
-        this.cut.likeDislikeButtons.thumbUpButton.val.click();
+        this.cut.likeDislikeButtons.val.thumbUpButton.val.click();
 
         // Verify
         assertThat(requestCaptured.descriptor, eq(LIKE_SHOW), "service");
@@ -1196,23 +1129,22 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(600, 600);
         this.cut = new Player(
-          (callback, ms) => 1,
-          (id) => {},
-          (reservedBottomMargin, danmakuSettigns) =>
-            new DanmakuCanvasMock(reservedBottomMargin, 5, danmakuSettigns),
+          window,
           undefined,
+          (reservedBottomMargin, danmakuSettigns) =>
+            new DanmakuCanvasMock(5, reservedBottomMargin, danmakuSettigns),
           createPlayerSettings(),
           {
             videoPath: mov,
             liking: Liking.NEUTRAL,
           },
         );
-        document.body.append(this.cut.body);
+        container.append(this.cut.body);
         let showSettings = false;
         this.cut.on("showSettings", () => (showSettings = true));
 
         // Execute
-        this.cut.settingsButton.click();
+        this.cut.settingsButton.val.click();
 
         // Verify
         assertThat(showSettings, eq(true), "show settings");
@@ -1222,7 +1154,7 @@ TEST_RUNNER.run({
         this.cut.on("showComments", () => (showComments = true));
 
         // Execute
-        this.cut.commentButton.click();
+        this.cut.commentButton.val.click();
 
         // Verify
         assertThat(showComments, eq(true), "show comments");
@@ -1232,7 +1164,7 @@ TEST_RUNNER.run({
         this.cut.on("showMoreInfo", () => (showMoreInfo = true));
 
         // Execute
-        this.cut.moreInfoButton.click();
+        this.cut.moreInfoButton.val.click();
 
         // Verify
         assertThat(showMoreInfo, eq(true), "show more info");

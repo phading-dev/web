@@ -4,16 +4,16 @@ import { DanmakuSettings } from "@phading/product_service_interface/consumer/sho
 
 export class DanmakuCanvasMock extends DanmakuCanvas {
   public constructor(
-    reservedBottomMargin: number,
     pausedPosX: number,
-    danmakuSettings: DanmakuSettings
+    reservedBottomMargin: number,
+    danmakuSettings: DanmakuSettings,
   ) {
     super(
       () => 0.4,
       (danmakuSettings, comment) =>
         new DanmakuElementMock(pausedPosX, danmakuSettings, comment),
       reservedBottomMargin,
-      danmakuSettings
+      danmakuSettings,
     );
   }
 }

@@ -3,10 +3,11 @@ import { SCHEME } from "../../../../../common/color_scheme";
 import { HoverObserver, Mode } from "../../../../../common/hover_observer";
 import { IconButton, TooltipPosition } from "../../../../../common/icon_button";
 import {
+  createArrowIcon,
   createCommentIcon,
   createDanmakuIcon,
-  createDoubleArrowsIcon,
   createFastForwardIcon,
+  createInfoIcon,
   createLoadingIcon,
   createLoopingIcon,
   createNoDanmakuIcon,
@@ -24,6 +25,7 @@ import { FONT_M, ICON_L, ICON_M, ICON_S } from "../../../../../common/sizes";
 import { Orientation, Slider } from "../../../../../common/slider";
 import { formatSecondsAsHHMMSS } from "../../../../../common/timestamp_formatter";
 import { PRODUCT_SERVICE_CLIENT } from "../../../../../common/web_service_client";
+import { PLAYBACK_SPEED_DEFAULT, VOLUME_RANGE } from "../common/defaults";
 import { DanmakuCanvas } from "./danmaku_canvas/body";
 import {
   Comment,
@@ -34,18 +36,19 @@ import {
   PlayerSettings,
 } from "@phading/product_service_interface/consumer/show_app/player_settings";
 import { Show } from "@phading/product_service_interface/consumer/show_app/show";
-import {
-  likeShow,
-  savePlayerSettings,
-} from "@phading/product_service_interface/consumer/show_app/web/client_requests";
+import { likeShow } from "@phading/product_service_interface/consumer/show_app/web/client_requests";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface Player {
+  on(event: "back", listener: () => void): this;
   on(event: "showComments", listener: () => void): this;
   on(event: "showSettings", listener: () => void): this;
   on(event: "showMoreInfo", listener: () => void): this;
+  on(event: "updateSettings", listener: () => void): this;
+  on(event: "playing", listener: () => void): this;
+  on(event: "notPlaying", listener: () => void): this;
   on(event: "canplaythrough", listener: () => void): this;
   on(event: "ended", listener: () => void): this;
 }
@@ -53,72 +56,70 @@ export interface Player {
 export class Player extends EventEmitter {
   public static create(playerSettings: PlayerSettings, show: Show): Player {
     return new Player(
-      (callback, ms) => window.setTimeout(callback, ms),
-      (id) => window.clearTimeout(id),
-      DanmakuCanvas.create,
+      window,
       PRODUCT_SERVICE_CLIENT,
+      DanmakuCanvas.create,
       playerSettings,
       show,
     );
   }
 
-  private static EDGE_PADDING = 2; // rem;
-  private static NORMAL_PLAYBACK_SPEED_INDEX = 3;
+  private static EDGE_PADDING = 1; // rem;
   private static PLAYBACK_SPEEDS = [
     0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4,
   ];
-  private static RESERVED_BOTTOM_MARGIN = 80; // px
-  private static UPDATE_PROGRESS_INTERVAL = 200; // ms
+  private static RESERVED_BOTTOM_MARGIN = 50; // px
   private static OPACITY_TRANSITION = `transition: opacity .3s linear;`;
 
   public body: HTMLDivElement;
-  private video_ = new Ref<HTMLVideoElement>();
+  public video = new Ref<HTMLVideoElement>();
   private loadingIcon = new Ref<HTMLDivElement>();
   private playingIcon = new Ref<HTMLDivElement>();
   private pausedIcon = new Ref<HTMLDivElement>();
-  private danmakuCanvas = new Ref<DanmakuCanvas>();
+  protected danmakuCanvas = new Ref<DanmakuCanvas>();
   private topButtonsContainer = new Ref<HTMLDivElement>();
-  private noLoopButton_ = new Ref<IconButton>();
-  private loopButton_ = new Ref<IconButton>();
-  private danmakuButton_ = new Ref<IconButton>();
-  private noDanmakuButton_ = new Ref<IconButton>();
-  private settingsButton_ = new Ref<IconButton>();
+  public backButton = new Ref<IconButton>();
+  public noLoopButton = new Ref<IconButton>();
+  public loopButton = new Ref<IconButton>();
+  public danmakuButton = new Ref<IconButton>();
+  public noDanmakuButton = new Ref<IconButton>();
+  public settingsButton = new Ref<IconButton>();
   private rightButtonsContainer = new Ref<HTMLDivElement>();
   private volumeSlider = new Ref<Slider>();
-  private volumeButton_ = new Ref<IconButton>();
-  private volumeMutedButton_ = new Ref<IconButton>();
-  private likeDislikeButtons_ = new Ref<LikeDislikeButtons>();
-  private commentButton_ = new Ref<IconButton>();
+  public volumeButton = new Ref<IconButton>();
+  public volumeMutedButton = new Ref<IconButton>();
+  public likeDislikeButtons = new Ref<LikeDislikeButtons>();
+  public commentButton = new Ref<IconButton>();
+  public moreInfoButton = new Ref<IconButton>();
   private bottomButtonsContainer = new Ref<HTMLDivElement>();
   private progressBar = new Ref<HTMLDivElement>();
   private progressBarBuffer = new Ref<HTMLDivElement>();
   private progressBarFiller = new Ref<HTMLDivElement>();
   private pointedTimestamp = new Ref<HTMLDivElement>();
   private currentTimeText = new Ref<HTMLDivElement>();
-  private skipBackwardButton_ = new Ref<IconButton>();
-  private speedDownButton_ = new Ref<IconButton>();
+  public skipBackwardButton = new Ref<IconButton>();
+  public speedDownButton = new Ref<IconButton>();
   private currentPlaybackSpeed = new Ref<HTMLDivElement>();
-  private speedUpButton_ = new Ref<IconButton>();
-  private skipForwardButton_ = new Ref<IconButton>();
+  public speedUpButton = new Ref<IconButton>();
+  public skipForwardButton = new Ref<IconButton>();
   private durationText = new Ref<HTMLDivElement>();
-  private moreInfoButton_ = new Ref<IconButton>();
   private bottomProgressBar = new Ref<HTMLDivElement>();
   private bottomProgressBarBuffer = new Ref<HTMLDivElement>();
   private bottomProgressBarFiller = new Ref<HTMLDivElement>();
   private hoverObserver: HoverObserver;
-  private updateProgressId: number;
+  private updateProgressId = -1;
   private playbackSpeedIndex: number;
   private duration = 0;
   private isSeeking = false;
+  private isLooping = false;
 
   public constructor(
-    private setTimeout: (callback: () => void, ms: number) => number,
-    private clearTimeout: (id: number) => void,
+    private window: Window,
+    private webServiceClient: WebServiceClient,
     private createDanmakuCanvas: (
       reservedBottomMargin: number,
       danmakuSettings: DanmakuSettings,
     ) => DanmakuCanvas,
-    private productServiceClient: WebServiceClient,
     private playerSettings: PlayerSettings,
     private show: Show,
   ) {
@@ -128,9 +129,9 @@ export class Player extends EventEmitter {
     this.body = E.div(
       {
         class: "player",
-        style: `position: relative; width: 100vw; height: 100vh; background-color: ${SCHEME.neutral4};`,
+        style: `flex: 1 1 0; min-width: 0; min-height: 0; width: 100%; height: 100%; position: relative; background-color: ${SCHEME.neutral4};`,
       },
-      E.videoRef(this.video_, {
+      E.videoRef(this.video, {
         class: "player-video",
         style: `width: 100%; height: 100%; object-fit: contain;`,
         src: this.show.videoPath,
@@ -170,66 +171,88 @@ export class Player extends EventEmitter {
         this.topButtonsContainer,
         {
           class: "player-top-buttons-container",
-          style: `position: absolute; top: 0; right: 0; box-sizing: border-box; padding: .5rem ${Player.EDGE_PADDING}rem 2rem; display: flex; flex-flow: row nowrap; align-items: center; gap: 2rem; ${Player.OPACITY_TRANSITION} `,
+          style: `position: absolute; top: 0; left: 0; width: 100%; box-sizing: border-box; padding: .5rem ${Player.EDGE_PADDING}rem 0; display: flex; flex-flow: row nowrap; justify-content: space-between; ${Player.OPACITY_TRANSITION} `,
         },
         assign(
-          this.noLoopButton_,
+          this.backButton,
           IconButton.create(
             `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .5rem; box-sizing: border-box;`,
-            createNotLoopingIcon(SCHEME.neutral1),
+            createArrowIcon(SCHEME.neutral1),
             TooltipPosition.BOTTOM,
-            LOCALIZED_TEXT.noLoopingButtonlabel,
+            LOCALIZED_TEXT.backLabel,
           ).enable(),
         ).body,
-        assign(
-          this.loopButton_,
-          IconButton.create(
-            `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .4rem; box-sizing: border-box;`,
-            createLoopingIcon(SCHEME.neutral1),
-            TooltipPosition.BOTTOM,
-            LOCALIZED_TEXT.loopingButtonLabel,
-          ).enable(),
-        ).body,
-        assign(
-          this.danmakuButton_,
-          IconButton.create(
-            `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .4rem; box-sizing: border-box;`,
-            createDanmakuIcon(SCHEME.neutral1),
-            TooltipPosition.BOTTOM,
-            LOCALIZED_TEXT.danmakuButtonLabel,
-          ).enable(),
-        ).body,
-        assign(
-          this.noDanmakuButton_,
-          IconButton.create(
-            `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .4rem; box-sizing: border-box;`,
-            createNoDanmakuIcon(SCHEME.neutral1),
-            TooltipPosition.BOTTOM,
-            LOCALIZED_TEXT.noDanmakuButtonLabel,
-          ).enable(),
-        ).body,
-        assign(
-          this.settingsButton_,
-          IconButton.create(
-            `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .3rem; box-sizing: border-box;`,
-            createSettingsIcon(SCHEME.neutral1),
-            TooltipPosition.BOTTOM,
-            LOCALIZED_TEXT.playerSettingsButtonLabel,
-          ).enable(),
-        ).body,
+        E.div(
+          {
+            class: "player-top-buttons-right-side-container",
+            style: `display: flex; flex-flow: row nowrap; gap: 2rem;`,
+          },
+          assign(
+            this.noLoopButton,
+            IconButton.create(
+              `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .5rem; box-sizing: border-box;`,
+              createNotLoopingIcon(SCHEME.neutral1),
+              TooltipPosition.BOTTOM,
+              LOCALIZED_TEXT.noLoopingButtonlabel,
+            ).enable(),
+          ).body,
+          assign(
+            this.loopButton,
+            IconButton.create(
+              `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .4rem; box-sizing: border-box;`,
+              createLoopingIcon(SCHEME.neutral1),
+              TooltipPosition.BOTTOM,
+              LOCALIZED_TEXT.loopingButtonLabel,
+            ).enable(),
+          ).body,
+          assign(
+            this.danmakuButton,
+            IconButton.create(
+              `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .4rem; box-sizing: border-box;`,
+              createDanmakuIcon(SCHEME.neutral1),
+              TooltipPosition.BOTTOM,
+              LOCALIZED_TEXT.danmakuButtonLabel,
+            ).enable(),
+          ).body,
+          assign(
+            this.noDanmakuButton,
+            IconButton.create(
+              `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .4rem; box-sizing: border-box;`,
+              createNoDanmakuIcon(SCHEME.neutral1),
+              TooltipPosition.BOTTOM,
+              LOCALIZED_TEXT.noDanmakuButtonLabel,
+            ).enable(),
+          ).body,
+          assign(
+            this.settingsButton,
+            IconButton.create(
+              `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .3rem; box-sizing: border-box;`,
+              createSettingsIcon(SCHEME.neutral1),
+              TooltipPosition.BOTTOM,
+              LOCALIZED_TEXT.playerSettingsButtonLabel,
+            ).enable(),
+          ).body,
+        ),
       ),
       E.divRef(
         this.rightButtonsContainer,
         {
           class: "player-right-buttons-container",
-          style: `position: absolute; right: 0; bottom: 10rem; padding: 0 ${Player.EDGE_PADDING}rem; display: flex; flex-flow: column nowrap; align-items: center; gap: 2rem; ${Player.OPACITY_TRANSITION}`,
+          style: `position: absolute; right: 0; bottom: 7rem; padding: 0 ${Player.EDGE_PADDING}rem; display: flex; flex-flow: column nowrap; align-items: center; gap: 2rem; ${Player.OPACITY_TRANSITION}`,
         },
         assign(
           this.volumeSlider,
-          Slider.create(Orientation.VERTICAL, `7rem`, `1rem`, 0, 1, ""),
+          Slider.create(
+            Orientation.VERTICAL,
+            `7rem`,
+            `1rem`,
+            VOLUME_RANGE.minValue,
+            VOLUME_RANGE.maxValue,
+            "",
+          ),
         ).body,
         assign(
-          this.volumeButton_,
+          this.volumeButton,
           IconButton.create(
             `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .1rem; box-sizing: border-box;`,
             createVolumeFullIcon(SCHEME.neutral1),
@@ -238,7 +261,7 @@ export class Player extends EventEmitter {
           ).enable(),
         ).body,
         assign(
-          this.volumeMutedButton_,
+          this.volumeMutedButton,
           IconButton.create(
             `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .1rem; box-sizing: border-box;`,
             createVolumeMutedIcon(SCHEME.neutral1),
@@ -247,7 +270,7 @@ export class Player extends EventEmitter {
           ).enable(),
         ).body,
         assign(
-          this.likeDislikeButtons_,
+          this.likeDislikeButtons,
           LikeDislikeButtons.create(
             `display: flex; flex-flow: column nowrap; gap: 2rem;`,
             0.3,
@@ -255,7 +278,7 @@ export class Player extends EventEmitter {
           ).enable(show.liking),
         ).body,
         assign(
-          this.commentButton_,
+          this.commentButton,
           IconButton.create(
             `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .3rem; box-sizing: border-box;`,
             createCommentIcon(SCHEME.neutral1),
@@ -263,12 +286,21 @@ export class Player extends EventEmitter {
             LOCALIZED_TEXT.showCommentButtonLabel,
           ).enable(),
         ).body,
+        assign(
+          this.moreInfoButton,
+          IconButton.create(
+            `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .2rem; box-sizing: border-box`,
+            createInfoIcon(SCHEME.neutral1),
+            TooltipPosition.LEFT,
+            LOCALIZED_TEXT.moreInfoButtonLabel,
+          ).enable(),
+        ).body,
       ),
       E.divRef(
         this.bottomButtonsContainer,
         {
           class: "player-bottom-buttons-container",
-          style: `position: absolute; bottom: 0; left: 0; width: 100%; display: flex; flex-flow: column nowrap; ${Player.OPACITY_TRANSITION}`,
+          style: `position: absolute; bottom: 0; left: 0; width: 100%; padding-bottom: .5rem; display: flex; flex-flow: column nowrap; ${Player.OPACITY_TRANSITION}`,
         },
         E.divRef(
           this.progressBar,
@@ -312,7 +344,7 @@ export class Player extends EventEmitter {
             E.text(formatSecondsAsHHMMSS(0)),
           ),
           assign(
-            this.skipBackwardButton_,
+            this.skipBackwardButton,
             IconButton.create(
               `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .7rem; box-sizing: border-box;`,
               createSkipForwardIcon(
@@ -329,7 +361,7 @@ export class Player extends EventEmitter {
               style: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: .5rem;`,
             },
             assign(
-              this.speedDownButton_,
+              this.speedDownButton,
               IconButton.create(
                 `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .5rem; box-sizing: border-box;`,
                 assign(
@@ -354,7 +386,7 @@ export class Player extends EventEmitter {
               style: `color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; width: 4rem; text-align: center;`,
             }),
             assign(
-              this.speedUpButton_,
+              this.speedUpButton,
               IconButton.create(
                 `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .5rem; box-sizing: border-box;`,
                 assign(
@@ -376,7 +408,7 @@ export class Player extends EventEmitter {
             ).body,
           ),
           assign(
-            this.skipForwardButton_,
+            this.skipForwardButton,
             IconButton.create(
               `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .7rem; box-sizing: border-box;`,
               createSkipForwardIcon(SCHEME.neutral1),
@@ -393,23 +425,6 @@ export class Player extends EventEmitter {
             E.text(formatSecondsAsHHMMSS(0)),
           ),
         ),
-        E.div({
-          style: "height: .5rem;",
-        }),
-        assign(
-          this.moreInfoButton_,
-          IconButton.create(
-            `width: 100%; display: flex; flex-flow: row nowrap; justify-content: center;`,
-            E.div(
-              {
-                style: `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .8rem; box-sizing: border-box; transform: rotate(-90deg);`,
-              },
-              createDoubleArrowsIcon(SCHEME.neutral1),
-            ),
-            TooltipPosition.TOP,
-            LOCALIZED_TEXT.moreShowInfoButtonLabel,
-          ).enable(),
-        ).body,
       ),
       E.divRef(
         this.bottomProgressBar,
@@ -433,34 +448,27 @@ export class Player extends EventEmitter {
     this.stopLooping();
     this.applyVideoSettings();
     this.applyDanmakuSettings();
-    this.hoverObserver = HoverObserver.create(
-      this.body,
-      Mode.HOVER_DELAY_LEAVE,
-    )
+    this.hoverObserver = HoverObserver.create(this.body, Mode.HOVER_DELAY_LEAVE)
       .on("hover", () => this.showAllActions())
       .on("leave", () => this.hideAllActions());
-    this.video_.val.addEventListener("loadedmetadata", () =>
-      this.setDuration(),
-    );
-    this.video_.val.addEventListener("durationchange", () =>
-      this.setDuration(),
-    );
-    this.video_.val.addEventListener("progress", () =>
+    this.video.val.addEventListener("loadedmetadata", () => this.setDuration());
+    this.video.val.addEventListener("durationchange", () => this.setDuration());
+    this.video.val.addEventListener("progress", () =>
       this.updateBufferProgress(),
     );
-    this.video_.val.addEventListener("canplaythrough", () =>
+    this.video.val.addEventListener("canplaythrough", () =>
       this.updateBufferCompleted(),
     );
-    this.video_.val.addEventListener("playing", () => this.isPlaying());
-    this.video_.val.addEventListener("pause", () => this.isPaused());
-    this.video_.val.addEventListener("ended", () => this.isEnded());
-    this.video_.val.addEventListener("waiting", () => this.isLoading());
+    this.video.val.addEventListener("playing", () => this.isPlaying());
+    this.video.val.addEventListener("pause", () => this.isPaused());
+    this.video.val.addEventListener("ended", () => this.isEnded());
+    this.video.val.addEventListener("waiting", () => this.isLoading());
     this.danmakuCanvas.val.on("passThroughClick", () => this.toggleVideoPlay());
-    this.volumeButton_.val.on("action", () => this.mute());
-    this.volumeMutedButton_.val.on("action", () => this.unmute());
+    this.volumeButton.val.on("action", () => this.mute());
+    this.volumeMutedButton.val.on("action", () => this.unmute());
     this.volumeSlider.val.on("change", (value) => this.setVolume(value));
-    this.likeDislikeButtons_.val.on("like", (liking) => this.likeShow(liking));
-    this.commentButton_.val.on("action", () => this.emit("showComments"));
+    this.likeDislikeButtons.val.on("like", (liking) => this.likeShow(liking));
+    this.commentButton.val.on("action", () => this.emit("showComments"));
     this.progressBar.val.addEventListener("pointerover", (event) =>
       this.hoverProgressBar(event),
     );
@@ -476,16 +484,17 @@ export class Player extends EventEmitter {
     this.progressBar.val.addEventListener("pointerout", () =>
       this.leaveProgressBar(),
     );
-    this.speedDownButton_.val.on("action", () => this.speedDownOnce());
-    this.speedUpButton_.val.on("action", () => this.speedUpOnce());
-    this.skipBackwardButton_.val.on("action", () => this.skipBackward());
-    this.skipForwardButton_.val.on("action", () => this.skipForward());
-    this.noLoopButton_.val.on("action", () => this.startLooping());
-    this.loopButton_.val.on("action", () => this.stopLooping());
-    this.danmakuButton_.val.on("action", () => this.disableDanmaku());
-    this.noDanmakuButton_.val.on("action", () => this.enableDanmaku());
-    this.settingsButton_.val.on("action", () => this.emit("showSettings"));
-    this.moreInfoButton_.val.on("action", () => this.emit("showMoreInfo"));
+    this.speedDownButton.val.on("action", () => this.speedDownOnce());
+    this.speedUpButton.val.on("action", () => this.speedUpOnce());
+    this.skipBackwardButton.val.on("action", () => this.skipBackward());
+    this.skipForwardButton.val.on("action", () => this.skipForward());
+    this.noLoopButton.val.on("action", () => this.startLooping());
+    this.loopButton.val.on("action", () => this.stopLooping());
+    this.danmakuButton.val.on("action", () => this.disableDanmaku());
+    this.noDanmakuButton.val.on("action", () => this.enableDanmaku());
+    this.settingsButton.val.on("action", () => this.emit("showSettings"));
+    this.moreInfoButton.val.on("action", () => this.emit("showMoreInfo"));
+    this.backButton.val.on("action", () => this.emit("back"));
   }
 
   private showAllActions(): void {
@@ -511,9 +520,9 @@ export class Player extends EventEmitter {
   }
 
   private setDuration(): void {
-    this.duration = this.video_.val.duration;
+    this.duration = this.video.val.duration;
     this.durationText.val.textContent = formatSecondsAsHHMMSS(
-      this.video_.val.duration,
+      this.video.val.duration,
     );
   }
 
@@ -521,14 +530,13 @@ export class Player extends EventEmitter {
     if (this.duration === 0) {
       return;
     }
-    let currentTime = this.video_.val.currentTime;
-    for (let i = 0; i < this.video_.val.buffered.length; i++) {
+    let currentTime = this.video.val.currentTime;
+    for (let i = 0; i < this.video.val.buffered.length; i++) {
       if (
-        this.video_.val.buffered.start(i) <= currentTime &&
-        this.video_.val.buffered.end(i) >= currentTime
+        this.video.val.buffered.start(i) <= currentTime &&
+        this.video.val.buffered.end(i) >= currentTime
       ) {
-        let percentage =
-          (this.video_.val.buffered.end(i) / this.duration) * 100;
+        let percentage = (this.video.val.buffered.end(i) / this.duration) * 100;
         this.progressBarBuffer.val.style.width = `${percentage}%`;
         this.bottomProgressBarBuffer.val.style.width = `${percentage}%`;
         break;
@@ -544,16 +552,15 @@ export class Player extends EventEmitter {
 
   private isPlaying(): void {
     this.danmakuCanvas.val.play();
-    this.clearTimeout(this.updateProgressId);
     this.updateProgressContinuously();
     this.hideLoadingIcon();
+    this.emit("playing");
   }
 
   private updateProgressContinuously = (): void => {
     this.updateProgress();
-    this.updateProgressId = this.setTimeout(
+    this.updateProgressId = this.window.requestAnimationFrame(
       this.updateProgressContinuously,
-      Player.UPDATE_PROGRESS_INTERVAL,
     );
   };
 
@@ -562,7 +569,7 @@ export class Player extends EventEmitter {
       this.progressBarFiller.val.style.width = `0`;
       this.bottomProgressBarFiller.val.style.width = `0`;
     } else {
-      let currentTime = this.video_.val.currentTime;
+      let currentTime = this.video.val.currentTime;
       let percentage = (currentTime / this.duration) * 100;
       this.progressBarFiller.val.style.width = `${percentage}%`;
       this.bottomProgressBarFiller.val.style.width = `${percentage}%`;
@@ -572,27 +579,32 @@ export class Player extends EventEmitter {
 
   private isPaused(): void {
     this.danmakuCanvas.val.pause();
-    this.clearTimeout(this.updateProgressId);
+    this.window.cancelAnimationFrame(this.updateProgressId);
     this.updateProgress();
     this.hideLoadingIcon();
+    this.emit("notPlaying");
   }
 
   private isEnded(): void {
-    this.isPaused();
+    // "pause" event is also expected to be fired to call isPaused().
+    if (this.isLooping) {
+      this.video.val.play();
+    }
     this.emit("ended");
   }
 
   private isLoading(): void {
     this.danmakuCanvas.val.pause();
     this.showLoadingIcon();
+    this.emit("notPlaying");
   }
 
   private toggleVideoPlay(): void {
-    if (this.video_.val.paused) {
-      this.video_.val.play();
+    if (this.video.val.paused) {
+      this.video.val.play();
       this.animateStatusIcon(this.playingIcon.val);
     } else {
-      this.video_.val.pause();
+      this.video.val.pause();
       this.animateStatusIcon(this.pausedIcon.val);
     }
   }
@@ -637,7 +649,7 @@ export class Player extends EventEmitter {
   }
 
   private seekNewPosition(timestamp: number): void {
-    this.video_.val.currentTime = timestamp;
+    this.video.val.currentTime = timestamp;
     this.updateProgress();
   }
 
@@ -663,14 +675,14 @@ export class Player extends EventEmitter {
   }
 
   private skipBackward(): void {
-    this.video_.val.currentTime = Math.max(0, this.video_.val.currentTime - 5);
+    this.video.val.currentTime = Math.max(0, this.video.val.currentTime - 5);
     this.updateProgress();
   }
 
   private skipForward(): void {
-    this.video_.val.currentTime = Math.min(
+    this.video.val.currentTime = Math.min(
       this.duration,
-      this.video_.val.currentTime + 5,
+      this.video.val.currentTime + 5,
     );
     this.updateProgress();
   }
@@ -681,42 +693,42 @@ export class Player extends EventEmitter {
       this.playerSettings.videoSettings.playbackSpeed,
     );
     if (this.playbackSpeedIndex === -1) {
-      this.playbackSpeedIndex = Player.NORMAL_PLAYBACK_SPEED_INDEX;
+      this.playbackSpeedIndex = Player.PLAYBACK_SPEEDS.indexOf(
+        PLAYBACK_SPEED_DEFAULT,
+      );
     }
     if (this.playbackSpeedIndex <= 0) {
-      this.speedDownButton_.val.disable();
+      this.speedDownButton.val.disable();
     } else {
-      this.speedDownButton_.val.enable();
+      this.speedDownButton.val.enable();
     }
     if (this.playbackSpeedIndex >= Player.PLAYBACK_SPEEDS.length - 1) {
-      this.speedUpButton_.val.disable();
+      this.speedUpButton.val.disable();
     } else {
-      this.speedUpButton_.val.enable();
+      this.speedUpButton.val.enable();
     }
     this.currentPlaybackSpeed.val.textContent = `${
       Player.PLAYBACK_SPEEDS[this.playbackSpeedIndex]
     }x`;
-    this.video_.val.playbackRate =
+    this.video.val.playbackRate =
       Player.PLAYBACK_SPEEDS[this.playbackSpeedIndex];
 
     // Volume & muted
     this.volumeSlider.val.setValue(this.playerSettings.videoSettings.volume);
     if (this.playerSettings.videoSettings.muted) {
-      this.video_.val.volume = 0;
-      this.volumeButton_.val.hide();
-      this.volumeMutedButton_.val.show();
+      this.video.val.volume = 0;
+      this.volumeButton.val.hide();
+      this.volumeMutedButton.val.show();
     } else {
-      this.video_.val.volume = this.playerSettings.videoSettings.volume;
-      this.volumeButton_.val.show();
-      this.volumeMutedButton_.val.hide();
+      this.video.val.volume = this.playerSettings.videoSettings.volume;
+      this.volumeButton.val.show();
+      this.volumeMutedButton.val.hide();
     }
   }
 
   private saveVideoSettings(): void {
     this.applyVideoSettings();
-    savePlayerSettings(this.productServiceClient, {
-      playerSettings: this.playerSettings,
-    });
+    this.emit("updateSettings");
   }
 
   private speedDownOnce(): void {
@@ -753,15 +765,15 @@ export class Player extends EventEmitter {
   }
 
   private startLooping(): void {
-    this.video_.val.loop = true;
-    this.noLoopButton_.val.hide();
-    this.loopButton_.val.show();
+    this.isLooping = true;
+    this.noLoopButton.val.hide();
+    this.loopButton.val.show();
   }
 
   private stopLooping(): void {
-    this.video_.val.loop = false;
-    this.noLoopButton_.val.show();
-    this.loopButton_.val.hide();
+    this.isLooping = false;
+    this.noLoopButton.val.show();
+    this.loopButton.val.hide();
   }
 
   private disableDanmaku(): void {
@@ -775,7 +787,7 @@ export class Player extends EventEmitter {
   }
 
   private async likeShow(liking: Liking): Promise<void> {
-    await likeShow(this.productServiceClient, {
+    await likeShow(this.webServiceClient, {
       showId: this.show.showId,
       liking,
     });
@@ -783,28 +795,28 @@ export class Player extends EventEmitter {
 
   private applyDanmakuSettings(): void {
     if (this.playerSettings.danmakuSettings.enable) {
-      this.danmakuButton_.val.show();
-      this.noDanmakuButton_.val.hide();
+      this.danmakuButton.val.show();
+      this.noDanmakuButton.val.hide();
     } else {
-      this.danmakuButton_.val.hide();
-      this.noDanmakuButton_.val.show();
+      this.danmakuButton.val.hide();
+      this.noDanmakuButton.val.show();
     }
     this.danmakuCanvas.val.updateSettings();
   }
 
   private saveDanmakuSettings(): void {
     this.applyDanmakuSettings();
-    savePlayerSettings(this.productServiceClient, {
-      playerSettings: this.playerSettings,
-    });
+    this.emit("updateSettings");
   }
 
-  public updateSettings(): void {
+  public applySettings(): void {
     this.applyDanmakuSettings();
     this.applyVideoSettings();
-    savePlayerSettings(this.productServiceClient, {
-      playerSettings: this.playerSettings,
-    });
+  }
+
+  // Milliseconds
+  public getCurrentVideoTimestamp(): number {
+    return this.video.val.currentTime * 1000;
   }
 
   public addDanmaku(comments: Array<Comment>): void {
@@ -812,56 +824,11 @@ export class Player extends EventEmitter {
   }
 
   public remove(): void {
+    this.video.val.pause();
     this.body.remove();
-    this.danmakuCanvas.val.remove();
   }
 
   // Visible for testing
-  public get video() {
-    return this.video_.val;
-  }
-  public get skipBackwardButton() {
-    return this.skipBackwardButton_.val;
-  }
-  public get skipForwardButton() {
-    return this.skipForwardButton_.val;
-  }
-  public get speedDownButton() {
-    return this.speedDownButton_.val;
-  }
-  public get speedUpbutton() {
-    return this.speedUpButton_.val;
-  }
-  public get noLoopButton() {
-    return this.noLoopButton_.val;
-  }
-  public get loopButton() {
-    return this.loopButton_.val;
-  }
-  public get danmakuButton() {
-    return this.danmakuButton_.val;
-  }
-  public get noDanmakuButton() {
-    return this.noDanmakuButton_.val;
-  }
-  public get settingsButton() {
-    return this.settingsButton_.val;
-  }
-  public get volumeButton() {
-    return this.volumeButton_.val;
-  }
-  public get volumeMutedButton() {
-    return this.volumeMutedButton_.val;
-  }
-  public get likeDislikeButtons() {
-    return this.likeDislikeButtons_.val;
-  }
-  public get commentButton() {
-    return this.commentButton_.val;
-  }
-  public get moreInfoButton() {
-    return this.moreInfoButton_.val;
-  }
   public showActions(): void {
     this.hoverObserver.emit("hover");
   }

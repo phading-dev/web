@@ -479,7 +479,7 @@ export default class Text {
   get playerSettingsButtonLabel() {
     return `Settings`;
   }
-  get moreShowInfoButtonLabel() {
+  get moreInfoButtonLabel() {
     return `More info`;
   }
   get danmakuSettingsLabel() {
@@ -520,5 +520,14 @@ export default class Text {
   }
   get resetButtonLabel() {
     return `Reset`;
+  }
+  get closeButtonLabel() {
+    return `Close`;
+  }
+  get dockToBottomButotnLabel() {
+    return `Dock to bottom`;
+  }
+  get dockToRightButtonLebel() {
+    return `Dock to right`;
   }
 }

@@ -2,7 +2,7 @@ import EventEmitter = require("events");
 import { SCHEME } from "../../../../../../common/color_scheme";
 import { createArrowIcon } from "../../../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../../../common/locales/localized_text";
-import { FONT_M, FONT_S } from "../../../../../../common/sizes";
+import { FONT_M, FONT_S, ICON_XS } from "../../../../../../common/sizes";
 import { createCardBrandIcon } from "../../common/card_brand_icons";
 import { getCardBrandName } from "../../common/card_brand_name";
 import { CARD_BORDER_RADIUS } from "../common/styles";
@@ -13,7 +13,7 @@ import { E } from "@selfage/element/factory";
 export interface CardPaymentItem {
   on(
     event: "update",
-    listener: (paymentMethod: PaymentMethodMasked) => void
+    listener: (paymentMethod: PaymentMethodMasked) => void,
   ): this;
 }
 
@@ -27,7 +27,7 @@ export class CardPaymentItem extends EventEmitter {
 
   public constructor(
     private getNow: () => number,
-    paymentMethod: PaymentMethodMasked
+    paymentMethod: PaymentMethodMasked,
   ) {
     super();
     let cardMasked = paymentMethod.card;
@@ -36,7 +36,7 @@ export class CardPaymentItem extends EventEmitter {
     // uses UTC time zone as a rough estimate.
     let rightAfterExpiredMonth = Date.UTC(
       cardMasked.expYear,
-      cardMasked.expMonth - 1 + 1
+      cardMasked.expMonth - 1 + 1, // expMonth -1 is the monthIndex of the exp month.
     );
     let isCardExpired = this.getNow() > rightAfterExpiredMonth;
 
@@ -55,7 +55,7 @@ export class CardPaymentItem extends EventEmitter {
           class: "card-payment-card-brand-icon",
           style: `width: 7rem;`,
         },
-        createCardBrandIcon(cardMasked.brand)
+        createCardBrandIcon(cardMasked.brand),
       ),
       E.div({
         style: `width: 1.5rem;`,
@@ -63,7 +63,7 @@ export class CardPaymentItem extends EventEmitter {
       E.div(
         {
           class: "card-payment-card-details",
-          style: `flex: 1 0 auto; display: flex; flex-flow: column nowrap; gap: 1rem;`,
+          style: `flex: 1 1 0; min-width: 0; display: flex; flex-flow: column nowrap; gap: 1rem;`,
         },
         E.div(
           {
@@ -78,16 +78,16 @@ export class CardPaymentItem extends EventEmitter {
             E.text(
               `${getCardBrandName(cardMasked.brand)} •••• ${
                 cardMasked.lastFourDigits
-              }`
-            )
+              }`,
+            ),
           ),
           E.div(
             {
               class: "card-payment-card-priority",
               style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: bold;`,
             },
-            E.text(this.getPrioirtyString(paymentMethod.priority))
-          )
+            E.text(this.getPrioirtyString(paymentMethod.priority)),
+          ),
         ),
         E.div(
           {
@@ -99,26 +99,26 @@ export class CardPaymentItem extends EventEmitter {
           E.text(
             isCardExpired
               ? LOCALIZED_TEXT.cardExpired
-              : `${LOCALIZED_TEXT.cardExpiresPartOne}${localizedExpDate}${LOCALIZED_TEXT.cardExpiresPartTwo}`
-          )
-        )
+              : `${LOCALIZED_TEXT.cardExpiresPartOne}${localizedExpDate}${LOCALIZED_TEXT.cardExpiresPartTwo}`,
+          ),
+        ),
       ),
       E.div(
         {
           class: "card-payment-card-expansion-icon",
-          style: `align-self: center; height: 1.6rem; transform: rotate(180deg);`,
+          style: `align-self: center; height: ${ICON_XS}rem; transform: rotate(180deg);`,
         },
-        createArrowIcon(SCHEME.neutral1)
-      )
+        createArrowIcon(SCHEME.neutral1),
+      ),
     );
 
     this.body_.addEventListener("click", () =>
-      this.emit("update", paymentMethod)
+      this.emit("update", paymentMethod),
     );
   }
 
   private getPrioirtyString(
-    paymentMethodPriority: PaymentMethodPriority
+    paymentMethodPriority: PaymentMethodPriority,
   ): string {
     switch (paymentMethodPriority) {
       case PaymentMethodPriority.PRIMARY:

@@ -1,6 +1,12 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../../../common/color_scheme";
-import { AVATAR_S, FONT_M, FONT_S, LINE_HEIGHT_M } from "../../../../../common/sizes";
+import {
+  AVATAR_S,
+  FONT_M,
+  FONT_S,
+  LINE_HEIGHT_M,
+} from "../../../../../common/sizes";
+import { CARD_SIDE_PADDING } from "../common/styles";
 import { Show } from "@phading/product_service_interface/consumer/show_app/show";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -10,6 +16,10 @@ export interface InfoCard {
 }
 
 export class InfoCard extends EventEmitter {
+  public static create(show: Show): InfoCard {
+    return new InfoCard(show);
+  }
+
   public body: HTMLDivElement;
   public publisher = new Ref<HTMLDivElement>();
 
@@ -26,7 +36,7 @@ export class InfoCard extends EventEmitter {
     this.body = E.div(
       {
         class: "info-card",
-        style: `width: 100%; height: 100%; overflow-y: auto; padding: 1rem 2rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; gap: 1rem; background-color: ${SCHEME.neutral4};`,
+        style: `flex: 1 1 0; min-height: 0; width: 100%; height: 100%; overflow-y: auto; padding: 1rem ${CARD_SIDE_PADDING}rem; box-sizing: border-box; flex-flow: column nowrap; gap: 1rem;`,
       },
       E.div(
         {
@@ -53,7 +63,7 @@ export class InfoCard extends EventEmitter {
         this.publisher,
         {
           class: "info-card-publisher",
-          style: `pointer: cursor;`
+          style: `pointer: cursor;`,
         },
         E.image({
           class: "info-card-publisher-avatar",
@@ -73,6 +83,16 @@ export class InfoCard extends EventEmitter {
     this.publisher.val.addEventListener("click", () =>
       this.emit("focusUser", show.publisher.accountId),
     );
+  }
+
+  public show(): this {
+    this.body.style.display = "flex";
+    return this;
+  }
+
+  public hide(): this {
+    this.body.style.display = "none";
+    return this;
   }
 
   public remove(): void {

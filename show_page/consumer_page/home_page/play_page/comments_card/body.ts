@@ -11,8 +11,8 @@ import { BASIC_INPUT_STYLE } from "../../../../../common/input_form_page/text_in
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import { ICON_S } from "../../../../../common/sizes";
 import { COMMENT_SERVICE_CLIENT } from "../../../../../common/web_service_client";
+import { CARD_SIDE_PADDING } from "../common/styles";
 import { CommentEntry } from "./comment_entry";
-import { CONTAINER_PADDING_LEFT_RIGHT } from "./styles";
 import { Comment } from "@phading/comment_service_interface/show_app/comment";
 import { postComment } from "@phading/comment_service_interface/show_app/web/client_requests";
 import { E } from "@selfage/element/factory";
@@ -53,16 +53,16 @@ export class CommentsCard extends EventEmitter {
     this.body = E.div(
       {
         class: "comments-card",
-        style: `width: 100%; height: 100%; display: flex; flex-flow: column nowrap; background-color: ${SCHEME.neutral4};`,
+        style: `flex: 1 1 0; min-height: 0; width: 100%; height: 100%; display: flex; flex-flow: column nowrap;`,
       },
       E.div(
         {
           class: "comments-card-input-box",
-          style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; align-items: center; padding: .5rem ${CONTAINER_PADDING_LEFT_RIGHT}rem; box-sizing: border-box; width: 100%; gap: 1rem;`,
+          style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; align-items: center; padding: .5rem ${CARD_SIDE_PADDING}rem; box-sizing: border-box; width: 100%; gap: 1rem;`,
         },
         E.inputRef(this.commentInput, {
           class: "comments-card-input",
-          style: `${BASIC_INPUT_STYLE} flex: 1 0 0; line-height: 3rem; border-color: ${SCHEME.neutral1};`,
+          style: `${BASIC_INPUT_STYLE} flex: 1 1 0; min-width: 0; line-height: 3rem; border-color: ${SCHEME.neutral1};`,
           placeholder: LOCALIZED_TEXT.commentInputPlaceholder,
         }),
         assign(
@@ -75,11 +75,11 @@ export class CommentsCard extends EventEmitter {
       E.div(
         {
           class: "comments-card-list-container",
-          style: `flex: 1 1 0; position: relative; display: flex; flex-flow: column nowrap;`,
+          style: `flex: 1 1 0; min-height: 0; position: relative;`,
         },
         E.divRef(this.scrollingArea, {
           class: "comments-card-scrolling-area",
-          style: `flex: 1 1 0; width: 100%; overflow-y: scroll;`,
+          style: `height: 100%; width: 100%; overflow-y: auto;`,
         }),
         assign(
           this.scrollToTopButton,
@@ -173,7 +173,7 @@ export class CommentsCard extends EventEmitter {
     return this;
   }
 
-  public addComment(comments: Array<Comment>): void {
+  public addComments(comments: Array<Comment>): void {
     let hadReachedTop = this.scrollingArea.val.scrollTop === 0;
     for (let comment of comments) {
       let commentEntry = this.createCommentEntry(comment);
@@ -191,6 +191,16 @@ export class CommentsCard extends EventEmitter {
       this.commentEntries.delete(commentEntry);
       commentEntry.remove();
     }
+  }
+
+  public show(): this {
+    this.body.style.display = "flex";
+    return this;
+  }
+
+  public hide(): this {
+    this.body.style.display = "none";
+    return this;
   }
 
   public remove(): void {

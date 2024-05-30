@@ -557,7 +557,7 @@ export function createNoDanmakuIcon(color: string): SVGSVGElement {
       viewBox: "0 0 200 200",
     },
     E.path({
-      d: `M69 17 L98 17 L98 80 L69 80 z  M120 17 L149 17 L149 80 L120 80 z  M171 17 L200 17 L200 80 L171 80 z  M20 120 L49 120 L49 183 L20 183 z  M71 120 L100 120 L100 183 L71 183 z  M122 120 L151 120 L151 183 L122 183 z`,
+      d: `M35 17 h29 v63 h-29 z  M86 17 h29 v63 h-29 z  M137 17 h29 v63 h-29 z  M35 120 h29 v63 h-29 z  M86 120 h29 v63 h-29 z  M137 120 h29 v63 h-29 z`,
     }),
   );
 }
@@ -585,6 +585,38 @@ export function createResetIcon(color: string): SVGSVGElement {
     },
     E.path({
       d: "M0 49 L56 0 L56 31 L131 31 A69 69 0 0 1 131 169 L40 169 L40 136 L131 136 A33 33 0 0 0 131 64 L56 64 L56 98 z",
+    }),
+  );
+}
+
+// Split into two columns. The left side is larger than the right side.
+export function createSplitColumnIcon(
+  color: string,
+  customStyle = "",
+): SVGSVGElement {
+  return E.svg(
+    {
+      class: "split-column-icon",
+      style: `height: 100%; fill-opacity: 0; stroke-width: 30; stroke: ${color}; ${customStyle}`,
+      viewBox: "0 0 200 200",
+    },
+    E.path({
+      d: `M15 15 h170 v170 h-170 z  M130 0 v200`,
+    }),
+  );
+}
+
+export function createInfoIcon(
+  color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "info-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 0 16 16",
+    },
+    E.path({
+      d: `M8 16A8 8 0 108 0a8 8 0 000 16zm0-9a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 7zm0-3a1 1 0 000 2h.007a1 1 0 000-2H8z`,
+      "fill-rule": `evenodd`,
     }),
   );
 }
