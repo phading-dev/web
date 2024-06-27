@@ -482,6 +482,18 @@ export default class Text {
   get moreInfoButtonLabel() {
     return `More info`;
   }
+  get interruptReasonNoConnectivity() {
+    return `Video stopped. No internet connection.`;
+  }
+  get gradePricing() {
+    return `Grade `;
+  }
+  get pricingRate1() {
+    return ``;
+  }
+  get pricingRate2() {
+    return ` / hour`;
+  }
   get danmakuSettingsLabel() {
     return `Settings for scrolling comments`;
   }

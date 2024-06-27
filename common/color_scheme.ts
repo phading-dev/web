@@ -29,7 +29,7 @@ export class DarkScheme {
   get neutral2() {
     return GREY_30;
   }
-  // Overall Background color.
+  // Overall Background color. Highlighted item.
   get neutral3() {
     return GREY_20;
   }

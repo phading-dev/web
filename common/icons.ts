@@ -43,7 +43,7 @@ export function createPlusIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "plus-icon",
-      style: `height: 100%; fill-opacity: 0; stroke-width: 30; stroke: ${color};`,
+      style: `height: 100%; fill: none; stroke-width: 30; stroke: ${color};`,
       viewBox: "0 0 200 200",
     },
     E.path({
@@ -56,7 +56,7 @@ export function createCrossIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "plus-icon",
-      style: `height: 100%; fill-opacity: 0; stroke-width: 30; stroke: ${color};`,
+      style: `height: 100%; fill: none; stroke-width: 30; stroke: ${color};`,
       viewBox: "0 0 200 200",
     },
     E.path({
@@ -69,7 +69,7 @@ export function createMinusIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "minus-icon",
-      style: `height: 100%; fill-opacity: 0; stroke-width: 30; stroke: ${color};`,
+      style: `height: 100%; fill: none; stroke-width: 30; stroke: ${color};`,
       viewBox: "0 0 200 200",
     },
     E.path({
@@ -83,7 +83,7 @@ export function createArrowIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "arrow-icon",
-      style: `height: 100%; fill-opacity: 0; stroke-width: 21.2132; stroke: ${color};`,
+      style: `height: 100%; fill: none; stroke-width: 21.2132; stroke: ${color};`,
       viewBox: "-90.5 -7.5 131 131",
     },
     E.path({
@@ -96,7 +96,7 @@ export function createArrowWithBarIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "arrow-with-bar-icon",
-      style: `height: 100%; fill-opacity: 0; stroke-width: 21.2132; stroke: ${color};`,
+      style: `height: 100%; fill: none; stroke-width: 21.2132; stroke: ${color};`,
       viewBox: "-115 -7.5 131 131",
     },
     E.path({
@@ -109,7 +109,7 @@ export function createDoubleArrowsIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "double-arrows-icon",
-      style: `height: 100%; fill-opacity: 0; stroke-width: 21.2132; stroke: ${color};`,
+      style: `height: 100%; fill: none; stroke-width: 21.2132; stroke: ${color};`,
       viewBox: "-123.5 -7.5 131 131",
     },
     E.path({
@@ -136,7 +136,7 @@ export function createExpandIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "expand-icon",
-      style: `height: 100%; fill-opacity: 0; stroke-width: 26; stroke: ${color};`,
+      style: `height: 100%; fill: none; stroke-width: 26; stroke: ${color};`,
       viewBox: "-113 -113 226 226",
     },
     E.path({
@@ -162,7 +162,7 @@ export function createThumbUpIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "thumb-up-icon",
-      style: `height: 100%; fill-opacity: 0; stroke-width: 30; stroke: ${color};`,
+      style: `height: 100%; fill: none; stroke-width: 30; stroke: ${color};`,
       viewBox: "-15 -15 517.57 517.57",
     },
     E.path({
@@ -191,7 +191,7 @@ export function createHeartIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "heart-icon",
-      style: `height: 100%; fill-opacity: 0; stroke-width: 30; stroke: ${color};`,
+      style: `height: 100%; fill: none; stroke-width: 30; stroke: ${color};`,
       viewBox: "-15 -15 533.876 533.876",
     },
     E.path({
@@ -474,7 +474,7 @@ export function createPauseIcon(color: string): SVGSVGElement {
 export function createLoopingIcon(color: string): SVGSVGElement {
   return E.svg(
     {
-      class: "loop-icon",
+      class: "looping-icon",
       style: `height: 100%; fill: ${color};`,
       viewBox: "0 -.5 8 8",
     },
@@ -487,7 +487,7 @@ export function createLoopingIcon(color: string): SVGSVGElement {
 export function createNotLoopingIcon(color: string): SVGSVGElement {
   return E.svg(
     {
-      class: "loop-icon",
+      class: "not-looping-icon",
       style: `height: 100%; fill: ${color};`,
       viewBox: "0 -2 8 8",
     },
@@ -553,11 +553,29 @@ export function createNoDanmakuIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "no-danmaku-icon",
-      style: `height: 100%; fill: ${color};`,
+      style: `height: 100%; fill: none;`,
       viewBox: "0 0 200 200",
     },
-    E.path({
-      d: `M35 17 h29 v63 h-29 z  M86 17 h29 v63 h-29 z  M137 17 h29 v63 h-29 z  M35 120 h29 v63 h-29 z  M86 120 h29 v63 h-29 z  M137 120 h29 v63 h-29 z`,
+    E.defs(
+      {},
+      E.path({
+        id: "border",
+        d: `M99 0 L99 97 L49 49 z  M120 17 L149 17 L149 80 L120 80 z  M171 17 L200 17 L200 80 L171 80 z  M50 103 L50 200 L0 152 z  M71 120 L100 120 L100 183 L71 183 z  M122 120 L151 120 L151 183 L122 183 z`,
+      }),
+      E.clipPath(
+        {
+          id: "clip",
+        },
+        E.use({
+          href: "#border",
+        }),
+      ),
+    ),
+    E.use({
+      href: "#border",
+      stroke: color,
+      "stroke-width": "13",
+      "clip-path": "url(#clip)",
     }),
   );
 }
@@ -597,7 +615,7 @@ export function createSplitColumnIcon(
   return E.svg(
     {
       class: "split-column-icon",
-      style: `height: 100%; fill-opacity: 0; stroke-width: 30; stroke: ${color}; ${customStyle}`,
+      style: `height: 100%; fill: none; stroke-width: 30; stroke: ${color}; ${customStyle}`,
       viewBox: "0 0 200 200",
     },
     E.path({
@@ -606,17 +624,28 @@ export function createSplitColumnIcon(
   );
 }
 
-export function createInfoIcon(
-  color: string): SVGSVGElement {
+export function createInfoIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "info-icon",
-      style: `height: 100%; fill: ${color};`,
-      viewBox: "0 0 16 16",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: "2 2 20 20",
     },
     E.path({
-      d: `M8 16A8 8 0 108 0a8 8 0 000 16zm0-9a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 7zm0-3a1 1 0 000 2h.007a1 1 0 000-2H8z`,
-      "fill-rule": `evenodd`,
+      d: `M12 11V16M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21ZM12.0498 8V8.1L11.9502 8.1002V8H12.0498Z`,
+    }),
+  );
+}
+
+export function createQuestionMarkIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "question-mark-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "2 2 20 20",
+    },
+    E.path({
+      d: `M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z  M12 6a3.5 3.5 0 0 0-3.5 3.5 1 1 0 0 0 2 0A1.5 1.5 0 1 1 12 11a1 1 0 0 0-1 1v2a1 1 0 0 0 2 0v-1.16A3.49 3.49 0 0 0 12 6z  M12 16 a1 1 0 1 1 -.01 0z`,
     }),
   );
 }

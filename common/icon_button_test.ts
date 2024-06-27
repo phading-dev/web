@@ -1,8 +1,9 @@
 import path = require("path");
 import { SCHEME } from "./color_scheme";
-import { IconButton, TooltipPosition } from "./icon_button";
+import { IconButton, IconTooltipButton, TooltipPosition } from "./icon_button";
 import { createCommentIcon } from "./icons";
 import { E } from "@selfage/element/factory";
+import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -21,6 +22,7 @@ class RenderOversizeCentering implements TestCase {
   ) {}
   public async execute() {
     // Prepare
+    await setViewport(400, 400);
     this.cut = new IconButton(
       `width: 2rem; height: 1rem;`,
       createCommentIcon(SCHEME.neutral1),
@@ -61,6 +63,7 @@ class RenderCenteringWithin implements TestCase {
   ) {}
   public async execute() {
     // Prepare
+    await setViewport(400, 400);
     this.cut = new IconButton(
       `width: 20rem; height: 12rem;`,
       createCommentIcon(SCHEME.neutral1),
@@ -216,5 +219,56 @@ TEST_RUNNER.run({
         assertThat(clicked, eq(true), "clicked");
       },
     },
+    new (class implements TestCase {
+      public name = "ClickToShowTooltip";
+      private cut: IconTooltipButton;
+      public async execute() {
+        // Prepare
+        await setViewport(400, 400);
+        this.cut = new IconTooltipButton(
+          `width: 12rem; height: 12rem;`,
+          createCommentIcon(SCHEME.neutral1),
+          TooltipPosition.BOTTOM,
+          "some text",
+        ).show();
+        container.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/icon_tooltip_button_default.png"),
+          path.join(__dirname, "/golden/icon_tooltip_button_default.png"),
+          path.join(__dirname, "/icon_tooltip_button_default_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        this.cut.click();
+        await new Promise<void>((resolve) =>
+          this.cut.once("tooltipShowed", resolve),
+        );
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/icon_tooltip_button_show.png"),
+          path.join(__dirname, "/golden/icon_tooltip_button_show.png"),
+          path.join(__dirname, "/icon_tooltip_button_show_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        this.cut.click();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/icon_tooltip_button_hide.png"),
+          path.join(__dirname, "/golden/icon_tooltip_button_default.png"),
+          path.join(__dirname, "/icon_tooltip_button_hide_diff.png"),
+          { fullPage: true },
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
   ],
 });
