@@ -33,7 +33,7 @@ import { formatSecondsAsHHMMSS } from "../../../../common/timestamp_formatter";
 import { PLAYBACK_SPEED_DEFAULT, VOLUME_RANGE } from "../common/defaults";
 import { DanmakuCanvas } from "./danmaku_canvas/body";
 import { Comment } from "@phading/comment_service_interface/frontend/show/comment";
-import { EpisodeToPlay } from "@phading/product_service_interface/consumer/frontend/show/episode_to_play";
+import { Episode } from "@phading/product_service_interface/consumer/frontend/show/episode_to_play";
 import {
   DanmakuSettings,
   PlayerSettings,
@@ -56,7 +56,7 @@ export interface Player {
 export class Player extends EventEmitter {
   public static create(
     playerSettings: PlayerSettings,
-    episode: EpisodeToPlay,
+    episode: Episode,
   ): Player {
     return new Player(window, DanmakuCanvas.create, playerSettings, episode);
   }
@@ -119,7 +119,7 @@ export class Player extends EventEmitter {
       danmakuSettings: DanmakuSettings,
     ) => DanmakuCanvas,
     private playerSettings: PlayerSettings,
-    private episode: EpisodeToPlay,
+    private episode: Episode,
   ) {
     super();
     let speedDownIconRef = new Ref<SVGSVGElement>();

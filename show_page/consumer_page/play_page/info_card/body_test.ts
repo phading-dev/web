@@ -7,7 +7,7 @@ import {
   GET_PRICING_REQUEST_BODY,
   GetPricingResponse,
 } from "@phading/commerce_service_interface/consumer/frontend/show/interface";
-import { EpisodeSummary } from "@phading/product_service_interface/consumer/frontend/show/season_to_play";
+import { EpisodeSummary } from "@phading/product_service_interface/consumer/frontend/show/episode_to_play";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
 import {
@@ -79,19 +79,21 @@ TEST_RUNNER.run({
             }
           })(),
           {
-            name: "Season 1",
-            grade: 1,
-            description: "Something something",
-            coverImagePath: coverImage,
+            season: {
+              name: "Season 1",
+              grade: 1,
+              description: "Something something",
+              coverImagePath: coverImage,
+            },
             publisher: {
               accountId: "account1",
               naturalName: "User name",
               avatarSmallPath: userImage,
             },
+            episode: {
+              episodeId: "ep0",
+            },
             episodes: createEpisode(1),
-          },
-          {
-            episodeId: "ep0",
           },
         );
 
@@ -160,19 +162,21 @@ TEST_RUNNER.run({
             }
           })(),
           {
-            name: "Season 1",
-            grade: 40,
-            description: "Something something",
-            coverImagePath: coverImage,
+            season: {
+              name: "Season 1",
+              grade: 40,
+              description: "Something something",
+              coverImagePath: coverImage,
+            },
             publisher: {
               accountId: "account1",
               naturalName: "User name",
               avatarSmallPath: userImage,
             },
+            episode: {
+              episodeId: "ep0",
+            },
             episodes: createEpisode(1),
-          },
-          {
-            episodeId: "ep0",
           },
         );
 
@@ -213,19 +217,21 @@ TEST_RUNNER.run({
             }
           })(),
           {
-            name: createString("This is a title.", 10),
-            grade: 8,
-            description: createString("Something something.", 30),
-            coverImagePath: coverImage,
+            season: {
+              name: createString("This is a title.", 10),
+              grade: 8,
+              description: createString("Something something.", 30),
+              coverImagePath: coverImage,
+            },
             publisher: {
               accountId: "account1",
               naturalName: createString("User name", 20),
               avatarSmallPath: userImage,
             },
+            episode: {
+              episodeId: "ep5",
+            },
             episodes: createEpisode(10),
-          },
-          {
-            episodeId: "ep5",
           },
         );
 

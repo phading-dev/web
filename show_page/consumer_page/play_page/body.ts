@@ -1,10 +1,7 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../common/color_scheme";
 import { IconButton, TooltipPosition } from "../../../common/icon_button";
-import {
-  createCrossIcon,
-  createSplitColumnIcon,
-} from "../../../common/icons";
+import { createCrossIcon, createSplitColumnIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { getRootFontSize } from "../../../common/root_font_size";
 import { ICON_S } from "../../../common/sizes";
@@ -30,16 +27,18 @@ import { InfoCard } from "./info_card/body";
 import { Meter } from "./meter";
 import { Player } from "./player/body";
 import { SettingsCard } from "./settings_card/body";
+import { ViewSessionTracker } from "./view_session_tracker";
 import { Comment } from "@phading/comment_service_interface/frontend/show/comment";
 import {
   getEpisodeToPlay,
   getPlayerSettings,
-  getSeasonToPlay,
   savePlayerSettings,
 } from "@phading/product_service_interface/consumer/frontend/show/client_requests";
-import { EpisodeToPlay } from "@phading/product_service_interface/consumer/frontend/show/episode_to_play";
+import {
+  Episode,
+  EpisodeToPlay,
+} from "@phading/product_service_interface/consumer/frontend/show/episode_to_play";
 import { PlayerSettings } from "@phading/product_service_interface/consumer/frontend/show/player_settings";
-import { SeasonToPlay } from "@phading/product_service_interface/consumer/frontend/show/season_to_play";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { TabNavigator } from "@selfage/tabs/navigator";
@@ -52,22 +51,23 @@ enum Tab {
 }
 
 export interface PlayPage {
+  on(event: "play", listener: (episodeId: string) => void): this;
   on(event: "focusAccount", listener: (accountId: string) => void): this;
   on(event: "loaded", listener: () => void): this;
 }
 
 export class PlayPage extends EventEmitter {
-  public static create(seasonId: string, episodeId: string): PlayPage {
+  public static create(episodeId: string): PlayPage {
     return new PlayPage(
       window,
       PRODUCT_SERVICE_CLIENT,
       Meter.create,
+      ViewSessionTracker.create,
       Player.create,
       CommentsCard.create,
       InfoCard.create,
       SettingsCard.create,
       CommentsPool.create,
-      seasonId,
       episodeId,
     );
   }
@@ -84,10 +84,10 @@ export class PlayPage extends EventEmitter {
   public infoCard = new Ref<InfoCard>();
   public settingsCard = new Ref<SettingsCard>();
   private tabNavigator: TabNavigator<Tab>;
-  private seasonToPlay: SeasonToPlay;
   private episodeToPlay: EpisodeToPlay;
   private playerSettings: PlayerSettings;
   private meter: Meter;
+  private viewSessionTracker: ViewSessionTracker;
   private commentsPool: CommentsPool;
   private heartBeatLoopId: number;
   private cardOpened: boolean;
@@ -96,20 +96,17 @@ export class PlayPage extends EventEmitter {
     private window: Window,
     private webServiceClient: WebServiceClient,
     private createMeter: (seasonId: string) => Meter,
+    private createViewSessionTracker: (episodeId: string) => ViewSessionTracker,
     private createPlayer: (
       playerSettings: PlayerSettings,
-      episodeToPlay: EpisodeToPlay,
+      episode: Episode,
     ) => Player,
     private createCommentsCard: (seasonId: string) => CommentsCard,
-    private createInfoCard: (
-      seasonToPlay: SeasonToPlay,
-      episodeToPlay: EpisodeToPlay,
-    ) => InfoCard,
+    private createInfoCard: (episodeToPlay: EpisodeToPlay) => InfoCard,
     private createSettingsCard: (
       playerSettings: PlayerSettings,
     ) => SettingsCard,
     private createCommentsPool: (episodeId: string) => CommentsPool,
-    seasonId: string,
     episodeId: string,
   ) {
     super();
@@ -118,21 +115,16 @@ export class PlayPage extends EventEmitter {
       style: `width: 100vw; height: 100vh; background-color: ${SCHEME.neutral3}; display: flex; align-items: center;`,
     });
 
-    this.load(seasonId, episodeId);
+    this.load(episodeId);
   }
 
-  private async load(seasonId: string, episodeId: string): Promise<void> {
-    let [seasonResponse, episodeResponse, playerSettingsResponse] =
-      await Promise.all([
-        getSeasonToPlay(this.webServiceClient, {
-          seasonId: seasonId,
-        }),
-        getEpisodeToPlay(this.webServiceClient, {
-          episodeId: episodeId,
-        }),
-        getPlayerSettings(this.webServiceClient, {}),
-      ]);
-    this.seasonToPlay = seasonResponse.season;
+  private async load(episodeId: string): Promise<void> {
+    let [episodeResponse, playerSettingsResponse] = await Promise.all([
+      getEpisodeToPlay(this.webServiceClient, {
+        episodeId: episodeId,
+      }),
+      getPlayerSettings(this.webServiceClient, {}),
+    ]);
     this.episodeToPlay = episodeResponse.episode;
     this.playerSettings = PlayPage.normalizePlayerSettings(
       playerSettingsResponse.playerSettings,
@@ -141,7 +133,7 @@ export class PlayPage extends EventEmitter {
     this.body.append(
       assign(
         this.player,
-        this.createPlayer(this.playerSettings, this.episodeToPlay),
+        this.createPlayer(this.playerSettings, this.episodeToPlay.episode),
       ).body,
       E.divRef(
         this.cardContainer,
@@ -187,12 +179,10 @@ export class PlayPage extends EventEmitter {
         ),
         assign(
           this.commentsCard,
-          this.createCommentsCard(this.seasonToPlay.seasonId).hide(),
+          this.createCommentsCard(this.episodeToPlay.season.seasonId).hide(),
         ).body,
-        assign(
-          this.infoCard,
-          this.createInfoCard(this.seasonToPlay, this.episodeToPlay).hide(),
-        ).body,
+        assign(this.infoCard, this.createInfoCard(this.episodeToPlay).hide())
+          .body,
         assign(
           this.settingsCard,
           this.createSettingsCard(this.playerSettings).hide(),
@@ -203,8 +193,13 @@ export class PlayPage extends EventEmitter {
     this.commentsCard.val.setCallbackToGetTimestampMs(() =>
       this.player.val.getCurrentVideoTimestampMs(),
     );
-    this.meter = this.createMeter(this.seasonToPlay.seasonId);
-    this.commentsPool = this.createCommentsPool(this.episodeToPlay.episodeId);
+    this.meter = this.createMeter(this.episodeToPlay.season.seasonId);
+    this.viewSessionTracker = this.createViewSessionTracker(
+      this.episodeToPlay.episode.episodeId,
+    );
+    this.commentsPool = this.createCommentsPool(
+      this.episodeToPlay.episode.episodeId,
+    );
 
     this.tabNavigator = new TabNavigator<Tab>(
       (tab) => this.showTab(tab),
@@ -223,9 +218,9 @@ export class PlayPage extends EventEmitter {
     this.commentsCard.val.on("commented", (comment) =>
       this.addPostedComment(comment),
     );
-    this.infoCard.val.on("focusAccount", (accountId) =>
-      this.emit("focusAccount", accountId),
-    );
+    this.infoCard.val
+      .on("focusAccount", (accountId) => this.emit("focusAccount", accountId))
+      .on("play", (episodeId) => this.emit("play", episodeId));
     this.settingsCard.val.on("update", () => this.updateSettings());
     this.meter.on("stop", () =>
       this.player.val.interrupt(LOCALIZED_TEXT.interruptReasonNoConnectivity),
@@ -384,6 +379,7 @@ export class PlayPage extends EventEmitter {
       this.heartBeatRecurringly,
     );
     this.meter.watchStart(videoTimestampMs);
+    this.viewSessionTracker.watchStart(videoTimestampMs);
   }
 
   private heartBeatRecurringly = (): void => {
@@ -398,7 +394,9 @@ export class PlayPage extends EventEmitter {
   };
 
   private stopPlaying(): void {
-    this.meter.watchStop();
+    let videoTimestampMs = this.player.val.getCurrentVideoTimestampMs();
+    this.meter.watchStop(videoTimestampMs);
+    this.viewSessionTracker.watchStop(videoTimestampMs);
     this.window.cancelAnimationFrame(this.heartBeatLoopId);
   }
 
@@ -410,6 +408,7 @@ export class PlayPage extends EventEmitter {
   public remove() {
     if (this.player.val) {
       this.player.val.remove();
+      this.meter.remove();
     }
     this.body.remove();
   }

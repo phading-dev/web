@@ -18,11 +18,10 @@ import { COMMERCE_SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { CARD_SIDE_PADDING } from "../common/styles";
 import { getPricing } from "@phading/commerce_service_interface/consumer/frontend/show/client_requests";
 import { GetPricingResponse } from "@phading/commerce_service_interface/consumer/frontend/show/interface";
-import { EpisodeToPlay } from "@phading/product_service_interface/consumer/frontend/show/episode_to_play";
 import {
   EpisodeSummary,
-  SeasonToPlay,
-} from "@phading/product_service_interface/consumer/frontend/show/season_to_play";
+  EpisodeToPlay,
+} from "@phading/product_service_interface/consumer/frontend/show/episode_to_play";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -34,8 +33,8 @@ export interface InfoCard {
 }
 
 export class InfoCard extends EventEmitter {
-  public static create(season: SeasonToPlay, episode: EpisodeToPlay): InfoCard {
-    return new InfoCard(COMMERCE_SERVICE_CLIENT, season, episode);
+  public static create(episodeToPlay: EpisodeToPlay): InfoCard {
+    return new InfoCard(COMMERCE_SERVICE_CLIENT, episodeToPlay);
   }
 
   private static DATE_FORMATTER = new Intl.DateTimeFormat(navigator.language, {
@@ -55,8 +54,7 @@ export class InfoCard extends EventEmitter {
 
   public constructor(
     private webServiceClient: WebServiceClient,
-    season: SeasonToPlay,
-    episode: EpisodeToPlay,
+    episodeToPlay: EpisodeToPlay,
   ) {
     super();
     this.body = E.div(
@@ -69,7 +67,7 @@ export class InfoCard extends EventEmitter {
           class: "info-card-season-name",
           style: `flex: 0 0 auto; padding: 0 ${CARD_SIDE_PADDING}rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: 600;`,
         },
-        E.text(season.name),
+        E.text(episodeToPlay.season.name),
       ),
       E.div({
         style: "flex: 0 0 auto; height: .5rem",
@@ -86,7 +84,7 @@ export class InfoCard extends EventEmitter {
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(
-            `${LOCALIZED_TEXT.gradePricing}${season.grade.toString().padStart(2, "0")}`,
+            `${LOCALIZED_TEXT.gradePricing}${episodeToPlay.season.grade.toString().padStart(2, "0")}`,
           ),
         ),
       ),
@@ -98,8 +96,11 @@ export class InfoCard extends EventEmitter {
           class: "info-card-episode-list",
           style: `flex: 0 2 auto; min-height: 0; overflow-y: auto; display: flex; flex-flow: column nowrap;`,
         },
-        ...season.episodes.map((episodeSummary) =>
-          this.createEpisodeItem(episodeSummary, episode.episodeId),
+        ...episodeToPlay.episodes.map((episodeSummary) =>
+          this.createEpisodeItem(
+            episodeSummary,
+            episodeToPlay.episode.episodeId,
+          ),
         ),
       ),
       E.div({
@@ -119,14 +120,14 @@ export class InfoCard extends EventEmitter {
           E.image({
             class: "info-card-season-cover-image",
             style: `float: left; width: 16rem; aspect-ratio: 16/9; margin: .2rem 1rem .3rem 0;`,
-            src: season.coverImagePath,
+            src: episodeToPlay.season.coverImagePath,
           }),
           E.div(
             {
               class: "info-card-season-description",
               style: `display: inline; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
-            E.text(season.description),
+            E.text(episodeToPlay.season.description),
           ),
         ),
         E.divRef(
@@ -138,22 +139,22 @@ export class InfoCard extends EventEmitter {
           E.image({
             class: "info-card-publisher-avatar",
             style: `float: left; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: ${AVATAR_S}rem; margin: 0 .5rem .5rem 0;`,
-            src: season.publisher.avatarSmallPath,
+            src: episodeToPlay.publisher.avatarSmallPath,
           }),
           E.div(
             {
               class: "info-card-publisher-name",
               style: `display: inline; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
-            E.text(season.publisher.naturalName),
+            E.text(episodeToPlay.publisher.naturalName),
           ),
         ),
       ),
     );
-    this.loadPricing(season);
+    this.loadPricing(episodeToPlay);
 
     this.publisher.val.addEventListener("click", () =>
-      this.emit("focusAccount", season.publisher.accountId),
+      this.emit("focusAccount", episodeToPlay.publisher.accountId),
     );
   }
 
@@ -220,11 +221,11 @@ export class InfoCard extends EventEmitter {
     return item;
   }
 
-  private async loadPricing(season: SeasonToPlay): Promise<void> {
+  private async loadPricing(episodeToPlay: EpisodeToPlay): Promise<void> {
     let response: GetPricingResponse;
     try {
       response = await getPricing(this.webServiceClient, {
-        grade: season.grade,
+        grade: episodeToPlay.season.grade,
       });
     } catch {
       console.error("Unable to get pricing.");

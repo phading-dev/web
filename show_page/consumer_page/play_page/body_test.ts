@@ -9,20 +9,23 @@ import { InfoCardMock } from "./info_card/body_mock";
 import { MeterMock } from "./meter_mock";
 import { PlayerMock } from "./player/body_mock";
 import { SettingsCardMock } from "./settings_card/body_mock";
+import { ViewSessionTrackerMock } from "./view_session_tracker_mock";
 import { Comment } from "@phading/comment_service_interface/frontend/show/comment";
-import { EpisodeToPlay } from "@phading/product_service_interface/consumer/frontend/show/episode_to_play";
+import {
+  Episode,
+  EpisodeToPlay,
+} from "@phading/product_service_interface/consumer/frontend/show/episode_to_play";
 import {
   GET_EPISODE_TO_PLAY,
+  GET_EPISODE_TO_PLAY_REQUEST_BODY,
   GET_PLAYER_SETTINGS,
-  GET_SEASON_TO_PLAY,
   GetEpisodeToPlayResponse,
-  GetSeasonToPlayResponse,
   SAVE_PLAYER_SETTINGS,
   SavePlayerSettingsRequestBody,
   SavePlayerSettingsResponse,
 } from "@phading/product_service_interface/consumer/frontend/show/interface";
 import { PlayerSettings } from "@phading/product_service_interface/consumer/frontend/show/player_settings";
-import { SeasonToPlay } from "@phading/product_service_interface/consumer/frontend/show/season_to_play";
+import { eqMessage } from "@selfage/message/test_matcher";
 import {
   mouseMove,
   mouseWheel,
@@ -34,17 +37,23 @@ import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 import "../../../common/normalize_body";
 
-function createSeasonToPlay(): SeasonToPlay {
+function createEpisodeToPlay(): EpisodeToPlay {
   return {
-    seasonId: "season1",
-    name: "This is a title",
-    description: "Some kind of description",
-    coverImagePath: coverImage,
-    grade: 1,
+    season: {
+      seasonId: "season1",
+      name: "This is a title",
+      description: "Some kind of description",
+      coverImagePath: coverImage,
+      grade: 1,
+    },
     publisher: {
       accountId: "accountId1",
       naturalName: "Publisher name",
       avatarSmallPath: userImage,
+    },
+    episode: {
+      episodeId: "ep1",
+      videoPath: mov,
     },
     episodes: [
       {
@@ -54,13 +63,6 @@ function createSeasonToPlay(): SeasonToPlay {
         publishedTime: 1719033940,
       },
     ],
-  };
-}
-
-function createEpisodeToPlay(): EpisodeToPlay {
-  return {
-    episodeId: "ep1",
-    videoPath: mov,
   };
 }
 
@@ -85,17 +87,15 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(500, 500);
+        let getEpisodeToPlayRequest: any;
         this.cut = new PlayPage(
           undefined,
           new (class extends WebServiceClientMock {
             public async send(request: any): Promise<any> {
               if (request.descriptor === GET_PLAYER_SETTINGS) {
                 return {} as PlayerSettings;
-              } else if (request.descriptor === GET_SEASON_TO_PLAY) {
-                return {
-                  season: createSeasonToPlay(),
-                } as GetSeasonToPlayResponse;
               } else if (request.descriptor === GET_EPISODE_TO_PLAY) {
+                getEpisodeToPlayRequest = request.body;
                 return {
                   episode: createEpisodeToPlay(),
                 } as GetEpisodeToPlayResponse;
@@ -103,16 +103,15 @@ TEST_RUNNER.run({
               throw new Error("Unexpected");
             }
           })(),
-          () => new MeterMock("season1"),
-          (playerSettings: PlayerSettings, episode: EpisodeToPlay) =>
+          (seasonId) => new MeterMock(seasonId),
+          (episodeId) => new ViewSessionTrackerMock(episodeId),
+          (playerSettings: PlayerSettings, episode: Episode) =>
             new PlayerMock(playerSettings, episode),
           (episodeId: string) => new CommentsCardMock(episodeId),
-          (season: SeasonToPlay, episode: EpisodeToPlay) =>
-            new InfoCardMock(season, episode),
+          (episode: EpisodeToPlay) => new InfoCardMock(episode),
           (playerSettings: PlayerSettings) =>
             new SettingsCardMock(playerSettings),
           (episodeId: string) => new CommentsPoolMock(episodeId, []),
-          "season1",
           "ep1",
         );
 
@@ -121,6 +120,16 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
+        assertThat(
+          getEpisodeToPlayRequest,
+          eqMessage(
+            {
+              episodeId: "ep1",
+            },
+            GET_EPISODE_TO_PLAY_REQUEST_BODY,
+          ),
+          "GetEpisodeToPlay request body",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/play_page_small.png"),
           path.join(__dirname, "/golden/play_page_small.png"),
@@ -211,10 +220,6 @@ TEST_RUNNER.run({
             public async send(request: any): Promise<any> {
               if (request.descriptor === GET_PLAYER_SETTINGS) {
                 return {} as PlayerSettings;
-              } else if (request.descriptor === GET_SEASON_TO_PLAY) {
-                return {
-                  season: createSeasonToPlay(),
-                } as GetSeasonToPlayResponse;
               } else if (request.descriptor === GET_EPISODE_TO_PLAY) {
                 return {
                   episode: createEpisodeToPlay(),
@@ -223,16 +228,15 @@ TEST_RUNNER.run({
               throw new Error("Unexpected");
             }
           })(),
-          () => new MeterMock("season1"),
-          (playerSettings: PlayerSettings, episode: EpisodeToPlay) =>
+          (seasonId) => new MeterMock(seasonId),
+          (episodeId) => new ViewSessionTrackerMock(episodeId),
+          (playerSettings: PlayerSettings, episode: Episode) =>
             new PlayerMock(playerSettings, episode),
           (episodeId: string) => new CommentsCardMock(episodeId),
-          (season: SeasonToPlay, episode: EpisodeToPlay) =>
-            new InfoCardMock(season, episode),
+          (episode: EpisodeToPlay) => new InfoCardMock(episode),
           (playerSettings: PlayerSettings) =>
             new SettingsCardMock(playerSettings),
           (episodeId: string) => new CommentsPoolMock(episodeId, []),
-          "season1",
           "ep1",
         );
 
@@ -294,12 +298,14 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "PlayWhileMeteringAndAddingComments_ScrollDown";
+      public name =
+        "PlayWhileMeteringAndTrackingViewSessionAndAddingComments_ScrollDown";
       private cut: PlayPage;
       public async execute() {
         // Prepare
         await setViewport(600, 600);
         let meterMock: MeterMock;
+        let trackerMock: ViewSessionTrackerMock;
         let playerMock: PlayerMock;
         this.cut = new PlayPage(
           window,
@@ -307,10 +313,6 @@ TEST_RUNNER.run({
             public async send(request: any): Promise<any> {
               if (request.descriptor === GET_PLAYER_SETTINGS) {
                 return {} as PlayerSettings;
-              } else if (request.descriptor === GET_SEASON_TO_PLAY) {
-                return {
-                  season: createSeasonToPlay(),
-                } as GetSeasonToPlayResponse;
               } else if (request.descriptor === GET_EPISODE_TO_PLAY) {
                 return {
                   episode: createEpisodeToPlay(),
@@ -319,17 +321,20 @@ TEST_RUNNER.run({
               throw new Error("Unexpected");
             }
           })(),
-          () => {
-            meterMock = new MeterMock("season1");
+          (seasonId) => {
+            meterMock = new MeterMock(seasonId);
             return meterMock;
           },
-          (playerSettings: PlayerSettings, episode: EpisodeToPlay) => {
+          (episodeId) => {
+            trackerMock = new ViewSessionTrackerMock(episodeId);
+            return trackerMock;
+          },
+          (playerSettings: PlayerSettings, episode: Episode) => {
             playerMock = new PlayerMock(playerSettings, episode);
             return playerMock;
           },
           (episodeId: string) => new CommentsCardMock(episodeId),
-          (season: SeasonToPlay, episode: EpisodeToPlay) =>
-            new InfoCardMock(season, episode),
+          (episode: EpisodeToPlay) => new InfoCardMock(episode),
           (playerSettings: PlayerSettings) =>
             new SettingsCardMock(playerSettings),
           (episodeId: string) =>
@@ -341,7 +346,6 @@ TEST_RUNNER.run({
               createComment(1500),
               createComment(1500),
             ]),
-          "season1",
           "ep1",
         );
         document.body.append(this.cut.body);
@@ -352,7 +356,18 @@ TEST_RUNNER.run({
         this.cut.player.val.emit("playing");
 
         // Verify
-        assertThat(meterMock.currentTimestampMs, eq(0), "watch start meter");
+        assertThat(meterMock.currentSeasonId, eq("season1"), "meter season id");
+        assertThat(meterMock.currentTimestampMs, eq(0), "meter watch start");
+        assertThat(
+          trackerMock.currentEpisodeId,
+          eq("ep1"),
+          "tracker episode id",
+        );
+        assertThat(
+          trackerMock.currentTimestampMs,
+          eq(0),
+          "tracker watch start",
+        );
 
         // Execute
         await new Promise<void>((resolve) => setTimeout(resolve, 20));
@@ -360,7 +375,7 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) => setTimeout(resolve, 100));
 
         // Verify
-        assertThat(meterMock.currentTimestampMs, eq(30), "watch update meter");
+        assertThat(meterMock.currentTimestampMs, eq(30), "meter watch update");
 
         // Execute
         this.cut.player.val.emit("notPlaying");
@@ -369,7 +384,12 @@ TEST_RUNNER.run({
         assertThat(
           meterMock.currentTimestampMs,
           eq(undefined),
-          "watch stop meter",
+          "meter watch stop",
+        );
+        assertThat(
+          trackerMock.currentTimestampMs,
+          eq(30),
+          "tracker watch stop",
         );
         this.cut.player.val.commentButton.val.click();
         await asyncAssertScreenshot(
@@ -382,7 +402,12 @@ TEST_RUNNER.run({
         this.cut.player.val.emit("playing");
 
         // Verify
-        assertThat(meterMock.currentTimestampMs, eq(30), "watch start meter 2");
+        assertThat(meterMock.currentTimestampMs, eq(30), "meter watch start 2");
+        assertThat(
+          trackerMock.currentTimestampMs,
+          eq(30),
+          "tracker watch start 2",
+        );
 
         // Execute
         await new Promise<void>((resolve) => setTimeout(resolve, 50));
@@ -393,7 +418,7 @@ TEST_RUNNER.run({
         assertThat(
           meterMock.currentTimestampMs,
           eq(1600),
-          "watch update meter 2",
+          "meter watch update 2",
         );
 
         // Execute
@@ -403,7 +428,12 @@ TEST_RUNNER.run({
         assertThat(
           meterMock.currentTimestampMs,
           eq(undefined),
-          "watch stop meter 2",
+          "meter watch stop 2",
+        );
+        assertThat(
+          trackerMock.currentTimestampMs,
+          eq(1600),
+          "tracker watch stop 2",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/play_page_added_more_comments.png"),
@@ -428,7 +458,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "FocusAccount";
+      public name = "FocusAccount_PlayNextEpisode";
       private cut: PlayPage;
       public async execute() {
         // Prepare
@@ -439,10 +469,6 @@ TEST_RUNNER.run({
             public async send(request: any): Promise<any> {
               if (request.descriptor === GET_PLAYER_SETTINGS) {
                 return {} as PlayerSettings;
-              } else if (request.descriptor === GET_SEASON_TO_PLAY) {
-                return {
-                  season: createSeasonToPlay(),
-                } as GetSeasonToPlayResponse;
               } else if (request.descriptor === GET_EPISODE_TO_PLAY) {
                 return {
                   episode: createEpisodeToPlay(),
@@ -451,16 +477,15 @@ TEST_RUNNER.run({
               throw new Error("Unexpected");
             }
           })(),
-          () => new MeterMock("season1"),
-          (playerSettings: PlayerSettings, episode: EpisodeToPlay) =>
+          (seasonId) => new MeterMock(seasonId),
+          (episodeId) => new ViewSessionTrackerMock(episodeId),
+          (playerSettings: PlayerSettings, episode: Episode) =>
             new PlayerMock(playerSettings, episode),
           (episodeId: string) => new CommentsCardMock(episodeId),
-          (season: SeasonToPlay, episode: EpisodeToPlay) =>
-            new InfoCardMock(season, episode),
+          (episode: EpisodeToPlay) => new InfoCardMock(episode),
           (playerSettings: PlayerSettings) =>
             new SettingsCardMock(playerSettings),
           (episodeId: string) => new CommentsPoolMock(episodeId, []),
-          "season1",
           "ep1",
         );
         document.body.append(this.cut.body);
@@ -476,6 +501,18 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(accountIdCaptured, eq("accountId1"), "focused account");
+
+        // Prepare
+        let nextEpisode: string;
+        this.cut.on("play", (episodeId) => {
+          nextEpisode = episodeId;
+        });
+
+        // Execute
+        this.cut.infoCard.val.emit("play", "ep2");
+
+        // Verify
+        assertThat(nextEpisode, eq("ep2"), "next episode");
       }
       public tearDown() {
         this.cut.remove();
@@ -495,10 +532,6 @@ TEST_RUNNER.run({
             public async send(request: any): Promise<any> {
               if (request.descriptor === GET_PLAYER_SETTINGS) {
                 return {} as PlayerSettings;
-              } else if (request.descriptor === GET_SEASON_TO_PLAY) {
-                return {
-                  season: createSeasonToPlay(),
-                } as GetSeasonToPlayResponse;
               } else if (request.descriptor === GET_EPISODE_TO_PLAY) {
                 return {
                   episode: createEpisodeToPlay(),
@@ -510,14 +543,14 @@ TEST_RUNNER.run({
               throw new Error("Unexpected");
             }
           })(),
-          () => new MeterMock("season1"),
-          (playerSettings: PlayerSettings, episode: EpisodeToPlay) => {
+          (seasonId) => new MeterMock(seasonId),
+          (episodeId) => new ViewSessionTrackerMock(episodeId),
+          (playerSettings: PlayerSettings, episode: Episode) => {
             playerMock = new PlayerMock(playerSettings, episode);
             return playerMock;
           },
           (episodeId: string) => new CommentsCardMock(episodeId),
-          (season: SeasonToPlay, episode: EpisodeToPlay) =>
-            new InfoCardMock(season, episode),
+          (episode: EpisodeToPlay) => new InfoCardMock(episode),
           (playerSettings: PlayerSettings) =>
             new SettingsCardMock(playerSettings),
           (episodeId: string) =>
@@ -525,7 +558,6 @@ TEST_RUNNER.run({
               createComment(10),
               createComment(20),
             ]),
-          "season1",
           "ep1",
         );
         document.body.append(this.cut.body);

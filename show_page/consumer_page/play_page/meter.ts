@@ -24,7 +24,7 @@ export class Meter extends EventEmitter {
     private seasonId: string,
   ) {
     super();
-    this.window.addEventListener("beforeunload", () => this.sync());
+    this.window.addEventListener("beforeunload", this.sync);
   }
 
   private syncRecurringly = async (): Promise<void> => {
@@ -38,12 +38,10 @@ export class Meter extends EventEmitter {
       // Loop id changed. A new loop might be started.
       return;
     }
-    this.syncLoopId = this.window.requestAnimationFrame(
-      this.syncRecurringly,
-    );
+    this.syncLoopId = this.window.requestAnimationFrame(this.syncRecurringly);
   };
 
-  private async sync(): Promise<void> {
+  private sync = async (): Promise<void> => {
     if (!this.watchTimeMs) {
       return;
     }
@@ -70,14 +68,12 @@ export class Meter extends EventEmitter {
       this.watchTimeMs += watchTimeMs;
       return;
     }
-  }
+  };
 
   public watchStart(timestampMs: number): void {
     this.watchTimeStartMs = timestampMs;
     this.window.cancelAnimationFrame(this.syncLoopId);
-    this.syncLoopId = this.window.requestAnimationFrame(
-      this.syncRecurringly,
-    );
+    this.syncLoopId = this.window.requestAnimationFrame(this.syncRecurringly);
   }
 
   public watchUpdate(timestampMs: number): void {
@@ -85,9 +81,14 @@ export class Meter extends EventEmitter {
     this.watchTimeStartMs = timestampMs;
   }
 
-  public watchStop(): void {
+  public watchStop(timestampMs: number): void {
+    this.watchUpdate(timestampMs);
     this.sync();
     this.window.cancelAnimationFrame(this.syncLoopId);
     this.syncLoopId = undefined;
+  }
+
+  public remove(): void {
+    this.window.removeEventListener("beforeunload", this.sync);
   }
 }
