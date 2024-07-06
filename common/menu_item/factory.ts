@@ -3,10 +3,12 @@ import {
   createAccountIcon,
   createArrowIcon,
   createHistogramIcon,
+  createHistoryIcon,
   createHomeIcon,
   createPaymentIcon,
   createPlusIcon,
   createReplyIcon,
+  createSearchIcon,
   createSecurityIcon,
   createShuffleIcon,
   createUploadIcon,
@@ -18,7 +20,7 @@ export function createHomeMenuItem(): MenuItem {
   return MenuItem.create(
     createHomeIcon(SCHEME.neutral1),
     `1rem`,
-    LOCALIZED_TEXT.homeLabel
+    LOCALIZED_TEXT.homeLabel,
   );
 }
 
@@ -26,7 +28,7 @@ export function createShuffleMenuItem(): MenuItem {
   return MenuItem.create(
     createShuffleIcon(SCHEME.neutral1),
     `1rem`,
-    LOCALIZED_TEXT.shuffleTalesLabel
+    LOCALIZED_TEXT.shuffleTalesLabel,
   );
 }
 
@@ -34,7 +36,7 @@ export function createWritePostMenuItem(): MenuItem {
   return MenuItem.create(
     createPlusIcon(SCHEME.primary1),
     `1rem`,
-    LOCALIZED_TEXT.writeTaleLabel
+    LOCALIZED_TEXT.writeTaleLabel,
   );
 }
 
@@ -42,7 +44,7 @@ export function createReplyPostMenuItem(): MenuItem {
   return MenuItem.create(
     createReplyIcon(SCHEME.primary1),
     `1rem`,
-    LOCALIZED_TEXT.replyTaleLabel
+    LOCALIZED_TEXT.replyTaleLabel,
   );
 }
 
@@ -50,7 +52,7 @@ export function createAccountMenuItem(): MenuItem {
   return MenuItem.create(
     createAccountIcon(SCHEME.neutral1),
     `1rem`,
-    LOCALIZED_TEXT.accountLabel
+    LOCALIZED_TEXT.accountLabel,
   );
 }
 
@@ -58,7 +60,7 @@ export function createBackMenuItem(): MenuItem {
   return MenuItem.create(
     createArrowIcon(SCHEME.neutral1),
     `1rem`,
-    LOCALIZED_TEXT.backLabel
+    LOCALIZED_TEXT.backLabel,
   );
 }
 
@@ -66,7 +68,7 @@ export function createUploadMenuItem(): MenuItem {
   return MenuItem.create(
     createUploadIcon(SCHEME.neutral1),
     `1rem`,
-    LOCALIZED_TEXT.uploadLabel
+    LOCALIZED_TEXT.uploadLabel,
   );
 }
 
@@ -74,7 +76,7 @@ export function createSecuritySettingsMenuItem(): MenuItem {
   return MenuItem.create(
     createSecurityIcon(SCHEME.neutral1),
     `1rem`,
-    LOCALIZED_TEXT.securitySettingsLabel
+    LOCALIZED_TEXT.securitySettingsLabel,
   );
 }
 
@@ -82,7 +84,7 @@ export function createPaymentMethodsMenuIcon(): MenuItem {
   return MenuItem.create(
     createPaymentIcon(SCHEME.neutral1),
     `1rem`,
-    LOCALIZED_TEXT.paymentMethodsLabel
+    LOCALIZED_TEXT.paymentMethodsLabel,
   );
 }
 
@@ -90,6 +92,22 @@ export function createUsageReportsMenuItem(): MenuItem {
   return MenuItem.create(
     createHistogramIcon(SCHEME.neutral1),
     `1rem`,
-    LOCALIZED_TEXT.usageReportsLabel
+    LOCALIZED_TEXT.usageReportsLabel,
+  );
+}
+
+export function createHistoryMenuItem(): MenuItem {
+  return MenuItem.create(
+    createHistoryIcon(SCHEME.neutral1),
+    `1rem`,
+    LOCALIZED_TEXT.historyLabel,
+  );
+}
+
+export function createSearchMenuItem(): MenuItem {
+  return MenuItem.create(
+    createSearchIcon(SCHEME.neutral1),
+    `1rem`,
+    LOCALIZED_TEXT.searchLabel,
   );
 }

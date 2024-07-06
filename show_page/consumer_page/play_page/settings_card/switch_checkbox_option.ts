@@ -19,7 +19,7 @@ export class SwitchCheckboxOption extends EventEmitter {
 
   private static RADIUS = ".9rem";
   private static SWITCHER_HEIGHT = "1.8rem";
-  private static TRANSITION_DURATION = ".3s";
+  private static TRANSITION_DURATION = ".2s";
 
   public body: HTMLDivElement;
   public switchBarWrapper = new Ref<HTMLDivElement>();

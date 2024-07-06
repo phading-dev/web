@@ -1,4 +1,5 @@
 import EventEmitter = require("events");
+import { BlockingButton } from "./blocking_button";
 import { BUTTON_BORDER_RADIUS, NULLIFIED_BUTTON_STYLE } from "./button_styles";
 import { SCHEME } from "./color_scheme";
 import { HoverObserver, Mode } from "./hover_observer";
@@ -14,38 +15,38 @@ export enum TooltipPosition {
 }
 
 export class IconWithTootlip {
-  public body: HTMLButtonElement;
+  public body: HTMLDivElement;
   public tooltip = new Ref<HTMLDivElement>();
-  private displayStyle: string;
 
   public constructor(
-    customButtonStyle: string,
-    iconElement: Element,
+    size: number, // rem
+    padding: number, // rem
+    customStyle: string,
+    iconElement: Element, // SVG needs to use "fill: currentColor;".
     position: TooltipPosition,
     text: string,
   ) {
-    this.body = E.button(
+    this.body = E.div(
       {
-        class: "icon-button",
-        style: `${NULLIFIED_BUTTON_STYLE} position: relative; ${customButtonStyle}`,
+        class: "icon-with-tooltip",
+        style: `position: relative; box-sizing: border-box; padding: ${padding}rem; width: ${size}rem; height: ${size}rem; ${customStyle}`,
       },
       iconElement,
       E.divRef(
         this.tooltip,
         {
-          class: "icon-button-tooltip",
-          style: `position: absolute; justify-content: center; align-items: center; transition: opacity .3s linear;`,
+          class: "icon-tooltip",
+          style: `position: absolute; justify-content: center; align-items: center; transition: opacity .2s;`,
         },
         E.div(
           {
-            class: "icon-button-tooltip-background",
+            class: "icon-tooltip-centered",
             style: `background-color: ${SCHEME.neutral4}; box-shadow: 0 0 .3rem ${SCHEME.neutral1}; border-radius: ${BUTTON_BORDER_RADIUS}; padding: .6rem 1rem; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; white-space: nowrap;`,
           },
           E.text(text),
         ),
       ),
     );
-    this.displayStyle = this.body.style.display;
 
     switch (position) {
       case TooltipPosition.TOP:
@@ -95,13 +96,13 @@ export class IconWithTootlip {
     this.tooltip.val.style.opacity = "0";
   }
 
-  public show(): this {
-    this.body.style.display = this.displayStyle;
+  public enable(): this {
+    this.body.style.color = SCHEME.neutral1;
     return this;
   }
 
-  public hide(): this {
-    this.body.style.display = "none";
+  public disable(): this {
+    this.body.style.color = SCHEME.neutral2;
     return this;
   }
 
@@ -122,43 +123,53 @@ export interface IconButton {
 
 export class IconButton extends EventEmitter {
   public static create(
-    customButtonStyle: string,
+    size: number, // rem
+    padding: number, // rem
+    customStyle: string,
     iconElement: Element,
     position: TooltipPosition,
     text: string,
-    customEnable: () => void = () => {},
-    customDisable: () => void = () => {},
   ): IconButton {
     return new IconButton(
-      customButtonStyle,
+      size,
+      padding,
+      customStyle,
       iconElement,
       position,
       text,
-      customEnable,
-      customDisable,
     );
   }
 
   public body: HTMLButtonElement;
   private iconWithTooltip: IconWithTootlip;
+  private displayStyle: string;
   private hoverObserver: HoverObserver;
 
   public constructor(
-    customButtonStyle: string,
+    size: number,
+    padding: number,
+    customStyle: string,
     iconElement: Element,
     position: TooltipPosition,
     text: string,
-    private customEnable: () => void,
-    private customDisable: () => void,
   ) {
     super();
     this.iconWithTooltip = new IconWithTootlip(
-      customButtonStyle,
+      size,
+      padding,
+      "",
       iconElement,
       position,
       text,
     );
-    this.body = this.iconWithTooltip.body;
+    this.body = E.button(
+      {
+        class: "icon-button",
+        style: `${NULLIFIED_BUTTON_STYLE} ${customStyle}`,
+      },
+      this.iconWithTooltip.body,
+    );
+    this.displayStyle = this.body.style.display;
 
     this.hoverObserver = HoverObserver.create(
       this.body,
@@ -175,29 +186,29 @@ export class IconButton extends EventEmitter {
   public enable(): this {
     this.body.disabled = false;
     this.body.style.cursor = "pointer";
-    this.customEnable();
+    this.iconWithTooltip.enable();
     return this;
   }
 
   public disable(): this {
     this.body.disabled = true;
     this.body.style.cursor = "not-allowed";
-    this.customDisable();
+    this.iconWithTooltip.disable();
     return this;
   }
 
   public show(): this {
-    this.iconWithTooltip.show();
+    this.body.style.display = this.displayStyle;
     return this;
   }
 
   public hide(): this {
-    this.iconWithTooltip.hide();
+    this.body.style.display = "none";
     return this;
   }
 
   public remove(): void {
-    this.iconWithTooltip.remove();
+    this.body.remove();
   }
 
   // Visible for testing
@@ -218,13 +229,17 @@ export interface IconTooltipButton {
 
 export class IconTooltipButton extends EventEmitter {
   public static create(
-    customButtonStyle: string,
+    size: number, // rem
+    padding: number, // rem
+    customStyle: string,
     iconElement: Element,
     position: TooltipPosition,
     text: string,
   ): IconTooltipButton {
     return new IconTooltipButton(
-      customButtonStyle,
+      size,
+      padding,
+      customStyle,
       iconElement,
       position,
       text,
@@ -235,19 +250,29 @@ export class IconTooltipButton extends EventEmitter {
   private iconWithTooltip: IconWithTootlip;
 
   public constructor(
-    customButtonStyle: string,
+    size: number,
+    padding: number,
+    customStyle: string,
     iconElement: Element,
     position: TooltipPosition,
     text: string,
   ) {
     super();
     this.iconWithTooltip = new IconWithTootlip(
-      `cursor: pointer; ${customButtonStyle}`,
+      size,
+      padding,
+      "",
       iconElement,
       position,
       text,
+    ).enable();
+    this.body = E.button(
+      {
+        class: "icon-tooltip-button",
+        style: `${NULLIFIED_BUTTON_STYLE} cursor: pointer; ${customStyle}`,
+      },
+      this.iconWithTooltip.body,
     );
-    this.body = this.iconWithTooltip.body;
 
     this.iconWithTooltip.tooltip.val.addEventListener("transitionend", () =>
       this.emit("tooltipShowed"),
@@ -257,16 +282,6 @@ export class IconTooltipButton extends EventEmitter {
     );
   }
 
-  public show(): this {
-    this.iconWithTooltip.show();
-    return this;
-  }
-
-  public hide(): this {
-    this.iconWithTooltip.hide();
-    return this;
-  }
-
   public remove(): void {
     this.body.remove();
   }
@@ -274,5 +289,76 @@ export class IconTooltipButton extends EventEmitter {
   // Visible for testing
   public click(): void {
     this.body.click();
+  }
+}
+
+export class BlockingIconButton extends BlockingButton {
+  public static create(
+    size: number, // rem
+    padding: number, // rem
+    customStyle: string,
+    iconElement: Element, // SVG needs to use "fill: currentColor;".
+    position: TooltipPosition,
+    text: string,
+  ): BlockingIconButton {
+    return new BlockingIconButton(
+      size,
+      padding,
+      customStyle,
+      iconElement,
+      position,
+      text,
+    );
+  }
+
+  private iconWithTooltip: IconWithTootlip;
+  private hoverObserver: HoverObserver;
+
+  public constructor(
+    size: number,
+    padding: number,
+    customStyle: string,
+    iconElement: Element, // SVG needs to use "fill: currentColor;".
+    position: TooltipPosition,
+    text: string,
+  ) {
+    super(`${NULLIFIED_BUTTON_STYLE} cursor: pointer; ${customStyle}`);
+    this.iconWithTooltip = new IconWithTootlip(
+      size,
+      padding,
+      "",
+      iconElement,
+      position,
+      text,
+    );
+    this.append(this.iconWithTooltip.body);
+
+    this.hoverObserver = HoverObserver.create(
+      this.body,
+      Mode.DELAY_HOVER_DELAY_LEAVE,
+    )
+      .on("hover", () => this.iconWithTooltip.showTootlip())
+      .on("leave", () => this.iconWithTooltip.hideTooltip());
+    this.iconWithTooltip.tooltip.val.addEventListener("transitionend", () =>
+      this.emit("tooltipShowed"),
+    );
+  }
+
+  protected enableOverride(): void {
+    this.container.style.color = SCHEME.neutral1;
+    this.iconWithTooltip.enable();
+  }
+
+  protected disableOverride(): void {
+    this.container.style.color = SCHEME.neutral2;
+    this.iconWithTooltip.disable();
+  }
+
+  // Visible for testing
+  public hover(): void {
+    this.hoverObserver.emit("hover");
+  }
+  public leave(): void {
+    this.hoverObserver.emit("leave");
   }
 }

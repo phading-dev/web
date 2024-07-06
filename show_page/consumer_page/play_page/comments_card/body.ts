@@ -84,14 +84,10 @@ export class CommentsCard extends EventEmitter {
         assign(
           this.scrollToTopButton,
           IconButton.create(
-            `position: absolute; display: block; top: 0; left: 0; width: 100%; background-color: ${SCHEME.neutral4};`,
-            E.div(
-              {
-                class: "comments-card-scroll-to-buttom-icon",
-                style: `margin-left: auto; margin-right: auto; width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .8rem; box-sizing: border-box; transform: rotate(90deg);`,
-              },
-              createArrowWithBarIcon(SCHEME.neutral1),
-            ),
+            ICON_S,
+            0.8,
+            `position: absolute; top: 0; left: 0; width: 100%; display: flex; flex-flow: row nowrap; justify-content: center; background-color: ${SCHEME.neutral4};`,
+            createArrowWithBarIcon("currentColor", "transform: rotate(90deg);"),
             TooltipPosition.TOP,
             LOCALIZED_TEXT.accountDescriptionLabel,
           ).enable(),

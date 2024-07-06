@@ -149,32 +149,38 @@ export class PlayPage extends EventEmitter {
           assign(
             this.dockToRightButton,
             IconButton.create(
-              `height: ${ICON_S}rem; width: ${ICON_S}rem; padding: .5rem; box-sizing: border-box; cursor: pointer;`,
-              createSplitColumnIcon(SCHEME.neutral1),
+              ICON_S,
+              0.5,
+              "",
+              createSplitColumnIcon("currentColor"),
               TooltipPosition.LEFT,
               LOCALIZED_TEXT.dockToRightButtonLebel,
-            ),
+            ).enable(),
           ).body,
           assign(
             this.dockToBottomButton,
             IconButton.create(
-              `height: ${ICON_S}rem; width: ${ICON_S}rem; padding: .5rem; box-sizing: border-box; cursor: pointer;`,
+              ICON_S,
+              0.5,
+              "",
               createSplitColumnIcon(
-                SCHEME.neutral1,
+                "currentColor",
                 "transform: rotate(90deg);",
               ),
               TooltipPosition.LEFT,
               LOCALIZED_TEXT.dockToBottomButotnLabel,
-            ),
+            ).enable(),
           ).body,
           assign(
             this.closeButton,
             IconButton.create(
-              `height: ${ICON_S}rem; width: ${ICON_S}rem; padding: .7rem; box-sizing: border-box; cursor: pointer;`,
-              createCrossIcon(SCHEME.neutral1),
+              ICON_S,
+              0.7,
+              "",
+              createCrossIcon("currentColor"),
               TooltipPosition.LEFT,
               LOCALIZED_TEXT.closeButtonLabel,
-            ),
+            ).enable(),
           ).body,
         ),
         assign(

@@ -19,15 +19,8 @@ import {
   createVolumeFullIcon,
   createVolumeMutedIcon,
 } from "../../../../common/icons";
-import { LikeDislikeButtons } from "../../../../common/like_dislike_buttons";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
-import {
-  FONT_L,
-  FONT_M,
-  ICON_L,
-  ICON_M,
-  ICON_S,
-} from "../../../../common/sizes";
+import { FONT_L, FONT_M, ICON_S } from "../../../../common/sizes";
 import { Orientation, Slider } from "../../../../common/slider";
 import { formatSecondsAsHHMMSS } from "../../../../common/timestamp_formatter";
 import { PLAYBACK_SPEED_DEFAULT, VOLUME_RANGE } from "../common/defaults";
@@ -66,7 +59,7 @@ export class Player extends EventEmitter {
     0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4,
   ];
   private static RESERVED_BOTTOM_MARGIN = 50; // px
-  private static OPACITY_TRANSITION = `transition: opacity .3s linear;`;
+  private static OPACITY_TRANSITION = `transition: opacity .2s linear;`;
 
   public body: HTMLDivElement;
   public video = new Ref<HTMLVideoElement>();
@@ -85,7 +78,6 @@ export class Player extends EventEmitter {
   private volumeSlider = new Ref<Slider>();
   public volumeButton = new Ref<IconButton>();
   public volumeMutedButton = new Ref<IconButton>();
-  public likeDislikeButtons = new Ref<LikeDislikeButtons>();
   public commentButton = new Ref<IconButton>();
   public moreInfoButton = new Ref<IconButton>();
   private bottomProgressBar = new Ref<HTMLDivElement>();
@@ -122,8 +114,6 @@ export class Player extends EventEmitter {
     private episode: Episode,
   ) {
     super();
-    let speedDownIconRef = new Ref<SVGSVGElement>();
-    let speedUpIconRef = new Ref<SVGSVGElement>();
     this.body = E.div(
       {
         class: "player",
@@ -138,7 +128,7 @@ export class Player extends EventEmitter {
         this.loadingIcon,
         {
           class: "player-video-loading-icon",
-          style: `position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto; width: ${ICON_L}rem; height: ${ICON_L}rem; ${Player.OPACITY_TRANSITION});`,
+          style: `position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto; width: 8rem; height: 8rem; ${Player.OPACITY_TRANSITION});`,
         },
         createLoadingIcon(SCHEME.neutral1),
       ),
@@ -146,7 +136,7 @@ export class Player extends EventEmitter {
         this.playingIcon,
         {
           class: "player-video-playing-icon",
-          style: `position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto; width: ${ICON_M}rem; height: ${ICON_M}rem; opacity: 0;`,
+          style: `position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto; width: 8rem; height: 8rem; opacity: 0;`,
         },
         createPlayIcon(SCHEME.neutral1),
       ),
@@ -154,7 +144,7 @@ export class Player extends EventEmitter {
         this.pausedIcon,
         {
           class: "player-video-paused-icon",
-          style: `position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto; width: ${ICON_M}rem; height: ${ICON_M}rem; opacity: 0;`,
+          style: `position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto; width: 8rem; height: 8rem; opacity: 0;`,
         },
         createPauseIcon(SCHEME.neutral1),
       ),
@@ -174,7 +164,9 @@ export class Player extends EventEmitter {
         assign(
           this.backButton,
           IconButton.create(
-            `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .5rem; box-sizing: border-box;`,
+            ICON_S,
+            0.5,
+            "",
             createArrowIcon(SCHEME.neutral1),
             TooltipPosition.BOTTOM,
             LOCALIZED_TEXT.backLabel,
@@ -188,7 +180,9 @@ export class Player extends EventEmitter {
           assign(
             this.noLoopButton,
             IconButton.create(
-              `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .5rem; box-sizing: border-box;`,
+              ICON_S,
+              0.5,
+              "",
               createNotLoopingIcon(SCHEME.neutral1),
               TooltipPosition.BOTTOM,
               LOCALIZED_TEXT.noLoopingButtonlabel,
@@ -197,7 +191,9 @@ export class Player extends EventEmitter {
           assign(
             this.loopButton,
             IconButton.create(
-              `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .4rem; box-sizing: border-box;`,
+              ICON_S,
+              0.4,
+              "",
               createLoopingIcon(SCHEME.neutral1),
               TooltipPosition.BOTTOM,
               LOCALIZED_TEXT.loopingButtonLabel,
@@ -206,7 +202,9 @@ export class Player extends EventEmitter {
           assign(
             this.danmakuButton,
             IconButton.create(
-              `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .4rem; box-sizing: border-box;`,
+              ICON_S,
+              0.4,
+              "",
               createDanmakuIcon(SCHEME.neutral1),
               TooltipPosition.BOTTOM,
               LOCALIZED_TEXT.danmakuButtonLabel,
@@ -215,7 +213,9 @@ export class Player extends EventEmitter {
           assign(
             this.noDanmakuButton,
             IconButton.create(
-              `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .4rem; box-sizing: border-box;`,
+              ICON_S,
+              0.4,
+              "",
               createNoDanmakuIcon(SCHEME.neutral1),
               TooltipPosition.BOTTOM,
               LOCALIZED_TEXT.noDanmakuButtonLabel,
@@ -224,7 +224,9 @@ export class Player extends EventEmitter {
           assign(
             this.settingsButton,
             IconButton.create(
-              `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .3rem; box-sizing: border-box;`,
+              ICON_S,
+              0.3,
+              "",
               createSettingsIcon(SCHEME.neutral1),
               TooltipPosition.BOTTOM,
               LOCALIZED_TEXT.playerSettingsButtonLabel,
@@ -252,7 +254,9 @@ export class Player extends EventEmitter {
         assign(
           this.volumeButton,
           IconButton.create(
-            `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .1rem; box-sizing: border-box;`,
+            ICON_S,
+            0.1,
+            "",
             createVolumeFullIcon(SCHEME.neutral1),
             TooltipPosition.LEFT,
             LOCALIZED_TEXT.volumeButtonLabel,
@@ -261,7 +265,9 @@ export class Player extends EventEmitter {
         assign(
           this.volumeMutedButton,
           IconButton.create(
-            `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .1rem; box-sizing: border-box;`,
+            ICON_S,
+            0.1,
+            "",
             createVolumeMutedIcon(SCHEME.neutral1),
             TooltipPosition.LEFT,
             LOCALIZED_TEXT.volumeMutedButtonLabel,
@@ -278,7 +284,9 @@ export class Player extends EventEmitter {
         assign(
           this.commentButton,
           IconButton.create(
-            `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .3rem; box-sizing: border-box;`,
+            ICON_S,
+            0.3,
+            "",
             createCommentIcon(SCHEME.neutral1),
             TooltipPosition.LEFT,
             LOCALIZED_TEXT.showCommentButtonLabel,
@@ -287,13 +295,19 @@ export class Player extends EventEmitter {
         assign(
           this.moreInfoButton,
           IconButton.create(
-            `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .2rem; box-sizing: border-box`,
+            ICON_S,
+            0.2,
+            "",
             createInfoIcon(SCHEME.neutral1),
             TooltipPosition.LEFT,
             LOCALIZED_TEXT.moreInfoButtonLabel,
           ).enable(),
         ).body,
       ),
+      E.divRef(this.bottomStatus, {
+        class: "player-bottom-status",
+        style: `opacity: 0; position: absolute; bottom: 0; left: 0; width: 100%; padding: 1rem; box-sizing: border-box; text-align: center; font-size: ${FONT_L}rem; color: ${SCHEME.error0}; background-color: ${SCHEME.neutral4};`,
+      }),
       E.divRef(
         this.bottomProgressBar,
         {
@@ -359,7 +373,9 @@ export class Player extends EventEmitter {
           assign(
             this.skipBackwardButton,
             IconButton.create(
-              `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .7rem; box-sizing: border-box;`,
+              ICON_S,
+              0.7,
+              "",
               createSkipForwardIcon(
                 SCHEME.neutral1,
                 `transform: rotate(180deg);`,
@@ -376,22 +392,15 @@ export class Player extends EventEmitter {
             assign(
               this.speedDownButton,
               IconButton.create(
-                `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .5rem; box-sizing: border-box;`,
-                assign(
-                  speedDownIconRef,
-                  createFastForwardIcon(
-                    SCHEME.neutral1,
-                    `transform: rotate(90deg);`,
-                  ),
+                ICON_S,
+                0.5,
+                "",
+                createFastForwardIcon(
+                  "currentColor",
+                  `transform: rotate(90deg);`,
                 ),
                 TooltipPosition.TOP,
                 LOCALIZED_TEXT.speedDownButtonLabel,
-                () => {
-                  speedDownIconRef.val.style.fill = SCHEME.neutral1;
-                },
-                () => {
-                  speedDownIconRef.val.style.fill = SCHEME.neutral3;
-                },
               ),
             ).body,
             E.divRef(this.currentPlaybackSpeed, {
@@ -401,29 +410,24 @@ export class Player extends EventEmitter {
             assign(
               this.speedUpButton,
               IconButton.create(
-                `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .5rem; box-sizing: border-box;`,
-                assign(
-                  speedUpIconRef,
-                  createFastForwardIcon(
-                    SCHEME.neutral1,
-                    `transform: rotate(-90deg);`,
-                  ),
+                ICON_S,
+                0.5,
+                "",
+                createFastForwardIcon(
+                  "currentColor",
+                  `transform: rotate(-90deg);`,
                 ),
                 TooltipPosition.TOP,
                 LOCALIZED_TEXT.speedUpButtonLabel,
-                () => {
-                  speedUpIconRef.val.style.fill = SCHEME.neutral1;
-                },
-                () => {
-                  speedUpIconRef.val.style.fill = SCHEME.neutral3;
-                },
               ),
             ).body,
           ),
           assign(
             this.skipForwardButton,
             IconButton.create(
-              `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: .7rem; box-sizing: border-box;`,
+              ICON_S,
+              0.7,
+              "",
               createSkipForwardIcon(SCHEME.neutral1),
               TooltipPosition.TOP,
               LOCALIZED_TEXT.skipForwardButtonLabel,
@@ -439,10 +443,6 @@ export class Player extends EventEmitter {
           ),
         ),
       ),
-      E.divRef(this.bottomStatus, {
-        class: "player-bottom-status",
-        style: `opacity: 0; position: absolute; bottom: 0; left: 0; width: 100%; padding: 1rem; box-sizing: border-box; text-align: center; font-size: ${FONT_L}rem; color: ${SCHEME.error0}; background-color: ${SCHEME.neutral4};`,
-      }),
     );
     this.hideAllActions();
     this.hideLoadingIcon();

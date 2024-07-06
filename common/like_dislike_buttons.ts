@@ -57,12 +57,6 @@ export class LikeDislikeButtons extends EventEmitter {
           assign(thumbUpIconRef, createFilledThumbUpIcon(SCHEME.neutral1)),
           tooltipPosition,
           LOCALIZED_TEXT.likeButtonLabel,
-          () => {
-            thumbUpIconRef.val.style.fill = SCHEME.neutral1;
-          },
-          () => {
-            thumbUpIconRef.val.style.fill = SCHEME.neutral2;
-          },
         ),
       ).body,
       assign(
@@ -72,12 +66,6 @@ export class LikeDislikeButtons extends EventEmitter {
           assign(thumbUpedIconRef, createFilledThumbUpIcon(SCHEME.primary1)),
           tooltipPosition,
           LOCALIZED_TEXT.likedButtonLabel,
-          () => {
-            thumbUpedIconRef.val.style.fill = SCHEME.primary1;
-          },
-          () => {
-            thumbUpedIconRef.val.style.fill = SCHEME.neutral2;
-          },
         ),
       ).body,
       assign(
@@ -93,12 +81,6 @@ export class LikeDislikeButtons extends EventEmitter {
           ),
           tooltipPosition,
           LOCALIZED_TEXT.dislikeButtonLabel,
-          () => {
-            thumbDownIconRef.val.style.fill = SCHEME.neutral1;
-          },
-          () => {
-            thumbDownIconRef.val.style.fill = SCHEME.neutral2;
-          },
         ),
       ).body,
       assign(
@@ -114,12 +96,6 @@ export class LikeDislikeButtons extends EventEmitter {
           ),
           tooltipPosition,
           LOCALIZED_TEXT.dislikedButtonLabel,
-          () => {
-            thumbDownedIconRef.val.style.fill = SCHEME.primary1;
-          },
-          () => {
-            thumbDownedIconRef.val.style.fill = SCHEME.neutral2;
-          },
         ),
       ).body,
     );

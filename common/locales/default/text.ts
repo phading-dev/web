@@ -104,6 +104,9 @@ export default class Text {
   get shuffleTalesLabel() {
     return `Shuffle`;
   }
+  get menuLabel() {
+    return `Menu`;
+  }
   get accountLabel() {
     return `Account`;
   }
@@ -115,6 +118,12 @@ export default class Text {
   }
   get uploadLabel() {
     return `Upload`;
+  }
+  get historyLabel() {
+    return `Activities`;
+  }
+  get searchLabel() {
+    return `Search`;
   }
   get securitySettingsLabel() {
     return `Security settings`;
@@ -344,7 +353,7 @@ export default class Text {
   get dislikedUserLabel() {
     return `Recommending less`;
   }
-  get noUserDescription() {
+  get noAccountDescription() {
     return `They didn't say anything about themself.`;
   }
   get usageReportRangePartOne() {

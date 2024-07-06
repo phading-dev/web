@@ -1,12 +1,10 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../../../common/color_scheme";
 import { HoverObserver, Mode } from "../../../../../common/hover_observer";
-import { TooltipPosition } from "../../../../../common/icon_button";
-import { LikeDislikeButtons } from "../../../../../common/like_dislike_buttons";
 import { Comment } from "@phading/comment_service_interface/frontend/show/comment";
 import { DanmakuSettings } from "@phading/product_service_interface/consumer/frontend/show/player_settings";
 import { E } from "@selfage/element/factory";
-import { Ref, assign } from "@selfage/ref";
+import { Ref } from "@selfage/ref";
 
 export interface DanmakuElementComponent {
   on(event: "occupyEnded", listener: () => void): this;
@@ -32,7 +30,6 @@ export class DanmakuElement extends EventEmitter {
 
   public body: HTMLDivElement;
   private content = new Ref<HTMLDivElement>();
-  private likeDislikeButtons = new Ref<LikeDislikeButtons>();
   private hoverObserver: HoverObserver;
   private canvasWidth: number;
   private posX: number;
@@ -63,16 +60,16 @@ export class DanmakuElement extends EventEmitter {
         },
         E.text(comment.content),
       ),
-      assign(
-        this.likeDislikeButtons,
-        LikeDislikeButtons.create(
-          `position: absolute; top: 100%; right: 0; display: flex; flex-flow: row nowrap; gap: .5rem;`,
-          0.5,
-          TooltipPosition.LEFT,
-        )
-          .disable()
-          .hide(),
-      ).body,
+      // assign(
+      //   this.likeDislikeButtons,
+      //   LikeDislikeButtons.create(
+      //     `position: absolute; top: 100%; right: 0; display: flex; flex-flow: row nowrap; gap: .5rem;`,
+      //     0.5,
+      //     TooltipPosition.LEFT,
+      //   )
+      //     .disable()
+      //     .hide(),
+      // ).body,
     );
 
     this.render();

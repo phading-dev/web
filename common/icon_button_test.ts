@@ -1,6 +1,10 @@
 import path = require("path");
-import { SCHEME } from "./color_scheme";
-import { IconButton, IconTooltipButton, TooltipPosition } from "./icon_button";
+import {
+  BlockingIconButton,
+  IconButton,
+  IconTooltipButton,
+  TooltipPosition,
+} from "./icon_button";
 import { createCommentIcon } from "./icons";
 import { E } from "@selfage/element/factory";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
@@ -24,13 +28,13 @@ class RenderOversizeCentering implements TestCase {
     // Prepare
     await setViewport(400, 400);
     this.cut = new IconButton(
-      `width: 2rem; height: 1rem;`,
-      createCommentIcon(SCHEME.neutral1),
+      2,
+      0,
+      "",
+      createCommentIcon("currentColor"),
       this.position,
       "some text",
-      () => {},
-      () => {},
-    ).show();
+    ).enable();
     container.append(this.cut.body);
 
     // Execute
@@ -65,13 +69,13 @@ class RenderCenteringWithin implements TestCase {
     // Prepare
     await setViewport(400, 400);
     this.cut = new IconButton(
-      `width: 20rem; height: 12rem;`,
-      createCommentIcon(SCHEME.neutral1),
+      20,
+      3,
+      "",
+      createCommentIcon("currentColor"),
       this.position,
       "some text",
-      () => {},
-      () => {},
-    ).show();
+    ).enable();
     container.append(this.cut.body);
 
     // Execute
@@ -98,7 +102,7 @@ TEST_RUNNER.run({
   environment: {
     setUp() {
       container = E.div({
-        style: `display: inline-block; background-color: red; margin: 10rem;`,
+        style: `display: inline-block; background-color: black; margin: 10rem;`,
       });
       document.body.append(container);
     },
@@ -169,13 +173,13 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         this.cut = new IconButton(
-          `width: 12rem; height: 12rem;`,
-          createCommentIcon(SCHEME.neutral1),
+          12,
+          2,
+          "",
+          createCommentIcon("currentColor"),
           TooltipPosition.BOTTOM,
           "some text",
-          () => {},
-          () => {},
-        ).show();
+        ).enable();
         container.append(this.cut.body);
         this.cut.hover();
         await new Promise<void>((resolve) =>
@@ -202,13 +206,13 @@ TEST_RUNNER.run({
       execute: () => {
         // Prepare
         let cut = new IconButton(
-          `width: 12rem; height: 12rem;`,
-          createCommentIcon(SCHEME.neutral1),
+          12,
+          2,
+          "",
+          createCommentIcon("currentColor"),
           TooltipPosition.BOTTOM,
           "some text",
-          () => {},
-          () => {},
-        ).show();
+        ).enable();
         let clicked = false;
         cut.on("action", () => (clicked = true));
 
@@ -220,17 +224,19 @@ TEST_RUNNER.run({
       },
     },
     new (class implements TestCase {
-      public name = "ClickToShowTooltip";
+      public name = "IconTooltipButton_ClickToShowTooltip";
       private cut: IconTooltipButton;
       public async execute() {
         // Prepare
         await setViewport(400, 400);
         this.cut = new IconTooltipButton(
-          `width: 12rem; height: 12rem;`,
-          createCommentIcon(SCHEME.neutral1),
+          12,
+          2,
+          "",
+          createCommentIcon("currentColor"),
           TooltipPosition.BOTTOM,
           "some text",
-        ).show();
+        );
         container.append(this.cut.body);
 
         // Verify
@@ -263,6 +269,83 @@ TEST_RUNNER.run({
           path.join(__dirname, "/icon_tooltip_button_hide.png"),
           path.join(__dirname, "/golden/icon_tooltip_button_default.png"),
           path.join(__dirname, "/icon_tooltip_button_hide_diff.png"),
+          { fullPage: true },
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "BlockingIconButton_HoverToShowTooltip_ClickToBlock";
+      private cut: BlockingIconButton;
+      public async execute() {
+        // Prepare
+        await setViewport(400, 400);
+        this.cut = new BlockingIconButton(
+          12,
+          2,
+          "",
+          createCommentIcon("currentColor"),
+          TooltipPosition.BOTTOM,
+          "some text",
+        ).enable();
+        container.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/blocking_icon_button_default.png"),
+          path.join(__dirname, "/golden/blocking_icon_button_default.png"),
+          path.join(__dirname, "/blocking_icon_button_default_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        this.cut.hover();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/blocking_icon_button_show_tooltip.png"),
+          path.join(__dirname, "/golden/blocking_icon_button_show_tooltip.png"),
+          path.join(__dirname, "/blocking_icon_button_show_tooltip_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        this.cut.leave();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/blocking_icon_button_hide_tooltip.png"),
+          path.join(__dirname, "/golden/blocking_icon_button_default.png"),
+          path.join(__dirname, "/blocking_icon_button_hide_tooltip_diff.png"),
+          { fullPage: true },
+        );
+
+        // Prepare
+        let resolveFn: Function;
+        let promise = new Promise<void>((resolve) => (resolveFn = resolve));
+        this.cut.on("action", () => promise);
+
+        // Execute
+        this.cut.click();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/blocking_icon_button_blocking.png"),
+          path.join(__dirname, "/golden/blocking_icon_button_blocking.png"),
+          path.join(__dirname, "/blocking_icon_button_blocking_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        resolveFn();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/blocking_icon_button_resolved.png"),
+          path.join(__dirname, "/golden/blocking_icon_button_default.png"),
+          path.join(__dirname, "/blocking_icon_button_resolved_diff.png"),
           { fullPage: true },
         );
       }

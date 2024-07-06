@@ -1,7 +1,5 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../../common/color_scheme";
-import { TooltipPosition } from "../../../../common/icon_button";
-import { LikeDislikeButtons } from "../../../../common/like_dislike_buttons";
 import {
   AVATAR_S,
   FONT_M,
@@ -11,7 +9,6 @@ import {
 import { CARD_SIDE_PADDING } from "../common/styles";
 import { Comment } from "@phading/comment_service_interface/frontend/show/comment";
 import { E } from "@selfage/element/factory";
-import { Ref, assign } from "@selfage/ref";
 
 export class CommentEntry extends EventEmitter {
   public static create(comment: Comment): CommentEntry {
@@ -19,8 +16,6 @@ export class CommentEntry extends EventEmitter {
   }
 
   private body_: HTMLDivElement;
-  private likeDislikeButtons = new Ref<LikeDislikeButtons>();
-  // private liking: Liking;
 
   public constructor(comment: Comment) {
     super();
@@ -56,16 +51,16 @@ export class CommentEntry extends EventEmitter {
         },
         E.text(comment.content),
       ),
-      assign(
-        this.likeDislikeButtons,
-        LikeDislikeButtons.create(
-          `width: 100%; box-sizing: border-box; padding: 0 ${CARD_SIDE_PADDING}rem; position: absolute; left: 0; bottom: 100%; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: row nowrap; justify-content: flex-end; gap: .5rem;`,
-          0.7,
-          TooltipPosition.LEFT,
-        )
-          .disable()
-          .hide(),
-      ).body,
+      // assign(
+      //   this.likeDislikeButtons,
+      //   LikeDislikeButtons.create(
+      //     `width: 100%; box-sizing: border-box; padding: 0 ${CARD_SIDE_PADDING}rem; position: absolute; left: 0; bottom: 100%; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: row nowrap; justify-content: flex-end; gap: .5rem;`,
+      //     0.7,
+      //     TooltipPosition.LEFT,
+      //   )
+      //     .disable()
+      //     .hide(),
+      // ).body,
     );
   }
 

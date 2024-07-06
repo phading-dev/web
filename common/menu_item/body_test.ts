@@ -2,6 +2,7 @@ import path = require("path");
 import { SCHEME } from "../color_scheme";
 import { createHomeIcon } from "../icons";
 import { MenuItem } from "./body";
+import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import "../normalize_body";
@@ -14,10 +15,11 @@ TEST_RUNNER.run({
       private cut: MenuItem;
       public async execute() {
         // Prepare
+        await setViewport(300, 300);
         this.cut = new MenuItem(
           createHomeIcon(SCHEME.neutral1),
           `1rem`,
-          "A long long test label"
+          "A long long test label",
         );
 
         // Execute
@@ -28,13 +30,13 @@ TEST_RUNNER.run({
           path.join(__dirname, "/menu_item_default.png"),
           path.join(__dirname, "/golden/menu_item_default.png"),
           path.join(__dirname, "/menu_item_default_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Execute
         this.cut.hover();
         await new Promise<void>((resolve) =>
-          this.cut.once("transitionEnded", resolve)
+          this.cut.once("transitionEnded", resolve),
         );
 
         // Verify
@@ -42,13 +44,13 @@ TEST_RUNNER.run({
           path.join(__dirname, "/menu_item_hover.png"),
           path.join(__dirname, "/golden/menu_item_hover.png"),
           path.join(__dirname, "/menu_item_hover_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Execute
         this.cut.leave();
         await new Promise<void>((resolve) =>
-          this.cut.once("transitionEnded", resolve)
+          this.cut.once("transitionEnded", resolve),
         );
 
         // Verify
@@ -56,7 +58,7 @@ TEST_RUNNER.run({
           path.join(__dirname, "/menu_item_collapsed.png"),
           path.join(__dirname, "/golden/menu_item_default.png"),
           path.join(__dirname, "/menu_item_collapsed_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
       }
       public tearDown() {

@@ -10,6 +10,7 @@ import {
   AVATAR_S,
   FONT_M,
   FONT_S,
+  FONT_WEIGHT_600,
   ICON_S,
   LINE_HEIGHT_M,
 } from "../../../../common/sizes";
@@ -65,7 +66,7 @@ export class InfoCard extends EventEmitter {
       E.div(
         {
           class: "info-card-season-name",
-          style: `flex: 0 0 auto; padding: 0 ${CARD_SIDE_PADDING}rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: 600;`,
+          style: `flex: 0 0 auto; padding: 0 ${CARD_SIDE_PADDING}rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
         },
         E.text(episodeToPlay.season.name),
       ),
@@ -119,7 +120,7 @@ export class InfoCard extends EventEmitter {
           },
           E.image({
             class: "info-card-season-cover-image",
-            style: `float: left; width: 16rem; aspect-ratio: 16/9; margin: .2rem 1rem .3rem 0;`,
+            style: `float: left; width: 10rem; aspect-ratio: 2/3; border: .1rem solid ${SCHEME.neutral1}; object-fit: contain; margin: .2rem 1rem .3rem 0;`,
             src: episodeToPlay.season.coverImagePath,
           }),
           E.div(
@@ -243,7 +244,9 @@ export class InfoCard extends EventEmitter {
       assign(
         this.pricingQuestionMark,
         IconTooltipButton.create(
-          `width: ${ICON_S}rem; height: ${ICON_S}rem; box-sizing: border-box; padding: .5rem;`,
+          ICON_S,
+          0.5,
+          "",
           createQuestionMarkIcon(SCHEME.neutral1),
           TooltipPosition.LEFT,
           `${LOCALIZED_TEXT.pricingRate1}${formattedMoney}${LOCALIZED_TEXT.pricingRate2}`,
