@@ -14,7 +14,7 @@ export interface ValidationResult {
   errorMsg?: string;
 }
 
-export class VerticalTextInputWithErrorMsg<Request>
+export class TextInputWithErrorMsg<Request>
   extends EventEmitter
   implements InputField<Request>
 {
@@ -23,14 +23,14 @@ export class VerticalTextInputWithErrorMsg<Request>
     customStyle: string,
     otherInputAttributes: ElementAttributeMap = {},
     fillInRequestFn: (request: Request, value: string) => void,
-    validateFn: (value: string) => Promise<ValidationResult> | ValidationResult
-  ): VerticalTextInputWithErrorMsg<Request> {
-    return new VerticalTextInputWithErrorMsg<Request>(
+    validateFn: (value: string) => Promise<ValidationResult> | ValidationResult,
+  ): TextInputWithErrorMsg<Request> {
+    return new TextInputWithErrorMsg<Request>(
       label,
       customStyle,
       otherInputAttributes,
       fillInRequestFn,
-      validateFn
+      validateFn,
     );
   }
 
@@ -45,8 +45,8 @@ export class VerticalTextInputWithErrorMsg<Request>
     otherInputAttributes: ElementAttributeMap,
     private fillInRequestFn: (request: Request, value: string) => void,
     private validateFn: (
-      value: string
-    ) => Promise<ValidationResult> | ValidationResult
+      value: string,
+    ) => Promise<ValidationResult> | ValidationResult,
   ) {
     super();
     let inputRef = new Ref<HTMLInputElement>();
@@ -61,7 +61,7 @@ export class VerticalTextInputWithErrorMsg<Request>
           class: "text-input-label",
           style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
-        E.text(label)
+        E.text(label),
       ),
       E.div({
         style: `height: 1rem;`,
@@ -80,8 +80,8 @@ export class VerticalTextInputWithErrorMsg<Request>
           class: "text-input-error-label",
           style: `align-self: flex-end; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
         },
-        E.text("1")
-      )
+        E.text("1"),
+      ),
     );
     this.input = inputRef.val;
     this.errorMsg = errorMsgRef.val;

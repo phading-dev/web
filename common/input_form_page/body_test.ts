@@ -1,6 +1,6 @@
 import path = require("path");
 import { InputFormPage } from "./body";
-import { VerticalTextInputWithErrorMsg } from "./text_input";
+import { TextInputWithErrorMsg } from "./text_input";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -25,7 +25,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(1000, 600);
-        let input = VerticalTextInputWithErrorMsg.create<Request>(
+        let input = TextInputWithErrorMsg.create<Request>(
           "Input",
           "",
           { type: "text" },
@@ -38,7 +38,7 @@ TEST_RUNNER.run({
             } else {
               return { valid: true };
             }
-          }
+          },
         );
         let callError: Error;
         let requestSubmitted: Request;
@@ -67,7 +67,7 @@ TEST_RUNNER.run({
               return "";
             }
           },
-          {}
+          {},
         );
         document.body.append(this.cut.body);
 
@@ -75,7 +75,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_default.png"),
           path.join(__dirname, "/golden/input_form_page_default.png"),
-          path.join(__dirname, "/input_form_page_default_diff.png")
+          path.join(__dirname, "/input_form_page_default_diff.png"),
         );
 
         // Execute
@@ -86,7 +86,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_valid.png"),
           path.join(__dirname, "/golden/input_form_page_valid.png"),
-          path.join(__dirname, "/input_form_page_valid_diff.png")
+          path.join(__dirname, "/input_form_page_valid_diff.png"),
         );
 
         // Prepare
@@ -95,7 +95,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.submit();
         await new Promise<void>((resolve) =>
-          this.cut.once("submitError", resolve)
+          this.cut.once("submitError", resolve),
         );
 
         // Verify
@@ -103,7 +103,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_submit_error.png"),
           path.join(__dirname, "/golden/input_form_page_submit_error.png"),
-          path.join(__dirname, "/input_form_page_submit_error_diff.png")
+          path.join(__dirname, "/input_form_page_submit_error_diff.png"),
         );
 
         // Cleanup
@@ -115,14 +115,14 @@ TEST_RUNNER.run({
         // Execute
         input.dispatchEnter();
         await new Promise<void>((resolve) =>
-          this.cut.once("submitError", resolve)
+          this.cut.once("submitError", resolve),
         );
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_error_in_response.png"),
           path.join(__dirname, "/golden/input_form_page_error_in_response.png"),
-          path.join(__dirname, "/input_form_page_error_in_response_diff.png")
+          path.join(__dirname, "/input_form_page_error_in_response_diff.png"),
         );
 
         // Prepare
@@ -131,14 +131,14 @@ TEST_RUNNER.run({
         // Execute
         this.cut.submit();
         await new Promise<void>((resolve) =>
-          this.cut.once("submitted", resolve)
+          this.cut.once("submitted", resolve),
         );
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_submitted.png"),
           path.join(__dirname, "/golden/input_form_page_valid.png"),
-          path.join(__dirname, "/input_form_page_submitted_diff.png")
+          path.join(__dirname, "/input_form_page_submitted_diff.png"),
         );
       }
       public tearDown() {
@@ -151,14 +151,14 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(1000, 600);
-        let input = VerticalTextInputWithErrorMsg.create<Request>(
+        let input = TextInputWithErrorMsg.create<Request>(
           "Input",
           "",
           { type: "text" },
           (request, value) => {},
           (value) => {
             return { valid: false };
-          }
+          },
         );
         let deleteError: Error;
 
@@ -174,8 +174,8 @@ TEST_RUNNER.run({
           (response, error) => {
             return "";
           },
-          {}
-        ).addSecondaryButton(
+          {},
+        ).addSecondaryBlockingButton(
           "Delete",
           async () => {
             if (deleteError) {
@@ -188,7 +188,7 @@ TEST_RUNNER.run({
             } else {
               return "";
             }
-          }
+          },
         );
         document.body.append(this.cut.body);
 
@@ -196,40 +196,90 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_delete_button.png"),
           path.join(__dirname, "/golden/input_form_page_delete_button.png"),
-          path.join(__dirname, "/input_form_page_delete_button_diff.png")
+          path.join(__dirname, "/input_form_page_delete_button_diff.png"),
         );
 
         // Prepare
         deleteError = new Error("Fake error");
 
         // Execute
-        this.cut.clickSecondaryButton();
+        this.cut.clickSecondaryBlockingButton();
         await new Promise<void>((resolve) =>
-          this.cut.once("secondaryActionError", resolve)
+          this.cut.once("secondaryActionError", resolve),
         );
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_delete_error.png"),
           path.join(__dirname, "/golden/input_form_page_delete_error.png"),
-          path.join(__dirname, "/input_form_page_delete_error_diff.png")
+          path.join(__dirname, "/input_form_page_delete_error_diff.png"),
         );
 
         // Cleanup
         deleteError = undefined;
 
         // Execute
-        this.cut.clickSecondaryButton();
+        this.cut.clickSecondaryBlockingButton();
         await new Promise<void>((resolve) =>
-          this.cut.once("secondaryActionSuccess", resolve)
+          this.cut.once("secondaryActionSuccess", resolve),
         );
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_delete_success.png"),
           path.join(__dirname, "/golden/input_form_page_delete_success.png"),
-          path.join(__dirname, "/input_form_page_delete_success_diff.png")
+          path.join(__dirname, "/input_form_page_delete_success_diff.png"),
         );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "SecondaryCancelButton";
+      private cut: InputFormPage<Request, Response>;
+      public async execute() {
+        // Prepare
+        await setViewport(1000, 600);
+        let input = TextInputWithErrorMsg.create<Request>(
+          "Input",
+          "",
+          { type: "text" },
+          (request, value) => {},
+          (value) => {
+            return { valid: false };
+          },
+        );
+        let cancelled = false;
+
+        // Execute
+        this.cut = new InputFormPage<Request, Response>(
+          "A title",
+          [input.body],
+          [input],
+          "Update",
+          async (request) => {
+            return {};
+          },
+          (response, error) => {
+            return "";
+          },
+          {},
+        ).addSecondaryNonblockingButton("Cancel", () => (cancelled = true));
+        document.body.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_cancel_button.png"),
+          path.join(__dirname, "/golden/input_form_page_cancel_button.png"),
+          path.join(__dirname, "/input_form_page_cancel_button_diff.png"),
+        );
+
+        // Execute
+        this.cut.clickSecondaryNonblockingButton();
+
+        // Verify
+        assertThat(cancelled, eq(true), "cancelled");
       }
       public tearDown() {
         this.cut.remove();

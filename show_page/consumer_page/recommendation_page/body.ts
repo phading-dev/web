@@ -11,13 +11,7 @@ import {
 } from "../../../common/icons";
 import { NULLIFIED_INPUT_STYLE } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import {
-  FONT_L,
-  FONT_M,
-  ICON_L,
-  ICON_S,
-  LINE_HEIGHT_XL,
-} from "../../../common/sizes";
+import { FONT_L, FONT_M, ICON_L, ICON_S } from "../../../common/sizes";
 import { PRODUCT_RECOMMENDATION_SERVICE_CLIENT } from "../../../common/web_service_client";
 import { PublisherContextItem } from "./publisher_context_item";
 import { SeasonItem } from "./season_item";
@@ -185,7 +179,7 @@ export class RecommendationPage extends EventEmitter {
           },
           E.inputRef(this.searchInput, {
             class: "recommendation-page-search-input",
-            style: `${NULLIFIED_INPUT_STYLE} font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_XL}rem; color: ${SCHEME.neutral0}; border-bottom: .1rem solid; flex: 0 1 auto; width: 60rem; margin-bottom: 1rem;`,
+            style: `${NULLIFIED_INPUT_STYLE} font-size: ${FONT_L}rem; line-height: 140%; color: ${SCHEME.neutral0}; border-bottom: .1rem solid; flex: 0 1 auto; width: 60rem; margin-bottom: 1rem;`,
           }),
           assign(
             this.searchButton,

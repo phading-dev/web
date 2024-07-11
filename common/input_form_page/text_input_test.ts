@@ -1,5 +1,5 @@
 import path = require("path");
-import { VerticalTextInputWithErrorMsg } from "./text_input";
+import { TextInputWithErrorMsg } from "./text_input";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -14,13 +14,12 @@ TEST_RUNNER.run({
   name: "TextInputTest",
   cases: [
     new (class implements TestCase {
-      public name =
-        "DefaultVerticalTextInput_InvalidWithErrors_Valid_InvalidWithoutErrors";
-      private cut: VerticalTextInputWithErrorMsg<Request>;
+      public name = "Default_InvalidWithErrors_Valid_InvalidWithoutErrors";
+      private cut: TextInputWithErrorMsg<Request>;
       private followingLine: HTMLDivElement;
       public async execute() {
         // Execute
-        this.cut = VerticalTextInputWithErrorMsg.create(
+        this.cut = TextInputWithErrorMsg.create(
           "Input",
           "width: 50rem;",
           {
@@ -41,14 +40,14 @@ TEST_RUNNER.run({
             } else {
               return { valid: true };
             }
-          }
+          },
         );
         await new Promise<void>((resolve) => this.cut.on("validated", resolve));
         this.followingLine = E.div(
           {
             style: `font-size: 1.4rem; color: black;`,
           },
-          E.text("following lines....")
+          E.text("following lines...."),
         );
         document.body.append(this.cut.body, this.followingLine);
 
@@ -56,13 +55,13 @@ TEST_RUNNER.run({
         assertThat(
           this.cut.isValid,
           eq(false),
-          "Initial empty input is invalid"
+          "Initial empty input is invalid",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/vertical_text_input_default.png"),
           path.join(__dirname, "/golden/vertical_text_input_default.png"),
           path.join(__dirname, "/vertical_text_input_default_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Execute
@@ -76,7 +75,7 @@ TEST_RUNNER.run({
           path.join(__dirname, "/vertical_text_input_with_error.png"),
           path.join(__dirname, "/golden/vertical_text_input_with_error.png"),
           path.join(__dirname, "/vertical_text_input_with_error_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Execute
@@ -90,7 +89,7 @@ TEST_RUNNER.run({
           path.join(__dirname, "/vertical_text_input_valid.png"),
           path.join(__dirname, "/golden/vertical_text_input_valid.png"),
           path.join(__dirname, "/vertical_text_input_valid_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Execute
@@ -103,14 +102,14 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/vertical_text_input_invalid_without_error.png"
+            "/vertical_text_input_invalid_without_error.png",
           ),
           path.join(__dirname, "/golden/vertical_text_input_default.png"),
           path.join(
             __dirname,
-            "/vertical_text_input_invalid_without_error_diff.png"
+            "/vertical_text_input_invalid_without_error_diff.png",
           ),
-          { fullPage: true }
+          { fullPage: true },
         );
       }
       public tearDown() {
@@ -122,7 +121,7 @@ TEST_RUNNER.run({
       name: "SubmitEvent",
       execute() {
         // Prepare
-        let cut = VerticalTextInputWithErrorMsg.create<Request>(
+        let cut = TextInputWithErrorMsg.create<Request>(
           "Label",
           "",
           { type: "text" },
@@ -131,7 +130,7 @@ TEST_RUNNER.run({
           },
           (value) => {
             return { valid: true };
-          }
+          },
         );
         let submitted = false;
         cut.on("submit", () => (submitted = true));
@@ -147,7 +146,7 @@ TEST_RUNNER.run({
       name: "FillInRequest",
       execute() {
         // Prepare
-        let cut = VerticalTextInputWithErrorMsg.create<Request>(
+        let cut = TextInputWithErrorMsg.create<Request>(
           "Label",
           "",
           { type: "text" },
@@ -156,7 +155,7 @@ TEST_RUNNER.run({
           },
           (value) => {
             return { valid: true };
-          }
+          },
         );
         cut.value = "123";
         let request: Request = {};
