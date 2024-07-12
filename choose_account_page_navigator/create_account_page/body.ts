@@ -73,12 +73,11 @@ export class CreateAccountPage extends EventEmitter {
       {
         accountType,
       },
-    ).addSecondaryNonblockingButton(LOCALIZED_TEXT.cancelButtonLabel, () =>
-      this.emit("back"),
-    );
+    ).addBackButton();
 
     this.inputFormPage.on("submitError", () => this.emit("createError"));
     this.inputFormPage.on("submitted", () => this.emit("created"));
+    this.inputFormPage.on("back", () => this.emit("back"));
   }
 
   private getCreateAccountTitle(): string {

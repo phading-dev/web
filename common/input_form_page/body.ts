@@ -5,9 +5,11 @@ import {
   FilledBlockingButton,
   TextBlockingButton,
 } from "../blocking_button";
-import { TEXT_BUTTON_STYLE } from "../button_styles";
+import { IconButton, TooltipPosition } from "../icon_button";
+import { createArrowIcon } from "../icons";
+import { LOCALIZED_TEXT } from "../locales/localized_text";
 import { PAGE_BACKGROUND_STYLE, PAGE_MEDIUM_CARD_STYLE } from "../page_style";
-import { FONT_L, FONT_M } from "../sizes";
+import { FONT_L, FONT_M, ICON_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -17,6 +19,7 @@ export interface InputFormPage<Request, Response> {
   on(event: "submitError", listener: () => void): this;
   on(event: "secondaryActionSuccess", listener: () => void): this;
   on(event: "secondaryActionError", listener: () => void): this;
+  on(event: "back", listener: () => void): this;
 }
 
 export class InputFormPage<Request, Response> extends EventEmitter {
@@ -41,10 +44,11 @@ export class InputFormPage<Request, Response> extends EventEmitter {
   }
 
   public body: HTMLDivElement;
+  private card = new Ref<HTMLFormElement>();
   private buttonsLine = new Ref<HTMLDivElement>();
   private submitButton = new Ref<BlockingButton>();
   private actionError = new Ref<HTMLDivElement>();
-  private secondaryNonblockingButton = new Ref<HTMLDivElement>();
+  private backButton = new Ref<IconButton>();
   private secondaryBlockingButton = new Ref<BlockingButton>();
   private secondaryActionCustomFn: () => Promise<void>;
   private postSecondaryActionCustomFn: (error?: Error) => string;
@@ -65,7 +69,8 @@ export class InputFormPage<Request, Response> extends EventEmitter {
         class: "input-form",
         style: PAGE_BACKGROUND_STYLE,
       },
-      E.form(
+      E.formRef(
+        this.card,
         {
           class: "input-form-card",
           style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
@@ -73,7 +78,7 @@ export class InputFormPage<Request, Response> extends EventEmitter {
         E.div(
           {
             class: "input-form-title",
-            style: `align-self: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
+            style: `align-self: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; max-width: 80%;`,
           },
           E.text(title),
         ),
@@ -148,21 +153,21 @@ export class InputFormPage<Request, Response> extends EventEmitter {
     }
   }
 
-  public addSecondaryNonblockingButton(
-    buttonLabel: string,
-    actionFn: () => void,
-  ): this {
-    this.buttonsLine.val.append(
-      E.divRef(
-        this.secondaryNonblockingButton,
-        {
-          class: "input-form-secondary-button",
-          style: `${TEXT_BUTTON_STYLE} color: ${SCHEME.neutral0};`,
-        },
-        E.text(buttonLabel),
-      ),
+  public addBackButton(): this {
+    this.card.val.append(
+      assign(
+        this.backButton,
+        IconButton.create(
+          ICON_M,
+          1,
+          `position: absolute; top: 0; left: 0;`,
+          createArrowIcon(SCHEME.neutral1),
+          TooltipPosition.BOTTOM,
+          LOCALIZED_TEXT.backLabel,
+        ).enable(),
+      ).body,
     );
-    this.buttonsLine.val.addEventListener("click", actionFn);
+    this.backButton.val.on("action", () => this.emit("back"));
     return this;
   }
 
@@ -219,8 +224,8 @@ export class InputFormPage<Request, Response> extends EventEmitter {
   public submit(): void {
     this.submitButton.val.click();
   }
-  public clickSecondaryNonblockingButton(): void {
-    this.secondaryNonblockingButton.val.click();
+  public clickBackButton(): void {
+    this.backButton.val.click();
   }
   public clickSecondaryBlockingButton(): void {
     this.secondaryBlockingButton.val.click();

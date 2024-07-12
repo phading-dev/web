@@ -166,6 +166,7 @@ export class IconButton extends EventEmitter {
       {
         class: "icon-button",
         style: `${NULLIFIED_BUTTON_STYLE} ${customStyle}`,
+        type: "button",
       },
       this.iconWithTooltip.body,
     );
@@ -270,6 +271,7 @@ export class IconTooltipButton extends EventEmitter {
       {
         class: "icon-tooltip-button",
         style: `${NULLIFIED_BUTTON_STYLE} cursor: pointer; ${customStyle}`,
+        type: "button",
       },
       this.iconWithTooltip.body,
     );

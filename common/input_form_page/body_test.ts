@@ -236,7 +236,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "SecondaryCancelButton";
+      public name = "BackButton";
       private cut: InputFormPage<Request, Response>;
       public async execute() {
         // Prepare
@@ -250,7 +250,6 @@ TEST_RUNNER.run({
             return { valid: false };
           },
         );
-        let cancelled = false;
 
         // Execute
         this.cut = new InputFormPage<Request, Response>(
@@ -265,21 +264,25 @@ TEST_RUNNER.run({
             return "";
           },
           {},
-        ).addSecondaryNonblockingButton("Cancel", () => (cancelled = true));
+        ).addBackButton();
         document.body.append(this.cut.body);
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/input_form_page_cancel_button.png"),
-          path.join(__dirname, "/golden/input_form_page_cancel_button.png"),
-          path.join(__dirname, "/input_form_page_cancel_button_diff.png"),
+          path.join(__dirname, "/input_form_page_back_button.png"),
+          path.join(__dirname, "/golden/input_form_page_back_button.png"),
+          path.join(__dirname, "/input_form_page_back_button_diff.png"),
         );
 
+        // Prepare
+        let back = false;
+        this.cut.on("back", () => (back = true));
+
         // Execute
-        this.cut.clickSecondaryNonblockingButton();
+        this.cut.clickBackButton();
 
         // Verify
-        assertThat(cancelled, eq(true), "cancelled");
+        assertThat(back, eq(true), "went back");
       }
       public tearDown() {
         this.cut.remove();

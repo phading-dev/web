@@ -156,7 +156,7 @@ TEST_RUNNER.run({
         this.cut.on("back", () => (back = true));
 
         // Execute
-        this.cut.inputFormPage.clickSecondaryNonblockingButton();
+        this.cut.inputFormPage.clickBackButton();
 
         // Verify
         assertThat(back, eq(true), "went back");
