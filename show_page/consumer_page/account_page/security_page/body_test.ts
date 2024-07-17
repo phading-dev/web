@@ -4,7 +4,6 @@ import { SecurityInfoPageMock } from "./security_info_page/body_mock";
 import { UpdatePasswordPageMock } from "./update_password_page/body_mock";
 import { UpdateRecoveryEmailPageMock } from "./update_recovery_email_page/body_mock";
 import { UpdateUsernamePageMock } from "./update_username_page/body_mock";
-import { E } from "@selfage/element/factory";
 import {
   deleteFile,
   screenshot,
@@ -13,8 +12,6 @@ import {
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import "../../../../common/normalize_body";
-
-let menuContainer: HTMLDivElement;
 
 class NavigateForwardAndBack implements TestCase {
   private cut: SecurityPage;
@@ -29,7 +26,7 @@ class NavigateForwardAndBack implements TestCase {
     private backActualFile: string,
     private backDiffFile: string,
     private updatedActualFile: string,
-    private updatedDiffFile: string
+    private updatedDiffFile: string,
   ) {}
 
   public async execute() {
@@ -41,7 +38,6 @@ class NavigateForwardAndBack implements TestCase {
       () => new UpdateRecoveryEmailPageMock(),
       () => new UpdateUsernamePageMock(),
       (...bodies) => document.body.append(...bodies),
-      (...bodies) => menuContainer.append(...bodies)
     );
     await screenshot(path.join(__dirname, "/security_page_baseline.png"));
 
@@ -52,7 +48,7 @@ class NavigateForwardAndBack implements TestCase {
     await asyncAssertScreenshot(
       this.goToPageActualFile,
       this.goToPageExpectedFile,
-      this.goToPageDiffFile
+      this.goToPageDiffFile,
     );
 
     // Execute
@@ -62,7 +58,7 @@ class NavigateForwardAndBack implements TestCase {
     await asyncAssertScreenshot(
       this.backActualFile,
       path.join(__dirname, "/security_page_baseline.png"),
-      this.backDiffFile
+      this.backDiffFile,
     );
 
     // Prepare
@@ -75,7 +71,7 @@ class NavigateForwardAndBack implements TestCase {
     await asyncAssertScreenshot(
       this.updatedActualFile,
       path.join(__dirname, "/security_page_baseline.png"),
-      this.updatedDiffFile
+      this.updatedDiffFile,
     );
 
     // Clearnup
@@ -88,17 +84,6 @@ class NavigateForwardAndBack implements TestCase {
 
 TEST_RUNNER.run({
   name: "ProfilePageTest",
-  environment: {
-    setUp: () => {
-      menuContainer = E.div({
-        style: `position: fixed; top: 0; left: 0;`,
-      });
-      document.body.append(menuContainer);
-    },
-    tearDown: () => {
-      menuContainer.remove();
-    },
-  },
   cases: [
     new (class implements TestCase {
       public name = "Default_UpdateStates";
@@ -114,14 +99,13 @@ TEST_RUNNER.run({
           () => new UpdateRecoveryEmailPageMock(),
           () => new UpdateUsernamePageMock(),
           (...bodies) => document.body.append(...bodies),
-          (...bodies) => menuContainer.append(...bodies)
         );
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/security_page_default.png"),
           path.join(__dirname, "/golden/security_page_default.png"),
-          path.join(__dirname, "/security_page_default_diff.png")
+          path.join(__dirname, "/security_page_default_diff.png"),
         );
       }
       public tearDown() {
@@ -130,7 +114,7 @@ TEST_RUNNER.run({
     })(),
     new NavigateForwardAndBack(
       "GoToUpdatePasswordAndBack",
-      (cut) => cut.securityInfoPage.password.click(),
+      (cut) => cut.securityInfoPage.password.val.click(),
       (cut) => cut.updatePasswordPage.emit("back"),
       (cut) => cut.updatePasswordPage.emit("updated"),
       path.join(__dirname, "/security_page_go_to_update_password.png"),
@@ -139,42 +123,45 @@ TEST_RUNNER.run({
       path.join(__dirname, "/security_page_back_from_update_password.png"),
       path.join(__dirname, "/security_page_back_from_update_password_diff.png"),
       path.join(__dirname, "/security_page_back_from_updated_password.png"),
-      path.join(__dirname, "/security_page_back_from_updated_password_diff.png")
+      path.join(
+        __dirname,
+        "/security_page_back_from_updated_password_diff.png",
+      ),
     ),
     new NavigateForwardAndBack(
       "GoToUpdateRecoveryEmailAndBack",
-      (cut) => cut.securityInfoPage.recoveryEmail.click(),
+      (cut) => cut.securityInfoPage.recoveryEmail.val.click(),
       (cut) => cut.updateRecoveryEmailPage.emit("back"),
       (cut) => cut.updateRecoveryEmailPage.emit("updated"),
       path.join(__dirname, "/security_page_go_to_update_recovery_email.png"),
       path.join(
         __dirname,
-        "/golden/security_page_go_to_update_recovery_email.png"
+        "/golden/security_page_go_to_update_recovery_email.png",
       ),
       path.join(
         __dirname,
-        "/security_page_go_to_update_recovery_email_diff.png"
+        "/security_page_go_to_update_recovery_email_diff.png",
       ),
       path.join(
         __dirname,
-        "/security_page_back_from_update_recovery_email.png"
+        "/security_page_back_from_update_recovery_email.png",
       ),
       path.join(
         __dirname,
-        "/security_page_back_from_update_recovery_email_diff.png"
+        "/security_page_back_from_update_recovery_email_diff.png",
       ),
       path.join(
         __dirname,
-        "/security_page_back_from_updated_recovery_email.png"
+        "/security_page_back_from_updated_recovery_email.png",
       ),
       path.join(
         __dirname,
-        "/security_page_back_from_updated_recovery_email_diff.png"
-      )
+        "/security_page_back_from_updated_recovery_email_diff.png",
+      ),
     ),
     new NavigateForwardAndBack(
       "GoToUpdateUsernameAndBack",
-      (cut) => cut.securityInfoPage.username.click(),
+      (cut) => cut.securityInfoPage.username.val.click(),
       (cut) => cut.updateUsernamePage.emit("back"),
       (cut) => cut.updateUsernamePage.emit("updated"),
       path.join(__dirname, "/security_page_go_to_update_username.png"),
@@ -183,7 +170,10 @@ TEST_RUNNER.run({
       path.join(__dirname, "/security_page_back_from_update_username.png"),
       path.join(__dirname, "/security_page_back_from_update_username_diff.png"),
       path.join(__dirname, "/security_page_back_from_updated_username.png"),
-      path.join(__dirname, "/security_page_back_from_updated_username_diff.png")
+      path.join(
+        __dirname,
+        "/security_page_back_from_updated_username_diff.png",
+      ),
     ),
   ],
 });

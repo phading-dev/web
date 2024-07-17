@@ -1,17 +1,15 @@
 import EventEmitter = require("events");
 import { InputFormPage } from "../../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../../common/input_form_page/text_area_input";
-import { VerticalTextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
+import { TextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
-import { MenuItem } from "../../../../../common/menu_item/body";
-import { createBackMenuItem } from "../../../../../common/menu_item/factory";
 import { RECOVERY_EMAIL_LENGTH_LIMIT } from "../../../../../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { updateRecoveryEmail } from "@phading/user_service_interface/self/web/client_requests";
+import { updateRecoveryEmail } from "@phading/user_service_interface/self/frontend/client_requests";
 import {
   UpdateRecoveryEmailRequestBody,
   UpdateRecoveryEmailResponse,
-} from "@phading/user_service_interface/self/web/interface";
+} from "@phading/user_service_interface/self/frontend/interface";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
@@ -25,29 +23,25 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
   public static create(): UpdateRecoveryEmailPage {
     return new UpdateRecoveryEmailPage(USER_SERVICE_CLIENT);
   }
-
-  private backMenuItem_: MenuItem;
-  private newRecoveryEmailInput_: VerticalTextInputWithErrorMsg<UpdateRecoveryEmailRequestBody>;
-  private currentPasswordInput_: VerticalTextInputWithErrorMsg<UpdateRecoveryEmailResponse>;
-  private inputFormPage_: InputFormPage<
+  public inputFormPage: InputFormPage<
     UpdateRecoveryEmailRequestBody,
     UpdateRecoveryEmailResponse
   >;
+  public newRecoveryEmailInput = new Ref<
+    TextInputWithErrorMsg<UpdateRecoveryEmailRequestBody>
+  >();
+  public currentPasswordInput = new Ref<
+    TextInputWithErrorMsg<UpdateRecoveryEmailRequestBody>
+  >();
 
   public constructor(private userServiceClient: WebServiceClient) {
     super();
-    let newRecoveryEmailInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<UpdateRecoveryEmailRequestBody>
-    >();
-    let currentPasswordInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<UpdateRecoveryEmailRequestBody>
-    >();
-    this.inputFormPage_ = InputFormPage.create(
+    this.inputFormPage = InputFormPage.create(
       LOCALIZED_TEXT.updateRecoveryEmailTitle,
       [
         assign(
-          newRecoveryEmailInputRef,
-          VerticalTextInputWithErrorMsg.create(
+          this.newRecoveryEmailInput,
+          TextInputWithErrorMsg.create(
             LOCALIZED_TEXT.newRecoveryEmailLabel,
             "",
             {
@@ -57,12 +51,12 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
             (request, value) => {
               request.newEmail = value;
             },
-            (value) => this.checkNewEmail(value)
-          )
+            (value) => this.checkNewEmail(value),
+          ),
         ).body,
         assign(
-          currentPasswordInputRef,
-          VerticalTextInputWithErrorMsg.create(
+          this.currentPasswordInput,
+          TextInputWithErrorMsg.create(
             LOCALIZED_TEXT.currentPasswordLabel,
             "",
             {
@@ -72,24 +66,20 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
             (request, value) => {
               request.currentPassword = value;
             },
-            (value) => this.checkCurrentPassword(value)
-          )
+            (value) => this.checkCurrentPassword(value),
+          ),
         ).body,
       ],
-      [newRecoveryEmailInputRef.val, currentPasswordInputRef.val],
+      [this.newRecoveryEmailInput.val, this.currentPasswordInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
       (request) => this.updateRecoveryEmail(request),
       (response, error) => this.postUpdateRecoveryEmail(error),
-      {}
-    );
-    this.newRecoveryEmailInput_ = newRecoveryEmailInputRef.val;
-    this.currentPasswordInput_ = currentPasswordInputRef.val;
+      {},
+    ).addBackButton();
 
-    this.backMenuItem_ = createBackMenuItem();
-
-    this.inputFormPage_.on("submitError", () => this.emit("updateError"));
-    this.inputFormPage_.on("submitted", () => this.emit("updated"));
-    this.backMenuItem_.on("action", () => this.emit("back"));
+    this.inputFormPage.on("submitError", () => this.emit("updateError"));
+    this.inputFormPage.on("submitted", () => this.emit("updated"));
+    this.inputFormPage.on("back", () => this.emit("back"));
   }
 
   private checkNewEmail(value: string): ValidationResult {
@@ -114,7 +104,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
   }
 
   private updateRecoveryEmail(
-    requset: UpdateRecoveryEmailRequestBody
+    requset: UpdateRecoveryEmailRequestBody,
   ): Promise<UpdateRecoveryEmailResponse> {
     return updateRecoveryEmail(this.userServiceClient, requset);
   }
@@ -128,28 +118,10 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
   }
 
   public get body() {
-    return this.inputFormPage_.body;
-  }
-  public get menuBody() {
-    return this.backMenuItem_.body;
+    return this.inputFormPage.body;
   }
 
   public remove(): void {
-    this.inputFormPage_.remove();
-    this.backMenuItem_.remove();
-  }
-
-  // Visible for testing
-  public get inputFormPage() {
-    return this.inputFormPage_;
-  }
-  public get newRecoveryEmailInput() {
-    return this.newRecoveryEmailInput_;
-  }
-  public get currentPasswordInput() {
-    return this.currentPasswordInput_;
-  }
-  public get backMenuItem() {
-    return this.backMenuItem_;
+    this.inputFormPage.remove();
   }
 }

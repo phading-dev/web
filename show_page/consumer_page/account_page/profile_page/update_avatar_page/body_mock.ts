@@ -1,17 +1,14 @@
 import { UpdateAvatarPage } from "./body";
-import { WebServiceClient } from "@selfage/web_service_client";
+import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 export class UpdateAvatarPageMock extends UpdateAvatarPage {
   public constructor() {
     super(
-      new (class extends WebServiceClient {
-        public constructor() {
-          super(undefined, undefined);
-        }
+      new (class extends WebServiceClientMock {
         public async send(request: any): Promise<any> {
           return {};
         }
-      })()
+      })(),
     );
   }
 }

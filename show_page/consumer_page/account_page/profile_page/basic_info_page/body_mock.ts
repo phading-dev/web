@@ -1,15 +1,12 @@
 import userImage = require("./test_data/user_image.jpg");
 import { BasicInfoPag } from "./body";
-import { GetAccountResponse } from "@phading/user_service_interface/self/web/interface";
-import { WebServiceClient } from "@selfage/web_service_client";
+import { GetAccountResponse } from "@phading/user_service_interface/self/frontend/interface";
+import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 export class BasicInfoPagMock extends BasicInfoPag {
   public constructor() {
     super(
-      new (class extends WebServiceClient {
-        public constructor() {
-          super(undefined, undefined);
-        }
+      new (class extends WebServiceClientMock {
         public async send(request: any): Promise<any> {
           return {
             account: {
@@ -19,7 +16,7 @@ export class BasicInfoPagMock extends BasicInfoPag {
             },
           } as GetAccountResponse;
         }
-      })()
+      })(),
     );
   }
 }

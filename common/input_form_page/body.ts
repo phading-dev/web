@@ -5,11 +5,9 @@ import {
   FilledBlockingButton,
   TextBlockingButton,
 } from "../blocking_button";
-import { IconButton, TooltipPosition } from "../icon_button";
-import { createArrowIcon } from "../icons";
-import { LOCALIZED_TEXT } from "../locales/localized_text";
+import { IconButton, createBackButton } from "../icon_button";
 import { PAGE_BACKGROUND_STYLE, PAGE_MEDIUM_CARD_STYLE } from "../page_style";
-import { FONT_L, FONT_M, ICON_M } from "../sizes";
+import { FONT_L, FONT_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -155,17 +153,7 @@ export class InputFormPage<Request, Response> extends EventEmitter {
 
   public addBackButton(): this {
     this.card.val.append(
-      assign(
-        this.backButton,
-        IconButton.create(
-          ICON_M,
-          1,
-          `position: absolute; top: 0; left: 0;`,
-          createArrowIcon(SCHEME.neutral1),
-          TooltipPosition.BOTTOM,
-          LOCALIZED_TEXT.backLabel,
-        ).enable(),
-      ).body,
+      assign(this.backButton, createBackButton().enable()).body,
     );
     this.backButton.val.on("action", () => this.emit("back"));
     return this;

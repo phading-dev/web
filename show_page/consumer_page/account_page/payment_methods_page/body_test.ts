@@ -5,8 +5,8 @@ import { UpdatePaymentMethodPageMock } from "./update_payment_method_page/body_m
 import {
   CardBrand,
   PaymentMethodMasked,
-} from "@phading/billing_service_interface/web/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
+} from "@phading/commerce_service_interface/consumer/frontend/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/commerce_service_interface/consumer/frontend/payment_method_priority";
 import { E } from "@selfage/element/factory";
 import {
   deleteFile,
@@ -20,7 +20,10 @@ import "../../../../common/normalize_body";
 let menuBodyContainer: HTMLDivElement;
 
 class NavigateToUpdateAndBack implements TestCase {
-  public constructor(public name: string, private eventName: string) {}
+  public constructor(
+    public name: string,
+    private eventName: string,
+  ) {}
   private cut: PaymentMethodsPage;
   public async execute() {
     // Prepare
@@ -29,10 +32,9 @@ class NavigateToUpdateAndBack implements TestCase {
       () => new PaymentMethodsListPageMock(),
       (paymentMethod) => new UpdatePaymentMethodPageMock(paymentMethod),
       (...bodies) => document.body.append(...bodies),
-      (...bodies) => menuBodyContainer.append(...bodies)
     );
     await screenshot(
-      path.join(__dirname, "/payment_methods_page_baseline.png")
+      path.join(__dirname, "/payment_methods_page_baseline.png"),
     );
     this.cut.paymentMethodsListPage.emit("update", {
       id: "id1",
@@ -47,18 +49,17 @@ class NavigateToUpdateAndBack implements TestCase {
 
     // Execute
     this.cut.updatePaymentMethodPage.emit(this.eventName);
-    // await new Promise<void>((resolve) => this.cut.paymentMethodsListPage.once('loaded', resolve));
 
     // Verify
     await asyncAssertScreenshot(
       path.join(__dirname, "/payment_methods_page_navigate_back.png"),
       path.join(__dirname, "/payment_methods_page_baseline.png"),
-      path.join(__dirname, "/payment_methods_page_navigate_back_diff.png")
+      path.join(__dirname, "/payment_methods_page_navigate_back_diff.png"),
     );
 
     // Cleanup
     await deleteFile(
-      path.join(__dirname, "/payment_methods_page_baseline.png")
+      path.join(__dirname, "/payment_methods_page_baseline.png"),
     );
   }
   public tearDown() {
@@ -92,14 +93,13 @@ TEST_RUNNER.run({
           () => new PaymentMethodsListPageMock(),
           (paymentMethod) => new UpdatePaymentMethodPageMock(paymentMethod),
           (...bodies) => document.body.append(...bodies),
-          (...bodies) => menuBodyContainer.append(...bodies)
         );
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/payment_methods_page_default.png"),
           path.join(__dirname, "/golden/payment_methods_page_default.png"),
-          path.join(__dirname, "/payment_methods_page_default_diff.png")
+          path.join(__dirname, "/payment_methods_page_default_diff.png"),
         );
 
         // Execute
@@ -118,7 +118,7 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "/payment_methods_page_update.png"),
           path.join(__dirname, "/golden/payment_methods_page_update.png"),
-          path.join(__dirname, "/payment_methods_page_update_diff.png")
+          path.join(__dirname, "/payment_methods_page_update_diff.png"),
         );
       }
       public tearDown() {

@@ -4,7 +4,7 @@ import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
 import {
   PAGE_BACKGROUND_STYLE,
-  PAGE_COMMON_CARD_STYLE
+  PAGE_COMMON_CARD_STYLE,
 } from "../../common/page_style";
 import { FONT_L } from "../../common/sizes";
 import { USER_SERVICE_CLIENT } from "../../common/web_service_client";

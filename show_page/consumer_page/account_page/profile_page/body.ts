@@ -4,7 +4,7 @@ import { PageNavigator } from "../../../../common/page_navigator";
 import { BasicInfoPag } from "./basic_info_page/body";
 import { UpdateAccountInfoPage } from "./update_account_info/body";
 import { UpdateAvatarPage } from "./update_avatar_page/body";
-import { Account } from "@phading/user_service_interface/self/web/account";
+import { Account } from "@phading/user_service_interface/self/frontend/account";
 
 enum Page {
   BASIC_INFO = 1,
@@ -13,16 +13,12 @@ enum Page {
 }
 
 export class ProfilePage extends EventEmitter {
-  public static create(
-    appendBodies: AddBodiesFn,
-    prependMenuBodies: AddBodiesFn
-  ): ProfilePage {
+  public static create(appendBodies: AddBodiesFn): ProfilePage {
     return new ProfilePage(
       BasicInfoPag.create,
       UpdateAvatarPage.create,
       UpdateAccountInfoPage.create,
       appendBodies,
-      prependMenuBodies
     );
   }
 
@@ -36,15 +32,14 @@ export class ProfilePage extends EventEmitter {
     private createBasicInfoPage: () => BasicInfoPag,
     private createUpdateAvatarPage: () => UpdateAvatarPage,
     private createUpdateAccountInfoPage: (
-      accountInfo: Account
+      accountInfo: Account,
     ) => UpdateAccountInfoPage,
     private appendBodies: AddBodiesFn,
-    private prependMenuBodies: AddBodiesFn
   ) {
     super();
     this.pageNavigator = new PageNavigator(
       (page) => this.addPage(page),
-      (page) => this.removePage(page)
+      (page) => this.removePage(page),
     );
     this.pageNavigator.goTo(Page.BASIC_INFO);
   }
@@ -65,16 +60,14 @@ export class ProfilePage extends EventEmitter {
           .on("back", () => this.pageNavigator.goTo(Page.BASIC_INFO))
           .on("updated", () => this.pageNavigator.goTo(Page.BASIC_INFO));
         this.appendBodies(this.updateAvatarPage_.body);
-        this.prependMenuBodies(this.updateAvatarPage_.backMenuBody);
         break;
       case Page.UPDATE_ACCOUNT:
         this.updateAccountInfoPage_ = this.createUpdateAccountInfoPage(
-          this.accountInfo
+          this.accountInfo,
         )
           .on("back", () => this.pageNavigator.goTo(Page.BASIC_INFO))
           .on("updated", () => this.pageNavigator.goTo(Page.BASIC_INFO));
         this.appendBodies(this.updateAccountInfoPage_.body);
-        this.prependMenuBodies(this.updateAccountInfoPage_.menuBody);
         break;
     }
   }

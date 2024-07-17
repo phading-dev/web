@@ -3,22 +3,21 @@ import { UpdatePaymentMethodPage } from "./body";
 import {
   DELETE_PAYMENT_METHOD,
   DELETE_PAYMENT_METHOD_REQUEST_BODY,
-  DeletePaymentMethodResponse,
   UPDATE_PAYMENT_METHOD,
   UPDATE_PAYMENT_METHOD_REQUEST_BODY,
-  UpdatePaymentMethodRequestBody,
-  UpdatePaymentMethodResponse,
-} from "@phading/billing_service_interface/web/interface";
-import { CardBrand } from "@phading/billing_service_interface/web/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
-import { CardUpdates } from "@phading/billing_service_interface/web/payment_method_updates";
-import { E } from "@selfage/element/factory";
-import { eqMessage } from "@selfage/message/test_matcher";
+} from "@phading/commerce_service_interface/consumer/frontend/interface";
+import { CardBrand } from "@phading/commerce_service_interface/consumer/frontend/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/commerce_service_interface/consumer/frontend/payment_method_priority";
+import { CardUpdates } from "@phading/commerce_service_interface/consumer/frontend/payment_method_updates";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import { WebServiceClient } from "@selfage/web_service_client";
+import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+import {
+  eqRequestMessageBody,
+  eqService,
+} from "@selfage/web_service_client/request_test_matcher";
 import "../../../../../common/normalize_body";
 
 class ExpDateParsingTestCase implements TestCase {
@@ -30,20 +29,11 @@ class ExpDateParsingTestCase implements TestCase {
     private actualFile: string,
     private expectedFile: string,
     private diffFile: string,
-    private expectedCard?: CardUpdates
+    private expectedCard?: CardUpdates,
   ) {}
   public async execute() {
     // Prepare
-    let requestBodyCaptured: UpdatePaymentMethodRequestBody;
-    let webServiceClientMock = new (class extends WebServiceClient {
-      public constructor() {
-        super(undefined, undefined);
-      }
-      public async send(request: any) {
-        requestBodyCaptured = request.body;
-        return {} as UpdatePaymentMethodResponse;
-      }
-    })();
+    let webServiceClientMock = new WebServiceClientMock();
     this.cut = new UpdatePaymentMethodPage(webServiceClientMock, {
       paymentMethodId: "id1",
       priority: PaymentMethodPriority.BACKUP,
@@ -55,19 +45,18 @@ class ExpDateParsingTestCase implements TestCase {
       },
     });
     document.body.append(this.cut.body);
-    menuBodyContainer.append(this.cut.menuBody);
 
     // Execute
-    this.cut.expMonthInput.value = this.expMonthValue;
-    this.cut.expMonthInput.dispatchInputEvent();
-    this.cut.expYearInput.value = this.expYearValue;
-    this.cut.expYearInput.dispatchInputEvent();
+    this.cut.expMonthInput.val.value = this.expMonthValue;
+    this.cut.expMonthInput.val.dispatchInputEvent();
+    this.cut.expYearInput.val.value = this.expYearValue;
+    this.cut.expYearInput.val.dispatchInputEvent();
 
     // Verify
     await asyncAssertScreenshot(
       this.actualFile,
       this.expectedFile,
-      this.diffFile
+      this.diffFile,
     );
 
     // Verify
@@ -75,9 +64,18 @@ class ExpDateParsingTestCase implements TestCase {
       this.cut.inputFormPage.submit();
       await new Promise<void>((resolve) => this.cut.once("updated", resolve));
       assertThat(
-        requestBodyCaptured.paymentMethodUpdates.card,
-        eqMessage(this.expectedCard, UPDATE_PAYMENT_METHOD_REQUEST_BODY),
-        "exp date"
+        webServiceClientMock.request,
+        eqRequestMessageBody(
+          {
+            paymentMethodUpdates: {
+              paymentMethodId: "id1",
+              priority: PaymentMethodPriority.BACKUP,
+              card: this.expectedCard,
+            },
+          },
+          UPDATE_PAYMENT_METHOD_REQUEST_BODY,
+        ),
+        "exp date",
       );
     }
   }
@@ -86,21 +84,8 @@ class ExpDateParsingTestCase implements TestCase {
   }
 }
 
-let menuBodyContainer: HTMLDivElement;
-
 TEST_RUNNER.run({
   name: "UpdatePaymentMethodPageTest",
-  environment: {
-    setUp: () => {
-      menuBodyContainer = E.div({
-        style: "position: fixed;"
-      });
-      document.body.append(menuBodyContainer);
-    },
-    tearDown: () => {
-      menuBodyContainer.remove();
-    },
-  },
   cases: [
     new (class implements TestCase {
       public name =
@@ -109,11 +94,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(800, 600);
-        let webServiceClientMock = new (class extends WebServiceClient {
-          public constructor() {
-            super(undefined, undefined);
-          }
-        })();
+        let webServiceClientMock = new WebServiceClientMock();
         this.cut = new UpdatePaymentMethodPage(webServiceClientMock, {
           paymentMethodId: "id1",
           priority: PaymentMethodPriority.BACKUP,
@@ -127,110 +108,108 @@ TEST_RUNNER.run({
 
         // Execute
         document.body.append(this.cut.body);
-        menuBodyContainer.append(this.cut.menuBody);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/update_payment_method_page_default.png"),
           path.join(
             __dirname,
-            "/golden/update_payment_method_page_default.png"
+            "/golden/update_payment_method_page_default.png",
           ),
-          path.join(__dirname, "/update_payment_method_page_default_diff.png")
+          path.join(__dirname, "/update_payment_method_page_default_diff.png"),
         );
 
         // Execute
-        this.cut.expMonthInput.value = "12";
-        this.cut.expMonthInput.dispatchInputEvent();
-        this.cut.expYearInput.value = "2020";
-        this.cut.expYearInput.dispatchInputEvent();
+        this.cut.expMonthInput.val.value = "12";
+        this.cut.expMonthInput.val.dispatchInputEvent();
+        this.cut.expYearInput.val.value = "2020";
+        this.cut.expYearInput.val.dispatchInputEvent();
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/update_payment_method_page_exp_input.png"),
           path.join(
             __dirname,
-            "/golden/update_payment_method_page_exp_input.png"
+            "/golden/update_payment_method_page_exp_input.png",
           ),
-          path.join(__dirname, "/update_payment_method_page_exp_input_diff.png")
+          path.join(
+            __dirname,
+            "/update_payment_method_page_exp_input_diff.png",
+          ),
         );
 
         // Execute
-        this.cut.priorityOptionInput.optionButtons[0].click();
+        this.cut.priorityOptionInput.val.optionButtons[0].click();
 
         // Verify
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/update_payment_method_page_set_as_primary.png"
+            "/update_payment_method_page_set_as_primary.png",
           ),
           path.join(
             __dirname,
-            "/golden/update_payment_method_page_set_as_primary.png"
+            "/golden/update_payment_method_page_set_as_primary.png",
           ),
           path.join(
             __dirname,
-            "/update_payment_method_page_set_as_primary_diff.png"
-          )
+            "/update_payment_method_page_set_as_primary_diff.png",
+          ),
         );
 
         // Execute
-        this.cut.priorityOptionInput.optionButtons[2].click();
+        this.cut.priorityOptionInput.val.optionButtons[2].click();
 
         // Verify
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/update_payment_method_page_set_as_not_in_use.png"
+            "/update_payment_method_page_set_as_not_in_use.png",
           ),
           path.join(
             __dirname,
-            "/golden/update_payment_method_page_set_as_not_in_use.png"
+            "/golden/update_payment_method_page_set_as_not_in_use.png",
           ),
           path.join(
             __dirname,
-            "/update_payment_method_page_set_as_not_in_use_diff.png"
-          )
+            "/update_payment_method_page_set_as_not_in_use_diff.png",
+          ),
         );
 
         // Execute
-        this.cut.priorityOptionInput.optionButtons[1].click();
+        this.cut.priorityOptionInput.val.optionButtons[1].click();
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/update_payment_method_page_set_as_backup.png"),
           path.join(
             __dirname,
-            "/golden/update_payment_method_page_set_as_backup.png"
+            "/golden/update_payment_method_page_set_as_backup.png",
           ),
           path.join(
             __dirname,
-            "/update_payment_method_page_set_as_backup_diff.png"
-          )
+            "/update_payment_method_page_set_as_backup_diff.png",
+          ),
         );
 
         // Prepare
-        let requestCaptured: any;
-        webServiceClientMock.send = async (request: any) => {
-          requestCaptured = request;
-          throw new Error("Fake error");
-        };
+        webServiceClientMock.error = new Error("Fake error");
 
         // Execute
         this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) =>
-          this.cut.once("updateError", resolve)
+          this.cut.once("updateError", resolve),
         );
 
         // Verify
         assertThat(
-          requestCaptured.descriptor,
-          eq(UPDATE_PAYMENT_METHOD),
-          "service"
+          webServiceClientMock.request,
+          eqService(UPDATE_PAYMENT_METHOD),
+          "updaate payment method",
         );
         assertThat(
-          requestCaptured.body,
-          eqMessage(
+          webServiceClientMock.request,
+          eqRequestMessageBody(
             {
               paymentMethodUpdates: {
                 paymentMethodId: "id1",
@@ -238,26 +217,25 @@ TEST_RUNNER.run({
                 card: { expMonth: 12, expYear: 2020 },
               },
             },
-            UPDATE_PAYMENT_METHOD_REQUEST_BODY
+            UPDATE_PAYMENT_METHOD_REQUEST_BODY,
           ),
-          "request body"
+          "update request body",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/update_payment_method_page_update_error.png"),
           path.join(
             __dirname,
-            "/golden/update_payment_method_page_update_error.png"
+            "/golden/update_payment_method_page_update_error.png",
           ),
           path.join(
             __dirname,
-            "/update_payment_method_page_update_error_diff.png"
-          )
+            "/update_payment_method_page_update_error_diff.png",
+          ),
         );
 
         // Prepare
-        webServiceClientMock.send = async (request: any) => {
-          return {} as UpdatePaymentMethodResponse;
-        };
+        webServiceClientMock.error = undefined;
+        webServiceClientMock.response = {};
 
         // Execute
         this.cut.inputFormPage.submit();
@@ -267,16 +245,16 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/update_payment_method_page_update_success.png"
+            "/update_payment_method_page_update_success.png",
           ),
           path.join(
             __dirname,
-            "/golden/update_payment_method_page_update_success.png"
+            "/golden/update_payment_method_page_update_success.png",
           ),
           path.join(
             __dirname,
-            "/update_payment_method_page_update_success_diff.png"
-          )
+            "/update_payment_method_page_update_success_diff.png",
+          ),
         );
       }
       public tearDown() {
@@ -289,11 +267,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(800, 600);
-        let webServiceClientMock = new (class extends WebServiceClient {
-          public constructor() {
-            super(undefined, undefined);
-          }
-        })();
+        let webServiceClientMock = new WebServiceClientMock();
         this.cut = new UpdatePaymentMethodPage(webServiceClientMock, {
           paymentMethodId: "id1",
           priority: PaymentMethodPriority.BACKUP,
@@ -307,72 +281,66 @@ TEST_RUNNER.run({
 
         // Execute
         document.body.append(this.cut.body);
-        menuBodyContainer.append(this.cut.menuBody);
 
         // Prepare
-        let requestCaptured: any;
-        webServiceClientMock.send = async (request: any) => {
-          requestCaptured = request;
-          throw new Error("Fake error");
-        };
+        webServiceClientMock.error = new Error("Fake error");
 
         // Execute
-        this.cut.inputFormPage.clickSecondaryButton();
+        this.cut.inputFormPage.clickSecondaryBlockingButton();
         await new Promise<void>((resolve) =>
-          this.cut.once("deleteError", resolve)
+          this.cut.once("deleteError", resolve),
         );
 
         // Verify
         assertThat(
-          requestCaptured.descriptor,
-          eq(DELETE_PAYMENT_METHOD),
-          "service"
+          webServiceClientMock.request,
+          eqService(DELETE_PAYMENT_METHOD),
+          "delete payment method",
         );
         assertThat(
-          requestCaptured.body,
-          eqMessage(
+          webServiceClientMock.request,
+          eqRequestMessageBody(
             {
               paymentMethodId: "id1",
             },
-            DELETE_PAYMENT_METHOD_REQUEST_BODY
+            DELETE_PAYMENT_METHOD_REQUEST_BODY,
           ),
-          "request body"
+          "delete request body",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/update_payment_method_page_delete_error.png"),
           path.join(
             __dirname,
-            "/golden/update_payment_method_page_delete_error.png"
+            "/golden/update_payment_method_page_delete_error.png",
           ),
           path.join(
             __dirname,
-            "/update_payment_method_page_delete_error_diff.png"
-          )
+            "/update_payment_method_page_delete_error_diff.png",
+          ),
         );
 
         // Prepare
-        webServiceClientMock.send = async (request: any) => {
-          return {} as DeletePaymentMethodResponse;
-        };
+        webServiceClientMock.error = undefined;
+        webServiceClientMock.response = {};
 
         // Execute
-        this.cut.inputFormPage.clickSecondaryButton();
+        this.cut.inputFormPage.clickSecondaryBlockingButton();
         await new Promise<void>((resolve) => this.cut.once("deleted", resolve));
 
         // Verify
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/update_payment_method_page_delete_success.png"
+            "/update_payment_method_page_delete_success.png",
           ),
           path.join(
             __dirname,
-            "/golden/update_payment_method_page_delete_success.png"
+            "/golden/update_payment_method_page_delete_success.png",
           ),
           path.join(
             __dirname,
-            "/update_payment_method_page_delete_success_diff.png"
-          )
+            "/update_payment_method_page_delete_success_diff.png",
+          ),
         );
       }
       public tearDown() {
@@ -386,9 +354,12 @@ TEST_RUNNER.run({
       path.join(__dirname, "/update_payment_method_page_exp_month_nan.png"),
       path.join(
         __dirname,
-        "/golden/update_payment_method_page_exp_month_nan.png"
+        "/golden/update_payment_method_page_exp_month_nan.png",
       ),
-      path.join(__dirname, "/update_payment_method_page_exp_month_nan_diff.png")
+      path.join(
+        __dirname,
+        "/update_payment_method_page_exp_month_nan_diff.png",
+      ),
     ),
     new ExpDateParsingTestCase(
       "ExpMonthTooSmall",
@@ -396,16 +367,16 @@ TEST_RUNNER.run({
       "2020",
       path.join(
         __dirname,
-        "/update_payment_method_page_exp_month_too_small.png"
+        "/update_payment_method_page_exp_month_too_small.png",
       ),
       path.join(
         __dirname,
-        "/golden/update_payment_method_page_exp_month_too_small.png"
+        "/golden/update_payment_method_page_exp_month_too_small.png",
       ),
       path.join(
         __dirname,
-        "/update_payment_method_page_exp_month_too_small_diff.png"
-      )
+        "/update_payment_method_page_exp_month_too_small_diff.png",
+      ),
     ),
     new ExpDateParsingTestCase(
       "ExpMonthTooLarge",
@@ -413,16 +384,16 @@ TEST_RUNNER.run({
       "2020",
       path.join(
         __dirname,
-        "/update_payment_method_page_exp_month_too_large.png"
+        "/update_payment_method_page_exp_month_too_large.png",
       ),
       path.join(
         __dirname,
-        "/golden/update_payment_method_page_exp_month_too_large.png"
+        "/golden/update_payment_method_page_exp_month_too_large.png",
       ),
       path.join(
         __dirname,
-        "/update_payment_method_page_exp_month_too_large_diff.png"
-      )
+        "/update_payment_method_page_exp_month_too_large_diff.png",
+      ),
     ),
     new ExpDateParsingTestCase(
       "ExpYearNan",
@@ -431,9 +402,9 @@ TEST_RUNNER.run({
       path.join(__dirname, "/update_payment_method_page_exp_year_nan.png"),
       path.join(
         __dirname,
-        "/golden/update_payment_method_page_exp_year_nan.png"
+        "/golden/update_payment_method_page_exp_year_nan.png",
       ),
-      path.join(__dirname, "/update_payment_method_page_exp_year_nan_diff.png")
+      path.join(__dirname, "/update_payment_method_page_exp_year_nan_diff.png"),
     ),
     new ExpDateParsingTestCase(
       "ExpYearTooSmall",
@@ -441,16 +412,16 @@ TEST_RUNNER.run({
       "0",
       path.join(
         __dirname,
-        "/update_payment_method_page_exp_year_too_small.png"
+        "/update_payment_method_page_exp_year_too_small.png",
       ),
       path.join(
         __dirname,
-        "/golden/update_payment_method_page_exp_year_too_small.png"
+        "/golden/update_payment_method_page_exp_year_too_small.png",
       ),
       path.join(
         __dirname,
-        "/update_payment_method_page_exp_year_too_small_diff.png"
-      )
+        "/update_payment_method_page_exp_year_too_small_diff.png",
+      ),
     ),
     new ExpDateParsingTestCase(
       "ExpYearTooLarge",
@@ -458,16 +429,16 @@ TEST_RUNNER.run({
       "10000",
       path.join(
         __dirname,
-        "/update_payment_method_page_exp_year_too_large.png"
+        "/update_payment_method_page_exp_year_too_large.png",
       ),
       path.join(
         __dirname,
-        "/golden/update_payment_method_page_exp_year_too_large.png"
+        "/golden/update_payment_method_page_exp_year_too_large.png",
       ),
       path.join(
         __dirname,
-        "/update_payment_method_page_exp_year_too_large_diff.png"
-      )
+        "/update_payment_method_page_exp_year_too_large_diff.png",
+      ),
     ),
     new ExpDateParsingTestCase(
       "ExpDateValid",
@@ -476,28 +447,23 @@ TEST_RUNNER.run({
       path.join(__dirname, "/update_payment_method_page_exp_date_valid.png"),
       path.join(
         __dirname,
-        "/golden/update_payment_method_page_exp_date_valid.png"
+        "/golden/update_payment_method_page_exp_date_valid.png",
       ),
       path.join(
         __dirname,
-        "/update_payment_method_page_exp_date_valid_diff.png"
+        "/update_payment_method_page_exp_date_valid_diff.png",
       ),
       {
         expMonth: 1,
         expYear: 2020,
-      }
+      },
     ),
     new (class implements TestCase {
       public name = "Back";
       private cut: UpdatePaymentMethodPage;
       public async execute() {
         // Prepare
-        let webServiceClientMock = new (class extends WebServiceClient {
-          public constructor() {
-            super(undefined, undefined);
-          }
-        })();
-        this.cut = new UpdatePaymentMethodPage(webServiceClientMock, {
+        this.cut = new UpdatePaymentMethodPage(new WebServiceClientMock(), {
           paymentMethodId: "id1",
           priority: PaymentMethodPriority.BACKUP,
           card: {
@@ -508,12 +474,11 @@ TEST_RUNNER.run({
           },
         });
         document.body.append(this.cut.body);
-        menuBodyContainer.append(this.cut.menuBody);
         let goBack = false;
         this.cut.on("back", () => (goBack = true));
 
         // Execute
-        this.cut.backMenuItem.click();
+        this.cut.inputFormPage.clickBackButton();
 
         // Verify
         assertThat(goBack, eq(true), "go back");

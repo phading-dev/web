@@ -420,16 +420,16 @@ export default class Text {
     return `Expires`;
   }
   get cardIsSavedAsLabel() {
-    return `Saved as`;
+    return `Saved`;
   }
   get cardIsUsedAsPrimaryPaymentMethodLabel() {
-    return `Primary`;
+    return `As primary`;
   }
   get cardIsUsedAsBackupPaymentMethodLabel() {
-    return `Backup`;
+    return `As backup`;
   }
   get cardIsSavedForFutureLabel() {
-    return `Not used`;
+    return `For future`;
   }
   get deleteButtonLabel() {
     return `Delete`;

@@ -4,17 +4,19 @@ import {
   OutlineBlockingButton,
 } from "../../../../../common/blocking_button";
 import { SCHEME } from "../../../../../common/color_scheme";
+import {
+  IconButton,
+  createBackButton,
+} from "../../../../../common/icon_button";
 import { ImageCropper } from "../../../../../common/image_cropper/body";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
-import { MenuItem } from "../../../../../common/menu_item/body";
-import { createBackMenuItem } from "../../../../../common/menu_item/factory";
 import {
-  MEDIUM_CARD_STYLE,
-  PAGE_STYLE,
+  PAGE_BACKGROUND_STYLE,
+  PAGE_MEDIUM_CARD_STYLE,
 } from "../../../../../common/page_style";
 import { AVATAR_M, AVATAR_S, FONT_M } from "../../../../../common/sizes";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { uploadAccountAvatar } from "@phading/user_service_interface/self/web/client_requests";
+import { uploadAccountAvatar } from "@phading/user_service_interface/self/frontend/client_requests";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -31,62 +33,56 @@ export class UpdateAvatarPage extends EventEmitter {
     return new UpdateAvatarPage(USER_SERVICE_CLIENT);
   }
 
-  private body_: HTMLDivElement;
-  private backMenuItem_: MenuItem;
-  private chooseFileButton_: OutlineBlockingButton;
-  private uploadButton_: FilledBlockingButton;
-  private imageCropper_: ImageCropper;
-  private loadErrorText: HTMLDivElement;
-  private previewMediumCanvas: HTMLCanvasElement;
-  private previewSmallCanvas: HTMLCanvasElement;
-  private uploadStatusText: HTMLDivElement;
+  public body: HTMLDivElement;
+  public backButton = new Ref<IconButton>();
+  public chooseFileButton = new Ref<OutlineBlockingButton>();
+  private loadErrorText = new Ref<HTMLDivElement>();
+  public imageCropper = new Ref<ImageCropper>();
+  private previewMediumCanvas = new Ref<HTMLCanvasElement>();
+  private previewSmallCanvas = new Ref<HTMLCanvasElement>();
+  public uploadButton = new Ref<FilledBlockingButton>();
+  private uploadStatusText = new Ref<HTMLDivElement>();
 
   public constructor(private userServiceClient: WebServiceClient) {
     super();
-    let chooseFileButtonRef = new Ref<OutlineBlockingButton>();
-    let loadErrorTextRef = new Ref<HTMLDivElement>();
-    let imageCropperRef = new Ref<ImageCropper>();
-    let previewMediumCanvasRef = new Ref<HTMLCanvasElement>();
-    let previewSmallCanvasRef = new Ref<HTMLCanvasElement>();
-    let uploadButtonRef = new Ref<FilledBlockingButton>();
-    let uploadStatusTextRef = new Ref<HTMLDivElement>();
-    this.body_ = E.div(
+    this.body = E.div(
       {
         class: "update-avatar",
-        style: PAGE_STYLE,
+        style: PAGE_BACKGROUND_STYLE,
       },
       E.div(
         {
           class: "update-avatar-card",
-          style: `${MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 1.5rem; align-items: center;`,
+          style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 1.5rem; align-items: center;`,
         },
+        assign(this.backButton, createBackButton().enable()).body,
         assign(
-          chooseFileButtonRef,
+          this.chooseFileButton,
           OutlineBlockingButton.create("")
             .append(E.text(LOCALIZED_TEXT.chooseAvatarLabel))
-            .enable()
+            .enable(),
         ).body,
         E.divRef(
-          loadErrorTextRef,
+          this.loadErrorText,
           {
             class: "update-avatar-image-load-error",
             style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
           },
-          E.text("1")
+          E.text("1"),
         ),
         E.div(
           {
             class: "update-avatar-canvas-wrapper",
             style: `width: 46rem; height: 46rem;`,
           },
-          assign(imageCropperRef, ImageCropper.create()).body
+          assign(this.imageCropper, ImageCropper.create()).body,
         ),
         E.div(
           {
             class: "update-avatar-preview-label",
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
-          E.text(LOCALIZED_TEXT.previewAvatarLabel)
+          E.text(LOCALIZED_TEXT.previewAvatarLabel),
         ),
         E.div(
           {
@@ -103,18 +99,18 @@ export class UpdateAvatarPage extends EventEmitter {
                 class: "update-avatar-preview-medium-cap",
                 style: `position: relative; width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: ${AVATAR_M}rem; border: .1rem solid ${SCHEME.neutral1}; overflow: hidden;`,
               },
-              E.canvasRef(previewMediumCanvasRef, {
+              E.canvasRef(this.previewMediumCanvas, {
                 class: "update-avatar-preview-medium-canvas",
                 style: `position: absolute;`,
-              })
+              }),
             ),
             E.div(
               {
                 class: "update-avatar-preview-medium-label",
                 style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
               },
-              E.text(`${AVATAR_M * 10} x ${AVATAR_M * 10}`)
-            )
+              E.text(`${AVATAR_M * 10} x ${AVATAR_M * 10}`),
+            ),
           ),
           E.div(
             {
@@ -126,52 +122,43 @@ export class UpdateAvatarPage extends EventEmitter {
                 class: "update-avatar-preview-small-cap",
                 style: `position: relative; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: ${AVATAR_S}rem; border: .1rem solid ${SCHEME.neutral1}; overflow: hidden;`,
               },
-              E.canvasRef(previewSmallCanvasRef, {
+              E.canvasRef(this.previewSmallCanvas, {
                 class: "change-vatar-preview-small-canvas",
                 style: `position: absolute;`,
-              })
+              }),
             ),
             E.div(
               {
                 class: "update-avatar-preview-small-label",
                 style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
               },
-              E.text(`${AVATAR_S * 10} x ${AVATAR_S * 10}`)
-            )
-          )
+              E.text(`${AVATAR_S * 10} x ${AVATAR_S * 10}`),
+            ),
+          ),
         ),
         assign(
-          uploadButtonRef,
+          this.uploadButton,
           FilledBlockingButton.create("")
             .append(E.text(LOCALIZED_TEXT.uploadAvatarLabel))
-            .disable()
+            .disable(),
         ).body,
         E.divRef(
-          uploadStatusTextRef,
+          this.uploadStatusText,
           {
             class: "update-avatar-upload-status-text",
             style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
           },
-          E.text("1")
-        )
-      )
+          E.text("1"),
+        ),
+      ),
     );
-    this.chooseFileButton_ = chooseFileButtonRef.val;
-    this.loadErrorText = loadErrorTextRef.val;
-    this.imageCropper_ = imageCropperRef.val;
-    this.previewMediumCanvas = previewMediumCanvasRef.val;
-    this.previewSmallCanvas = previewSmallCanvasRef.val;
-    this.uploadButton_ = uploadButtonRef.val;
-    this.uploadStatusText = uploadStatusTextRef.val;
 
-    this.backMenuItem_ = createBackMenuItem();
-
-    this.backMenuItem_.on("action", () => this.emit("back"));
-    this.chooseFileButton_.on("action", () => this.chooseFile());
-    this.imageCropper_.on("change", () => this.preview());
-    this.uploadButton_.on("action", () => this.uploadAvatar());
-    this.uploadButton_.on("postAction", (error) =>
-      this.postUploadAvatar(error)
+    this.backButton.val.on("action", () => this.emit("back"));
+    this.chooseFileButton.val.on("action", () => this.chooseFile());
+    this.imageCropper.val.on("change", () => this.preview());
+    this.uploadButton.val.on("action", () => this.uploadAvatar());
+    this.uploadButton.val.on("postAction", (error) =>
+      this.postUploadAvatar(error),
     );
   }
 
@@ -187,98 +174,84 @@ export class UpdateAvatarPage extends EventEmitter {
   }
 
   private async load(files: FileList): Promise<void> {
-    this.loadErrorText.style.visibility = "hidden";
+    this.loadErrorText.val.style.visibility = "hidden";
     try {
-      await this.imageCropper_.load(files[0]);
+      await this.imageCropper.val.load(files[0]);
     } catch (e) {
-      this.loadErrorText.textContent = LOCALIZED_TEXT.loadImageError;
-      this.loadErrorText.style.visibility = "visible";
+      this.loadErrorText.val.textContent = LOCALIZED_TEXT.loadImageError;
+      this.loadErrorText.val.style.visibility = "visible";
       console.error(e);
       this.emit("imageLoaded");
       return;
     }
 
-    this.previewMediumCanvas.width = this.imageCropper_.canvas.width;
-    this.previewMediumCanvas.height = this.imageCropper_.canvas.height;
-    this.previewMediumCanvas
+    this.previewMediumCanvas.val.width = this.imageCropper.val.canvas.val.width;
+    this.previewMediumCanvas.val.height =
+      this.imageCropper.val.canvas.val.height;
+    this.previewMediumCanvas.val
       .getContext("2d")
-      .drawImage(this.imageCropper_.canvas, 0, 0);
-    this.previewSmallCanvas.width = this.imageCropper_.canvas.width;
-    this.previewSmallCanvas.height = this.imageCropper_.canvas.height;
-    this.previewSmallCanvas
+      .drawImage(this.imageCropper.val.canvas.val, 0, 0);
+    this.previewSmallCanvas.val.width = this.imageCropper.val.canvas.val.width;
+    this.previewSmallCanvas.val.height =
+      this.imageCropper.val.canvas.val.height;
+    this.previewSmallCanvas.val
       .getContext("2d")
-      .drawImage(this.imageCropper_.canvas, 0, 0);
-    this.uploadButton_.enable();
+      .drawImage(this.imageCropper.val.canvas.val, 0, 0);
+    this.uploadButton.val.enable();
     this.emit("imageLoaded");
   }
 
   private preview(): void {
-    this.previewMediumCanvas.style.width = `${
-      (this.imageCropper_.canvas.width / this.imageCropper_.sWidth) * AVATAR_M
+    this.previewMediumCanvas.val.style.width = `${
+      (this.imageCropper.val.canvas.val.width / this.imageCropper.val.sWidth) *
+      AVATAR_M
     }rem`;
-    this.previewMediumCanvas.style.height = `${
-      (this.imageCropper_.canvas.height / this.imageCropper_.sHeight) * AVATAR_M
+    this.previewMediumCanvas.val.style.height = `${
+      (this.imageCropper.val.canvas.val.height /
+        this.imageCropper.val.sHeight) *
+      AVATAR_M
     }rem`;
-    this.previewMediumCanvas.style.left = `-${
-      (this.imageCropper_.sx / this.imageCropper_.sWidth) * AVATAR_M
+    this.previewMediumCanvas.val.style.left = `-${
+      (this.imageCropper.val.sx / this.imageCropper.val.sWidth) * AVATAR_M
     }rem`;
-    this.previewMediumCanvas.style.top = `-${
-      (this.imageCropper_.sy / this.imageCropper_.sHeight) * AVATAR_M
+    this.previewMediumCanvas.val.style.top = `-${
+      (this.imageCropper.val.sy / this.imageCropper.val.sHeight) * AVATAR_M
     }rem`;
-    this.previewSmallCanvas.style.width = `${
-      (this.imageCropper_.canvas.width / this.imageCropper_.sWidth) * AVATAR_S
+    this.previewSmallCanvas.val.style.width = `${
+      (this.imageCropper.val.canvas.val.width / this.imageCropper.val.sWidth) *
+      AVATAR_S
     }rem`;
-    this.previewSmallCanvas.style.height = `${
-      (this.imageCropper_.canvas.height / this.imageCropper_.sHeight) * AVATAR_S
+    this.previewSmallCanvas.val.style.height = `${
+      (this.imageCropper.val.canvas.val.height /
+        this.imageCropper.val.sHeight) *
+      AVATAR_S
     }rem`;
-    this.previewSmallCanvas.style.left = `-${
-      (this.imageCropper_.sx / this.imageCropper_.sWidth) * AVATAR_S
+    this.previewSmallCanvas.val.style.left = `-${
+      (this.imageCropper.val.sx / this.imageCropper.val.sWidth) * AVATAR_S
     }rem`;
-    this.previewSmallCanvas.style.top = `-${
-      (this.imageCropper_.sy / this.imageCropper_.sHeight) * AVATAR_S
+    this.previewSmallCanvas.val.style.top = `-${
+      (this.imageCropper.val.sy / this.imageCropper.val.sHeight) * AVATAR_S
     }rem`;
   }
 
   private async uploadAvatar(): Promise<void> {
-    this.uploadStatusText.style.visibility = "hidden";
-    let blob = await this.imageCropper_.export();
+    this.uploadStatusText.val.style.visibility = "hidden";
+    let blob = await this.imageCropper.val.export();
     await uploadAccountAvatar(this.userServiceClient, blob);
   }
 
   private postUploadAvatar(error?: Error): void {
     if (error) {
       console.error(error);
-      this.uploadStatusText.textContent = LOCALIZED_TEXT.uploadAvatarError;
-      this.uploadStatusText.style.visibility = "visible";
+      this.uploadStatusText.val.textContent = LOCALIZED_TEXT.uploadAvatarError;
+      this.uploadStatusText.val.style.visibility = "visible";
       this.emit("updateError");
     } else {
       this.emit("updated");
     }
   }
 
-  public get body() {
-    return this.body_;
-  }
-  public get backMenuBody() {
-    return this.backMenuItem_.body;
-  }
-
   public remove(): void {
-    this.backMenuItem_.remove();
-    this.body_.remove();
-  }
-
-  // Visible for testing
-  public get backMenuItem() {
-    return this.backMenuItem_;
-  }
-  public get chooseFileButton() {
-    return this.chooseFileButton_;
-  }
-  public get uploadButton() {
-    return this.uploadButton_;
-  }
-  public get imageCropper() {
-    return this.imageCropper_;
+    this.body.remove();
   }
 }

@@ -2,7 +2,7 @@ import { AddBodiesFn } from "../../../../common/add_bodies_fn";
 import { PageNavigator } from "../../../../common/page_navigator";
 import { PaymentMethodsListPage } from "./payment_methods_list_page/body";
 import { UpdatePaymentMethodPage } from "./update_payment_method_page/body";
-import { PaymentMethodMasked } from "@phading/billing_service_interface/web/payment_method_masked";
+import { PaymentMethodMasked } from "@phading/commerce_service_interface/consumer/frontend/payment_method_masked";
 
 enum Page {
   LIST = 1,
@@ -12,13 +12,12 @@ enum Page {
 export class PaymentMethodsPage {
   public static create(
     appendBodies: AddBodiesFn,
-    prependMenuBodies: AddBodiesFn
+    prependMenuBodies: AddBodiesFn,
   ): PaymentMethodsPage {
     return new PaymentMethodsPage(
       PaymentMethodsListPage.create,
       UpdatePaymentMethodPage.create,
       appendBodies,
-      prependMenuBodies
     );
   }
 
@@ -30,14 +29,13 @@ export class PaymentMethodsPage {
   public constructor(
     private createPaymentMethodsListPage: () => PaymentMethodsListPage,
     private createUpdatePaymentMethodPage: (
-      paymentMethod: PaymentMethodMasked
+      paymentMethod: PaymentMethodMasked,
     ) => UpdatePaymentMethodPage,
     private appendBodies: AddBodiesFn,
-    private prependMenuBodies: AddBodiesFn
   ) {
     this.pageNavigator = new PageNavigator(
       (page) => this.addPage(page),
-      (page) => this.removePage(page)
+      (page) => this.removePage(page),
     );
     this.pageNavigator.goTo(Page.LIST);
   }
@@ -50,13 +48,13 @@ export class PaymentMethodsPage {
           (paymentMethod) => {
             this.paymentMethodToBeUpdated = paymentMethod;
             this.pageNavigator.goTo(Page.UPDATE);
-          }
+          },
         );
         this.appendBodies(this.paymentMethodsListPage_.body);
         break;
       case Page.UPDATE:
         this.updatePaymentMethodPage_ = this.createUpdatePaymentMethodPage(
-          this.paymentMethodToBeUpdated
+          this.paymentMethodToBeUpdated,
         )
           .on("back", () => {
             this.pageNavigator.goTo(Page.LIST);
@@ -64,7 +62,6 @@ export class PaymentMethodsPage {
           .on("updated", () => this.pageNavigator.goTo(Page.LIST))
           .on("deleted", () => this.pageNavigator.goTo(Page.LIST));
         this.appendBodies(this.updatePaymentMethodPage_.body);
-        this.prependMenuBodies(this.updatePaymentMethodPage_.menuBody);
         break;
     }
   }

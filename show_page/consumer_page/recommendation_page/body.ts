@@ -75,7 +75,7 @@ export class RecommendationPage extends EventEmitter {
     this.body = E.div(
       {
         class: "recommendation-page",
-        style: `width: 100vw; height: 100vh; box-sizing: border-box; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: column nowrap;`,
+        style: `width: 100%; height: 100%; box-sizing: border-box; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: column nowrap;`,
       },
       E.divRef(this.contextContainer, {
         class: "recommendation-page-context",

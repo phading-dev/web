@@ -3,15 +3,17 @@ import { UpdatePasswordPage } from "./body";
 import {
   UPDATE_PASSWORD,
   UPDATE_PASSWORD_REQUEST_BODY,
-  UpdatePasswordResponse,
-} from "@phading/user_service_interface/self/web/interface";
+} from "@phading/user_service_interface/self/frontend/interface";
 import { E } from "@selfage/element/factory";
-import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import { WebServiceClient } from "@selfage/web_service_client";
+import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+import {
+  eqRequestMessageBody,
+  eqService,
+} from "@selfage/web_service_client/request_test_matcher";
 import "../../../../../common/normalize_body";
 
 function createLongString(length: number) {
@@ -44,41 +46,24 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(1000, 600);
-        let requestCaptured: any;
-        let error: Error;
-        let response: UpdatePasswordResponse;
+        let clientMock = new WebServiceClientMock();
 
         // Execute
-        this.cut = new UpdatePasswordPage(
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(request: any): Promise<any> {
-              requestCaptured = request;
-              if (error) {
-                throw error;
-              } else {
-                return response;
-              }
-            }
-          })()
-        );
+        this.cut = new UpdatePasswordPage(clientMock);
         document.body.append(this.cut.body);
-        menuContainer.append(this.cut.menuBody);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/update_password_page.png"),
           path.join(__dirname, "/golden/update_password_page.png"),
-          path.join(__dirname, "/update_password_page_diff.png")
+          path.join(__dirname, "/update_password_page_diff.png"),
         );
 
         // Execute
-        this.cut.newPasswordInput.value = createLongString(101);
-        this.cut.newPasswordInput.dispatchInput();
+        this.cut.newPasswordInput.val.value = createLongString(101);
+        this.cut.newPasswordInput.val.dispatchInput();
         await new Promise<void>((resolve) =>
-          this.cut.newPasswordInput.once("validated", resolve)
+          this.cut.newPasswordInput.val.once("validated", resolve),
         );
 
         // Verify
@@ -86,19 +71,16 @@ TEST_RUNNER.run({
           path.join(__dirname, "/update_password_page_too_long_error.png"),
           path.join(
             __dirname,
-            "/golden/update_password_page_too_long_error.png"
+            "/golden/update_password_page_too_long_error.png",
           ),
-          path.join(
-            __dirname,
-            "/update_password_page_too_long_error_diff.png"
-          )
+          path.join(__dirname, "/update_password_page_too_long_error_diff.png"),
         );
 
         // Execute
-        this.cut.newPasswordRepeatInput.value = "some password";
-        this.cut.newPasswordRepeatInput.dispatchInput();
+        this.cut.newPasswordRepeatInput.val.value = "some password";
+        this.cut.newPasswordRepeatInput.val.dispatchInput();
         await new Promise<void>((resolve) =>
-          this.cut.newPasswordRepeatInput.once("validated", resolve)
+          this.cut.newPasswordRepeatInput.val.once("validated", resolve),
         );
 
         // Verify
@@ -106,70 +88,63 @@ TEST_RUNNER.run({
           path.join(__dirname, "/update_password_page_password_not_match.png"),
           path.join(
             __dirname,
-            "/golden/update_password_page_password_not_match.png"
+            "/golden/update_password_page_password_not_match.png",
           ),
           path.join(
             __dirname,
-            "/update_password_page_password_not_match_diff.png"
-          )
+            "/update_password_page_password_not_match_diff.png",
+          ),
         );
 
         // Prepare
-        this.cut.currentPasswordInput.value = "current password";
-        this.cut.currentPasswordInput.dispatchInput();
+        this.cut.currentPasswordInput.val.value = "current password";
+        this.cut.currentPasswordInput.val.dispatchInput();
         await new Promise<void>((resolve) =>
-          this.cut.currentPasswordInput.once("validated", resolve)
+          this.cut.currentPasswordInput.val.once("validated", resolve),
         );
-        this.cut.newPasswordInput.value = "a new password";
-        this.cut.newPasswordInput.dispatchInput();
+        this.cut.newPasswordInput.val.value = "a new password";
+        this.cut.newPasswordInput.val.dispatchInput();
         await new Promise<void>((resolve) =>
-          this.cut.newPasswordInput.once("validated", resolve)
+          this.cut.newPasswordInput.val.once("validated", resolve),
         );
-        this.cut.newPasswordRepeatInput.value = "a new password";
-        this.cut.newPasswordRepeatInput.dispatchInput();
+        this.cut.newPasswordRepeatInput.val.value = "a new password";
+        this.cut.newPasswordRepeatInput.val.dispatchInput();
         await new Promise<void>((resolve) =>
-          this.cut.newPasswordRepeatInput.once("validated", resolve)
+          this.cut.newPasswordRepeatInput.val.once("validated", resolve),
         );
-        error = new Error("fake error");
+        clientMock.error = new Error("fake error");
 
         // Execute
         this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) =>
-          this.cut.once("updateError", resolve)
+          this.cut.once("updateError", resolve),
         );
 
         // Verify
+        assertThat(clientMock.request, eqService(UPDATE_PASSWORD), "service");
         assertThat(
-          requestCaptured.descriptor,
-          eq(UPDATE_PASSWORD),
-          "service"
-        );
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
+          clientMock.request,
+          eqRequestMessageBody(
             {
               currentPassword: "current password",
-              newPassword: "a new password"
+              newPassword: "a new password",
             },
-            UPDATE_PASSWORD_REQUEST_BODY
+            UPDATE_PASSWORD_REQUEST_BODY,
           ),
-          "request body"
+          "request body",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/update_password_page_update_failed.png"),
           path.join(
             __dirname,
-            "/golden/update_password_page_update_failed.png"
+            "/golden/update_password_page_update_failed.png",
           ),
-          path.join(
-            __dirname,
-            "/update_password_page_update_failed_diff.png"
-          )
+          path.join(__dirname, "/update_password_page_update_failed_diff.png"),
         );
 
         // Prepare
-        error = undefined;
-        response = {};
+        clientMock.error = undefined;
+        clientMock.response = {};
 
         // Execute
         this.cut.inputFormPage.submit();
@@ -180,12 +155,12 @@ TEST_RUNNER.run({
           path.join(__dirname, "/update_password_page_update_successs.png"),
           path.join(
             __dirname,
-            "/golden/update_password_page_update_successs.png"
+            "/golden/update_password_page_update_successs.png",
           ),
           path.join(
             __dirname,
-            "/update_password_page_update_successs_diff.png"
-          )
+            "/update_password_page_update_successs_diff.png",
+          ),
         );
       }
       public tearDown() {
@@ -201,7 +176,7 @@ TEST_RUNNER.run({
         cut.on("back", () => (isBack = true));
 
         // Execute
-        cut.backMenuItem.click();
+        cut.inputFormPage.clickBackButton();
 
         // Verify
         assertThat(isBack, eq(true), "Back");

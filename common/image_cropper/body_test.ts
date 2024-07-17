@@ -5,7 +5,13 @@ import widerImage = require("./test_data/wider.jpg");
 import path = require("path");
 import { ImageCropper } from "./body";
 import { E } from "@selfage/element/factory";
-import { getFiles } from "@selfage/puppeteer_test_executor_api";
+import {
+  forceMouseUp,
+  getFiles,
+  mouseDown,
+  mouseMove,
+  mouseUp,
+} from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import {
   asyncAssertImage,
@@ -15,599 +21,559 @@ import "../normalize_body";
 
 let PADDING = 100;
 let LENGTH = 450;
+let container: HTMLDivElement;
 
 class ResizeOnceCase implements TestCase {
-  private container: HTMLDivElement;
+  private cut: ImageCropper;
   public constructor(
     public name: string,
-    private getResizePoint: (cut: ImageCropper) => HTMLDivElement,
-    private clientX: number,
-    private clientY: number,
+    private startX: number,
+    private startY: number,
+    private endX: number,
+    private endY: number,
     private actualFile: string,
     private expectedFile: string,
-    private diffFile: string
+    private diffFile: string,
   ) {}
 
   public async execute() {
-    let cut = new ImageCropper();
-    this.container = E.div(
-      {
-        style: `width: ${LENGTH}px; height: ${LENGTH}px; padding: ${PADDING}px;`,
-      },
-      cut.body
-    );
-    document.body.appendChild(this.container);
+    // Prepare
+    this.cut = new ImageCropper();
+    container.appendChild(this.cut.body);
 
     // Execute
-    this.getResizePoint(cut).dispatchEvent(
-      new MouseEvent("mousedown", {
-        clientX: this.clientX,
-        clientY: this.clientY,
-        bubbles: true,
-      })
-    );
+    await mouseMove(this.startX, this.startY, 1);
+    await mouseDown();
+    await mouseMove(this.endX, this.endY, 1);
+    await mouseUp();
 
     // Verify
     await asyncAssertScreenshot(
       this.actualFile,
       this.expectedFile,
       this.diffFile,
-      { fullPage: true }
+      { fullPage: true },
     );
   }
-  public tearDown() {
-    this.container.remove();
+  public async tearDown() {
+    await forceMouseUp();
+    await mouseMove(-1, -1, 1);
+    this.cut.remove();
   }
 }
 
 TEST_RUNNER.run({
   name: "ImageCropperTest",
+  environment: {
+    setUp: () => {
+      container = E.div({
+        style: `width: ${LENGTH}px; height: ${LENGTH}px; padding: ${PADDING}px;`,
+      });
+      document.body.append(container);
+    },
+    tearDown: () => {
+      container.remove();
+    },
+  },
   cases: [
     new (class implements TestCase {
       public name = "Default_ResizeFromAllPoints";
-      private container: HTMLDivElement;
+      private cut: ImageCropper;
       public async execute() {
         // Prepare
-        let cut = new ImageCropper();
-        this.container = E.div(
-          {
-            style: `width: ${LENGTH}px; height: ${LENGTH}px; padding: ${PADDING}px;`,
-          },
-          cut.body
-        );
+        this.cut = new ImageCropper();
 
         // Execute
-        document.body.appendChild(this.container);
+        container.append(this.cut.body);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/image_cropper_default.png"),
           path.join(__dirname, "/golden/image_cropper_default.png"),
           path.join(__dirname, "/image_cropper_default_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Execute
-        cut.resizePointTopLeft.dispatchEvent(
-          new MouseEvent("mousedown", {
-            clientX: PADDING + 20,
-            clientY: PADDING + 70,
-            bubbles: true,
-          })
-        );
+        await mouseMove(PADDING + 115, PADDING + 115, 1);
+        await mouseDown();
+        await mouseMove(PADDING + 20, PADDING + 70, 1);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/image_cropper_top_left_resize_mouse_down.png"),
           path.join(
             __dirname,
-            "/golden/image_cropper_top_left_resize_mouse_down.png"
+            "/golden/image_cropper_top_left_resize_mouse_down.png",
           ),
           path.join(
             __dirname,
-            "/image_cropper_top_left_resize_mouse_down_diff.png"
+            "/image_cropper_top_left_resize_mouse_down_diff.png",
           ),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Execute
-        cut.resizePointTopLeft.dispatchEvent(
-          new MouseEvent("mousemove", {
-            clientX: PADDING + 70,
-            clientY: PADDING + 20,
-            bubbles: true,
-          })
-        );
+        await mouseMove(PADDING + 70, PADDING + 20, 1);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/image_cropper_top_left_resize_mouse_move.png"),
           path.join(
             __dirname,
-            "/golden/image_cropper_top_left_resize_mouse_down.png"
+            "/golden/image_cropper_top_left_resize_mouse_down.png",
           ),
           path.join(
             __dirname,
-            "/image_cropper_top_left_resize_mouse_move_diff.png"
+            "/image_cropper_top_left_resize_mouse_move_diff.png",
           ),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Execute
-        cut.resizePointTopLeft.dispatchEvent(
-          new MouseEvent("mouseup", {
-            clientX: PADDING + LENGTH / 3 + 30,
-            clientY: PADDING + LENGTH / 3 + 40,
-            bubbles: true,
-          })
+        await mouseMove(
+          PADDING + LENGTH / 3 + 30,
+          PADDING + LENGTH / 3 + 40,
+          1,
         );
+        await mouseUp();
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/image_cropper_top_left_resize_mouse_up.png"),
           path.join(
             __dirname,
-            "/golden/image_cropper_top_left_resize_mouse_up.png"
+            "/golden/image_cropper_top_left_resize_mouse_up.png",
           ),
           path.join(
             __dirname,
-            "/image_cropper_top_left_resize_mouse_up_diff.png"
+            "/image_cropper_top_left_resize_mouse_up_diff.png",
           ),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Execute
-        cut.resizePointTopLeft.dispatchEvent(
-          new MouseEvent("mousemove", {
-            clientX: PADDING + LENGTH / 3,
-            clientY: PADDING + LENGTH / 3,
-            bubbles: true,
-          })
-        );
+        await mouseMove(PADDING + LENGTH / 3, PADDING + LENGTH / 3, 1);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/image_cropper_top_left_move_no_resize.png"),
           path.join(
             __dirname,
-            "/golden/image_cropper_top_left_resize_mouse_up.png"
+            "/golden/image_cropper_top_left_resize_mouse_up.png",
           ),
           path.join(
             __dirname,
-            "/image_cropper_top_left_move_no_resize_diff.png"
+            "/image_cropper_top_left_move_no_resize_diff.png",
           ),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Execute
-        cut.resizePointTopRight.dispatchEvent(
-          new MouseEvent("mousedown", {
-            clientX: PADDING + LENGTH - 20,
-            clientY: PADDING + 100,
-            bubbles: true,
-          })
-        );
-        cut.resizePointTopRight.dispatchEvent(
-          new MouseEvent("mouseup", {
-            clientX: PADDING + LENGTH - 20,
-            clientY: PADDING + 100,
-            bubbles: true,
-          })
-        );
+        await mouseMove(PADDING + LENGTH - 110, PADDING + 190, 1);
+        await mouseDown();
+        await mouseMove(PADDING + LENGTH - 20, PADDING + 100, 1);
+        await mouseUp();
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/image_cropper_top_right_resize.png"),
           path.join(__dirname, "/golden/image_cropper_top_right_resize.png"),
           path.join(__dirname, "/image_cropper_top_right_resize_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Execute
-        cut.resizePointBottmRight.dispatchEvent(
-          new MouseEvent("mousedown", {
-            clientX: PADDING + LENGTH - 50,
-            clientY: PADDING + LENGTH - 40,
-            bubbles: true,
-          })
-        );
-        cut.resizePointBottmRight.dispatchEvent(
-          new MouseEvent("mouseup", {
-            clientX: PADDING + LENGTH - 50,
-            clientY: PADDING + LENGTH - 40,
-            bubbles: true,
-          })
-        );
+        await mouseMove(PADDING + LENGTH - 25, PADDING + LENGTH - 110, 1);
+        await mouseDown();
+        await mouseMove(PADDING + LENGTH - 50, PADDING + LENGTH - 40, 1);
+        await mouseUp();
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/image_cropper_bottom_right_resize.png"),
           path.join(__dirname, "/golden/image_cropper_bottom_right_resize.png"),
           path.join(__dirname, "/image_cropper_bottom_right_resize_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Execute
-        cut.resizePointBottmLeft.dispatchEvent(
-          new MouseEvent("mousedown", {
-            clientX: PADDING + 100,
-            clientY: PADDING + LENGTH - 40,
-            bubbles: true,
-          })
-        );
-        cut.resizePointBottmLeft.dispatchEvent(
-          new MouseEvent("mouseup", {
-            clientX: PADDING + 100,
-            clientY: PADDING + LENGTH - 40,
-            bubbles: true,
-          })
-        );
+        await mouseMove(PADDING + 190, PADDING + LENGTH - 140, 1);
+        await mouseDown();
+        await mouseMove(PADDING + 100, PADDING + LENGTH - 40, 1);
+        await mouseUp();
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/image_cropper_bottom_left_resize.png"),
           path.join(__dirname, "/golden/image_cropper_bottom_left_resize.png"),
           path.join(__dirname, "/image_cropper_bottom_left_resize_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
       }
-      public tearDown() {
-        this.container.remove();
+      public async tearDown() {
+        await forceMouseUp();
+        await mouseMove(-1, -1, 1);
+        this.cut.remove();
       }
     })(),
     new ResizeOnceCase(
       "ResizeTopLeft_MoveTooUp",
-      (cut) => cut.resizePointTopLeft,
+      PADDING + 110,
+      PADDING + 110,
       PADDING - 20,
       PADDING - 50,
       path.join(__dirname, "/image_cropper_top_left_point_move_too_up.png"),
       path.join(
         __dirname,
-        "/golden/image_cropper_top_left_point_move_too_up.png"
+        "/golden/image_cropper_top_left_point_move_too_up.png",
       ),
-      path.join(__dirname, "/image_cropper_top_left_point_move_too_up_diff.png")
+      path.join(
+        __dirname,
+        "/image_cropper_top_left_point_move_too_up_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeTopLeft_MoveTooLeft",
-      (cut) => cut.resizePointTopLeft,
+      PADDING + 110,
+      PADDING + 110,
       PADDING - 50,
       PADDING - 20,
       path.join(__dirname, "/image_cropper_top_left_point_move_too_left.png"),
       path.join(
         __dirname,
-        "/golden/image_cropper_top_left_point_move_too_left.png"
+        "/golden/image_cropper_top_left_point_move_too_left.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_top_left_point_move_too_left_diff.png"
-      )
+        "/image_cropper_top_left_point_move_too_left_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeTopLeft_MoveTooDown",
-      (cut) => cut.resizePointTopLeft,
+      PADDING + 110,
+      PADDING + 110,
       PADDING + 20,
       PADDING + LENGTH - 50,
       path.join(__dirname, "/image_cropper_top_left_point_move_too_down.png"),
       path.join(
         __dirname,
-        "/golden/image_cropper_top_left_point_move_too_down.png"
+        "/golden/image_cropper_top_left_point_move_too_down.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_top_left_point_move_too_down_diff.png"
-      )
+        "/image_cropper_top_left_point_move_too_down_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeTopLeft_MoveTooRight",
-      (cut) => cut.resizePointTopLeft,
+      PADDING + 110,
+      PADDING + 110,
       PADDING + LENGTH - 50,
       PADDING + 20,
       path.join(__dirname, "/image_cropper_top_left_point_move_too_right.png"),
       path.join(
         __dirname,
-        "/golden/image_cropper_top_left_point_move_too_right.png"
+        "/golden/image_cropper_top_left_point_move_too_right.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_top_left_point_move_too_right_diff.png"
-      )
+        "/image_cropper_top_left_point_move_too_right_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeTopRight_MoveTooUp",
-      (cut) => cut.resizePointTopRight,
+      PADDING + LENGTH - 110,
+      PADDING + 110,
       PADDING + LENGTH + 20,
       PADDING - 50,
       path.join(__dirname, "/image_cropper_top_right_point_move_too_up.png"),
       path.join(
         __dirname,
-        "/golden/image_cropper_top_right_point_move_too_up.png"
+        "/golden/image_cropper_top_right_point_move_too_up.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_top_right_point_move_too_up_diff.png"
-      )
+        "/image_cropper_top_right_point_move_too_up_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeTopRight_MoveTooRight",
-      (cut) => cut.resizePointTopRight,
+      PADDING + LENGTH - 110,
+      PADDING + 110,
       PADDING + LENGTH + 50,
       PADDING - 20,
       path.join(__dirname, "/image_cropper_top_right_point_move_too_right.png"),
       path.join(
         __dirname,
-        "/golden/image_cropper_top_right_point_move_too_right.png"
+        "/golden/image_cropper_top_right_point_move_too_right.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_top_right_point_move_too_right_diff.png"
-      )
+        "/image_cropper_top_right_point_move_too_right_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeTopRight_MoveTooDown",
-      (cut) => cut.resizePointTopRight,
+      PADDING + LENGTH - 110,
+      PADDING + 110,
       PADDING + LENGTH - 20,
       PADDING + LENGTH - 50,
       path.join(__dirname, "/image_cropper_top_right_point_move_too_down.png"),
       path.join(
         __dirname,
-        "/golden/image_cropper_top_right_point_move_too_down.png"
+        "/golden/image_cropper_top_right_point_move_too_down.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_top_right_point_move_too_down_diff.png"
-      )
+        "/image_cropper_top_right_point_move_too_down_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeTopRight_MoveTooLeft",
-      (cut) => cut.resizePointTopRight,
+      PADDING + LENGTH - 110,
+      PADDING + 110,
       PADDING + 50,
       PADDING + 20,
       path.join(__dirname, "/image_cropper_top_right_point_move_too_left.png"),
       path.join(
         __dirname,
-        "/golden/image_cropper_top_right_point_move_too_left.png"
+        "/golden/image_cropper_top_right_point_move_too_left.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_top_right_point_move_too_left_diff.png"
-      )
+        "/image_cropper_top_right_point_move_too_left_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeBottomRight_MoveTooDown",
-      (cut) => cut.resizePointBottmRight,
+      PADDING + LENGTH - 110,
+      PADDING + LENGTH - 110,
       PADDING + LENGTH + 20,
       PADDING + LENGTH + 50,
       path.join(
         __dirname,
-        "/image_cropper_bottom_right_point_move_too_down.png"
+        "/image_cropper_bottom_right_point_move_too_down.png",
       ),
       path.join(
         __dirname,
-        "/golden/image_cropper_bottom_right_point_move_too_down.png"
+        "/golden/image_cropper_bottom_right_point_move_too_down.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_bottom_right_point_move_too_down_diff.png"
-      )
+        "/image_cropper_bottom_right_point_move_too_down_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeBottomRight_MoveTooRight",
-      (cut) => cut.resizePointBottmRight,
+      PADDING + LENGTH - 110,
+      PADDING + LENGTH - 110,
       PADDING + LENGTH + 50,
       PADDING + LENGTH + 20,
       path.join(
         __dirname,
-        "/image_cropper_bottom_right_point_move_too_right.png"
+        "/image_cropper_bottom_right_point_move_too_right.png",
       ),
       path.join(
         __dirname,
-        "/golden/image_cropper_bottom_right_point_move_too_right.png"
+        "/golden/image_cropper_bottom_right_point_move_too_right.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_bottom_right_point_move_too_right_diff.png"
-      )
+        "/image_cropper_bottom_right_point_move_too_right_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeBottomRight_MoveTooUp",
-      (cut) => cut.resizePointBottmRight,
+      PADDING + LENGTH - 110,
+      PADDING + LENGTH - 110,
       PADDING + LENGTH - 20,
       PADDING + 50,
       path.join(__dirname, "/image_cropper_bottom_right_point_move_too_up.png"),
       path.join(
         __dirname,
-        "/golden/image_cropper_bottom_right_point_move_too_up.png"
+        "/golden/image_cropper_bottom_right_point_move_too_up.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_bottom_right_point_move_too_up_diff.png"
-      )
+        "/image_cropper_bottom_right_point_move_too_up_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeBottomRight_MoveTooLeft",
-      (cut) => cut.resizePointBottmRight,
+      PADDING + LENGTH - 110,
+      PADDING + LENGTH - 110,
       PADDING + 50,
       PADDING + LENGTH - 20,
       path.join(
         __dirname,
-        "/image_cropper_bottom_right_point_move_too_left.png"
+        "/image_cropper_bottom_right_point_move_too_left.png",
       ),
       path.join(
         __dirname,
-        "/golden/image_cropper_bottom_right_point_move_too_left.png"
+        "/golden/image_cropper_bottom_right_point_move_too_left.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_bottom_right_point_move_too_left_diff.png"
-      )
+        "/image_cropper_bottom_right_point_move_too_left_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeBottomLeft_MoveTooDown",
-      (cut) => cut.resizePointBottmLeft,
+      PADDING + 110,
+      PADDING + LENGTH - 110,
       PADDING - 20,
       PADDING + LENGTH + 50,
       path.join(
         __dirname,
-        "/image_cropper_bottom_left_point_move_too_down.png"
+        "/image_cropper_bottom_left_point_move_too_down.png",
       ),
       path.join(
         __dirname,
-        "/golden/image_cropper_bottom_left_point_move_too_down.png"
+        "/golden/image_cropper_bottom_left_point_move_too_down.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_bottom_left_point_move_too_down_diff.png"
-      )
+        "/image_cropper_bottom_left_point_move_too_down_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeBottomLeft_MoveTooLeft",
-      (cut) => cut.resizePointBottmLeft,
+      PADDING + 110,
+      PADDING + LENGTH - 110,
       PADDING - 50,
       PADDING + LENGTH + 20,
       path.join(
         __dirname,
-        "/image_cropper_bottom_left_point_move_too_left.png"
+        "/image_cropper_bottom_left_point_move_too_left.png",
       ),
       path.join(
         __dirname,
-        "/golden/image_cropper_bottom_left_point_move_too_left.png"
+        "/golden/image_cropper_bottom_left_point_move_too_left.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_bottom_left_point_move_too_left_diff.png"
-      )
+        "/image_cropper_bottom_left_point_move_too_left_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeBottomLeft_MoveTooUp",
-      (cut) => cut.resizePointBottmLeft,
+      PADDING + 110,
+      PADDING + LENGTH - 110,
       PADDING + 20,
       PADDING + 50,
       path.join(__dirname, "/image_cropper_bottom_left_point_move_too_up.png"),
       path.join(
         __dirname,
-        "/golden/image_cropper_bottom_left_point_move_too_up.png"
+        "/golden/image_cropper_bottom_left_point_move_too_up.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_bottom_left_point_move_too_up_diff.png"
-      )
+        "/image_cropper_bottom_left_point_move_too_up_diff.png",
+      ),
     ),
     new ResizeOnceCase(
       "ResizeBottomLeft_MoveTooRight",
-      (cut) => cut.resizePointBottmLeft,
+      PADDING + 110,
+      PADDING + LENGTH - 110,
       PADDING + LENGTH - 50,
       PADDING + LENGTH - 20,
       path.join(
         __dirname,
-        "/image_cropper_bottom_left_point_move_too_right.png"
+        "/image_cropper_bottom_left_point_move_too_right.png",
       ),
       path.join(
         __dirname,
-        "/golden/image_cropper_bottom_left_point_move_too_right.png"
+        "/golden/image_cropper_bottom_left_point_move_too_right.png",
       ),
       path.join(
         __dirname,
-        "/image_cropper_bottom_left_point_move_too_right_diff.png"
-      )
+        "/image_cropper_bottom_left_point_move_too_right_diff.png",
+      ),
     ),
     new (class implements TestCase {
       public name = "ChooseMultipleImages";
-      private container: HTMLDivElement;
+      private cut: ImageCropper;
       public async execute() {
         // Prepare
-        let cut = new ImageCropper();
-        this.container = E.div(
-          {
-            style: `width: ${LENGTH}px; height: ${LENGTH}px; padding: ${PADDING}px;`,
-          },
-          cut.body
-        );
-        document.body.appendChild(this.container);
+        this.cut = new ImageCropper();
+        container.append(this.cut.body);
         let files = await getFiles(wideImage);
 
         // Execute
-        await cut.load(files[0]);
+        await this.cut.load(files[0]);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/image_cropper_draw_wide_image.png"),
           path.join(__dirname, "/golden/image_cropper_draw_wide_image.png"),
           path.join(__dirname, "/image_cropper_draw_wide_image_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Prepare
         files = await getFiles(widerImage);
 
         // Execute
-        await cut.load(files[0]);
+        await this.cut.load(files[0]);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/image_cropper_draw_wider_image.png"),
           path.join(__dirname, "/golden/image_cropper_draw_wider_image.png"),
           path.join(__dirname, "/image_cropper_draw_wider_image_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Prepare
         files = await getFiles(tallImage);
 
         // Execute
-        await cut.load(files[0]);
+        await this.cut.load(files[0]);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/image_cropper_draw_tall_image.png"),
           path.join(__dirname, "/golden/image_cropper_draw_tall_image.png"),
           path.join(__dirname, "/image_cropper_draw_tall_image_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
 
         // Prepare
         files = await getFiles(tallerImage);
 
         // Execute
-        await cut.load(files[0]);
+        await this.cut.load(files[0]);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/image_cropper_draw_taller_image.png"),
           path.join(__dirname, "/golden/image_cropper_draw_taller_image.png"),
           path.join(__dirname, "/image_cropper_draw_taller_image_diff.png"),
-          { fullPage: true }
+          { fullPage: true },
         );
       }
       public tearDown() {
-        this.container.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
       public name = "ChooseImage_Export";
-      private container: HTMLDivElement;
+      private cut: ImageCropper;
       public async execute() {
         // Prepare
-        let cut = new ImageCropper();
-        this.container = E.div(
-          {
-            style: `width: ${LENGTH}px; height: ${LENGTH}px; padding: ${PADDING}px;`,
-          },
-          cut.body
-        );
-        document.body.appendChild(this.container);
+        this.cut = new ImageCropper();
+        container.append(this.cut.body);
         let files = await getFiles(wideImage);
-        await cut.load(files[0]);
+        await this.cut.load(files[0]);
 
-        cut.resizePointTopLeft.dispatchEvent(
-          new MouseEvent("mousedown", {
-            clientX: PADDING + 20,
-            clientY: PADDING + 40,
-            bubbles: true,
-          })
-        );
+        await mouseMove(PADDING + 110, PADDING + 110, 1);
+        await mouseDown();
+        await mouseMove(PADDING + 20, PADDING + 40, 1);
+        await mouseUp();
 
         // Execute
-        let fileBlob = await cut.export();
+        let fileBlob = await this.cut.export();
 
         // Verify
         let fileData = await new Promise<string>((resolve) => {
@@ -619,16 +585,18 @@ TEST_RUNNER.run({
         });
         await puppeteerWriteFile(
           path.join(__dirname, "/image_cropper_export_cropped.png"),
-          fileData
+          fileData,
         );
         await asyncAssertImage(
           path.join(__dirname, "/image_cropper_export_cropped.png"),
           path.join(__dirname, "/golden/image_cropper_export_cropped.png"),
-          path.join(__dirname, "//image_cropper_export_cropped_diff.png")
+          path.join(__dirname, "//image_cropper_export_cropped_diff.png"),
         );
       }
-      public tearDown() {
-        this.container.remove();
+      public async tearDown() {
+        await forceMouseUp();
+        await mouseMove(-1, -1, 1);
+        this.cut.remove();
       }
     })(),
   ],

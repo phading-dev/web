@@ -6,8 +6,8 @@ import { FONT_M, FONT_S, ICON_XS } from "../../../../../../common/sizes";
 import { createCardBrandIcon } from "../../common/card_brand_icons";
 import { getCardBrandName } from "../../common/card_brand_name";
 import { CARD_BORDER_RADIUS } from "../common/styles";
-import { PaymentMethodMasked } from "@phading/billing_service_interface/web/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
+import { PaymentMethodMasked } from "@phading/commerce_service_interface/consumer/frontend/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/commerce_service_interface/consumer/frontend/payment_method_priority";
 import { E } from "@selfage/element/factory";
 
 export interface CardPaymentItem {

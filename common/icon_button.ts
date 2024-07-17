@@ -3,7 +3,9 @@ import { BlockingButton } from "./blocking_button";
 import { BUTTON_BORDER_RADIUS, NULLIFIED_BUTTON_STYLE } from "./button_styles";
 import { SCHEME } from "./color_scheme";
 import { HoverObserver, Mode } from "./hover_observer";
-import { FONT_M } from "./sizes";
+import { createArrowIcon } from "./icons";
+import { LOCALIZED_TEXT } from "./locales/localized_text";
+import { FONT_M, ICON_M } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
@@ -363,4 +365,15 @@ export class BlockingIconButton extends BlockingButton {
   public leave(): void {
     this.hoverObserver.emit("leave");
   }
+}
+
+export function createBackButton(customStyle = ""): IconButton {
+  return IconButton.create(
+    ICON_M,
+    1,
+    `position: absolute; top: 0; left: 0; ${customStyle}`,
+    createArrowIcon(SCHEME.neutral1),
+    TooltipPosition.BOTTOM,
+    LOCALIZED_TEXT.backLabel,
+  );
 }

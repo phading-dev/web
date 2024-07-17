@@ -1,19 +1,16 @@
 import { PaymentMethodsListPage } from "./body";
 import { CardPaymentItemMock } from "./card_payment_item/body_mock";
-import { ListPaymentMethodsResponse } from "@phading/billing_service_interface/web/interface";
-import { CardBrand } from "@phading/billing_service_interface/web/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
-import { WebServiceClient } from "@selfage/web_service_client";
+import { ListPaymentMethodsResponse } from "@phading/commerce_service_interface/consumer/frontend/interface";
+import { CardBrand } from "@phading/commerce_service_interface/consumer/frontend/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/commerce_service_interface/consumer/frontend/payment_method_priority";
+import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 export class PaymentMethodsListPageMock extends PaymentMethodsListPage {
   public constructor() {
     super(
       undefined,
       (paymentMethod) => new CardPaymentItemMock(paymentMethod),
-      new (class extends WebServiceClient {
-        public constructor() {
-          super(undefined, undefined);
-        }
+      new (class extends WebServiceClientMock {
         public async send() {
           return {
             paymentMethods: [
@@ -50,7 +47,7 @@ export class PaymentMethodsListPageMock extends PaymentMethodsListPage {
             ],
           } as ListPaymentMethodsResponse;
         }
-      })()
+      })(),
     );
   }
 }

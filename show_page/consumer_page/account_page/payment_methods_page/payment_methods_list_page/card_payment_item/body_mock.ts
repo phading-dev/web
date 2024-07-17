@@ -1,5 +1,5 @@
 import { CardPaymentItem } from "./body";
-import { PaymentMethodMasked } from "@phading/billing_service_interface/web/payment_method_masked";
+import { PaymentMethodMasked } from "@phading/commerce_service_interface/consumer/frontend/payment_method_masked";
 
 export class CardPaymentItemMock extends CardPaymentItem {
   public constructor(paymentMethod: PaymentMethodMasked) {

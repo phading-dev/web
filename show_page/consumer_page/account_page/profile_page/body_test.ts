@@ -3,7 +3,6 @@ import { BasicInfoPagMock } from "./basic_info_page/body_mock";
 import { ProfilePage } from "./body";
 import { UpdateAccountInfoPageMock } from "./update_account_info/body_mock";
 import { UpdateAvatarPageMock } from "./update_avatar_page/body_mock";
-import { E } from "@selfage/element/factory";
 import {
   deleteFile,
   screenshot,
@@ -12,8 +11,6 @@ import {
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import "../../../../common/normalize_body";
-
-let menuContainer: HTMLDivElement;
 
 class NavigateForwardAndBack implements TestCase {
   private cut: ProfilePage;
@@ -28,7 +25,7 @@ class NavigateForwardAndBack implements TestCase {
     private backActualFile: string,
     private backDiffFile: string,
     private updatedActualFile: string,
-    private updatedDiffFile: string
+    private updatedDiffFile: string,
   ) {}
 
   public async execute() {
@@ -39,7 +36,6 @@ class NavigateForwardAndBack implements TestCase {
       () => new UpdateAvatarPageMock(),
       (account) => new UpdateAccountInfoPageMock(account),
       (...bodies) => document.body.append(...bodies),
-      (...bodies) => menuContainer.append(...bodies)
     );
     await screenshot(path.join(__dirname, "/profile_page_baseline.png"));
 
@@ -50,7 +46,7 @@ class NavigateForwardAndBack implements TestCase {
     await asyncAssertScreenshot(
       this.goToPageActualFile,
       this.goToPageExpectedFile,
-      this.goToPageDiffFile
+      this.goToPageDiffFile,
     );
 
     // Execute
@@ -60,7 +56,7 @@ class NavigateForwardAndBack implements TestCase {
     await asyncAssertScreenshot(
       this.backActualFile,
       path.join(__dirname, "/profile_page_baseline.png"),
-      this.backDiffFile
+      this.backDiffFile,
     );
 
     // Prepare
@@ -73,7 +69,7 @@ class NavigateForwardAndBack implements TestCase {
     await asyncAssertScreenshot(
       this.updatedActualFile,
       path.join(__dirname, "/profile_page_baseline.png"),
-      this.updatedDiffFile
+      this.updatedDiffFile,
     );
 
     // Clearnup
@@ -86,17 +82,6 @@ class NavigateForwardAndBack implements TestCase {
 
 TEST_RUNNER.run({
   name: "ProfilePageTest",
-  environment: {
-    setUp: () => {
-      menuContainer = E.div({
-        style: `position: fixed; top: 0; left: 0;`,
-      });
-      document.body.append(menuContainer);
-    },
-    tearDown: () => {
-      menuContainer.remove();
-    },
-  },
   cases: [
     new (class implements TestCase {
       public name = "Default";
@@ -111,14 +96,13 @@ TEST_RUNNER.run({
           () => new UpdateAvatarPageMock(),
           (account) => new UpdateAccountInfoPageMock(account),
           (...bodies) => document.body.append(...bodies),
-          (...bodies) => menuContainer.append(...bodies)
         );
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/profile_page_default.png"),
           path.join(__dirname, "/golden/profile_page_default.png"),
-          path.join(__dirname, "/profile_page_default_diff.png")
+          path.join(__dirname, "/profile_page_default_diff.png"),
         );
       }
       public tearDown() {
@@ -136,7 +120,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/profile_page_back_from_update_avatar.png"),
       path.join(__dirname, "/profile_page_back_from_update_avatar_diff.png"),
       path.join(__dirname, "/profile_page_back_from_updated_avatar.png"),
-      path.join(__dirname, "/profile_page_back_from_updated_avatar_diff.png")
+      path.join(__dirname, "/profile_page_back_from_updated_avatar_diff.png"),
     ),
     new NavigateForwardAndBack(
       "GoToUpdateAccountInfoAndBack",
@@ -146,19 +130,19 @@ TEST_RUNNER.run({
       path.join(__dirname, "/profile_page_go_to_update_account_info.png"),
       path.join(
         __dirname,
-        "/golden/profile_page_go_to_update_account_info.png"
+        "/golden/profile_page_go_to_update_account_info.png",
       ),
       path.join(__dirname, "/profile_page_go_to_update_account_info_diff.png"),
       path.join(__dirname, "/profile_page_back_from_update_account_info.png"),
       path.join(
         __dirname,
-        "/profile_page_back_from_update_account_info_diff.png"
+        "/profile_page_back_from_update_account_info_diff.png",
       ),
       path.join(__dirname, "/profile_page_back_from_updated_account_info.png"),
       path.join(
         __dirname,
-        "/profile_page_back_from_updated_account_info_diff.png"
-      )
+        "/profile_page_back_from_updated_account_info_diff.png",
+      ),
     ),
   ],
 });

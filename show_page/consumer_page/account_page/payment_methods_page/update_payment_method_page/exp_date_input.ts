@@ -2,7 +2,7 @@ import EventEmitter = require("events");
 import { SCHEME } from "../../../../../common/color_scheme";
 import { InputField } from "../../../../../common/input_form_page/input_field";
 import { BASIC_INPUT_STYLE } from "../../../../../common/input_form_page/text_input";
-import { UpdatePaymentMethodRequestBody } from "@phading/billing_service_interface/web/interface";
+import { UpdatePaymentMethodRequestBody } from "@phading/commerce_service_interface/consumer/frontend/interface";
 import { E } from "@selfage/element/factory";
 
 export class ExpMonthInput

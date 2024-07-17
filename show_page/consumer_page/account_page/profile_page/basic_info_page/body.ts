@@ -2,14 +2,14 @@ import EventEmitter = require("events");
 import { SCHEME } from "../../../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import {
-  MEDIUM_CARD_STYLE,
-  PAGE_STYLE,
+  PAGE_BACKGROUND_STYLE,
+  PAGE_MEDIUM_CARD_STYLE,
 } from "../../../../../common/page_style";
 import { AVATAR_M, FONT_M } from "../../../../../common/sizes";
 import { TextValuesGroup } from "../../../../../common/text_values_group";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { Account } from "@phading/user_service_interface/self/web/account";
-import { getAccount } from "@phading/user_service_interface/self/web/client_requests";
+import { Account } from "@phading/user_service_interface/self/frontend/account";
+import { getAccount } from "@phading/user_service_interface/self/frontend/client_requests";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -38,12 +38,12 @@ export class BasicInfoPag extends EventEmitter {
     this.body_ = E.div(
       {
         class: "basic-info",
-        style: PAGE_STYLE,
+        style: PAGE_BACKGROUND_STYLE,
       },
       E.divRef(cardRef, {
         class: "basic-info-card",
-        style: `${MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 3rem;`,
-      })
+        style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 3rem;`,
+      }),
     );
     this.card = cardRef.val;
 
@@ -79,9 +79,9 @@ export class BasicInfoPag extends EventEmitter {
               class: `basic-info-avatar-update-hint-label`,
               style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
-            E.text(LOCALIZED_TEXT.changeAvatarLabel)
-          )
-        )
+            E.text(LOCALIZED_TEXT.changeAvatarLabel),
+          ),
+        ),
       ),
       assign(
         infoValuesGroupRef,
@@ -98,8 +98,8 @@ export class BasicInfoPag extends EventEmitter {
             label: LOCALIZED_TEXT.accountDescriptionLabel,
             value: account.description,
           },
-        ])
-      ).body
+        ]),
+      ).body,
     );
     this.avatarContainer_ = avatarContainerRef.val;
     this.avatarUpdateHint = avatarUpdateHintRef.val;
@@ -107,19 +107,19 @@ export class BasicInfoPag extends EventEmitter {
 
     this.hideChangeAvatarHint();
     this.avatarContainer_.addEventListener("mouseenter", () =>
-      this.showChangeAvatarHint()
+      this.showChangeAvatarHint(),
     );
     this.avatarContainer_.addEventListener("mouseleave", () =>
-      this.hideChangeAvatarHint()
+      this.hideChangeAvatarHint(),
     );
     this.avatarContainer_.addEventListener("click", () =>
-      this.emit("updateAvatar")
+      this.emit("updateAvatar"),
     );
     this.avatarUpdateHint.addEventListener("transitionend", () =>
-      this.emit("avatarUpdateHintTransitionEnded")
+      this.emit("avatarUpdateHintTransitionEnded"),
     );
     this.infoValuesGroup_.on("action", () =>
-      this.emit("updateAccountInfo", account)
+      this.emit("updateAccountInfo", account),
     );
     this.emit("loaded");
   }

@@ -33,7 +33,7 @@ export class Slider extends EventEmitter {
     );
   }
 
-  private body_: HTMLDivElement;
+  public body: HTMLDivElement;
   private filler = new Ref<HTMLDivElement>();
   private cursor = new Ref<HTMLDivElement>();
 
@@ -47,7 +47,7 @@ export class Slider extends EventEmitter {
     initValue: number,
   ) {
     super();
-    this.body_ = E.div(
+    this.body = E.div(
       {
         class: "slider-input",
         style: `display: inline-block; padding: ${
@@ -85,20 +85,20 @@ export class Slider extends EventEmitter {
     );
 
     this.setValue(initValue);
-    this.body_.addEventListener("pointerdown", (event) =>
+    this.body.addEventListener("pointerdown", (event) =>
       this.startMoving(event),
     );
-    this.body_.addEventListener("pointerup", (event) => this.stopMoving(event));
   }
 
   private startMoving(event: PointerEvent): void {
-    this.body_.addEventListener("pointermove", this.move);
-    this.body_.setPointerCapture(event.pointerId);
+    this.body.addEventListener("pointermove", this.move);
+    this.body.addEventListener("pointerup", this.stopMoving);
+    this.body.setPointerCapture(event.pointerId);
     this.move(event);
   }
 
   private move = (event: PointerEvent): void => {
-    let rect = this.body_.getBoundingClientRect();
+    let rect = this.body.getBoundingClientRect();
     let ratio: number;
     if (this.orientation === Orientation.HORIZONTAL) {
       ratio = Math.max(0, Math.min(1, (event.clientX - rect.x) / rect.width));
@@ -122,21 +122,18 @@ export class Slider extends EventEmitter {
     }
   }
 
-  private stopMoving(event: PointerEvent): void {
-    this.body_.removeEventListener("pointermove", this.move);
-    this.body_.releasePointerCapture(event.pointerId);
+  private stopMoving = (event: PointerEvent): void => {
+    this.body.removeEventListener("pointermove", this.move);
+    this.body.removeEventListener("pointerup", this.stopMoving);
+    this.body.releasePointerCapture(event.pointerId);
     this.move(event);
-  }
+  };
 
   public setValue(value: number): void {
     this.setRatio((value - this.minValue) / (this.maxValue - this.minValue));
   }
 
-  public get body() {
-    return this.body_;
-  }
-
   public remove(): void {
-    this.body_.remove();
+    this.body.remove();
   }
 }

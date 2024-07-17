@@ -4,14 +4,17 @@ import {
   UPDATE_USERNAME,
   UPDATE_USERNAME_REQUEST_BODY,
   UpdateUsernameResponse,
-} from "@phading/user_service_interface/self/web/interface";
+} from "@phading/user_service_interface/self/frontend/interface";
 import { E } from "@selfage/element/factory";
-import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import { WebServiceClient } from "@selfage/web_service_client";
+import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+import {
+  eqRequestMessageBody,
+  eqService,
+} from "@selfage/web_service_client/request_test_matcher";
 import "../../../../../common/normalize_body";
 
 function createLongString(length: number) {
@@ -44,41 +47,24 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setViewport(1000, 600);
-        let requestCaptured: any;
-        let error: Error;
-        let response: UpdateUsernameResponse;
+        let clientMock = new WebServiceClientMock();
 
         // Execute
-        this.cut = new UpdateUsernamePage(
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(request: any): Promise<any> {
-              requestCaptured = request;
-              if (error) {
-                throw error;
-              } else {
-                return response;
-              }
-            }
-          })()
-        );
+        this.cut = new UpdateUsernamePage(clientMock);
         document.body.append(this.cut.body);
-        menuContainer.append(this.cut.menuBody);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/update_username_page.png"),
           path.join(__dirname, "/golden/update_username_page.png"),
-          path.join(__dirname, "/update_username_page_diff.png")
+          path.join(__dirname, "/update_username_page_diff.png"),
         );
 
         // Execute
-        this.cut.newUsernameInput.value = createLongString(101);
-        this.cut.newUsernameInput.dispatchInput();
+        this.cut.newUsernameInput.val.value = createLongString(101);
+        this.cut.newUsernameInput.val.dispatchInput();
         await new Promise<void>((resolve) =>
-          this.cut.newUsernameInput.once("validated", resolve)
+          this.cut.newUsernameInput.val.once("validated", resolve),
         );
 
         // Verify
@@ -86,84 +72,84 @@ TEST_RUNNER.run({
           path.join(__dirname, "/update_username_page_too_long_error.png"),
           path.join(
             __dirname,
-            "/golden/update_username_page_too_long_error.png"
+            "/golden/update_username_page_too_long_error.png",
           ),
-          path.join(__dirname, "/update_username_page_too_long_error_diff.png")
+          path.join(__dirname, "/update_username_page_too_long_error_diff.png"),
         );
 
         // Prepare
-        this.cut.currentPasswordInput.value = "current password";
-        this.cut.currentPasswordInput.dispatchInput();
+        this.cut.currentPasswordInput.val.value = "current password";
+        this.cut.currentPasswordInput.val.dispatchInput();
         await new Promise<void>((resolve) =>
-          this.cut.currentPasswordInput.once("validated", resolve)
+          this.cut.currentPasswordInput.val.once("validated", resolve),
         );
-        this.cut.newUsernameInput.value = "new username";
-        this.cut.newUsernameInput.dispatchInput();
+        this.cut.newUsernameInput.val.value = "new username";
+        this.cut.newUsernameInput.val.dispatchInput();
         await new Promise<void>((resolve) =>
-          this.cut.newUsernameInput.once("validated", resolve)
+          this.cut.newUsernameInput.val.once("validated", resolve),
         );
-        error = new Error("fake error");
+        clientMock.error = new Error("fake error");
 
         // Execute
         this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) =>
-          this.cut.once("updateError", resolve)
+          this.cut.once("updateError", resolve),
         );
 
         // Verify
-        assertThat(requestCaptured.descriptor, eq(UPDATE_USERNAME), "service");
+        assertThat(clientMock.request, eqService(UPDATE_USERNAME), "service");
         assertThat(
-          requestCaptured.body,
-          eqMessage(
+          clientMock.request,
+          eqRequestMessageBody(
             {
               newUsername: "new username",
               currentPassword: "current password",
             },
-            UPDATE_USERNAME_REQUEST_BODY
+            UPDATE_USERNAME_REQUEST_BODY,
           ),
-          "request body"
+          "request body",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/update_username_page_update_failed.png"),
           path.join(
             __dirname,
-            "/golden/update_username_page_update_failed.png"
+            "/golden/update_username_page_update_failed.png",
           ),
-          path.join(__dirname, "/update_username_page_update_failed_diff.png")
+          path.join(__dirname, "/update_username_page_update_failed_diff.png"),
         );
 
         // Cleanup
-        error = undefined;
+        clientMock.error = undefined;
 
         // Prepare
-        response = {
+        clientMock.response = {
           usernameIsNotAvailable: true,
-        };
+        } as UpdateUsernameResponse;
 
         // Execute
         this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) =>
-          this.cut.once("updateError", resolve)
+          this.cut.once("updateError", resolve),
         );
 
         // Verify
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/update_username_page_username_not_available.png"
+            "/update_username_page_username_not_available.png",
           ),
           path.join(
             __dirname,
-            "/golden/update_username_page_username_not_available.png"
+            "/golden/update_username_page_username_not_available.png",
           ),
           path.join(
             __dirname,
-            "/update_username_page_username_not_available_diff.png"
-          )
+            "/update_username_page_username_not_available_diff.png",
+          ),
         );
 
         // Prepare
-        response = {};
+        clientMock.response = {};
 
         // Execute
         this.cut.inputFormPage.submit();
@@ -174,9 +160,12 @@ TEST_RUNNER.run({
           path.join(__dirname, "/update_username_page_update_successs.png"),
           path.join(
             __dirname,
-            "/golden/update_username_page_update_successs.png"
+            "/golden/update_username_page_update_successs.png",
           ),
-          path.join(__dirname, "/update_username_page_update_successs_diff.png")
+          path.join(
+            __dirname,
+            "/update_username_page_update_successs_diff.png",
+          ),
         );
       }
       public tearDown() {
@@ -192,7 +181,7 @@ TEST_RUNNER.run({
         cut.on("back", () => (isBack = true));
 
         // Execute
-        cut.backMenuItem.click();
+        cut.inputFormPage.clickBackButton();
 
         // Verify
         assertThat(isBack, eq(true), "Back");

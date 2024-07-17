@@ -1,4 +1,4 @@
-import { CardBrand } from "@phading/billing_service_interface/web/payment_method_masked";
+import { CardBrand } from "@phading/commerce_service_interface/consumer/frontend/payment_method_masked";
 
 export function getCardBrandName(cardBrand: CardBrand): string {
   switch (cardBrand) {

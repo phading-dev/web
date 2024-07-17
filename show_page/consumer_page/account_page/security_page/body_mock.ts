@@ -6,17 +6,13 @@ import { UpdateRecoveryEmailPageMock } from "./update_recovery_email_page/body_m
 import { UpdateUsernamePageMock } from "./update_username_page/body_mock";
 
 export class SecurityPageMock extends SecurityPage {
-  public constructor(
-    appendBodies: AddBodiesFn,
-    prependMenuBodies: AddBodiesFn
-  ) {
+  public constructor(appendBodies: AddBodiesFn) {
     super(
       () => new SecurityInfoPageMock(),
       () => new UpdatePasswordPageMock(),
       () => new UpdateRecoveryEmailPageMock(),
       () => new UpdateUsernamePageMock(),
       appendBodies,
-      prependMenuBodies
     );
   }
 }

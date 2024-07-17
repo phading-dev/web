@@ -12,43 +12,32 @@ export class ImageCropper extends EventEmitter {
     return new ImageCropper();
   }
 
-  private container: HTMLDivElement;
-  private canvas_: HTMLCanvasElement;
-  private sx_: number;
-  private sy_: number;
-  private sWidth_: number;
-  private sHeight_: number;
-  private loaded_: boolean;
-  private leftColumn: HTMLDivElement;
-  private midColumn: HTMLDivElement;
-  private rightColumn: HTMLDivElement;
-  private midTopBlock: HTMLDivElement;
-  private midMidBlock: HTMLDivElement;
-  private midBottmBlock: HTMLDivElement;
-  private resizePointTopLeft_: HTMLDivElement;
-  private resizePointTopRight_: HTMLDivElement;
-  private resizePointBottmLeft_: HTMLDivElement;
-  private resizePointBottmRight_: HTMLDivElement;
+  public body: HTMLDivElement;
+  public canvas = new Ref<HTMLCanvasElement>();
+  private leftColumn = new Ref<HTMLDivElement>();
+  private midColumn = new Ref<HTMLDivElement>();
+  private rightColumn = new Ref<HTMLDivElement>();
+  private midTopBlock = new Ref<HTMLDivElement>();
+  private midMidBlock = new Ref<HTMLDivElement>();
+  private midBottmBlock = new Ref<HTMLDivElement>();
+  private resizePointTopLeft = new Ref<HTMLDivElement>();
+  private resizePointTopRight = new Ref<HTMLDivElement>();
+  private resizePointBottmLeft = new Ref<HTMLDivElement>();
+  private resizePointBottmRight = new Ref<HTMLDivElement>();
+  public sx: number;
+  public sy: number;
+  public sWidth: number;
+  public sHeight: number;
+  public loaded: boolean;
 
   public constructor() {
     super();
-    let canvasRef = new Ref<HTMLCanvasElement>();
-    let leftColumnRef = new Ref<HTMLDivElement>();
-    let midColumnRef = new Ref<HTMLDivElement>();
-    let rightColumnRef = new Ref<HTMLDivElement>();
-    let midTopBlockRef = new Ref<HTMLDivElement>();
-    let midMidBlockRef = new Ref<HTMLDivElement>();
-    let midBottmBlockRef = new Ref<HTMLDivElement>();
-    let resizePointTopLeftRef = new Ref<HTMLDivElement>();
-    let resizePointTopRightRef = new Ref<HTMLDivElement>();
-    let resizePointBottmLeftRef = new Ref<HTMLDivElement>();
-    let resizePointBottmRightRef = new Ref<HTMLDivElement>();
-    this.container = E.div(
+    this.body = E.div(
       {
-        class: "avatar-canvas-container",
-        style: `position: relative; width: 100%; height: 100%; background-color: white;`,
+        class: "avatar-canvas",
+        style: `position: relative; width: 100%; height: 100%; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral1}; background-color: ${SCHEME.neutral4};`,
       },
-      E.canvasRef(canvasRef, {
+      E.canvasRef(this.canvas, {
         class: "avatar-canvas-canvas",
         style: `width: 100%; height: 100%;`,
       }),
@@ -57,22 +46,22 @@ export class ImageCropper extends EventEmitter {
           class: "avatar-canvas-cover",
           style: `position: absolute; display: flex; flex-flow: row nowrap; width: 100%; height: 100%; top: 0; left: 0;`,
         },
-        E.divRef(leftColumnRef, {
+        E.divRef(this.leftColumn, {
           class: "avatar-canvas-left-column",
           style: `height: 100%; background-color: ${SCHEME.neutral4Translucent};`,
         }),
         E.divRef(
-          midColumnRef,
+          this.midColumn,
           {
             class: "avatar-canvas-mid-column",
             style: `height: 100%; display: flex; flex-flow: column nowrap;`,
           },
-          E.divRef(midTopBlockRef, {
+          E.divRef(this.midTopBlock, {
             class: "avatar-canvas-mid-top-block",
             style: `width: 100%; background-color: ${SCHEME.neutral4Translucent};`,
           }),
           E.divRef(
-            midMidBlockRef,
+            this.midMidBlock,
             {
               class: "avatar-canvas-mid-mid-block",
               style: `width: 100%; position: relative; box-sizing: border-box; `,
@@ -81,283 +70,220 @@ export class ImageCropper extends EventEmitter {
               class: "avatar-canvas-mid-mid-circle",
               style: `width: 100%; height: 100%; box-sizing: border-box; border: .1rem dashed ${SCHEME.primary1}; border-radius: 100%;`,
             }),
-            E.divRef(resizePointTopLeftRef, {
+            E.divRef(this.resizePointTopLeft, {
               class: "avatar-canvas-resize-point-top-left",
               style: `position: absolute; top: -.5rem; left: -.5rem; width: 1rem; height: 1rem; border: .1rem solid ${SCHEME.primary1}; border-radius: 1rem; background-color: ${SCHEME.primaryContrast0}; cursor: nw-resize;`,
             }),
-            E.divRef(resizePointTopRightRef, {
+            E.divRef(this.resizePointTopRight, {
               class: "avatar-canvas-resize-point-top-right",
               style: `position: absolute; top: -.5rem; right: -.5rem; width: 1rem; height: 1rem; border: .1rem solid ${SCHEME.primary1}; border-radius: 1rem; background-color: ${SCHEME.primaryContrast0}; cursor: ne-resize;`,
             }),
-            E.divRef(resizePointBottmLeftRef, {
+            E.divRef(this.resizePointBottmLeft, {
               class: "avatar-canvas-resize-point-bottom-left",
               style: `position: absolute; bottom: -.5rem; left: -.5rem; width: 1rem; height: 1rem; border: .1rem solid ${SCHEME.primary1}; border-radius: 1rem; background-color: ${SCHEME.primaryContrast0}; cursor: se-resize;`,
             }),
-            E.divRef(resizePointBottmRightRef, {
+            E.divRef(this.resizePointBottmRight, {
               class: "avatar-canvas-resize-point-bottom-right",
               style: `position: absolute; bottom: -.5rem; right: -.5rem; width: 1rem; height: 1rem; border: .1rem solid ${SCHEME.primary1}; border-radius: 1rem; background-color: ${SCHEME.primaryContrast0}; cursor: sw-resize;`,
-            })
+            }),
           ),
-          E.divRef(midBottmBlockRef, {
+          E.divRef(this.midBottmBlock, {
             class: "avatar-canvas-mid-bottom-block",
             style: `width: 100%; background-color: ${SCHEME.neutral4Translucent};`,
-          })
+          }),
         ),
-        E.divRef(rightColumnRef, {
+        E.divRef(this.rightColumn, {
           class: "avatar-canvas-right-column",
           style: `height: 100%; background-color: ${SCHEME.neutral4Translucent};`,
-        })
-      )
+        }),
+      ),
     );
-    this.canvas_ = canvasRef.val;
-    this.leftColumn = leftColumnRef.val;
-    this.midColumn = midColumnRef.val;
-    this.rightColumn = rightColumnRef.val;
-    this.midTopBlock = midTopBlockRef.val;
-    this.midMidBlock = midMidBlockRef.val;
-    this.midBottmBlock = midBottmBlockRef.val;
-    this.resizePointTopLeft_ = resizePointTopLeftRef.val;
-    this.resizePointTopRight_ = resizePointTopRightRef.val;
-    this.resizePointBottmLeft_ = resizePointBottmLeftRef.val;
-    this.resizePointBottmRight_ = resizePointBottmRightRef.val;
     this.clear();
 
-    this.resizePointTopLeft_.addEventListener(
-      "mousedown",
-      this.startResizingTopLeft
+    this.resizePointTopLeft.val.addEventListener(
+      "pointerdown",
+      this.startResizingTopLeft,
     );
-    this.resizePointTopRight_.addEventListener(
-      "mousedown",
-      this.startResizingTopRight
+    this.resizePointTopRight.val.addEventListener(
+      "pointerdown",
+      this.startResizingTopRight,
     );
-    this.resizePointBottmLeft_.addEventListener(
-      "mousedown",
-      this.startResizingBottomLeft
+    this.resizePointBottmLeft.val.addEventListener(
+      "pointerdown",
+      this.startResizingBottomLeft,
     );
-    this.resizePointBottmRight_.addEventListener(
-      "mousedown",
-      this.startResizingBottomRight
+    this.resizePointBottmRight.val.addEventListener(
+      "pointerdown",
+      this.startResizingBottomRight,
     );
   }
 
   public clear(): void {
-    this.canvas_
+    this.canvas.val
       .getContext("2d")
-      .clearRect(0, 0, this.canvas_.width, this.canvas_.height);
-    this.leftColumn.style.flex = "1 0 0";
-    this.midColumn.style.flex = "2 0 0";
-    this.midTopBlock.style.flex = "1 0 0";
-    this.midMidBlock.style.flex = "2 0 0";
-    this.midBottmBlock.style.flex = "1 0 0";
-    this.rightColumn.style.flex = "1 0 0";
-    this.loaded_ = false;
+      .clearRect(0, 0, this.canvas.val.width, this.canvas.val.height);
+    this.leftColumn.val.style.flex = "1 0 0";
+    this.midColumn.val.style.flex = "2 0 0";
+    this.midTopBlock.val.style.flex = "1 0 0";
+    this.midMidBlock.val.style.flex = "2 0 0";
+    this.midBottmBlock.val.style.flex = "1 0 0";
+    this.rightColumn.val.style.flex = "1 0 0";
+    this.loaded = false;
   }
 
-  private startResizingTopLeft = (event: MouseEvent): void => {
-    this.container.addEventListener("mousemove", this.resizeFromTopLeft);
-    this.container.addEventListener("mouseleave", this.stopResizingFromTopLeft);
-    this.container.addEventListener("mouseup", this.stopResizingFromTopLeft);
+  private startResizingTopLeft = (event: PointerEvent): void => {
+    this.body.addEventListener("pointermove", this.resizeFromTopLeft);
+    this.body.addEventListener("pointerup", this.stopResizingFromTopLeft);
+    this.body.setPointerCapture(event.pointerId);
     this.resizeFromTopLeft(event);
   };
 
-  private resizeFromTopLeft = (event: MouseEvent): void => {
-    let bodyRect = this.container.getBoundingClientRect();
-    let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
-    let x = Math.max(Math.min(event.x, midMidBlockRect.right), bodyRect.left);
-    let y = Math.max(Math.min(event.y, midMidBlockRect.bottom), bodyRect.top);
+  private resizeFromTopLeft = (event: PointerEvent): void => {
+    let canvasRect = this.canvas.val.getBoundingClientRect();
+    let midMidBlockRect = this.midMidBlock.val.getBoundingClientRect();
+    let x = Math.max(Math.min(event.x, midMidBlockRect.right), canvasRect.left);
+    let y = Math.max(Math.min(event.y, midMidBlockRect.bottom), canvasRect.top);
     let length = Math.min(
       midMidBlockRect.right - x,
-      midMidBlockRect.bottom - y
+      midMidBlockRect.bottom - y,
     );
-    this.midMidBlock.style.flex = `0 0 ${length}px`;
-    this.midTopBlock.style.flex = `0 0 ${
-      midMidBlockRect.bottom - length - bodyRect.top
+    this.midMidBlock.val.style.flex = `0 0 ${length}px`;
+    this.midTopBlock.val.style.flex = `0 0 ${
+      midMidBlockRect.bottom - length - canvasRect.top
     }px`;
-    this.midColumn.style.flex = `0 0 ${length}px`;
-    this.leftColumn.style.flex = `0 0 ${
-      midMidBlockRect.right - length - bodyRect.left
+    this.midColumn.val.style.flex = `0 0 ${length}px`;
+    this.leftColumn.val.style.flex = `0 0 ${
+      midMidBlockRect.right - length - canvasRect.left
     }px`;
     this.saveSize();
   };
 
   private saveSize(): void {
     // Need to force reflow.
-    let bodyRect = this.container.getBoundingClientRect();
-    let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
-    this.sx_ = midMidBlockRect.left - bodyRect.left;
-    this.sy_ = midMidBlockRect.top - bodyRect.top;
-    this.sWidth_ = midMidBlockRect.width;
-    this.sHeight_ = midMidBlockRect.height;
+    let canvasRect = this.canvas.val.getBoundingClientRect();
+    let midMidBlockRect = this.midMidBlock.val.getBoundingClientRect();
+    this.sx = midMidBlockRect.left - canvasRect.left;
+    this.sy = midMidBlockRect.top - canvasRect.top;
+    this.sWidth = midMidBlockRect.width;
+    this.sHeight = midMidBlockRect.height;
     this.emit("change");
   }
 
-  private stopResizingFromTopLeft = (event: MouseEvent): void => {
-    this.container.removeEventListener("mousemove", this.resizeFromTopLeft);
-    this.container.removeEventListener(
-      "mouseleave",
-      this.stopResizingFromTopLeft
-    );
-    this.container.removeEventListener("mouseup", this.stopResizingFromTopLeft);
+  private stopResizingFromTopLeft = (event: PointerEvent): void => {
+    this.body.removeEventListener("pointermove", this.resizeFromTopLeft);
+    this.body.removeEventListener("pointerup", this.stopResizingFromTopLeft);
+    this.body.releasePointerCapture(event.pointerId);
     this.resizeFromTopLeft(event);
   };
 
-  private startResizingTopRight = (event: MouseEvent): void => {
-    this.container.addEventListener("mousemove", this.resizeFromTopRight);
-    this.container.addEventListener(
-      "mouseleave",
-      this.stopResizingFromTopRight
-    );
-    this.container.addEventListener("mouseup", this.stopResizingFromTopRight);
+  private startResizingTopRight = (event: PointerEvent): void => {
+    this.body.addEventListener("pointermove", this.resizeFromTopRight);
+    this.body.addEventListener("pointerup", this.stopResizingFromTopRight);
+    this.body.setPointerCapture(event.pointerId);
     this.resizeFromTopRight(event);
   };
 
-  private resizeFromTopRight = (event: MouseEvent): void => {
-    let bodyRect = this.container.getBoundingClientRect();
-    let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
-    let x = Math.min(Math.max(event.x, midMidBlockRect.left), bodyRect.right);
-    let y = Math.max(Math.min(event.y, midMidBlockRect.bottom), bodyRect.top);
+  private resizeFromTopRight = (event: PointerEvent): void => {
+    let canvasRect = this.canvas.val.getBoundingClientRect();
+    let midMidBlockRect = this.midMidBlock.val.getBoundingClientRect();
+    let x = Math.min(Math.max(event.x, midMidBlockRect.left), canvasRect.right);
+    let y = Math.max(Math.min(event.y, midMidBlockRect.bottom), canvasRect.top);
     let length = Math.min(x - midMidBlockRect.left, midMidBlockRect.bottom - y);
-    this.midMidBlock.style.flex = `0 0 ${length}px`;
-    this.midTopBlock.style.flex = `0 0 ${
-      midMidBlockRect.bottom - length - bodyRect.top
+    this.midMidBlock.val.style.flex = `0 0 ${length}px`;
+    this.midTopBlock.val.style.flex = `0 0 ${
+      midMidBlockRect.bottom - length - canvasRect.top
     }px`;
-    this.midColumn.style.flex = `0 0 ${length}px`;
-    this.rightColumn.style.flex = `0 0 ${
-      bodyRect.right - length - midMidBlockRect.left
+    this.midColumn.val.style.flex = `0 0 ${length}px`;
+    this.rightColumn.val.style.flex = `0 0 ${
+      canvasRect.right - length - midMidBlockRect.left
     }px`;
     this.saveSize();
   };
 
-  private stopResizingFromTopRight = (event: MouseEvent): void => {
-    this.container.removeEventListener("mousemove", this.resizeFromTopRight);
-    this.container.removeEventListener(
-      "mouseleave",
-      this.stopResizingFromTopRight
-    );
-    this.container.removeEventListener(
-      "mouseup",
-      this.stopResizingFromTopRight
-    );
+  private stopResizingFromTopRight = (event: PointerEvent): void => {
+    this.body.removeEventListener("pointermove", this.resizeFromTopRight);
+    this.body.removeEventListener("pointerup", this.stopResizingFromTopRight);
+    this.body.releasePointerCapture(event.pointerId);
     this.resizeFromTopRight(event);
   };
 
-  private startResizingBottomRight = (event: MouseEvent): void => {
-    this.container.addEventListener("mousemove", this.resizeFromBottomRight);
-    this.container.addEventListener(
-      "mouseleave",
-      this.stopResizingFromBottomRight
-    );
-    this.container.addEventListener(
-      "mouseup",
-      this.stopResizingFromBottomRight
-    );
+  private startResizingBottomRight = (event: PointerEvent): void => {
+    this.body.addEventListener("pointermove", this.resizeFromBottomRight);
+    this.body.addEventListener("pointerup", this.stopResizingFromBottomRight);
+    this.body.setPointerCapture(event.pointerId);
     this.resizeFromBottomRight(event);
   };
 
-  private resizeFromBottomRight = (event: MouseEvent): void => {
-    let bodyRect = this.container.getBoundingClientRect();
-    let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
-    let x = Math.min(Math.max(event.x, midMidBlockRect.left), bodyRect.right);
-    let y = Math.min(Math.max(event.y, midMidBlockRect.top), bodyRect.bottom);
+  private resizeFromBottomRight = (event: PointerEvent): void => {
+    let canvasRect = this.canvas.val.getBoundingClientRect();
+    let midMidBlockRect = this.midMidBlock.val.getBoundingClientRect();
+    let x = Math.min(Math.max(event.x, midMidBlockRect.left), canvasRect.right);
+    let y = Math.min(Math.max(event.y, midMidBlockRect.top), canvasRect.bottom);
     let length = Math.min(x - midMidBlockRect.left, y - midMidBlockRect.top);
-    this.midMidBlock.style.flex = `0 0 ${length}px`;
-    this.midBottmBlock.style.flex = `0 0 ${
-      bodyRect.bottom - length - midMidBlockRect.top
+    this.midMidBlock.val.style.flex = `0 0 ${length}px`;
+    this.midBottmBlock.val.style.flex = `0 0 ${
+      canvasRect.bottom - length - midMidBlockRect.top
     }px`;
-    this.midColumn.style.flex = `0 0 ${length}px`;
-    this.rightColumn.style.flex = `0 0 ${
-      bodyRect.right - length - midMidBlockRect.left
+    this.midColumn.val.style.flex = `0 0 ${length}px`;
+    this.rightColumn.val.style.flex = `0 0 ${
+      canvasRect.right - length - midMidBlockRect.left
     }px`;
     this.saveSize();
   };
 
-  private stopResizingFromBottomRight = (event: MouseEvent): void => {
-    this.container.removeEventListener("mousemove", this.resizeFromBottomRight);
-    this.container.removeEventListener(
-      "mouseleave",
-      this.stopResizingFromBottomRight
+  private stopResizingFromBottomRight = (event: PointerEvent): void => {
+    this.body.removeEventListener("pointermove", this.resizeFromBottomRight);
+    this.body.removeEventListener(
+      "pointerup",
+      this.stopResizingFromBottomRight,
     );
-    this.container.removeEventListener(
-      "mouseup",
-      this.stopResizingFromBottomRight
-    );
+    this.body.releasePointerCapture(event.pointerId);
     this.resizeFromBottomRight(event);
   };
 
-  private startResizingBottomLeft = (event: MouseEvent): void => {
-    this.container.addEventListener("mousemove", this.resizeFromBottomLeft);
-    this.container.addEventListener(
-      "mouseleave",
-      this.stopResizingFromBottomLeft
-    );
-    this.container.addEventListener("mouseup", this.stopResizingFromBottomLeft);
+  private startResizingBottomLeft = (event: PointerEvent): void => {
+    this.body.addEventListener("pointermove", this.resizeFromBottomLeft);
+    this.body.addEventListener("pointerup", this.stopResizingFromBottomLeft);
+    this.body.setPointerCapture(event.pointerId);
     this.resizeFromBottomLeft(event);
   };
 
-  private resizeFromBottomLeft = (event: MouseEvent): void => {
-    let bodyRect = this.container.getBoundingClientRect();
-    let midMidBlockRect = this.midMidBlock.getBoundingClientRect();
-    let x = Math.max(Math.min(event.x, midMidBlockRect.right), bodyRect.left);
-    let y = Math.min(Math.max(event.y, midMidBlockRect.top), bodyRect.bottom);
+  private resizeFromBottomLeft = (event: PointerEvent): void => {
+    let canvasRect = this.canvas.val.getBoundingClientRect();
+    let midMidBlockRect = this.midMidBlock.val.getBoundingClientRect();
+    let x = Math.max(Math.min(event.x, midMidBlockRect.right), canvasRect.left);
+    let y = Math.min(Math.max(event.y, midMidBlockRect.top), canvasRect.bottom);
     let length = Math.min(midMidBlockRect.right - x, y - midMidBlockRect.top);
-    this.midMidBlock.style.flex = `0 0 ${length}px`;
-    this.midBottmBlock.style.flex = `0 0 ${
-      bodyRect.bottom - length - midMidBlockRect.top
+    this.midMidBlock.val.style.flex = `0 0 ${length}px`;
+    this.midBottmBlock.val.style.flex = `0 0 ${
+      canvasRect.bottom - length - midMidBlockRect.top
     }px`;
-    this.midColumn.style.flex = `0 0 ${length}px`;
-    this.leftColumn.style.flex = `0 0 ${
-      midMidBlockRect.right - length - bodyRect.left
+    this.midColumn.val.style.flex = `0 0 ${length}px`;
+    this.leftColumn.val.style.flex = `0 0 ${
+      midMidBlockRect.right - length - canvasRect.left
     }px`;
     this.saveSize();
   };
 
-  private stopResizingFromBottomLeft = (event: MouseEvent): void => {
-    this.container.removeEventListener("mousemove", this.resizeFromBottomLeft);
-    this.container.removeEventListener(
-      "mouseleave",
-      this.stopResizingFromBottomLeft
-    );
-    this.container.removeEventListener(
-      "mouseup",
-      this.stopResizingFromBottomLeft
-    );
+  private stopResizingFromBottomLeft = (event: PointerEvent): void => {
+    this.body.removeEventListener("pointermove", this.resizeFromBottomLeft);
+    this.body.removeEventListener("pointerup", this.stopResizingFromBottomLeft);
+    this.body.releasePointerCapture(event.pointerId);
     this.resizeFromBottomLeft(event);
   };
-
-  public get body() {
-    return this.container;
-  }
-  public get canvas() {
-    return this.canvas_;
-  }
-  public get sx() {
-    return this.sx_;
-  }
-  public get sy() {
-    return this.sy_;
-  }
-  public get sWidth() {
-    return this.sWidth_;
-  }
-  public get sHeight() {
-    return this.sHeight_;
-  }
-  public get loaded() {
-    return this.loaded_;
-  }
 
   public async load(imageFile: File): Promise<void> {
-    this.canvas_
+    this.canvas.val
       .getContext("2d")
-      .clearRect(0, 0, this.canvas_.width, this.canvas_.height);
+      .clearRect(0, 0, this.canvas.val.width, this.canvas.val.height);
     await new Promise<void>((resolve, reject) => {
       let fileReader = new FileReader();
       fileReader.onload = () => {
         let image = new Image();
         image.onload = () => {
-          this.loaded_ = true;
-          let canvasWidth = this.canvas_.offsetWidth;
-          let canvasHeight = this.canvas_.offsetHeight;
+          this.loaded = true;
+          let canvasWidth = this.canvas.val.offsetWidth;
+          let canvasHeight = this.canvas.val.offsetHeight;
           let imageWidth = image.naturalWidth;
           let imageHeight = image.naturalHeight;
           let dWidth = 0;
@@ -381,9 +307,9 @@ export class ImageCropper extends EventEmitter {
           }
           let dx = (canvasWidth - dWidth) / 2;
           let dy = (canvasHeight - dHeight) / 2;
-          this.canvas_.width = canvasWidth;
-          this.canvas_.height = canvasHeight;
-          this.canvas_
+          this.canvas.val.width = canvasWidth;
+          this.canvas.val.height = canvasHeight;
+          this.canvas.val
             .getContext("2d")
             .drawImage(image, dx, dy, dWidth, dHeight);
 
@@ -409,7 +335,7 @@ export class ImageCropper extends EventEmitter {
     resultCanvas
       .getContext("2d")
       .drawImage(
-        this.canvas_,
+        this.canvas.val,
         this.sx,
         this.sy,
         this.sWidth,
@@ -417,7 +343,7 @@ export class ImageCropper extends EventEmitter {
         0,
         0,
         this.sWidth,
-        this.sHeight
+        this.sHeight,
       );
     return new Promise<Blob>((resovle) => {
       resultCanvas.toBlob((blob) => {
@@ -426,20 +352,7 @@ export class ImageCropper extends EventEmitter {
     });
   }
 
-  // Visible for testing
-  public get resizePointTopLeft() {
-    return this.resizePointTopLeft_;
-  }
-
-  public get resizePointTopRight() {
-    return this.resizePointTopRight_;
-  }
-
-  public get resizePointBottmLeft() {
-    return this.resizePointBottmLeft_;
-  }
-
-  public get resizePointBottmRight() {
-    return this.resizePointBottmRight_;
+  public remove(): void {
+    this.body.remove();
   }
 }

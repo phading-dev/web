@@ -1,17 +1,15 @@
 import EventEmitter = require("events");
 import { InputFormPage } from "../../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../../common/input_form_page/text_area_input";
-import { VerticalTextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
+import { TextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
-import { MenuItem } from "../../../../../common/menu_item/body";
-import { createBackMenuItem } from "../../../../../common/menu_item/factory";
 import { PASSWORD_LENGTH_LIMIT } from "../../../../../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { updatePassword } from "@phading/user_service_interface/self/web/client_requests";
+import { updatePassword } from "@phading/user_service_interface/self/frontend/client_requests";
 import {
   UpdatePasswordRequestBody,
   UpdatePasswordResponse,
-} from "@phading/user_service_interface/self/web/interface";
+} from "@phading/user_service_interface/self/frontend/interface";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
@@ -26,33 +24,29 @@ export class UpdatePasswordPage extends EventEmitter {
     return new UpdatePasswordPage(USER_SERVICE_CLIENT);
   }
 
-  private backMenuItem_: MenuItem;
-  private newPasswordInput_: VerticalTextInputWithErrorMsg<UpdatePasswordRequestBody>;
-  private newPasswordRepeatInput_: VerticalTextInputWithErrorMsg<UpdatePasswordRequestBody>;
-  private currentPasswordInput_: VerticalTextInputWithErrorMsg<UpdatePasswordRequestBody>;
-  private inputFormPage_: InputFormPage<
+  public inputFormPage: InputFormPage<
     UpdatePasswordRequestBody,
     UpdatePasswordResponse
   >;
+  public newPasswordInput = new Ref<
+    TextInputWithErrorMsg<UpdatePasswordRequestBody>
+  >();
+  public newPasswordRepeatInput = new Ref<
+    TextInputWithErrorMsg<UpdatePasswordRequestBody>
+  >();
+  public currentPasswordInput = new Ref<
+    TextInputWithErrorMsg<UpdatePasswordRequestBody>
+  >();
   private newPassword: string;
 
   public constructor(private userServiceClient: WebServiceClient) {
     super();
-    let newPasswordInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<UpdatePasswordRequestBody>
-    >();
-    let newPasswordRepeatInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<UpdatePasswordRequestBody>
-    >();
-    let currentPasswordInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<UpdatePasswordRequestBody>
-    >();
-    this.inputFormPage_ = InputFormPage.create(
+    this.inputFormPage = InputFormPage.create(
       LOCALIZED_TEXT.updatePasswordTitle,
       [
         assign(
-          newPasswordInputRef,
-          VerticalTextInputWithErrorMsg.create(
+          this.newPasswordInput,
+          TextInputWithErrorMsg.create(
             LOCALIZED_TEXT.newPasswordLabel,
             "",
             {
@@ -62,12 +56,12 @@ export class UpdatePasswordPage extends EventEmitter {
             (request, value) => {
               request.newPassword = value;
             },
-            (value) => this.checkNewPassword(value)
-          )
+            (value) => this.checkNewPassword(value),
+          ),
         ).body,
         assign(
-          newPasswordRepeatInputRef,
-          VerticalTextInputWithErrorMsg.create(
+          this.newPasswordRepeatInput,
+          TextInputWithErrorMsg.create(
             LOCALIZED_TEXT.repeatNewPasswordLabel,
             "",
             {
@@ -75,12 +69,12 @@ export class UpdatePasswordPage extends EventEmitter {
               autocomplete: "new-password",
             },
             () => {},
-            (value) => this.checkNewPasswordRepeat(value)
-          )
+            (value) => this.checkNewPasswordRepeat(value),
+          ),
         ).body,
         assign(
-          currentPasswordInputRef,
-          VerticalTextInputWithErrorMsg.create(
+          this.currentPasswordInput,
+          TextInputWithErrorMsg.create(
             LOCALIZED_TEXT.currentPasswordLabel,
             "",
             {
@@ -90,29 +84,24 @@ export class UpdatePasswordPage extends EventEmitter {
             (request, value) => {
               request.currentPassword = value;
             },
-            (value) => this.checkCurrentPassword(value)
-          )
+            (value) => this.checkCurrentPassword(value),
+          ),
         ).body,
       ],
       [
-        newPasswordInputRef.val,
-        newPasswordRepeatInputRef.val,
-        currentPasswordInputRef.val,
+        this.newPasswordInput.val,
+        this.newPasswordRepeatInput.val,
+        this.currentPasswordInput.val,
       ],
       LOCALIZED_TEXT.updateButtonLabel,
       (request) => this.updatePassword(request),
       (response, error) => this.postUpdatePassword(error),
-      {}
-    );
-    this.newPasswordInput_ = newPasswordInputRef.val;
-    this.newPasswordRepeatInput_ = newPasswordRepeatInputRef.val;
-    this.currentPasswordInput_ = currentPasswordInputRef.val;
+      {},
+    ).addBackButton();
 
-    this.backMenuItem_ = createBackMenuItem();
-
-    this.inputFormPage_.on("submitError", () => this.emit("updateError"));
-    this.inputFormPage_.on("submitted", () => this.emit("updated"));
-    this.backMenuItem_.on("action", () => this.emit("back"));
+    this.inputFormPage.on("submitError", () => this.emit("updateError"));
+    this.inputFormPage.on("submitted", () => this.emit("updated"));
+    this.inputFormPage.on("back", () => this.emit("back"));
   }
 
   private checkNewPassword(value: string): ValidationResult {
@@ -149,7 +138,7 @@ export class UpdatePasswordPage extends EventEmitter {
   }
 
   private updatePassword(
-    requset: UpdatePasswordRequestBody
+    requset: UpdatePasswordRequestBody,
   ): Promise<UpdatePasswordResponse> {
     return updatePassword(this.userServiceClient, requset);
   }
@@ -163,31 +152,10 @@ export class UpdatePasswordPage extends EventEmitter {
   }
 
   public get body() {
-    return this.inputFormPage_.body;
-  }
-  public get menuBody() {
-    return this.backMenuItem_.body;
+    return this.inputFormPage.body;
   }
 
   public remove(): void {
-    this.inputFormPage_.remove();
-    this.backMenuItem_.remove();
-  }
-
-  // Visible for testing
-  public get inputFormPage() {
-    return this.inputFormPage_;
-  }
-  public get newPasswordInput() {
-    return this.newPasswordInput_;
-  }
-  public get newPasswordRepeatInput() {
-    return this.newPasswordRepeatInput_;
-  }
-  public get currentPasswordInput() {
-    return this.currentPasswordInput_;
-  }
-  public get backMenuItem() {
-    return this.backMenuItem_;
+    this.inputFormPage.remove();
   }
 }

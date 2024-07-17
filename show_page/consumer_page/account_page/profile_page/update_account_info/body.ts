@@ -2,24 +2,22 @@ import EventEmitter = require("events");
 import { InputFormPage } from "../../../../../common/input_form_page/body";
 import { TextAreaInputWithErrorMsg } from "../../../../../common/input_form_page/text_area_input";
 import {
+  TextInputWithErrorMsg,
   ValidationResult,
-  VerticalTextInputWithErrorMsg,
 } from "../../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
-import { MenuItem } from "../../../../../common/menu_item/body";
-import { createBackMenuItem } from "../../../../../common/menu_item/factory";
 import {
   CONTACT_EMAIL_LENGTH_LIMIT,
   DESCRIPTION_LENGTH_LIMIT,
   NATURAL_NAME_LENGTH_LIMIT,
 } from "../../../../../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { Account } from "@phading/user_service_interface/self/web/account";
-import { updateAccount } from "@phading/user_service_interface/self/web/client_requests";
+import { Account } from "@phading/user_service_interface/self/frontend/account";
+import { updateAccount } from "@phading/user_service_interface/self/frontend/client_requests";
 import {
   UpdateAccountRequestBody,
   UpdateAccountResponse,
-} from "@phading/user_service_interface/self/web/interface";
+} from "@phading/user_service_interface/self/frontend/interface";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
@@ -34,35 +32,31 @@ export class UpdateAccountInfoPage extends EventEmitter {
     return new UpdateAccountInfoPage(USER_SERVICE_CLIENT, account);
   }
 
-  private backMenuItem_: MenuItem;
-  private naturalNameInput_: VerticalTextInputWithErrorMsg<UpdateAccountRequestBody>;
-  private emailInput_: VerticalTextInputWithErrorMsg<UpdateAccountRequestBody>;
-  private descriptionInput_: TextAreaInputWithErrorMsg<UpdateAccountRequestBody>;
-  private inputFormPage_: InputFormPage<
+  public naturalNameInput = new Ref<
+    TextInputWithErrorMsg<UpdateAccountRequestBody>
+  >();
+  public emailInput = new Ref<
+    TextInputWithErrorMsg<UpdateAccountRequestBody>
+  >();
+  public descriptionInput = new Ref<
+    TextAreaInputWithErrorMsg<UpdateAccountRequestBody>
+  >();
+  public inputFormPage: InputFormPage<
     UpdateAccountRequestBody,
     UpdateAccountResponse
   >;
 
   public constructor(
     private userServiceClient: WebServiceClient,
-    account: Account
+    account: Account,
   ) {
     super();
-    let naturalNameInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<UpdateAccountRequestBody>
-    >();
-    let emailInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<UpdateAccountRequestBody>
-    >();
-    let descriptionInputRef = new Ref<
-      TextAreaInputWithErrorMsg<UpdateAccountRequestBody>
-    >();
-    this.inputFormPage_ = InputFormPage.create(
+    this.inputFormPage = InputFormPage.create(
       LOCALIZED_TEXT.updateAccountInfo,
       [
         assign(
-          naturalNameInputRef,
-          VerticalTextInputWithErrorMsg.create(
+          this.naturalNameInput,
+          TextInputWithErrorMsg.create(
             LOCALIZED_TEXT.naturalNameLabel,
             "",
             {
@@ -73,12 +67,12 @@ export class UpdateAccountInfoPage extends EventEmitter {
             (request, value) => {
               request.naturalName = value;
             },
-            (value) => this.checkNaturalNameInput(value)
-          )
+            (value) => this.checkNaturalNameInput(value),
+          ),
         ).body,
         assign(
-          emailInputRef,
-          VerticalTextInputWithErrorMsg.create(
+          this.emailInput,
+          TextInputWithErrorMsg.create(
             LOCALIZED_TEXT.contactEmailLabel,
             "",
             {
@@ -89,11 +83,11 @@ export class UpdateAccountInfoPage extends EventEmitter {
             (request, value) => {
               request.contactEmail = value;
             },
-            (value) => this.checkEmailInput(value)
-          )
+            (value) => this.checkEmailInput(value),
+          ),
         ).body,
         assign(
-          descriptionInputRef,
+          this.descriptionInput,
           TextAreaInputWithErrorMsg.create(
             LOCALIZED_TEXT.accountDescriptionLabel,
             "",
@@ -102,25 +96,24 @@ export class UpdateAccountInfoPage extends EventEmitter {
             (request, value) => {
               request.description = value;
             },
-            (value) => this.checkDescriptionInput(value)
-          )
+            (value) => this.checkDescriptionInput(value),
+          ),
         ).body,
       ],
-      [naturalNameInputRef.val, emailInputRef.val, descriptionInputRef.val],
+      [
+        this.naturalNameInput.val,
+        this.emailInput.val,
+        this.descriptionInput.val,
+      ],
       LOCALIZED_TEXT.updateButtonLabel,
       (request) => this.updateAccountInfo(request),
       (response, error) => this.postUpdateAccountInfo(error),
-      {}
-    );
-    this.naturalNameInput_ = naturalNameInputRef.val;
-    this.emailInput_ = emailInputRef.val;
-    this.descriptionInput_ = descriptionInputRef.val;
+      {},
+    ).addBackButton();
 
-    this.backMenuItem_ = createBackMenuItem();
-
-    this.inputFormPage_.on("submitError", () => this.emit("updateError"));
-    this.inputFormPage_.on("submitted", () => this.emit("updated"));
-    this.backMenuItem_.on("action", () => this.emit("back"));
+    this.inputFormPage.on("submitError", () => this.emit("updateError"));
+    this.inputFormPage.on("submitted", () => this.emit("updated"));
+    this.inputFormPage.on("back", () => this.emit("back"));
   }
 
   private checkNaturalNameInput(value: string): ValidationResult {
@@ -159,7 +152,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
   }
 
   private updateAccountInfo(
-    request: UpdateAccountRequestBody
+    request: UpdateAccountRequestBody,
   ): Promise<UpdateAccountResponse> {
     return updateAccount(this.userServiceClient, request);
   }
@@ -173,31 +166,10 @@ export class UpdateAccountInfoPage extends EventEmitter {
   }
 
   public get body() {
-    return this.inputFormPage_.body;
-  }
-  public get menuBody() {
-    return this.backMenuItem_.body;
+    return this.inputFormPage.body;
   }
 
   public remove(): void {
-    this.inputFormPage_.remove();
-    this.backMenuItem_.remove();
-  }
-
-  // Visible for testing
-  public get naturalNameInput() {
-    return this.naturalNameInput_;
-  }
-  public get emailInput() {
-    return this.emailInput_;
-  }
-  public get descriptionInput() {
-    return this.descriptionInput_;
-  }
-  public get inputFormPage() {
-    return this.inputFormPage_;
-  }
-  public get backMenuItem() {
-    return this.backMenuItem_;
+    this.inputFormPage.remove();
   }
 }

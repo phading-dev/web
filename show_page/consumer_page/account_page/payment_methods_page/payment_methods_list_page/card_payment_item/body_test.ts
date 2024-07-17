@@ -4,8 +4,8 @@ import {
   CardBrand,
   PAYMENT_METHOD_MASKED,
   PaymentMethodMasked,
-} from "@phading/billing_service_interface/web/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
+} from "@phading/commerce_service_interface/consumer/frontend/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/commerce_service_interface/consumer/frontend/payment_method_priority";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -20,7 +20,7 @@ class CardBrandTestCase implements TestCase {
     private cardBrand: CardBrand,
     private screenshotPath: string,
     private goldenFilePath: string,
-    private diffFilePath: string
+    private diffFilePath: string,
   ) {}
   public async execute() {
     // Prepare
@@ -46,7 +46,7 @@ class CardBrandTestCase implements TestCase {
       this.diffFilePath,
       {
         fullPage: true,
-      }
+      },
     );
 
     // Prepare
@@ -72,9 +72,9 @@ class CardBrandTestCase implements TestCase {
             lastFourDigits: "1111",
           },
         },
-        PAYMENT_METHOD_MASKED
+        PAYMENT_METHOD_MASKED,
       ),
-      "payment method"
+      "payment method",
     );
   }
   public tearDown() {
@@ -91,7 +91,7 @@ TEST_RUNNER.run({
       CardBrand.AMEX,
       path.join(__dirname, "/card_payment_card_amex.png"),
       path.join(__dirname, "/golden/card_payment_card_amex.png"),
-      path.join(__dirname, "/card_payment_card_amex_diff.png")
+      path.join(__dirname, "/card_payment_card_amex_diff.png"),
     ),
     new CardBrandTestCase(
       "Diners",
@@ -99,7 +99,7 @@ TEST_RUNNER.run({
       CardBrand.DINERS,
       path.join(__dirname, "/card_payment_card_diners.png"),
       path.join(__dirname, "/golden/card_payment_card_diners.png"),
-      path.join(__dirname, "/card_payment_card_diners_diff.png")
+      path.join(__dirname, "/card_payment_card_diners_diff.png"),
     ),
     new CardBrandTestCase(
       "Discover",
@@ -107,7 +107,7 @@ TEST_RUNNER.run({
       CardBrand.DISCOVER,
       path.join(__dirname, "/card_payment_card_discover.png"),
       path.join(__dirname, "/golden/card_payment_card_discover.png"),
-      path.join(__dirname, "/card_payment_card_discover_diff.png")
+      path.join(__dirname, "/card_payment_card_discover_diff.png"),
     ),
     new CardBrandTestCase(
       "JCB",
@@ -115,7 +115,7 @@ TEST_RUNNER.run({
       CardBrand.JCB,
       path.join(__dirname, "/card_payment_card_jcb.png"),
       path.join(__dirname, "/golden/card_payment_card_jcb.png"),
-      path.join(__dirname, "/card_payment_card_jcb_diff.png")
+      path.join(__dirname, "/card_payment_card_jcb_diff.png"),
     ),
     new CardBrandTestCase(
       "Mastercard",
@@ -123,7 +123,7 @@ TEST_RUNNER.run({
       CardBrand.MASTERCARD,
       path.join(__dirname, "/card_payment_card_mastercard.png"),
       path.join(__dirname, "/golden/card_payment_card_mastercard.png"),
-      path.join(__dirname, "/card_payment_card_mastercard_diff.png")
+      path.join(__dirname, "/card_payment_card_mastercard_diff.png"),
     ),
     new CardBrandTestCase(
       "Unionpay",
@@ -131,7 +131,7 @@ TEST_RUNNER.run({
       CardBrand.UNIONPAY,
       path.join(__dirname, "/card_payment_card_unionpay.png"),
       path.join(__dirname, "/golden/card_payment_card_unionpay.png"),
-      path.join(__dirname, "/card_payment_card_unionpay_diff.png")
+      path.join(__dirname, "/card_payment_card_unionpay_diff.png"),
     ),
     new CardBrandTestCase(
       "Visa",
@@ -139,7 +139,7 @@ TEST_RUNNER.run({
       CardBrand.VISA,
       path.join(__dirname, "/card_payment_card_visa.png"),
       path.join(__dirname, "/golden/card_payment_card_visa.png"),
-      path.join(__dirname, "/card_payment_card_visa_diff.png")
+      path.join(__dirname, "/card_payment_card_visa_diff.png"),
     ),
     new CardBrandTestCase(
       "Unknown",
@@ -147,7 +147,7 @@ TEST_RUNNER.run({
       CardBrand.UNKNOWN,
       path.join(__dirname, "/card_payment_card_unknown.png"),
       path.join(__dirname, "/golden/card_payment_card_unknown.png"),
-      path.join(__dirname, "/card_payment_card_unknown_diff.png")
+      path.join(__dirname, "/card_payment_card_unknown_diff.png"),
     ),
     new (class CardBrandTestCase implements TestCase {
       public name = "CardExpired";
@@ -176,7 +176,7 @@ TEST_RUNNER.run({
           path.join(__dirname, "/card_payment_card_expired_diff.png"),
           {
             fullPage: true,
-          }
+          },
         );
 
         // Prepare
@@ -202,9 +202,9 @@ TEST_RUNNER.run({
                 lastFourDigits: "1111",
               },
             },
-            PAYMENT_METHOD_MASKED
+            PAYMENT_METHOD_MASKED,
           ),
-          "payment method"
+          "payment method",
         );
       }
       public tearDown() {

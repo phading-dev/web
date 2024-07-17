@@ -8,23 +8,41 @@ import {
   LIST_PAYMENT_METHODS,
   LIST_PAYMENT_METHODS_REQUEST_BODY,
   ListPaymentMethodsResponse,
-} from "@phading/billing_service_interface/web/interface";
+} from "@phading/commerce_service_interface/consumer/frontend/interface";
 import {
   CardBrand,
   PAYMENT_METHOD_MASKED,
   PaymentMethodMasked,
-} from "@phading/billing_service_interface/web/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
+} from "@phading/commerce_service_interface/consumer/frontend/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/commerce_service_interface/consumer/frontend/payment_method_priority";
+import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import { WebServiceClient } from "@selfage/web_service_client";
+import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+import {
+  eqRequestMessageBody,
+  eqService,
+} from "@selfage/web_service_client/request_test_matcher";
 import "../../../../../common/normalize_body";
+
+let container: HTMLDivElement;
 
 TEST_RUNNER.run({
   name: "PaymentMethodsListPageTest",
+  environment: {
+    setUp: () => {
+      container = E.div({
+        style: `width: 100vw; height: 100vh;`,
+      });
+      document.body.append(container);
+    },
+    tearDown: () => {
+      container.remove();
+    },
+  },
   cases: [
     new (class implements TestCase {
       public name = "Default_Edit_RedirectFailed_RedirectSuccess";
@@ -35,76 +53,68 @@ TEST_RUNNER.run({
         let windowMock = {
           location: { href: "fake_url" },
         };
-        let requestCaptured: any;
-        let serviceClientMock = new (class extends WebServiceClient {
-          public constructor() {
-            super(undefined, undefined);
-          }
-          public async send(request: any): Promise<any> {
-            requestCaptured = request;
-            return {
-              paymentMethods: [
-                {
-                  paymentMethodId: "id1",
-                  priority: PaymentMethodPriority.PRIMARY,
-                  card: {
-                    brand: CardBrand.AMEX,
-                    expMonth: 11,
-                    expYear: 2023,
-                    lastFourDigits: "1234",
-                  },
-                },
-                {
-                  paymentMethodId: "id2",
-                  priority: PaymentMethodPriority.BACKUP,
-                  card: {
-                    brand: CardBrand.DINERS,
-                    expMonth: 12,
-                    expYear: 2023,
-                    lastFourDigits: "1111",
-                  },
-                },
-                {
-                  paymentMethodId: "id3",
-                  priority: PaymentMethodPriority.NORMAL,
-                  card: {
-                    brand: CardBrand.DISCOVER,
-                    expMonth: 1,
-                    expYear: 2024,
-                    lastFourDigits: "0000",
-                  },
-                },
-              ],
-            } as ListPaymentMethodsResponse;
-          }
-        })();
+        let webServiceClientMock = new WebServiceClientMock();
+        webServiceClientMock.response = {
+          paymentMethods: [
+            {
+              paymentMethodId: "id1",
+              priority: PaymentMethodPriority.PRIMARY,
+              card: {
+                brand: CardBrand.AMEX,
+                expMonth: 11,
+                expYear: 2023,
+                lastFourDigits: "1234",
+              },
+            },
+            {
+              paymentMethodId: "id2",
+              priority: PaymentMethodPriority.BACKUP,
+              card: {
+                brand: CardBrand.DINERS,
+                expMonth: 12,
+                expYear: 2023,
+                lastFourDigits: "1111",
+              },
+            },
+            {
+              paymentMethodId: "id3",
+              priority: PaymentMethodPriority.NORMAL,
+              card: {
+                brand: CardBrand.DISCOVER,
+                expMonth: 1,
+                expYear: 2024,
+                lastFourDigits: "0000",
+              },
+            },
+          ],
+        } as ListPaymentMethodsResponse;
         this.cut = new PaymentMethodsListPage(
           windowMock as any,
           (paymentMethod) => new CardPaymentItemMock(paymentMethod),
-          serviceClientMock
+          webServiceClientMock,
         );
 
         // Execute
-        document.body.append(this.cut.body);
+        container.append(this.cut.body);
         await new Promise<void>((resolve) =>
-          this.cut.once("loaded", () => resolve())
+          this.cut.once("loaded", () => resolve()),
         );
 
         // Verify
         assertThat(
-          requestCaptured.descriptor,
-          eq(LIST_PAYMENT_METHODS),
-          "service"
+          webServiceClientMock.request,
+          eqService(LIST_PAYMENT_METHODS),
+          "list payment methods",
         );
         assertThat(
-          requestCaptured.body,
-          eqMessage({}, LIST_PAYMENT_METHODS_REQUEST_BODY),
-          "request"
+          webServiceClientMock.request,
+          eqRequestMessageBody({}, LIST_PAYMENT_METHODS_REQUEST_BODY),
+          "list request body",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/payment_methods_list_page_default.png"),
           path.join(__dirname, "/golden/payment_methods_list_page_default.png"),
-          path.join(__dirname, "/payment_methods_list_page_default_diff.png")
+          path.join(__dirname, "/payment_methods_list_page_default_diff.png"),
         );
 
         // Prepare
@@ -126,7 +136,7 @@ TEST_RUNNER.run({
               lastFourDigits: "1111",
             },
           },
-          false
+          false,
         );
 
         // Verify
@@ -143,14 +153,15 @@ TEST_RUNNER.run({
                 lastFourDigits: "1111",
               },
             },
-            PAYMENT_METHOD_MASKED
+            PAYMENT_METHOD_MASKED,
           ),
-          "card"
+          "card",
         );
 
         // Prepare
+        let requestCaptured: any;
         let resolveCaptured: () => void;
-        serviceClientMock.send = async (request: any) => {
+        webServiceClientMock.send = async (request: any) => {
           requestCaptured = request;
           await new Promise<void>((resolve) => {
             resolveCaptured = resolve;
@@ -165,7 +176,7 @@ TEST_RUNNER.run({
         assertThat(
           requestCaptured.descriptor,
           eq(CREATE_STRIPE_SESSION_TO_ADD_PAYMENT_METHOD),
-          "create session service"
+          "create session service",
         );
         assertThat(
           requestCaptured.body,
@@ -173,26 +184,26 @@ TEST_RUNNER.run({
             {
               backUrl: "fake_url",
             },
-            CREATE_STRIPE_SESSION_TO_ADD_PAYMENT_METHOD_REQUEST_BODY
+            CREATE_STRIPE_SESSION_TO_ADD_PAYMENT_METHOD_REQUEST_BODY,
           ),
-          "create session request"
+          "create session request",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/payment_methods_list_page_redirecting.png"),
           path.join(
             __dirname,
-            "/golden/payment_methods_list_page_redirecting.png"
+            "/golden/payment_methods_list_page_redirecting.png",
           ),
           path.join(
             __dirname,
-            "/payment_methods_list_page_redirecting_diff.png"
-          )
+            "/payment_methods_list_page_redirecting_diff.png",
+          ),
         );
 
         // Execute
         resolveCaptured();
         await new Promise<void>((resolve) =>
-          this.cut.once("redirectError", resolve)
+          this.cut.once("redirectError", resolve),
         );
 
         // Verify
@@ -200,16 +211,16 @@ TEST_RUNNER.run({
           path.join(__dirname, "/payment_methods_list_page_redirect_error.png"),
           path.join(
             __dirname,
-            "/golden/payment_methods_list_page_redirect_error.png"
+            "/golden/payment_methods_list_page_redirect_error.png",
           ),
           path.join(
             __dirname,
-            "/payment_methods_list_page_redirect_error_diff.png"
-          )
+            "/payment_methods_list_page_redirect_error_diff.png",
+          ),
         );
 
         // Prepare
-        serviceClientMock.send = async (request: any) => {
+        webServiceClientMock.send = async (request: any) => {
           return {
             redirectUrl: "redirect_url",
           } as CreateStripeSessionToAddPaymentMethodResponse;
@@ -218,22 +229,25 @@ TEST_RUNNER.run({
         // Execute
         this.cut.addPaymentMethodButton.click();
         await new Promise<void>((resolve) =>
-          this.cut.once("redirected", resolve)
+          this.cut.once("redirected", resolve),
         );
 
         // Verify
         assertThat(
           windowMock.location.href,
           eq("redirect_url"),
-          "redirect url"
+          "redirect url",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/payment_methods_list_page_redirected.png"),
           path.join(
             __dirname,
-            "/golden/payment_methods_list_page_redirected.png"
+            "/golden/payment_methods_list_page_redirected.png",
           ),
-          path.join(__dirname, "/payment_methods_list_page_redirected_diff.png")
+          path.join(
+            __dirname,
+            "/payment_methods_list_page_redirected_diff.png",
+          ),
         );
       }
       public tearDown() {

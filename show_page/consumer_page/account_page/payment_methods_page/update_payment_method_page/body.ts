@@ -6,23 +6,21 @@ import {
   OptionInput,
 } from "../../../../../common/input_form_page/option_input";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
-import { MenuItem } from "../../../../../common/menu_item/body";
-import { createBackMenuItem } from "../../../../../common/menu_item/factory";
 import { FONT_M } from "../../../../../common/sizes";
-import { BILLING_SERVICE_CLIENT } from "../../../../../common/web_service_client";
+import { COMMERCE_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { createCardBrandIcon } from "../common/card_brand_icons";
 import { getCardBrandName } from "../common/card_brand_name";
 import { ExpMonthInput, ExpYearInput } from "./exp_date_input";
 import {
   deletePaymentMethod,
   updatePaymentMethod,
-} from "@phading/billing_service_interface/web/client_requests";
+} from "@phading/commerce_service_interface/consumer/frontend/client_requests";
 import {
   UpdatePaymentMethodRequestBody,
   UpdatePaymentMethodResponse,
-} from "@phading/billing_service_interface/web/interface";
-import { PaymentMethodMasked } from "@phading/billing_service_interface/web/payment_method_masked";
-import { PaymentMethodPriority } from "@phading/billing_service_interface/web/payment_method_priority";
+} from "@phading/commerce_service_interface/consumer/frontend/interface";
+import { PaymentMethodMasked } from "@phading/commerce_service_interface/consumer/frontend/payment_method_masked";
+import { PaymentMethodPriority } from "@phading/commerce_service_interface/consumer/frontend/payment_method_priority";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -38,34 +36,27 @@ export interface UpdatePaymentMethodPage {
 // Only handles card-type payment method for now.
 export class UpdatePaymentMethodPage extends EventEmitter {
   public static create(
-    paymentMethod: PaymentMethodMasked
+    paymentMethod: PaymentMethodMasked,
   ): UpdatePaymentMethodPage {
-    return new UpdatePaymentMethodPage(BILLING_SERVICE_CLIENT, paymentMethod);
+    return new UpdatePaymentMethodPage(COMMERCE_SERVICE_CLIENT, paymentMethod);
   }
 
-  private inputFormPage_: InputFormPage<
+  public inputFormPage: InputFormPage<
     UpdatePaymentMethodRequestBody,
     UpdatePaymentMethodResponse
   >;
-  private expMonthInput_: ExpMonthInput;
-  private expYearInput_: ExpYearInput;
-  private priorityOptionInput_: OptionInput<
-    PaymentMethodPriority,
-    UpdatePaymentMethodRequestBody
-  >;
-  private backMenuItem_: MenuItem;
+  public expMonthInput = new Ref<ExpMonthInput>();
+  public expYearInput = new Ref<ExpYearInput>();
+  public priorityOptionInput = new Ref<
+    OptionInput<PaymentMethodPriority, UpdatePaymentMethodRequestBody>
+  >();
 
   public constructor(
     private webServiceClient: WebServiceClient,
-    private paymentMethod: PaymentMethodMasked
+    private paymentMethod: PaymentMethodMasked,
   ) {
     super();
-    let expMonthInputRef = new Ref<ExpMonthInput>();
-    let expYearInputRef = new Ref<ExpYearInput>();
-    let priorityOptionInputRef = new Ref<
-      OptionInput<PaymentMethodPriority, UpdatePaymentMethodRequestBody>
-    >();
-    this.inputFormPage_ = InputFormPage.create(
+    this.inputFormPage = InputFormPage.create(
       LOCALIZED_TEXT.updatePaymentMethodTitle,
       [
         E.div(
@@ -78,7 +69,7 @@ export class UpdatePaymentMethodPage extends EventEmitter {
               class: "update-payment-method-card-brand-icon",
               style: `width: 5rem;`,
             },
-            createCardBrandIcon(paymentMethod.card.brand)
+            createCardBrandIcon(paymentMethod.card.brand),
           ),
           E.div(
             {
@@ -88,9 +79,9 @@ export class UpdatePaymentMethodPage extends EventEmitter {
             E.text(
               `${getCardBrandName(paymentMethod.card.brand)} •••• ${
                 paymentMethod.card.lastFourDigits
-              }`
-            )
-          )
+              }`,
+            ),
+          ),
         ),
         E.div(
           {
@@ -102,26 +93,28 @@ export class UpdatePaymentMethodPage extends EventEmitter {
               class: "update-payment-method-card-expiration-label",
               style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
-            E.text(LOCALIZED_TEXT.updatePaymentMethodExpiresLabel)
+            E.text(LOCALIZED_TEXT.updatePaymentMethodExpiresLabel),
           ),
           E.div({
             style: `width: .5rem;`,
           }),
           assign(
-            expMonthInputRef,
-            new ExpMonthInput(paymentMethod.card.expMonth)
+            this.expMonthInput,
+            new ExpMonthInput(paymentMethod.card.expMonth),
           ).body,
           E.div(
             {
               style: `font-size: 1.4rem; color: ${SCHEME.neutral1};`,
             },
-            E.text("/")
+            E.text("/"),
           ),
-          assign(expYearInputRef, new ExpYearInput(paymentMethod.card.expYear))
-            .body
+          assign(
+            this.expYearInput,
+            new ExpYearInput(paymentMethod.card.expYear),
+          ).body,
         ),
         assign(
-          priorityOptionInputRef,
+          this.priorityOptionInput,
           OptionInput.create(
             LOCALIZED_TEXT.cardIsSavedAsLabel,
             "",
@@ -129,27 +122,31 @@ export class UpdatePaymentMethodPage extends EventEmitter {
               OptionButton.create(
                 LOCALIZED_TEXT.cardIsUsedAsPrimaryPaymentMethodLabel,
                 PaymentMethodPriority.PRIMARY,
-                ""
+                "",
               ),
               OptionButton.create(
                 LOCALIZED_TEXT.cardIsUsedAsBackupPaymentMethodLabel,
                 PaymentMethodPriority.BACKUP,
-                ""
+                "",
               ),
               OptionButton.create(
                 LOCALIZED_TEXT.cardIsSavedForFutureLabel,
                 PaymentMethodPriority.NORMAL,
-                ""
+                "",
               ),
             ],
             paymentMethod.priority,
             (request, value) => {
               request.paymentMethodUpdates.priority = value;
-            }
-          )
+            },
+          ),
         ).body,
       ],
-      [expMonthInputRef.val, expYearInputRef.val, priorityOptionInputRef.val],
+      [
+        this.expMonthInput.val,
+        this.expYearInput.val,
+        this.priorityOptionInput.val,
+      ],
       LOCALIZED_TEXT.updateButtonLabel,
       (request) => this.updatePaymentMethod(request),
       (response, error) => this.postUpdatePaymentMethod(response, error),
@@ -157,31 +154,26 @@ export class UpdatePaymentMethodPage extends EventEmitter {
         paymentMethodUpdates: {
           card: {},
         },
-      }
-    ).addSecondaryButton(
-      LOCALIZED_TEXT.deleteButtonLabel,
-      () => this.deletePaymentMethod(),
-      (error) => this.postDeletePaymentMethod(error)
-    );
-    this.expMonthInput_ = expMonthInputRef.val;
-    this.expYearInput_ = expYearInputRef.val;
-    this.priorityOptionInput_ = priorityOptionInputRef.val;
+      },
+    )
+      .addSecondaryBlockingButton(
+        LOCALIZED_TEXT.deleteButtonLabel,
+        () => this.deletePaymentMethod(),
+        (error) => this.postDeletePaymentMethod(error),
+      )
+      .addBackButton();
 
-    this.backMenuItem_ = createBackMenuItem();
-
-    this.inputFormPage_.on("submitted", () => this.emit("updated"));
-    this.inputFormPage_.on("submitError", () => this.emit("updateError"));
-    this.inputFormPage_.on("secondaryActionSuccess", () =>
-      this.emit("deleted")
+    this.inputFormPage.on("submitted", () => this.emit("updated"));
+    this.inputFormPage.on("submitError", () => this.emit("updateError"));
+    this.inputFormPage.on("secondaryActionSuccess", () => this.emit("deleted"));
+    this.inputFormPage.on("secondaryActionError", () =>
+      this.emit("deleteError"),
     );
-    this.inputFormPage_.on("secondaryActionError", () =>
-      this.emit("deleteError")
-    );
-    this.backMenuItem_.on("action", () => this.emit("back"));
+    this.inputFormPage.on("back", () => this.emit("back"));
   }
 
   private updatePaymentMethod(
-    request: UpdatePaymentMethodRequestBody
+    request: UpdatePaymentMethodRequestBody,
   ): Promise<UpdatePaymentMethodResponse> {
     request.paymentMethodUpdates.paymentMethodId =
       this.paymentMethod.paymentMethodId;
@@ -190,7 +182,7 @@ export class UpdatePaymentMethodPage extends EventEmitter {
 
   private postUpdatePaymentMethod(
     response: UpdatePaymentMethodResponse,
-    error?: Error
+    error?: Error,
   ): string {
     if (error) {
       return LOCALIZED_TEXT.updateGenericFailure;
@@ -214,31 +206,10 @@ export class UpdatePaymentMethodPage extends EventEmitter {
   }
 
   public get body() {
-    return this.inputFormPage_.body;
-  }
-  public get menuBody() {
-    return this.backMenuItem_.body;
+    return this.inputFormPage.body;
   }
 
   public remove(): void {
-    this.inputFormPage_.remove();
-    this.backMenuItem_.remove();
-  }
-
-  // Visible for testing
-  public get inputFormPage() {
-    return this.inputFormPage_;
-  }
-  public get expMonthInput() {
-    return this.expMonthInput_;
-  }
-  public get expYearInput() {
-    return this.expYearInput_;
-  }
-  public get priorityOptionInput() {
-    return this.priorityOptionInput_;
-  }
-  public get backMenuItem() {
-    return this.backMenuItem_;
+    this.inputFormPage.remove();
   }
 }

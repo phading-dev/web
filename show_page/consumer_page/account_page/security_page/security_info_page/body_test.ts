@@ -1,16 +1,19 @@
 import path = require("path");
 import { SecurityInfoPage } from "./body";
 import {
-  GET_ACCOUNT_TYPE_REQUEST_BODY,
-  GET_AUTH_SETTINGS,
-  GetAuthSettingsResponse,
-} from "@phading/user_service_interface/self/web/interface";
-import { eqMessage } from "@selfage/message/test_matcher";
+  GET_USER,
+  GET_USER_REQUEST_BODY,
+  GetUserResponse,
+} from "@phading/user_service_interface/self/frontend/interface";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import { WebServiceClient } from "@selfage/web_service_client";
+import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+import {
+  eqRequestMessageBody,
+  eqService,
+} from "@selfage/web_service_client/request_test_matcher";
 import "../../../../../common/normalize_body";
 
 TEST_RUNNER.run({
@@ -21,38 +24,31 @@ TEST_RUNNER.run({
       private cut: SecurityInfoPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 800);
+        await setViewport(1000, 600);
+        let clientMock = new WebServiceClientMock();
+        clientMock.response = {
+          user: {
+            username: "user1",
+            recoveryEmail: "some@gmail.com",
+          },
+        } as GetUserResponse;
 
         // Execute
-        this.cut = new SecurityInfoPage(
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(request: any): Promise<any> {
-              assertThat(request.descriptor, eq(GET_AUTH_SETTINGS), "service");
-              assertThat(
-                request.body,
-                eqMessage({}, GET_ACCOUNT_TYPE_REQUEST_BODY),
-                "request body"
-              );
-              return {
-                authSettings: {
-                  username: "user1",
-                  recoveryEmail: "some@gmail.com",
-                },
-              } as GetAuthSettingsResponse;
-            }
-          })()
-        );
+        this.cut = new SecurityInfoPage(clientMock);
         document.body.append(this.cut.body);
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
+        assertThat(clientMock.request, eqService(GET_USER), "service");
+        assertThat(
+          clientMock.request,
+          eqRequestMessageBody({}, GET_USER_REQUEST_BODY),
+          "request body",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/security_info_page_default.png"),
           path.join(__dirname, "/golden/security_info_page_default.png"),
-          path.join(__dirname, "/security_info_page_default_diff.png")
+          path.join(__dirname, "/security_info_page_default_diff.png"),
         );
       }
       public tearnDown() {
@@ -64,27 +60,20 @@ TEST_RUNNER.run({
       private cut: SecurityInfoPage;
       public async execute() {
         // Prepare
-        this.cut = new SecurityInfoPage(
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(request: any): Promise<any> {
-              return {
-                authSettings: {
-                  username: "user1",
-                  recoveryEmail: "some@gmail.com",
-                },
-              } as GetAuthSettingsResponse;
-            }
-          })()
-        );
+        let clientMock = new WebServiceClientMock();
+        clientMock.response = {
+          user: {
+            username: "user1",
+            recoveryEmail: "some@gmail.com",
+          },
+        } as GetUserResponse;
+        this.cut = new SecurityInfoPage(clientMock);
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
         let updateUsername = false;
         this.cut.on("updateUsername", () => (updateUsername = true));
 
         // Execute
-        this.cut.username.click();
+        this.cut.username.val.click();
 
         // Verify
         assertThat(updateUsername, eq(true), "update username");
@@ -98,27 +87,20 @@ TEST_RUNNER.run({
       private cut: SecurityInfoPage;
       public async execute() {
         // Prepare
-        this.cut = new SecurityInfoPage(
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(request: any): Promise<any> {
-              return {
-                authSettings: {
-                  username: "user1",
-                  recoveryEmail: "some@gmail.com",
-                },
-              } as GetAuthSettingsResponse;
-            }
-          })()
-        );
+        let clientMock = new WebServiceClientMock();
+        clientMock.response = {
+          user: {
+            username: "user1",
+            recoveryEmail: "some@gmail.com",
+          },
+        } as GetUserResponse;
+        this.cut = new SecurityInfoPage(clientMock);
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
         let updatePassword = false;
         this.cut.on("updatePassword", () => (updatePassword = true));
 
         // Execute
-        this.cut.password.click();
+        this.cut.password.val.click();
 
         // Verify
         assertThat(updatePassword, eq(true), "update password");
@@ -132,27 +114,20 @@ TEST_RUNNER.run({
       private cut: SecurityInfoPage;
       public async execute() {
         // Prepare
-        this.cut = new SecurityInfoPage(
-          new (class extends WebServiceClient {
-            public constructor() {
-              super(undefined, undefined);
-            }
-            public async send(request: any): Promise<any> {
-              return {
-                authSettings: {
-                  username: "user1",
-                  recoveryEmail: "some@gmail.com",
-                },
-              } as GetAuthSettingsResponse;
-            }
-          })()
-        );
+        let clientMock = new WebServiceClientMock();
+        clientMock.response = {
+          user: {
+            username: "user1",
+            recoveryEmail: "some@gmail.com",
+          },
+        } as GetUserResponse;
+        this.cut = new SecurityInfoPage(clientMock);
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
         let updateRecoveryEmail = false;
         this.cut.on("updateRecoveryEmail", () => (updateRecoveryEmail = true));
 
         // Execute
-        this.cut.recoveryEmail.click();
+        this.cut.recoveryEmail.val.click();
 
         // Verify
         assertThat(updateRecoveryEmail, eq(true), "update recovery email");

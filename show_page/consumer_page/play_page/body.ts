@@ -112,7 +112,7 @@ export class PlayPage extends EventEmitter {
     super();
     this.body = E.div({
       class: "play-page",
-      style: `width: 100vw; height: 100vh; background-color: ${SCHEME.neutral3}; display: flex; align-items: center;`,
+      style: `width: 100%; height: 100%; background-color: ${SCHEME.neutral3}; display: flex; align-items: center;`,
     });
 
     this.load(episodeId);

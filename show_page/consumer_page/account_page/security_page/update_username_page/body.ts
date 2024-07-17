@@ -1,17 +1,15 @@
 import EventEmitter = require("events");
 import { InputFormPage } from "../../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../../common/input_form_page/text_area_input";
-import { VerticalTextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
+import { TextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
-import { MenuItem } from "../../../../../common/menu_item/body";
-import { createBackMenuItem } from "../../../../../common/menu_item/factory";
 import { USERNAME_LENGTH_LIMIT } from "../../../../../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { updateUsername } from "@phading/user_service_interface/self/web/client_requests";
+import { updateUsername } from "@phading/user_service_interface/self/frontend/client_requests";
 import {
   UpdateUsernameRequestBody,
   UpdateUsernameResponse,
-} from "@phading/user_service_interface/self/web/interface";
+} from "@phading/user_service_interface/self/frontend/interface";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
@@ -26,28 +24,25 @@ export class UpdateUsernamePage extends EventEmitter {
     return new UpdateUsernamePage(USER_SERVICE_CLIENT);
   }
 
-  private backMenuItem_: MenuItem;
-  private newUsernameInput_: VerticalTextInputWithErrorMsg<UpdateUsernameRequestBody>;
-  private currentPasswordInput_: VerticalTextInputWithErrorMsg<UpdateUsernameRequestBody>;
-  private inputFormPage_: InputFormPage<
+  public inputFormPage: InputFormPage<
     UpdateUsernameRequestBody,
     UpdateUsernameResponse
   >;
+  public newUsernameInput = new Ref<
+    TextInputWithErrorMsg<UpdateUsernameRequestBody>
+  >();
+  public currentPasswordInput = new Ref<
+    TextInputWithErrorMsg<UpdateUsernameRequestBody>
+  >();
 
   public constructor(private userServiceClient: WebServiceClient) {
     super();
-    let newUsernameInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<UpdateUsernameRequestBody>
-    >();
-    let currentPasswordInputRef = new Ref<
-      VerticalTextInputWithErrorMsg<UpdateUsernameRequestBody>
-    >();
-    this.inputFormPage_ = InputFormPage.create(
+    this.inputFormPage = InputFormPage.create(
       LOCALIZED_TEXT.updateUsernameTitle,
       [
         assign(
-          newUsernameInputRef,
-          VerticalTextInputWithErrorMsg.create(
+          this.newUsernameInput,
+          TextInputWithErrorMsg.create(
             LOCALIZED_TEXT.newUsernameLabel,
             "",
             {
@@ -57,12 +52,12 @@ export class UpdateUsernamePage extends EventEmitter {
             (request, value) => {
               request.newUsername = value;
             },
-            (value) => this.checkNewUsername(value)
-          )
+            (value) => this.checkNewUsername(value),
+          ),
         ).body,
         assign(
-          currentPasswordInputRef,
-          VerticalTextInputWithErrorMsg.create(
+          this.currentPasswordInput,
+          TextInputWithErrorMsg.create(
             LOCALIZED_TEXT.currentPasswordLabel,
             "",
             {
@@ -72,24 +67,20 @@ export class UpdateUsernamePage extends EventEmitter {
             (request, value) => {
               request.currentPassword = value;
             },
-            (value) => this.checkCurrentPassword(value)
-          )
+            (value) => this.checkCurrentPassword(value),
+          ),
         ).body,
       ],
-      [newUsernameInputRef.val, currentPasswordInputRef.val],
+      [this.newUsernameInput.val, this.currentPasswordInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
       (request) => this.updateUsername(request),
       (response, error) => this.postUpdateUsername(response, error),
-      {}
-    );
-    this.newUsernameInput_ = newUsernameInputRef.val;
-    this.currentPasswordInput_ = currentPasswordInputRef.val;
+      {},
+    ).addBackButton();
 
-    this.backMenuItem_ = createBackMenuItem();
-
-    this.inputFormPage_.on("submitError", () => this.emit("updateError"));
-    this.inputFormPage_.on("submitted", () => this.emit("updated"));
-    this.backMenuItem_.on("action", () => this.emit("back"));
+    this.inputFormPage.on("submitError", () => this.emit("updateError"));
+    this.inputFormPage.on("submitted", () => this.emit("updated"));
+    this.inputFormPage.on("back", () => this.emit("back"));
   }
 
   private checkNewUsername(value: string): ValidationResult {
@@ -114,14 +105,14 @@ export class UpdateUsernamePage extends EventEmitter {
   }
 
   private updateUsername(
-    requset: UpdateUsernameRequestBody
+    requset: UpdateUsernameRequestBody,
   ): Promise<UpdateUsernameResponse> {
     return updateUsername(this.userServiceClient, requset);
   }
 
   private postUpdateUsername(
     response: UpdateUsernameResponse,
-    error?: Error
+    error?: Error,
   ): string {
     if (error) {
       return LOCALIZED_TEXT.updateGenericFailure;
@@ -133,28 +124,10 @@ export class UpdateUsernamePage extends EventEmitter {
   }
 
   public get body() {
-    return this.inputFormPage_.body;
-  }
-  public get menuBody() {
-    return this.backMenuItem_.body;
+    return this.inputFormPage.body;
   }
 
   public remove(): void {
-    this.inputFormPage_.remove();
-    this.backMenuItem_.remove();
-  }
-
-  // Visible for testing
-  public get inputFormPage() {
-    return this.inputFormPage_;
-  }
-  public get newUsernameInput() {
-    return this.newUsernameInput_;
-  }
-  public get currentPasswordInput() {
-    return this.currentPasswordInput_;
-  }
-  public get backMenuItem() {
-    return this.backMenuItem_;
+    this.inputFormPage.remove();
   }
 }

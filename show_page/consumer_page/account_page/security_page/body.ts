@@ -14,24 +14,20 @@ enum Page {
 }
 
 export class SecurityPage extends EventEmitter {
-  public static create(
-    appendBodies: AddBodiesFn,
-    prependMenuBodies: AddBodiesFn
-  ): SecurityPage {
+  public static create(appendBodies: AddBodiesFn): SecurityPage {
     return new SecurityPage(
       SecurityInfoPage.create,
       UpdatePasswordPage.create,
       UpdateRecoveryEmailPage.create,
       UpdateUsernamePage.create,
       appendBodies,
-      prependMenuBodies
     );
   }
 
-  private securityInfoPage_: SecurityInfoPage;
-  private updatePasswordPage_: UpdatePasswordPage;
-  private updateRecoveryEmailPage_: UpdateRecoveryEmailPage;
-  private updateUsernamePage_: UpdateUsernamePage;
+  public securityInfoPage: SecurityInfoPage;
+  public updatePasswordPage: UpdatePasswordPage;
+  public updateRecoveryEmailPage: UpdateRecoveryEmailPage;
+  public updateUsernamePage: UpdateUsernamePage;
   private pageNavigator: PageNavigator<Page>;
 
   public constructor(
@@ -40,12 +36,11 @@ export class SecurityPage extends EventEmitter {
     private createUpdateRecoveryEmailPage: () => UpdateRecoveryEmailPage,
     private createUpdateUsernamePage: () => UpdateUsernamePage,
     private appendBodies: AddBodiesFn,
-    private prependMenuBodies: AddBodiesFn
   ) {
     super();
     this.pageNavigator = new PageNavigator(
       (page) => this.addPage(page),
-      (page) => this.removePage(page)
+      (page) => this.removePage(page),
     );
     this.pageNavigator.goTo(Page.INFO);
   }
@@ -53,38 +48,35 @@ export class SecurityPage extends EventEmitter {
   private addPage(page: Page): void {
     switch (page) {
       case Page.INFO:
-        this.securityInfoPage_ = this.createSecurityInfoPagee()
+        this.securityInfoPage = this.createSecurityInfoPagee()
           .on("updatePassword", () =>
-            this.pageNavigator.goTo(Page.UPDATE_PASSWORD)
+            this.pageNavigator.goTo(Page.UPDATE_PASSWORD),
           )
           .on("updateRecoveryEmail", () =>
-            this.pageNavigator.goTo(Page.UPDATE_RECOVERY_EMAIL)
+            this.pageNavigator.goTo(Page.UPDATE_RECOVERY_EMAIL),
           )
           .on("updateUsername", () =>
-            this.pageNavigator.goTo(Page.UPDATE_USERNAME)
+            this.pageNavigator.goTo(Page.UPDATE_USERNAME),
           );
-        this.appendBodies(this.securityInfoPage_.body);
+        this.appendBodies(this.securityInfoPage.body);
         break;
       case Page.UPDATE_PASSWORD:
-        this.updatePasswordPage_ = this.createUpdatePasswordPage()
+        this.updatePasswordPage = this.createUpdatePasswordPage()
           .on("back", () => this.pageNavigator.goTo(Page.INFO))
           .on("updated", () => this.pageNavigator.goTo(Page.INFO));
-        this.appendBodies(this.updatePasswordPage_.body);
-        this.prependMenuBodies(this.updatePasswordPage_.menuBody);
+        this.appendBodies(this.updatePasswordPage.body);
         break;
       case Page.UPDATE_RECOVERY_EMAIL:
-        this.updateRecoveryEmailPage_ = this.createUpdateRecoveryEmailPage()
+        this.updateRecoveryEmailPage = this.createUpdateRecoveryEmailPage()
           .on("back", () => this.pageNavigator.goTo(Page.INFO))
           .on("updated", () => this.pageNavigator.goTo(Page.INFO));
-        this.appendBodies(this.updateRecoveryEmailPage_.body);
-        this.prependMenuBodies(this.updateRecoveryEmailPage_.menuBody);
+        this.appendBodies(this.updateRecoveryEmailPage.body);
         break;
       case Page.UPDATE_USERNAME:
-        this.updateUsernamePage_ = this.createUpdateUsernamePage()
+        this.updateUsernamePage = this.createUpdateUsernamePage()
           .on("back", () => this.pageNavigator.goTo(Page.INFO))
           .on("updated", () => this.pageNavigator.goTo(Page.INFO));
-        this.appendBodies(this.updateUsernamePage_.body);
-        this.prependMenuBodies(this.updateUsernamePage_.menuBody);
+        this.appendBodies(this.updateUsernamePage.body);
         break;
     }
   }
@@ -92,35 +84,21 @@ export class SecurityPage extends EventEmitter {
   private removePage(page: Page): void {
     switch (page) {
       case Page.INFO:
-        this.securityInfoPage_.remove();
+        this.securityInfoPage.remove();
         break;
       case Page.UPDATE_PASSWORD:
-        this.updatePasswordPage_.remove();
+        this.updatePasswordPage.remove();
         break;
       case Page.UPDATE_RECOVERY_EMAIL:
-        this.updateRecoveryEmailPage_.remove();
+        this.updateRecoveryEmailPage.remove();
         break;
       case Page.UPDATE_USERNAME:
-        this.updateUsernamePage_.remove();
+        this.updateUsernamePage.remove();
         break;
     }
   }
 
   public remove(): void {
     this.pageNavigator.remove();
-  }
-
-  // Visible for testing
-  public get securityInfoPage() {
-    return this.securityInfoPage_;
-  }
-  public get updatePasswordPage() {
-    return this.updatePasswordPage_;
-  }
-  public get updateRecoveryEmailPage() {
-    return this.updateRecoveryEmailPage_;
-  }
-  public get updateUsernamePage() {
-    return this.updateUsernamePage_;
   }
 }
