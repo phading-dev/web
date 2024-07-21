@@ -26,26 +26,17 @@ export class BasicInfoPag extends EventEmitter {
     return new BasicInfoPag(USER_SERVICE_CLIENT);
   }
 
-  private body_: HTMLDivElement;
-  private card: HTMLDivElement;
-  private avatarContainer_: HTMLDivElement;
-  private avatarUpdateHint: HTMLDivElement;
-  private infoValuesGroup_: TextValuesGroup;
+  public body: HTMLDivElement;
+  public avatarContainer = new Ref<HTMLDivElement>();
+  private avatarUpdateHint = new Ref<HTMLDivElement>();
+  public infoValuesGroup = new Ref<TextValuesGroup>();
 
   public constructor(private userServiceClient: WebServiceClient) {
     super();
-    let cardRef = new Ref<HTMLDivElement>();
-    this.body_ = E.div(
-      {
-        class: "basic-info",
-        style: PAGE_BACKGROUND_STYLE,
-      },
-      E.divRef(cardRef, {
-        class: "basic-info-card",
-        style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 3rem;`,
-      }),
-    );
-    this.card = cardRef.val;
+    this.body = E.div({
+      class: "basic-info",
+      style: PAGE_BACKGROUND_STYLE,
+    });
 
     this.load();
   }
@@ -53,98 +44,86 @@ export class BasicInfoPag extends EventEmitter {
   private async load(): Promise<void> {
     let account = (await getAccount(this.userServiceClient, {})).account;
 
-    let avatarContainerRef = new Ref<HTMLDivElement>();
-    let avatarUpdateHintRef = new Ref<HTMLDivElement>();
-    let infoValuesGroupRef = new Ref<TextValuesGroup>();
-    this.card.append(
-      E.divRef(
-        avatarContainerRef,
+    this.body.append(
+      E.div(
         {
-          class: "basic-info-avatar",
-          style: `align-self: center; position: relative; height: ${AVATAR_M}rem; width: ${AVATAR_M}rem; border-radius: ${AVATAR_M}rem; overflow: hidden; cursor: pointer;`,
+          class: "basic-info-card",
+          style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 3rem;`,
         },
-        E.image({
-          class: "basic-info-avatar-image",
-          style: `height: 100%; width: 100%;`,
-          src: account.avatarLargePath,
-        }),
         E.divRef(
-          avatarUpdateHintRef,
+          this.avatarContainer,
           {
-            class: "basic-info-avatar-update-hint-background",
-            style: `position: absolute; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; bottom: 0; left: 0; height: 0; width: 100%; transition: height .2s; overflow: hidden; background-color: ${SCHEME.neutral4Translucent};`,
+            class: "basic-info-avatar",
+            style: `align-self: center; position: relative; height: ${AVATAR_M}rem; width: ${AVATAR_M}rem; border-radius: ${AVATAR_M}rem; overflow: hidden; cursor: pointer;`,
           },
-          E.div(
+          E.image({
+            class: "basic-info-avatar-image",
+            style: `height: 100%; width: 100%;`,
+            src: account.avatarLargePath,
+          }),
+          E.divRef(
+            this.avatarUpdateHint,
             {
-              class: `basic-info-avatar-update-hint-label`,
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              class: "basic-info-avatar-update-hint-background",
+              style: `position: absolute; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; bottom: 0; left: 0; height: 0; width: 100%; transition: height .2s; overflow: hidden; background-color: ${SCHEME.neutral4Translucent};`,
             },
-            E.text(LOCALIZED_TEXT.changeAvatarLabel),
+            E.div(
+              {
+                class: `basic-info-avatar-update-hint-label`,
+                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              },
+              E.text(LOCALIZED_TEXT.changeAvatarLabel),
+            ),
           ),
         ),
+        assign(
+          this.infoValuesGroup,
+          TextValuesGroup.create([
+            {
+              label: LOCALIZED_TEXT.naturalNameLabel,
+              value: account.naturalName,
+            },
+            {
+              label: LOCALIZED_TEXT.contactEmailLabel,
+              value: account.contactEmail,
+            },
+            {
+              label: LOCALIZED_TEXT.accountDescriptionLabel,
+              value: account.description,
+            },
+          ]),
+        ).body,
       ),
-      assign(
-        infoValuesGroupRef,
-        TextValuesGroup.create([
-          {
-            label: LOCALIZED_TEXT.naturalNameLabel,
-            value: account.naturalName,
-          },
-          {
-            label: LOCALIZED_TEXT.contactEmailLabel,
-            value: account.contactEmail,
-          },
-          {
-            label: LOCALIZED_TEXT.accountDescriptionLabel,
-            value: account.description,
-          },
-        ]),
-      ).body,
     );
-    this.avatarContainer_ = avatarContainerRef.val;
-    this.avatarUpdateHint = avatarUpdateHintRef.val;
-    this.infoValuesGroup_ = infoValuesGroupRef.val;
 
     this.hideChangeAvatarHint();
-    this.avatarContainer_.addEventListener("mouseenter", () =>
+    this.avatarContainer.val.addEventListener("mouseenter", () =>
       this.showChangeAvatarHint(),
     );
-    this.avatarContainer_.addEventListener("mouseleave", () =>
+    this.avatarContainer.val.addEventListener("mouseleave", () =>
       this.hideChangeAvatarHint(),
     );
-    this.avatarContainer_.addEventListener("click", () =>
+    this.avatarContainer.val.addEventListener("click", () =>
       this.emit("updateAvatar"),
     );
-    this.avatarUpdateHint.addEventListener("transitionend", () =>
+    this.avatarUpdateHint.val.addEventListener("transitionend", () =>
       this.emit("avatarUpdateHintTransitionEnded"),
     );
-    this.infoValuesGroup_.on("action", () =>
+    this.infoValuesGroup.val.on("action", () =>
       this.emit("updateAccountInfo", account),
     );
     this.emit("loaded");
   }
 
   private showChangeAvatarHint(): void {
-    this.avatarUpdateHint.style.height = "100%";
+    this.avatarUpdateHint.val.style.height = "100%";
   }
 
   private hideChangeAvatarHint(): void {
-    this.avatarUpdateHint.style.height = "0";
-  }
-
-  public get body() {
-    return this.body_;
+    this.avatarUpdateHint.val.style.height = "0";
   }
 
   public remove(): void {
-    this.body_.remove();
-  }
-
-  // Visible for testing
-  public get avatarContainer() {
-    return this.avatarContainer_;
-  }
-  public get infoValuesGroup() {
-    return this.infoValuesGroup_;
+    this.body.remove();
   }
 }

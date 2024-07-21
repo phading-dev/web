@@ -371,26 +371,38 @@ export default class Text {
   get noAccountDescription() {
     return `They didn't say anything about themself.`;
   }
-  get usageReportRangePartOne() {
-    return `Your usage report starting from `;
+  get usageReportRangeFrom() {
+    return `From`;
   }
-  get usageReportRangePartTwo() {
-    return ` until `;
+  get usageReportRangeTo() {
+    return `to`;
   }
-  get usageSumLabel() {
+  get usageReportRangeGranularityAsDay() {
+    return `Day`;
+  }
+  get usageReportRangeGranularityAsMonth() {
+    return `Month`;
+  }
+  get usageReportShowTitleColumn() {
+    return `Title`;
+  }
+  get usageReportShowDateColumn() {
+    return `Date`;
+  }
+  get usageReportShowMonthColumn() {
+    return `Month`;
+  }
+  get usageReportShowWatchTimeColumn() {
+    return `Watch time`;
+  }
+  get usageReportShowChargesColumn() {
+    return `Charges`;
+  }
+  get usageReportTotal() {
     return `Total`;
   }
-  get usageReportSeeOtherButtonLabel() {
-    return `See other usage reports`;
-  }
-  get chooseReportTitle() {
-    return `Choose a usage report`;
-  }
-  get chooseReportCurrentButtonLabel() {
-    return `Current`;
-  }
-  get chooseReportRangeEndedInDateLabel() {
-    return `Until `;
+  get usageReportEndDateSmallerThanStartDate() {
+    return `End date cannot be smaller than start date.`;
   }
   get paymentMethodsListTitle() {
     return `Payment methods`;

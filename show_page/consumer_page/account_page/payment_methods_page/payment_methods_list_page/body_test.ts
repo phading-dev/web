@@ -124,7 +124,7 @@ TEST_RUNNER.run({
         });
 
         // Execute
-        this.cut.paymentMethodItems[1].emit(
+        this.cut.items[1].emit(
           "update",
           {
             paymentMethodId: "id2",
@@ -170,7 +170,7 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        this.cut.addPaymentMethodButton.click();
+        this.cut.addPaymentMethodButton.val.click();
 
         // Verify
         assertThat(
@@ -227,7 +227,7 @@ TEST_RUNNER.run({
         };
 
         // Execute
-        this.cut.addPaymentMethodButton.click();
+        this.cut.addPaymentMethodButton.val.click();
         await new Promise<void>((resolve) =>
           this.cut.once("redirected", resolve),
         );

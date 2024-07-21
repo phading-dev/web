@@ -1,6 +1,7 @@
 import EventEmitter = require("events");
 import { SCHEME } from "./color_scheme";
-import { FONT_M } from "./sizes";
+import { createArrowIcon } from "./icons";
+import { FONT_M, ICON_XS } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
@@ -18,11 +19,11 @@ export class DropdownEntry<T> extends EventEmitter {
     return new DropdownEntry(optionEntry);
   }
 
-  private body_: HTMLDivElement;
+  public body: HTMLDivElement;
 
   public constructor(private optionEntry: OptionEntry<T>) {
     super();
-    this.body_ = E.div(
+    this.body = E.div(
       {
         class: "dropdown-entry",
         style: `width: 100%; padding: .4rem; box-sizing: border-box; font-size: ${FONT_M}rem;`,
@@ -31,26 +32,27 @@ export class DropdownEntry<T> extends EventEmitter {
     );
     this.lowlight();
 
-    this.body_.addEventListener("pointerover", () => this.highlight());
-    this.body_.addEventListener("pointerout", () => this.lowlight());
-    this.body_.addEventListener("click", () => this.select());
+    this.body.addEventListener("pointerover", () => this.highlight());
+    this.body.addEventListener("pointerout", () => this.lowlight());
+    this.body.addEventListener("click", () => this.select());
   }
 
   private lowlight(): void {
-    this.body_.style.color = SCHEME.neutral0;
+    this.body.style.color = SCHEME.neutral0;
   }
 
   private highlight(): void {
-    this.body_.style.color = SCHEME.primary0;
+    this.body.style.color = SCHEME.primary0;
   }
 
   public select(): void {
     this.emit("select", this.optionEntry.kind);
   }
+}
 
-  public get body() {
-    return this.body_;
-  }
+export enum Direction {
+  DOWN = 1,
+  UP = 2,
 }
 
 export interface DropdownList<T> {
@@ -62,8 +64,9 @@ export class DropdownList<T> extends EventEmitter {
     optionEntries: Array<OptionEntry<T>>,
     value: T,
     customStyle = "",
+    direction = Direction.DOWN,
   ): DropdownList<T> {
-    return new DropdownList(optionEntries, value, customStyle);
+    return new DropdownList(optionEntries, value, customStyle, direction);
   }
 
   public selectedKind: T;
@@ -77,6 +80,7 @@ export class DropdownList<T> extends EventEmitter {
     private optionEntries: Array<OptionEntry<T>>,
     value: T,
     customStyle: string,
+    direction: Direction,
   ) {
     super();
     this.dropdownEntries = optionEntries.map((optionEntry) =>
@@ -97,10 +101,13 @@ export class DropdownList<T> extends EventEmitter {
           class: "dropdown-list-selected-option-text",
           style: `padding: .4rem 0; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         }),
-        E.div({
-          class: "dropdown-list-option-arrow",
-          style: `border-left: .4rem solid transparent; border-right: .4rem solid transparent; border-top: .8rem solid ${SCHEME.neutral1};`,
-        }),
+        E.div(
+          {
+            class: "dropdown-list-option-arrow",
+            style: `width: ${ICON_XS}rem; height: ${ICON_XS}rem; box-sizing: border-box; padding: .3rem; transform: rotate(-90deg);`,
+          },
+          createArrowIcon(SCHEME.neutral1),
+        ),
       ),
       E.divRef(
         this.optionList,
@@ -111,12 +118,24 @@ export class DropdownList<T> extends EventEmitter {
         ...this.dropdownEntries.map((dropdownEntry) => dropdownEntry.body),
       ),
     );
+    this.setDirection(direction);
     this.setValue(value);
 
     this.dropdownEntries.forEach((dropdownEntry) => {
       dropdownEntry.on("select", (value) => this.selectValue(value));
     });
     this.body.addEventListener("click", () => this.toggleOptionList());
+  }
+
+  private setDirection(direction: Direction): void {
+    switch (direction) {
+      case Direction.DOWN:
+        this.optionList.val.style.top = "100%";
+        return;
+      case Direction.UP:
+        this.optionList.val.style.bottom = "100%";
+        return;
+    }
   }
 
   public setValue(value: T): void {
@@ -139,6 +158,10 @@ export class DropdownList<T> extends EventEmitter {
     } else {
       this.optionList.val.style.display = "none";
     }
+  }
+
+  public click(): void {
+    this.body.click();
   }
 
   public remove(): void {

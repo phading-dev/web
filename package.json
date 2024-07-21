@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@phading/comment_service_interface": "^0.2.1",
-    "@phading/commerce_service_interface": "^0.1.4",
+    "@phading/commerce_service_interface": "^0.1.7",
     "@phading/constants": "^0.1.0",
     "@phading/product_meter_service_interface": "^0.2.5",
     "@phading/product_recommendation_service_interface": "^0.3.10",

@@ -1,5 +1,5 @@
 import path = require("path");
-import { DropdownList } from "./dropdown_list";
+import { Direction, DropdownList } from "./dropdown_list";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -39,6 +39,7 @@ TEST_RUNNER.run({
           ],
           Location.MIDDLE,
           "width: 10rem;",
+          Direction.DOWN,
         );
         let selected: Location;
         this.cut.on("select", (value) => (selected = value));
@@ -106,6 +107,47 @@ TEST_RUNNER.run({
           path.join(__dirname, "/dropdown_list_hide_options.png"),
           path.join(__dirname, "/golden/dropdown_list_default.png"),
           path.join(__dirname, "/dropdown_list_hide_options_diff.png"),
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "DirectionUp";
+      private cut: DropdownList<Location>;
+      public async execute() {
+        // Prepare
+        await setViewport(400, 400);
+        this.cut = new DropdownList<Location>(
+          [
+            {
+              kind: Location.TOP,
+              localizedMsg: "Top",
+            },
+            {
+              kind: Location.MIDDLE,
+              localizedMsg: "Middle",
+            },
+            {
+              kind: Location.BOTTOM,
+              localizedMsg: "Bottom",
+            },
+          ],
+          Location.MIDDLE,
+          "margin-top: 20rem; width: 10rem;",
+          Direction.UP,
+        );
+        document.body.append(this.cut.body);
+
+        // Execute
+        this.cut.selectedOption.val.click();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/dropdown_list_drop_up.png"),
+          path.join(__dirname, "/golden/dropdown_list_drop_up.png"),
+          path.join(__dirname, "/dropdown_list_drop_up_diff.png"),
         );
       }
       public tearDown() {

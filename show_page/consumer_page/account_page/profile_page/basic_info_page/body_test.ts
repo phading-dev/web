@@ -60,7 +60,9 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.avatarContainer.dispatchEvent(new MouseEvent("mouseenter"));
+        this.cut.avatarContainer.val.dispatchEvent(
+          new MouseEvent("mouseenter"),
+        );
         await new Promise<void>((resolve) =>
           this.cut.once("avatarUpdateHintTransitionEnded", resolve),
         );
@@ -73,7 +75,9 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.avatarContainer.dispatchEvent(new MouseEvent("mouseleave"));
+        this.cut.avatarContainer.val.dispatchEvent(
+          new MouseEvent("mouseleave"),
+        );
         await new Promise<void>((resolve) =>
           this.cut.once("avatarUpdateHintTransitionEnded", resolve),
         );
@@ -90,7 +94,7 @@ TEST_RUNNER.run({
         this.cut.on("updateAvatar", () => (updateAvatar = true));
 
         // Execute
-        this.cut.avatarContainer.click();
+        this.cut.avatarContainer.val.click();
 
         // Verify
         assertThat(updateAvatar, eq(true), "update avatar");
@@ -152,7 +156,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.infoValuesGroup.click();
+        this.cut.infoValuesGroup.val.click();
 
         // Verify
         assertThat(

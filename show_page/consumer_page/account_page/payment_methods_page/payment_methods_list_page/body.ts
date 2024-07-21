@@ -6,7 +6,7 @@ import {
   PAGE_BACKGROUND_STYLE,
   PAGE_MEDIUM_CARD_STYLE,
 } from "../../../../../common/page_style";
-import { FONT_L, FONT_S } from "../../../../../common/sizes";
+import { FONT_S } from "../../../../../common/sizes";
 import { COMMERCE_SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { AddPaymentMethodButton } from "./add_payment_method_button";
 import { CardPaymentItem } from "./card_payment_item/body";
@@ -39,11 +39,10 @@ export class PaymentMethodsListPage extends EventEmitter {
     );
   }
 
-  private body_: HTMLDivElement;
-  private card: HTMLDivElement;
-  private items = new Array<CardPaymentItem>();
-  private addPaymentMethodButton_: BlockingButton;
-  private addErrorMsg: HTMLDivElement;
+  public body: HTMLDivElement;
+  public items = new Array<CardPaymentItem>();
+  public addPaymentMethodButton = new Ref<BlockingButton>();
+  private addErrorMsg = new Ref<HTMLDivElement>();
   private response: CreateStripeSessionToAddPaymentMethodResponse;
 
   public constructor(
@@ -54,55 +53,43 @@ export class PaymentMethodsListPage extends EventEmitter {
     private webSerivceClient: WebServiceClient,
   ) {
     super();
-    let cardRef = new Ref<HTMLDivElement>();
-    this.body_ = E.div(
-      {
-        class: "payment-methods-list",
-        style: PAGE_BACKGROUND_STYLE,
-      },
-      E.divRef(cardRef, {
-        class: "payment-methods-list-card",
-        style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 1.5rem;`,
-      }),
-    );
-    this.card = cardRef.val;
+    this.body = E.div({
+      class: "payment-methods-list",
+      style: PAGE_BACKGROUND_STYLE,
+    });
 
     this.load();
   }
 
   private async load(): Promise<void> {
     let response = await listPaymentMethods(this.webSerivceClient, {});
-    let addPaymentMethodButtonRef = new Ref<BlockingButton>();
-    let addErrorMsgRef = new Ref<HTMLDivElement>();
-    this.card.append(
+
+    this.body.append(
       E.div(
         {
-          class: "payment-methods-list-title",
-          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
+          class: "payment-methods-list-card",
+          style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 1.5rem;`,
         },
-        E.text(LOCALIZED_TEXT.paymentMethodsListTitle),
-      ),
-      ...this.createPaymentMethodItems(response.paymentMethods),
-      assign(
-        addPaymentMethodButtonRef,
-        AddPaymentMethodButton.create().enable().show(),
-      ).body,
-      E.divRef(
-        addErrorMsgRef,
-        {
-          class: "payment-methods-list-add-error",
-          style: `font-size: ${FONT_S}rem; color: ${SCHEME.error0}; visibility: hidden;`,
-        },
-        E.text("1"),
+        ...this.createPaymentMethodItems(response.paymentMethods),
+        assign(
+          this.addPaymentMethodButton,
+          AddPaymentMethodButton.create().enable().show(),
+        ).body,
+        E.divRef(
+          this.addErrorMsg,
+          {
+            class: "payment-methods-list-add-error",
+            style: `font-size: ${FONT_S}rem; color: ${SCHEME.error0}; visibility: hidden;`,
+          },
+          E.text("1"),
+        ),
       ),
     );
-    this.addPaymentMethodButton_ = addPaymentMethodButtonRef.val;
-    this.addErrorMsg = addErrorMsgRef.val;
 
-    this.addPaymentMethodButton_.on("action", () =>
+    this.addPaymentMethodButton.val.on("action", () =>
       this.startRedirectingToAddPaymentMethod(),
     );
-    this.addPaymentMethodButton_.on("postAction", (error?: Error) =>
+    this.addPaymentMethodButton.val.on("postAction", (error?: Error) =>
       this.tryRedirectToStripeToAddPaymentMethod(error),
     );
     this.emit("loaded");
@@ -125,7 +112,7 @@ export class PaymentMethodsListPage extends EventEmitter {
   }
 
   private async startRedirectingToAddPaymentMethod(): Promise<void> {
-    this.addErrorMsg.style.visibility = "hidden";
+    this.addErrorMsg.val.style.visibility = "hidden";
     this.response = await createStripeSessionToAddPaymentMethod(
       this.webSerivceClient,
       {
@@ -138,9 +125,9 @@ export class PaymentMethodsListPage extends EventEmitter {
     error?: Error,
   ): Promise<void> {
     if (error) {
-      this.addErrorMsg.textContent =
+      this.addErrorMsg.val.textContent =
         LOCALIZED_TEXT.startToAddPaymentMethodsFailed;
-      this.addErrorMsg.style.visibility = "visible";
+      this.addErrorMsg.val.style.visibility = "visible";
       this.emit("redirectError");
     } else {
       this.window.location.href = this.response.redirectUrl;
@@ -148,19 +135,7 @@ export class PaymentMethodsListPage extends EventEmitter {
     }
   }
 
-  public get body() {
-    return this.body_;
-  }
-
   public remove(): void {
-    this.body_.remove();
-  }
-
-  // Visible for testing
-  public get paymentMethodItems() {
-    return this.items;
-  }
-  public get addPaymentMethodButton() {
-    return this.addPaymentMethodButton_;
+    this.body.remove();
   }
 }
