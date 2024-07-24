@@ -9,13 +9,13 @@ enum Page {
   SIGN_UP,
 }
 
-export interface AuthPageNavigator {
+export interface AuthPage {
   on(event: "signedIn", listener: () => void): this;
 }
 
-export class AuthPageNavigator extends EventEmitter {
-  public static create(appendBodiesFn: AddBodiesFn): AuthPageNavigator {
-    return new AuthPageNavigator(
+export class AuthPage extends EventEmitter {
+  public static create(appendBodiesFn: AddBodiesFn): AuthPage {
+    return new AuthPage(
       SignInPage.create,
       SignUpPage.create,
       appendBodiesFn,

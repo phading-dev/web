@@ -1,5 +1,5 @@
 import path = require("path");
-import { AuthPageNavigator } from "./body";
+import { AuthPage } from "./body";
 import { SignInPageMock } from "./sign_in_page_mock";
 import { SignUpPageMock } from "./sign_up_page_mock";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -7,14 +7,14 @@ import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import "../common/normalize_body";
 
 TEST_RUNNER.run({
-  name: "AuthPageNavigatorTest",
+  name: "AuthPageTest",
   cases: [
     new (class implements TestCase {
       public name = "Render";
-      private cut: AuthPageNavigator;
+      private cut: AuthPage;
       public async execute() {
         // Execute
-        this.cut = new AuthPageNavigator(
+        this.cut = new AuthPage(
           () => new SignInPageMock(),
           () => new SignUpPageMock(),
           (...bodies) => document.body.append(...bodies),

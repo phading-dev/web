@@ -1,5 +1,5 @@
 import path = require("path");
-import { ChooseAccountPageNavigator } from "./body";
+import { ChooseAccountPage } from "./body";
 import { CreateAccountPageMock } from "./create_account_page/body_mock";
 import { ListAccountsPageMock } from "./list_accounts_page/body_mock";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
@@ -9,17 +9,17 @@ import { assertThat, eq } from "@selfage/test_matcher";
 import "../common/normalize_body";
 
 TEST_RUNNER.run({
-  name: "ChooseAccountPageNavigator",
+  name: "ChooseAccountPage",
   cases: [
     new (class implements TestCase {
       public name = "Default";
-      private cut: ChooseAccountPageNavigator;
+      private cut: ChooseAccountPage;
       public async execute() {
         // Prepare
         await setViewport(800, 600);
 
         // Execute
-        this.cut = new ChooseAccountPageNavigator(
+        this.cut = new ChooseAccountPage(
           (accountType) => new CreateAccountPageMock(accountType),
           () => new ListAccountsPageMock(),
           (...bodies) => document.body.append(...bodies),

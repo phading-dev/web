@@ -11,15 +11,15 @@ enum Page {
   CREATE_PUBLISHER,
 }
 
-export interface ChooseAccountPageNavigator {
+export interface ChooseAccountPage {
   on(event: "chosen", listener: () => void): this;
 }
 
-export class ChooseAccountPageNavigator extends EventEmitter {
+export class ChooseAccountPage extends EventEmitter {
   public static create(
     appendBodiesFn: AddBodiesFn,
-  ): ChooseAccountPageNavigator {
-    return new ChooseAccountPageNavigator(
+  ): ChooseAccountPage {
+    return new ChooseAccountPage(
       CreateAccountPage.create,
       ListAccountsPage.create,
       appendBodiesFn,
