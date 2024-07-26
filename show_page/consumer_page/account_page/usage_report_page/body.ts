@@ -17,23 +17,27 @@ import { FONT_M, FONT_WEIGHT_600 } from "../../../../common/sizes";
 import { formatSecondsAsHHMMSS } from "../../../../common/timestamp_formatter";
 import { COMMERCE_SERVICE_CLIENT } from "../../../../common/web_service_client";
 import {
+  Granularity,
+  USAGE_REPORT_PAGE_STATE,
+  UsageReportPageState,
+} from "./state";
+import {
   listMeterReadingsPerDay,
   listMeterReadingsPerMonth,
   listMeterReadingsPerSeason,
 } from "@phading/commerce_service_interface/consumer/frontend/show/client_requests";
 import { Money } from "@phading/commerce_service_interface/money";
 import { E } from "@selfage/element/factory";
+import { copyMessage } from "@selfage/message/copier";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
-export enum RangeGranularity {
-  DAY = 1,
-  MONTH = 2,
-}
-
 export interface UsageReportPage {
+  on(
+    event: "newState",
+    listener: (newState: UsageReportPageState) => void,
+  ): this;
   on(event: "loaded", listener: () => void): this;
-  on(event: "chooseReport", listener: () => void): this;
 }
 
 export class UsageReportPage extends EventEmitter {
@@ -49,27 +53,17 @@ export class UsageReportPage extends EventEmitter {
   public startMonthInput = new Ref<HTMLInputElement>();
   public endDateInput = new Ref<HTMLInputElement>();
   public endMonthInput = new Ref<HTMLInputElement>();
-  public granularityDropdown = new Ref<DropdownList<RangeGranularity>>();
+  public granularityDropdown = new Ref<DropdownList<Granularity>>();
   private inputError = new Ref<HTMLDivElement>();
   private readingsContainer = new Ref<HTMLDivElement>();
   private queryIndex = 0;
+  private state: UsageReportPageState;
 
   public constructor(
     private now: () => number,
     private webServiceClient: WebServiceClient,
   ) {
     super();
-    // Use this hack to convert current timestamp to the specified time zone.
-    // now() gets the current timestamp in local time zone. toLocaleString()
-    // converts the timestamp to the specified timezone and output a date
-    // string but without a timezone in the string. Date() will then parse the
-    // date string as UTC. Therefore, we should always use getUTC*() functions.
-    let nowDate = new Date(
-      new Date(this.now()).toLocaleString("en-US", {
-        timeZone: UsageReportPage.TIMEZONE_ID,
-      }),
-    );
-    let initGranularity = RangeGranularity.DAY;
     this.body = E.div(
       {
         class: "usage-report",
@@ -145,16 +139,16 @@ export class UsageReportPage extends EventEmitter {
             DropdownList.create(
               [
                 {
-                  kind: RangeGranularity.DAY,
+                  kind: Granularity.DAY,
                   localizedMsg: LOCALIZED_TEXT.usageReportRangeGranularityAsDay,
                 },
                 {
-                  kind: RangeGranularity.MONTH,
+                  kind: Granularity.MONTH,
                   localizedMsg:
                     LOCALIZED_TEXT.usageReportRangeGranularityAsMonth,
                 },
               ],
-              initGranularity,
+              Granularity.DAY,
               `flex: 0 0 auto; width: 7rem;`,
             ),
           ).body,
@@ -179,83 +173,144 @@ export class UsageReportPage extends EventEmitter {
         }),
       ),
     );
-    this.setInitialDate(nowDate);
-    this.updateGranularity(initGranularity);
 
-    this.granularityDropdown.val.on("select", (granularity) =>
-      this.updateGranularity(granularity),
+    this.granularityDropdown.val.on("select", () =>
+      this.updateStateAndBubbleUp((newState) => {
+        newState.granularity = this.granularityDropdown.val.selectedKind;
+      }),
     );
     this.startDateInput.val.addEventListener("input", () =>
-      this.validateDateRangeAndQuery(),
+      this.updateStateAndBubbleUp((newState) => {
+        newState.dateRange.startDate = this.startDateInput.val.value;
+      }),
     );
     this.endDateInput.val.addEventListener("input", () =>
-      this.validateDateRangeAndQuery(),
+      this.updateStateAndBubbleUp((newState) => {
+        newState.dateRange.endDate = this.endDateInput.val.value;
+      }),
     );
     this.startMonthInput.val.addEventListener("input", () =>
-      this.validateDateRangeAndQuery(),
+      this.updateStateAndBubbleUp((newState) => {
+        newState.monthRange.startMonth = this.startMonthInput.val.value;
+      }),
     );
     this.endMonthInput.val.addEventListener("input", () =>
-      this.validateDateRangeAndQuery(),
+      this.updateStateAndBubbleUp((newState) => {
+        newState.monthRange.endMonth = this.endMonthInput.val.value;
+      }),
     );
   }
 
-  private updateGranularity(granularity: RangeGranularity): void {
-    switch (granularity) {
-      case RangeGranularity.DAY:
+  private updateStateAndBubbleUp(
+    setField: (newState: UsageReportPageState) => void,
+  ): void {
+    let newState = copyMessage(this.state, USAGE_REPORT_PAGE_STATE);
+    setField(newState);
+    let valid = this.updateState(newState);
+    if (valid) {
+      // Only pushes into history stack if the query is valid.
+      this.emit("newState", newState);
+    }
+  }
+
+  // Returns true if a query is valid and being executed.
+  public updateState(newState?: UsageReportPageState): boolean {
+    if (!newState) {
+      newState = {};
+    }
+    if (!newState.granularity) {
+      newState.granularity = Granularity.DAY;
+    }
+    switch (newState.granularity) {
+      case Granularity.DAY:
+        newState.monthRange = undefined;
+        if (
+          !newState.dateRange ||
+          (!newState.dateRange.startDate && !newState.dateRange.endDate)
+        ) {
+          let nowDate = this.getNowDate();
+          let dateIsoString = toISODateString(nowDate);
+          newState.dateRange = {
+            startDate: dateIsoString,
+            endDate: dateIsoString,
+          };
+        }
+        break;
+      case Granularity.MONTH:
+        newState.dateRange = undefined;
+        if (
+          !newState.monthRange ||
+          (!newState.monthRange.startMonth && !newState.monthRange.endMonth)
+        ) {
+          let nowDate = this.getNowDate();
+          let monthIsoString = toISOMonthString(nowDate);
+          newState.monthRange = {
+            startMonth: monthIsoString,
+            endMonth: monthIsoString,
+          };
+        }
+        break;
+      default:
+        throw new Error("Unsupported granularity");
+    }
+    this.state = newState;
+
+    this.inputError.val.style.visibility = "hidden";
+    switch (this.state.granularity) {
+      case Granularity.DAY: {
+        this.granularityDropdown.val.setValue(Granularity.DAY);
         this.startDateInput.val.style.display = "block";
         this.endDateInput.val.style.display = "block";
         this.startMonthInput.val.style.display = "none";
         this.endMonthInput.val.style.display = "none";
-        break;
-      case RangeGranularity.MONTH:
+        this.startDateInput.val.value = this.state.dateRange.startDate;
+        this.endDateInput.val.value = this.state.dateRange.endDate;
+
+        let startDate = this.startDateInput.val.valueAsDate;
+        let endDate = this.endDateInput.val.valueAsDate;
+        if (!startDate || !endDate) {
+          return false;
+        }
+
+        let startTime = startDate.getTime();
+        let endTime = endDate.getTime();
+        if (endTime < startTime) {
+          this.inputError.val.textContent =
+            LOCALIZED_TEXT.usageReportEndDateSmallerThanStartDate;
+          this.inputError.val.style.visibility = "visible";
+          return false;
+        } else if (endTime === startTime) {
+          this.listMeterReadingsPerSeason(startDate);
+          return true;
+        } else {
+          this.listMeterReadingsPerDay(startDate, endDate);
+          return true;
+        }
+      }
+      case Granularity.MONTH: {
+        this.granularityDropdown.val.setValue(Granularity.MONTH);
         this.startDateInput.val.style.display = "none";
         this.endDateInput.val.style.display = "none";
         this.startMonthInput.val.style.display = "block";
         this.endMonthInput.val.style.display = "block";
-        break;
-    }
-    this.validateDateRangeAndQuery();
-  }
+        this.startMonthInput.val.value = this.state.monthRange.startMonth;
+        this.endMonthInput.val.value = this.state.monthRange.endMonth;
 
-  private setInitialDate(nowDate: Date): void {
-    let dateIsoString = toISODateString(nowDate);
-    let monthIsoString = toISOMonthString(nowDate);
-    this.startDateInput.val.value = dateIsoString;
-    this.endDateInput.val.value = dateIsoString;
-    this.startMonthInput.val.value = monthIsoString;
-    this.endMonthInput.val.value = monthIsoString;
-  }
-
-  private async validateDateRangeAndQuery(): Promise<void> {
-    this.inputError.val.style.visibility = "hidden";
-    switch (this.granularityDropdown.val.selectedKind) {
-      case RangeGranularity.DAY: {
-        let startDate = this.startDateInput.val.valueAsDate;
-        let endDate = this.endDateInput.val.valueAsDate;
-        let startTime = startDate.getTime();
-        let endTime = endDate.getTime();
-        if (endTime < startTime) {
-          this.inputError.val.textContent =
-            LOCALIZED_TEXT.usageReportEndDateSmallerThanStartDate;
-          this.inputError.val.style.visibility = "visible";
-        } else if (endTime === startTime) {
-          await this.listMeterReadingsPerSeason(startDate);
-        } else {
-          await this.listMeterReadingsPerDay(startDate, endDate);
-        }
-        return;
-      }
-      case RangeGranularity.MONTH: {
         let startDate = this.startMonthInput.val.valueAsDate;
         let endDate = this.endMonthInput.val.valueAsDate;
+        if (!startDate || !endDate) {
+          return false;
+        }
+
         let startTime = startDate.getTime();
         let endTime = endDate.getTime();
         if (endTime < startTime) {
           this.inputError.val.textContent =
             LOCALIZED_TEXT.usageReportEndDateSmallerThanStartDate;
           this.inputError.val.style.visibility = "visible";
+          return false;
         } else if (endTime === startTime) {
-          await this.listMeterReadingsPerDay(
+          this.listMeterReadingsPerDay(
             startDate,
             new Date(
               Date.UTC(
@@ -265,12 +320,26 @@ export class UsageReportPage extends EventEmitter {
               ),
             ),
           );
+          return true;
         } else {
-          await this.listMeterReadingsPerMonth(startDate, endDate);
+          this.listMeterReadingsPerMonth(startDate, endDate);
+          return true;
         }
-        return;
       }
     }
+  }
+
+  private getNowDate(): Date {
+    // Use this hack to convert current timestamp to the specified time zone.
+    // now() gets the current timestamp in local time zone. toLocaleString()
+    // converts the timestamp to the specified timezone and output a date
+    // string but without a timezone in the string. Date() will then parse the
+    // date string as UTC. Therefore, we should always use getUTC*() functions.
+    return new Date(
+      new Date(this.now()).toLocaleString("en-US", {
+        timeZone: UsageReportPage.TIMEZONE_ID,
+      }),
+    );
   }
 
   private listMeterReadingsPerSeason(date: Date): Promise<void> {

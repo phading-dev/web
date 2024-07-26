@@ -1,9 +1,9 @@
 import userImage = require("./test_data/user_image.jpg");
-import { BasicInfoPag } from "./body";
-import { GetAccountResponse } from "@phading/user_service_interface/self/frontend/interface";
+import { BasicInfoPage } from "./body";
+import { GetAccountAndUserResponse } from "@phading/user_service_interface/self/frontend/interface";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
-export class BasicInfoPagMock extends BasicInfoPag {
+export class BasicInfoPageMock extends BasicInfoPage {
   public constructor() {
     super(
       new (class extends WebServiceClientMock {
@@ -13,8 +13,10 @@ export class BasicInfoPagMock extends BasicInfoPag {
               avatarLargePath: userImage,
               contactEmail: "my@gmail.com",
               naturalName: "First Second",
+              username: "user1",
+              recoveryEmail: "some@gmail.com",
             },
-          } as GetAccountResponse;
+          } as GetAccountAndUserResponse;
         }
       })(),
     );

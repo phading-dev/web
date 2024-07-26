@@ -5,14 +5,11 @@
       "name": "PROFILE",
       "value": 1
     }, {
-      "name": "SECURITY",
+      "name": "PAYMENT_METHODS",
       "value": 2
     }, {
-      "name": "PAYMENT_METHODS",
+      "name": "USAGE_REPORT",
       "value": 3
-    }, {
-      "name": "USAGE_REPORTS",
-      "value": 4
     }]
   }
 }, {
@@ -22,9 +19,9 @@
       "name": "page",
       "type": "Page"
     }, {
-      "name": "usageReportsPageState",
-      "type": "UsageReportsPageState",
-      "import": "./usage_reports_page/state"
+      "name": "usageReport",
+      "type": "UsageReportPageState",
+      "import": "./usage_report_page/state"
     }]
   }
 }]

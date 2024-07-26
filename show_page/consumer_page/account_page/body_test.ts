@@ -1,185 +1,209 @@
 import path = require("path");
-import { MenuItem } from "../../../common/menu_item/body";
 import { AccountPage } from "./body";
 import { PaymentMethodsPageMock } from "./payment_methods_page/body_mock";
 import { ProfilePageMock } from "./profile_page/body_mock";
-import { SecurityPageMock } from "./security_page/body_mock";
-import { AccountPageState, Page } from "./state";
-import { UsageReportsPageMock } from "./usage_reports_page/body_mock";
-import { Page as UsageReportsPage } from "./usage_reports_page/state";
-import { E } from "@selfage/element/factory";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
+import { ACCOUNT_PAGE_STATE, AccountPageState, Page } from "./state";
+import { UsageReportPageMock } from "./usage_report_page/body_mock";
+import { Granularity, UsageReportPageState } from "./usage_report_page/state";
+import { eqMessage } from "@selfage/message/test_matcher";
+import {
+  mouseMove,
+  mouseWheel,
+  setViewport,
+} from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+import { assertThat } from "@selfage/test_matcher";
 import "../../../common/normalize_body";
-
-let menuBodyContainer: HTMLDivElement;
-
-class NavigationTestCase implements TestCase {
-  private cut: AccountPage;
-  public constructor(
-    public name: string,
-    private initPage: Page,
-    private getMenuItem: (accountPage: AccountPage) => MenuItem,
-    private initPageActualFile: string,
-    private initPageExpectedFile: string,
-    private initPageDiffFile: string,
-    private newStateToUpdate: AccountPageState,
-    private updatedPageActualFile: string,
-    private updatedPageExpectedFile: string,
-    private updatedPageDiffFile: string
-  ) {}
-  public async execute() {
-    // Prepare
-    await setViewport(800, 600);
-    this.cut = new AccountPage(
-      (appendBodies, prependMenuBodies) =>
-        new ProfilePageMock(appendBodies, prependMenuBodies),
-      (appendBodies, prependMenuBodies) =>
-        new SecurityPageMock(appendBodies, prependMenuBodies),
-      (appendBodies, prependMenuBodies) =>
-        new PaymentMethodsPageMock(appendBodies, prependMenuBodies),
-      (appendBodies, prependMenuBodies) =>
-        new UsageReportsPageMock(appendBodies, prependMenuBodies),
-      (...bodies) => document.body.append(...bodies),
-      (...bodies) => menuBodyContainer.prepend(...bodies),
-      (...bodies) => menuBodyContainer.append(...bodies)
-    );
-    this.cut.updateState({
-      page: this.initPage,
-    });
-
-    // Execute
-    this.getMenuItem(this.cut).click();
-
-    // Verify
-    await asyncAssertScreenshot(
-      this.initPageActualFile,
-      this.initPageExpectedFile,
-      this.initPageDiffFile
-    );
-
-    // Execute
-    this.cut.updateState(this.newStateToUpdate);
-
-    // Verify
-    await asyncAssertScreenshot(
-      this.updatedPageActualFile,
-      this.updatedPageExpectedFile,
-      this.updatedPageDiffFile
-    );
-  }
-  public tearDown() {
-    this.cut.remove();
-  }
-}
 
 TEST_RUNNER.run({
   name: "AccountPageTest",
-  environment: {
-    setUp() {
-      menuBodyContainer = E.div({
-        style: `position: fixed; left: 0; top: 0`,
-      });
-      document.body.append(menuBodyContainer);
-    },
-    tearDown() {
-      menuBodyContainer.remove();
-    },
-  },
   cases: [
     new (class implements TestCase {
       public name = "Default";
       private cut: AccountPage;
       public async execute() {
         // Prepare
-        await setViewport(800, 600);
+        await setViewport(600, 600);
         this.cut = new AccountPage(
-          (appendBodies, prependMenuBodies) =>
-            new ProfilePageMock(appendBodies, prependMenuBodies),
-          (appendBodies, prependMenuBodies) =>
-            new SecurityPageMock(appendBodies, prependMenuBodies),
-          (appendBodies, prependMenuBodies) =>
-            new PaymentMethodsPageMock(appendBodies, prependMenuBodies),
-          (appendBodies, prependMenuBodies) =>
-            new UsageReportsPageMock(appendBodies, prependMenuBodies),
-          (...bodies) => document.body.append(...bodies),
-          (...bodies) => menuBodyContainer.prepend(...bodies),
-          (...bodies) => menuBodyContainer.append(...bodies)
+          (appendBodies) => new PaymentMethodsPageMock(appendBodies),
+          (appendBodies) => new ProfilePageMock(appendBodies),
+          () => new UsageReportPageMock(),
         );
+        this.cut.updateState();
+        let newStateCaptured: AccountPageState;
+        this.cut.on("newState", (newState) => (newStateCaptured = newState));
 
         // Execute
-        this.cut.updateState();
+        document.body.append(this.cut.body);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/account_page_default.png"),
           path.join(__dirname, "/golden/account_page_default.png"),
-          path.join(__dirname, "/account_page_default_diff.png")
+          path.join(__dirname, "/account_page_default_diff.png"),
+        );
+
+        // Execute
+        this.cut.paymentMethodsPageButton.val.click();
+
+        // Verify
+        assertThat(
+          newStateCaptured,
+          eqMessage(
+            {
+              page: Page.PAYMENT_METHODS,
+            },
+            ACCOUNT_PAGE_STATE,
+          ),
+          "go to payment methods page",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/account_page_payment_methods_page.png"),
+          path.join(__dirname, "/golden/account_page_payment_methods_page.png"),
+          path.join(__dirname, "/account_page_payment_methods_page_diff.png"),
+        );
+
+        // Execute
+        this.cut.usageReportPageButton.val.click();
+
+        // Verify
+        assertThat(
+          newStateCaptured,
+          eqMessage(
+            {
+              page: Page.USAGE_REPORT,
+            },
+            ACCOUNT_PAGE_STATE,
+          ),
+          "go to usage report page",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/account_page_usage_report_page.png"),
+          path.join(__dirname, "/golden/account_page_usage_report_page.png"),
+          path.join(__dirname, "/account_page_usage_report_page_diff.png"),
+        );
+
+        // Execute
+        this.cut.usageReportPage.emit("newState", {
+          granularity: Granularity.MONTH,
+        } as UsageReportPageState);
+
+        // Verify
+        assertThat(
+          newStateCaptured,
+          eqMessage(
+            {
+              page: Page.USAGE_REPORT,
+              usageReport: {
+                granularity: Granularity.MONTH,
+              },
+            },
+            ACCOUNT_PAGE_STATE,
+          ),
+          "usage report update",
+        );
+
+        // Execute
+        this.cut.profilePageButton.val.click();
+
+        // Verify
+        assertThat(
+          newStateCaptured,
+          eqMessage(
+            {
+              page: Page.PROFILE,
+            },
+            ACCOUNT_PAGE_STATE,
+          ),
+          "go to profile page",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/account_page_profile_page.png"),
+          path.join(__dirname, "/golden/account_page_default.png"),
+          path.join(__dirname, "/account_page_profile_page_diff.png"),
         );
       }
       public tearDown() {
         this.cut.remove();
       }
     })(),
-    new NavigationTestCase(
-      "GoToAccount",
-      Page.SECURITY,
-      (accountPage) => accountPage.accountMenuItem,
-      path.join(__dirname, "/account_page_go_to_account.png"),
-      path.join(__dirname, "/golden/account_page_go_to_account.png"),
-      path.join(__dirname, "/account_page_go_to_account_diff.png"),
-      {
-        page: Page.PROFILE,
-      },
-      path.join(__dirname, "/account_page_update_account.png"),
-      path.join(__dirname, "/golden/account_page_go_to_account.png"),
-      path.join(__dirname, "/account_page_update_account_diff.png")
-    ),
-    new NavigationTestCase(
-      "GoToSecurtySettings",
-      Page.PROFILE,
-      (accountPage) => accountPage.securitySettingsMenuItem,
-      path.join(__dirname, "/account_page_go_to_security_settings.png"),
-      path.join(__dirname, "/golden/account_page_go_to_security_settings.png"),
-      path.join(__dirname, "/account_page_go_to_security_settings_diff.png"),
-      {
-        page: Page.SECURITY,
-      },
-      path.join(__dirname, "/account_page_update_security_settings.png"),
-      path.join(__dirname, "/golden/account_page_go_to_security_settings.png"),
-      path.join(__dirname, "/account_page_update_security_settings_diff.png")
-    ),
-    new NavigationTestCase(
-      "GoToPaymentMethods",
-      Page.PROFILE,
-      (accountPage) => accountPage.paymentMethodsMenuItem,
-      path.join(__dirname, "/account_page_go_to_payment_methods.png"),
-      path.join(__dirname, "/golden/account_page_go_to_payment_methods.png"),
-      path.join(__dirname, "/account_page_go_to_payment_methods_diff.png"),
-      {
-        page: Page.PAYMENT_METHODS,
-      },
-      path.join(__dirname, "/account_page_update_payment_methods.png"),
-      path.join(__dirname, "/golden/account_page_go_to_payment_methods.png"),
-      path.join(__dirname, "/account_page_update_payment_methods_diff.png")
-    ),
-    new NavigationTestCase(
-      "GoToUsageReports",
-      Page.PROFILE,
-      (accountPage) => accountPage.usageReportsMenuItem,
-      path.join(__dirname, "/account_page_go_to_usage_reports.png"),
-      path.join(__dirname, "/golden/account_page_go_to_usage_reports.png"),
-      path.join(__dirname, "/account_page_go_to_usage_reports_diff.png"),
-      {
-        page: Page.USAGE_REPORTS,
-        usageReportsPageState: {
-          page: UsageReportsPage.CHOOSE,
-        },
-      },
-      path.join(__dirname, "/account_page_update_usage_reports.png"),
-      path.join(__dirname, "/golden/account_page_update_usage_reports.png"),
-      path.join(__dirname, "/account_page_update_usage_reports_diff.png")
-    ),
+    new (class implements TestCase {
+      public name = "UpdateStateToPaymentMethods";
+      private cut: AccountPage;
+      public async execute() {
+        // Prepare
+        await setViewport(600, 600);
+        this.cut = new AccountPage(
+          (appendBodies) => new PaymentMethodsPageMock(appendBodies),
+          (appendBodies) => new ProfilePageMock(appendBodies),
+          () => new UsageReportPageMock(),
+        );
+        this.cut.updateState({
+          page: Page.PAYMENT_METHODS,
+        });
+
+        // Execute
+        document.body.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/account_page_update_state_payment_methods_Page.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/account_page_update_state_payment_methods_Page.png",
+          ),
+          path.join(
+            __dirname,
+            "/account_page_update_state_payment_methods_Page_diff.png",
+          ),
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "Short_ScrollToBottom";
+      private cut: AccountPage;
+      public async execute() {
+        // Prepare
+        await setViewport(350, 500);
+        this.cut = new AccountPage(
+          (appendBodies) => new PaymentMethodsPageMock(appendBodies),
+          (appendBodies) => new ProfilePageMock(appendBodies),
+          () => new UsageReportPageMock(),
+        );
+        this.cut.updateState();
+
+        // Execute
+        document.body.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/account_page_short.png"),
+          path.join(__dirname, "/golden/account_page_short.png"),
+          path.join(__dirname, "/account_page_short_diff.png"),
+        );
+
+        // Execute
+        await mouseMove(1, 1, 1);
+        await mouseWheel(100, 300);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/account_page_scroll_to_bottom.png"),
+          path.join(__dirname, "/golden/account_page_scroll_to_bottom.png"),
+          path.join(__dirname, "/account_page_scroll_to_bottom_diff.png"),
+        );
+      }
+      public async tearDown() {
+        await mouseMove(-1, -1, 1);
+        this.cut.remove();
+      }
+    })(),
   ],
 });

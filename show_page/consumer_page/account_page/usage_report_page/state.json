@@ -1,0 +1,52 @@
+[{
+  "name": "Granularity",
+  "enum": {
+    "values": [{
+      "name": "DAY",
+      "value": 1
+    }, {
+      "name": "MONTH",
+      "value": 2
+    }]
+  }
+}, {
+  "name": "DateRange",
+  "message": {
+    "fields": [{
+      "name": "startDate",
+      "type": "string",
+      "comment": "ISO date string"
+    }, {
+      "name": "endDate",
+      "type": "string",
+      "comment": "ISO date string"
+    }]
+  }
+}, {
+  "name": "MonthRange",
+  "message": {
+    "fields": [{
+      "name": "startMonth",
+      "type": "string",
+      "comment": "ISO date string"
+    }, {
+      "name": "endMonth",
+      "type": "string",
+      "comment": "ISO date string"
+    }]
+  }
+}, {
+  "name": "UsageReportPageState",
+  "message": {
+    "fields": [{
+      "name": "granularity",
+      "type": "Granularity"
+    }, {
+      "name": "dateRange",
+      "type": "DateRange"
+    }, {
+      "name": "monthRange",
+      "type": "MonthRange"
+    }]
+  }
+}]

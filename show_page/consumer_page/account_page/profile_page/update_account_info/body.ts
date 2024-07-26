@@ -12,7 +12,7 @@ import {
   NATURAL_NAME_LENGTH_LIMIT,
 } from "../../../../../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { Account } from "@phading/user_service_interface/self/frontend/account";
+import { AccountAndUser } from "@phading/user_service_interface/self/frontend/account";
 import { updateAccount } from "@phading/user_service_interface/self/frontend/client_requests";
 import {
   UpdateAccountRequestBody,
@@ -28,7 +28,7 @@ export interface UpdateAccountInfoPage {
 }
 
 export class UpdateAccountInfoPage extends EventEmitter {
-  public static create(account: Account): UpdateAccountInfoPage {
+  public static create(account: AccountAndUser): UpdateAccountInfoPage {
     return new UpdateAccountInfoPage(USER_SERVICE_CLIENT, account);
   }
 
@@ -48,7 +48,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
 
   public constructor(
     private userServiceClient: WebServiceClient,
-    account: Account,
+    account: AccountAndUser,
   ) {
     super();
     this.inputFormPage = InputFormPage.create(

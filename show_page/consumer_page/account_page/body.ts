@@ -1,224 +1,209 @@
 import EventEmitter = require("events");
 import { AddBodiesFn } from "../../../common/add_bodies_fn";
-import { MenuItem } from "../../../common/menu_item/body";
+import { SCHEME } from "../../../common/color_scheme";
+import { IconButton, TooltipPosition } from "../../../common/icon_button";
 import {
-  createAccountMenuItem,
-  createHomeMenuItem,
-  createPaymentMethodsMenuIcon,
-  createSecuritySettingsMenuItem,
-  createUsageReportsMenuItem,
-} from "../../../common/menu_item/factory";
+  createAccountIcon,
+  createHistogramIcon,
+  createHomeIcon,
+  createPaymentIcon,
+} from "../../../common/icons";
+import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PageNavigator } from "../../../common/page_navigator";
+import { ICON_M } from "../../../common/sizes";
 import { PaymentMethodsPage } from "./payment_methods_page/body";
 import { ProfilePage } from "./profile_page/body";
-import { SecurityPage } from "./security_page/body";
 import { AccountPageState, Page } from "./state";
-import { UsageReportsPage } from "./usage_reports_page/body";
+import { UsageReportPage } from "./usage_report_page/body";
+import { E } from "@selfage/element/factory";
+import { Ref, assign } from "@selfage/ref";
 
 export interface AccountPage {
-  on(event: "newState", listener: (newState: AccountPageState) => void): this;
   on(event: "home", listener: () => void): this;
+  on(event: "signOut", listener: () => void): this;
+  on(event: "switchAccount", listener: () => void): this;
+  on(event: "newState", listener: (newState: AccountPageState) => void): this;
 }
 
 export class AccountPage extends EventEmitter {
-  public static create(
-    appendBodies: AddBodiesFn,
-    prependMenuBodies: AddBodiesFn,
-    appendMenuBodies: AddBodiesFn
-  ): AccountPage {
+  public static create(): AccountPage {
     return new AccountPage(
-      ProfilePage.create,
-      SecurityPage.create,
       PaymentMethodsPage.create,
-      UsageReportsPage.create,
-      appendBodies,
-      prependMenuBodies,
-      appendMenuBodies
+      ProfilePage.create,
+      UsageReportPage.create,
     );
   }
 
-  private profilePage_: ProfilePage;
-  private securityPage_: SecurityPage;
-  private paymentMethodsPage_: PaymentMethodsPage;
-  private usageReportsPage_: UsageReportsPage;
-  private homeMenuItem_: MenuItem;
-  private accountMenuItem_: MenuItem;
-  private securitySettingsMenuItem_: MenuItem;
-  private paymentMethodsMenuItem_: MenuItem;
-  private usageReportsMenuItem_: MenuItem;
+  public body: HTMLDivElement;
+  private pageContainer = new Ref<HTMLDivElement>();
+  public homePageButton = new Ref<IconButton>();
+  public profilePageButton = new Ref<IconButton>();
+  public paymentMethodsPageButton = new Ref<IconButton>();
+  public usageReportPageButton = new Ref<IconButton>();
+  public paymentMethodsPage: PaymentMethodsPage;
+  public profilePage: ProfilePage;
+  public usageReportPage: UsageReportPage;
   private pageNavigator: PageNavigator<Page>;
   private state: AccountPageState;
 
   public constructor(
-    private createProfilePage: (
-      appendBodies: AddBodiesFn,
-      prependMenuBodies: AddBodiesFn
-    ) => ProfilePage,
-    private createSecurityPage: (
-      appendBodies: AddBodiesFn,
-      prependMenuBodies: AddBodiesFn
-    ) => SecurityPage,
     private createPaymentMethodsPage: (
       appendBodies: AddBodiesFn,
-      prependMenuBodies: AddBodiesFn
     ) => PaymentMethodsPage,
-    private createUsageReportsPage: (
-      appendBodies: AddBodiesFn,
-      prependMenuBodies: AddBodiesFn
-    ) => UsageReportsPage,
-    private appendBodies: AddBodiesFn,
-    private prependMenuBodies: AddBodiesFn,
-    private appendMenuBodies: AddBodiesFn
+    private createProfilePage: (appendBodies: AddBodiesFn) => ProfilePage,
+    private createUsageReportPage: () => UsageReportPage,
   ) {
     super();
-    this.pageNavigator = new PageNavigator(
+
+    this.body = E.div(
+      {
+        class: "account-page",
+        style: `width: 100%; height: 100%; display: flex; flex-flow: column nowrap; align-items: center; background-color: ${SCHEME.neutral3};`,
+      },
+      E.divRef(this.pageContainer, {
+        class: "account-page-container",
+        style: `flex: 1 1 0; min-height: 0; width: 100%; overflow-y: auto;`,
+      }),
+      E.div(
+        {
+          class: "account-page-navigation-buttons",
+          style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem; padding: 0 1rem; border-radius: 1rem 1rem 0 0; background-color: ${SCHEME.neutral4};`,
+        },
+        assign(
+          this.homePageButton,
+          IconButton.create(
+            ICON_M,
+            0.7,
+            "",
+            createHomeIcon(SCHEME.neutral1),
+            TooltipPosition.TOP,
+            LOCALIZED_TEXT.homeLabel,
+          ),
+        ).body,
+        assign(
+          this.profilePageButton,
+          IconButton.create(
+            ICON_M,
+            0.7,
+            "",
+            createAccountIcon(SCHEME.neutral1),
+            TooltipPosition.TOP,
+            LOCALIZED_TEXT.accountLabel,
+          ),
+        ).body,
+        assign(
+          this.paymentMethodsPageButton,
+          IconButton.create(
+            ICON_M,
+            0.7,
+            "",
+            createPaymentIcon(SCHEME.neutral1),
+            TooltipPosition.TOP,
+            LOCALIZED_TEXT.paymentMethodsLabel,
+          ),
+        ).body,
+        assign(
+          this.usageReportPageButton,
+          IconButton.create(
+            ICON_M,
+            0.7,
+            "",
+            createHistogramIcon(SCHEME.neutral1),
+            TooltipPosition.TOP,
+            LOCALIZED_TEXT.usageReportLabel,
+          ),
+        ).body,
+      ),
+    );
+
+    this.pageNavigator = new PageNavigator<Page>(
       (page) => this.addPage(page),
       (page) => this.removePage(page),
-      (page) => this.updatePage(page)
+      (page) => this.updatePage(page),
     );
-
-    this.homeMenuItem_ = createHomeMenuItem();
-    this.accountMenuItem_ = createAccountMenuItem();
-    this.securitySettingsMenuItem_ = createSecuritySettingsMenuItem();
-    this.paymentMethodsMenuItem_ = createPaymentMethodsMenuIcon();
-    this.usageReportsMenuItem_ = createUsageReportsMenuItem();
-    this.appendMenuBodies(
-      this.homeMenuItem_.body,
-      this.accountMenuItem_.body,
-      this.securitySettingsMenuItem_.body,
-      this.paymentMethodsMenuItem_.body,
-      this.usageReportsMenuItem_.body
+    this.profilePageButton.val.on("action", () =>
+      this.updateStatePageAndEmit(Page.PROFILE),
     );
-
-    this.homeMenuItem_.on("action", () => this.emit("home"));
-    this.accountMenuItem_.on("action", () =>
-      this.updateState({
-        page: Page.PROFILE,
-      })
+    this.paymentMethodsPageButton.val.on("action", () =>
+      this.updateStatePageAndEmit(Page.PAYMENT_METHODS),
     );
-    this.securitySettingsMenuItem_.on("action", () =>
-      this.updateState({
-        page: Page.SECURITY,
-      })
-    );
-    this.paymentMethodsMenuItem_.on("action", () =>
-      this.updateState({
-        page: Page.PAYMENT_METHODS,
-      })
-    );
-    this.usageReportsMenuItem_.on("action", () =>
-      this.updateState({
-        page: Page.USAGE_REPORTS,
-      })
+    this.usageReportPageButton.val.on("action", () =>
+      this.updateStatePageAndEmit(Page.USAGE_REPORT),
     );
   }
 
   private addPage(page: Page): void {
     switch (page) {
       case Page.PROFILE:
-        this.profilePage_ = this.createProfilePage(
-          this.appendBodies,
-          this.prependMenuBodies
-        );
-        break;
-      case Page.SECURITY:
-        this.securityPage_ = this.createSecurityPage(
-          this.appendBodies,
-          this.prependMenuBodies
-        );
+        this.profilePage = this.createProfilePage((...bodies) =>
+          this.pageContainer.val.append(...bodies),
+        )
+          .on("switchAccount", () => this.emit("switchAccount"))
+          .on("signOut", () => this.emit("signOut"));
         break;
       case Page.PAYMENT_METHODS:
-        this.paymentMethodsPage_ = this.createPaymentMethodsPage(
-          this.appendBodies,
-          this.prependMenuBodies
+        this.paymentMethodsPage = this.createPaymentMethodsPage((...bodies) =>
+          this.pageContainer.val.append(...bodies),
         );
         break;
-      case Page.USAGE_REPORTS:
-        this.usageReportsPage_ = this.createUsageReportsPage(
-          this.appendBodies,
-          this.prependMenuBodies
-        )
-          .on("newState", (newState) => {
-            this.state.usageReportsPageState = newState;
+      case Page.USAGE_REPORT:
+        this.usageReportPage = this.createUsageReportPage().on(
+          "newState",
+          (newState) => {
+            this.state.usageReport = newState;
             this.emit("newState", this.state);
-          })
-          .updateState(this.state.usageReportsPageState);
+          },
+        );
+        this.usageReportPage.updateState(this.state.usageReport);
+        this.pageContainer.val.append(this.usageReportPage.body);
         break;
     }
   }
 
-  private removePage(page: Page): void {
+  public updatePage(page: Page): void {
+    switch (page) {
+      case Page.USAGE_REPORT:
+        this.usageReportPage.updateState(this.state.usageReport);
+        break;
+    }
+  }
+
+  public removePage(page: Page): void {
     switch (page) {
       case Page.PROFILE:
-        this.profilePage_.remove();
-        break;
-      case Page.SECURITY:
-        this.securityPage_.remove();
+        this.profilePage.remove();
         break;
       case Page.PAYMENT_METHODS:
-        this.paymentMethodsPage_.remove();
+        this.paymentMethodsPage.remove();
         break;
-      case Page.USAGE_REPORTS:
-        this.usageReportsPage_.remove();
-        break;
-    }
-  }
-
-  private updatePage(page: Page): void {
-    switch (page) {
-      case Page.USAGE_REPORTS:
-        this.usageReportsPage_.updateState(this.state.usageReportsPageState);
+      case Page.USAGE_REPORT:
+        this.usageReportPage.remove();
         break;
     }
   }
 
-  public updateState(newState?: AccountPageState): this {
+  private updateStatePageAndEmit(page: Page): void {
+    this.updateState({
+      page,
+    });
+    this.emit("newState", this.state);
+  }
+
+  public updateState(newState?: AccountPageState): void {
     if (!newState) {
       newState = {};
     }
     if (!newState.page) {
       newState.page = Page.PROFILE;
     }
+    if (newState.page !== Page.USAGE_REPORT) {
+      newState.usageReport = undefined;
+    }
     this.state = newState;
     this.pageNavigator.goTo(this.state.page);
-    return this;
   }
 
   public remove(): void {
-    this.pageNavigator.remove();
-    this.homeMenuItem_.remove();
-    this.accountMenuItem_.remove();
-    this.securitySettingsMenuItem_.remove();
-    this.paymentMethodsMenuItem_.remove();
-    this.usageReportsMenuItem_.remove();
-  }
-
-  // Visible for testing
-  public get profilePage() {
-    return this.profilePage_;
-  }
-  public get securityPage() {
-    return this.securityPage_;
-  }
-  public get paymentMethodsPage() {
-    return this.paymentMethodsPage_;
-  }
-  public get usageReportsPage() {
-    return this.usageReportsPage_;
-  }
-  public get homeMenuItem() {
-    return this.homeMenuItem_;
-  }
-  public get accountMenuItem() {
-    return this.accountMenuItem_;
-  }
-  public get securitySettingsMenuItem() {
-    return this.securitySettingsMenuItem_;
-  }
-  public get paymentMethodsMenuItem() {
-    return this.paymentMethodsMenuItem_;
-  }
-  public get usageReportsMenuItem() {
-    return this.usageReportsMenuItem_;
+    this.body.remove();
   }
 }

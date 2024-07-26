@@ -10,10 +10,7 @@ enum Page {
 }
 
 export class PaymentMethodsPage {
-  public static create(
-    appendBodies: AddBodiesFn,
-    prependMenuBodies: AddBodiesFn,
-  ): PaymentMethodsPage {
+  public static create(appendBodies: AddBodiesFn): PaymentMethodsPage {
     return new PaymentMethodsPage(
       PaymentMethodsListPage.create,
       UpdatePaymentMethodPage.create,

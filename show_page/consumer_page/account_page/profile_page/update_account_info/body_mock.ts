@@ -1,8 +1,8 @@
 import { UpdateAccountInfoPage } from "./body";
-import { Account } from "@phading/user_service_interface/self/frontend/account";
+import { AccountAndUser } from "@phading/user_service_interface/self/frontend/account";
 
 export class UpdateAccountInfoPageMock extends UpdateAccountInfoPage {
-  public constructor(account: Account) {
+  public constructor(account: AccountAndUser) {
     super(undefined, account);
   }
 }
