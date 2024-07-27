@@ -160,7 +160,7 @@ export class AccountPage extends EventEmitter {
     }
   }
 
-  public updatePage(page: Page): void {
+  private updatePage(page: Page): void {
     switch (page) {
       case Page.USAGE_REPORT:
         this.usageReportPage.updateState(this.state.usageReport);
@@ -168,7 +168,7 @@ export class AccountPage extends EventEmitter {
     }
   }
 
-  public removePage(page: Page): void {
+  private removePage(page: Page): void {
     switch (page) {
       case Page.PROFILE:
         this.profilePage.remove();

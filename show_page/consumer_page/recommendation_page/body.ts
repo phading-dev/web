@@ -6,12 +6,11 @@ import {
   createAccountIcon,
   createHistoryIcon,
   createLoadingIcon,
-  createMenuIcon,
   createSearchIcon,
 } from "../../../common/icons";
 import { NULLIFIED_INPUT_STYLE } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { FONT_L, FONT_M, ICON_L, ICON_S } from "../../../common/sizes";
+import { FONT_L, FONT_M, ICON_M, ICON_S } from "../../../common/sizes";
 import { PRODUCT_RECOMMENDATION_SERVICE_CLIENT } from "../../../common/web_service_client";
 import { PublisherContextItem } from "./publisher_context_item";
 import { SeasonItem } from "./season_item";
@@ -51,8 +50,6 @@ export class RecommendationPage extends EventEmitter {
   private loadingSection = new Ref<HTMLDivElement>();
   public tryReloadButton = new Ref<HTMLDivElement>();
   private loadingIcon = new Ref<HTMLDivElement>();
-  public menuButton = new Ref<IconButton>();
-  private navigationBar = new Ref<HTMLDivElement>();
   public accountButton = new Ref<IconButton>();
   public historyButton = new Ref<IconButton>();
   public searchInput = new Ref<HTMLInputElement>();
@@ -69,7 +66,7 @@ export class RecommendationPage extends EventEmitter {
     private createPublisherContextItem: (
       publisher: PublisherDetail,
     ) => PublisherContextItem,
-    state: RecommendationPageState,
+    state?: RecommendationPageState,
   ) {
     super();
     this.body = E.div(
@@ -124,81 +121,53 @@ export class RecommendationPage extends EventEmitter {
       E.div(
         {
           class: "recommendation-page-bottom-action-bar",
-          style: `display: flex; flex-flow: row nowrap; align-items: flex-end; gap: 1rem;`,
+          style: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: flex-end; gap: 1rem;`,
         },
-        E.div(
-          {
-            class: "recommendation-page-nav-container",
-            style: `flex: 0 0 auto; position: relative;`,
-          },
-          assign(
-            this.menuButton,
-            IconButton.create(
-              ICON_L,
-              1.2,
-              "",
-              createMenuIcon(SCHEME.neutral1),
-              TooltipPosition.RIGHT,
-              LOCALIZED_TEXT.menuLabel,
-            ).enable(),
-          ).body,
-          E.divRef(
-            this.navigationBar,
-            {
-              class: "recommendation-page-navigation-bar",
-              style: `position: absolute; left: 0; bottom: 100%; display: flex; flex-flow: column nowrap; gap: 1rem; padding-bottom: 1rem; box-sizing: border-box; transition: opacity .2s;`,
-            },
-            assign(
-              this.accountButton,
-              IconButton.create(
-                ICON_L,
-                1,
-                `border-radius: 100%; background-color: ${SCHEME.neutral4}`,
-                createAccountIcon("currentColor"),
-                TooltipPosition.RIGHT,
-                LOCALIZED_TEXT.accountLabel,
-              ).enable(),
-            ).body,
-            assign(
-              this.historyButton,
-              IconButton.create(
-                ICON_L,
-                1,
-                `border-radius: 100%; background-color: ${SCHEME.neutral4}`,
-                createHistoryIcon("currentColor"),
-                TooltipPosition.RIGHT,
-                LOCALIZED_TEXT.historyLabel,
-              ).enable(),
-            ).body,
-          ),
-        ),
-        E.div(
-          {
-            class: "recommendation-page-search-input-bar",
-            style: `flex: 1 1 0; min-width: 0; display: flex; flex-flow: row nowrap; justify-content: center; align-items: flex-end; gap: 1rem;`,
-          },
-          E.inputRef(this.searchInput, {
-            class: "recommendation-page-search-input",
-            style: `${NULLIFIED_INPUT_STYLE} font-size: ${FONT_L}rem; line-height: 140%; color: ${SCHEME.neutral0}; border-bottom: .1rem solid; flex: 0 1 auto; width: 60rem; margin-bottom: 1rem;`,
-          }),
-          assign(
-            this.searchButton,
-            IconButton.create(
-              ICON_L,
-              1,
-              "",
-              createSearchIcon("currentColor"),
-              TooltipPosition.LEFT,
-              LOCALIZED_TEXT.searchLabel,
-            ).enable(),
-          ).body,
-        ),
+        assign(
+          this.accountButton,
+          IconButton.create(
+            ICON_M,
+            0.7,
+            `flex: 0 0 auto;`,
+            createAccountIcon("currentColor"),
+            TooltipPosition.TOP,
+            LOCALIZED_TEXT.accountLabel,
+          ).enable(),
+        ).body,
+        assign(
+          this.historyButton,
+          IconButton.create(
+            ICON_M,
+            0.7,
+            `flex: 0 0 auto;`,
+            createHistoryIcon("currentColor"),
+            TooltipPosition.TOP,
+            LOCALIZED_TEXT.historyLabel,
+          ).enable(),
+        ).body,
+        E.inputRef(this.searchInput, {
+          class: "recommendation-page-search-input",
+          style: `${NULLIFIED_INPUT_STYLE} font-size: ${FONT_L}rem; line-height: 140%; color: ${SCHEME.neutral0}; border-bottom: .1rem solid; flex: 0 1 auto; width: 60rem; margin-bottom: 1rem;`,
+        }),
+        assign(
+          this.searchButton,
+          IconButton.create(
+            ICON_M,
+            0.7,
+            `flex: 0 0 auto;`,
+            createSearchIcon("currentColor"),
+            TooltipPosition.TOP,
+            LOCALIZED_TEXT.searchLabel,
+          ).enable(),
+        ).body,
       ),
     );
-    if (state.query) {
-      this.originalQuery = state.query;
-    } else if (state.accountId) {
-      this.originalQuery = `${RecommendationPage.ACCOUNT_ID_QUERY_PREFIX}${state.accountId}`;
+    if (state) {
+      if (state.query) {
+        this.originalQuery = state.query;
+      } else if (state.accountId) {
+        this.originalQuery = `${RecommendationPage.ACCOUNT_ID_QUERY_PREFIX}${state.accountId}`;
+      }
     }
     this.searchInput.val.value = this.originalQuery;
 
@@ -209,9 +178,7 @@ export class RecommendationPage extends EventEmitter {
       }
     });
     this.loadMore();
-    this.hideNavigationBar();
 
-    this.menuButton.val.on("action", () => this.toggleNavigationBar());
     this.accountButton.val.on("action", () => this.emit("goToAccount"));
     this.historyButton.val.on("action", () => this.emit("goToHistory"));
     this.searchInput.val.addEventListener("keydown", (event) =>
@@ -287,22 +254,6 @@ export class RecommendationPage extends EventEmitter {
     } else {
       this.moreContentLoaded = false;
       this.emit("loadedAll");
-    }
-  }
-
-  private hideNavigationBar(): void {
-    this.navigationBar.val.style.display = "none";
-    this.navigationBar.val.style.opacity = "0";
-  }
-
-  private toggleNavigationBar(): void {
-    if (this.navigationBar.val.style.display === "none") {
-      this.navigationBar.val.style.display = "flex";
-      // Force reflow
-      this.navigationBar.val.clientHeight;
-      this.navigationBar.val.style.opacity = "1";
-    } else {
-      this.hideNavigationBar();
     }
   }
 

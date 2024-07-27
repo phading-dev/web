@@ -97,7 +97,6 @@ class LayoutTestCase implements TestCase {
       })(),
       SeasonItem.create,
       PublisherContextItem.create,
-      {},
     );
     document.body.append(this.cut.body);
     await new Promise<void>((resolve) => this.cut.on("loadedAll", resolve));
@@ -120,8 +119,8 @@ TEST_RUNNER.run({
   cases: [
     new LayoutTestCase(
       "Smallest",
-      600,
-      3,
+      400,
+      1,
       path.join(__dirname, "/recommendation_page_smallest.png"),
       path.join(__dirname, "/golden/recommendation_page_smallest.png"),
       path.join(__dirname, "/recommendation_page_smallest_diff.png"),
@@ -181,7 +180,6 @@ TEST_RUNNER.run({
           })(),
           SeasonItem.create,
           PublisherContextItem.create,
-          {},
         );
         document.body.append(this.cut.body);
         await new Promise<void>((resolve) => this.cut.on("loaded", resolve));
@@ -305,7 +303,6 @@ TEST_RUNNER.run({
           })(),
           SeasonItem.create,
           PublisherContextItem.create,
-          {},
         );
         document.body.append(this.cut.body);
         await new Promise<void>((resolve) => this.cut.on("loadedAll", resolve));
@@ -356,7 +353,6 @@ TEST_RUNNER.run({
           })(),
           SeasonItem.create,
           PublisherContextItem.create,
-          {},
         );
         document.body.append(this.cut.body);
         await new Promise<void>((resolve) => this.cut.on("loadedAll", resolve));
@@ -613,26 +609,9 @@ TEST_RUNNER.run({
           })(),
           SeasonItem.create,
           PublisherContextItem.create,
-          {},
         );
         document.body.append(this.cut.body);
         await new Promise<void>((resolve) => this.cut.on("loaded", resolve));
-        await screenshot(
-          path.join(
-            __dirname,
-            "/recommendation_page_before_show_menu_baseline.png",
-          ),
-        );
-
-        // Execute
-        this.cut.menuButton.val.click();
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/recommendation_page_show_menu.png"),
-          path.join(__dirname, "/golden/recommendation_page_show_menu.png"),
-          path.join(__dirname, "/recommendation_page_show_menu_diff.png"),
-        );
 
         // Prepare
         let goToAccount = false;
@@ -653,27 +632,6 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(goToHistory, eq(true), "go to history");
-
-        // Execute
-        this.cut.menuButton.val.click();
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/recommendation_page_hide_menu.png"),
-          path.join(
-            __dirname,
-            "/recommendation_page_before_show_menu_baseline.png",
-          ),
-          path.join(__dirname, "/recommendation_page_hide_menu_diff.png"),
-        );
-
-        // Cleanup
-        await deleteFile(
-          path.join(
-            __dirname,
-            "/recommendation_page_before_show_menu_baseline.png",
-          ),
-        );
       }
       public tearDown() {
         this.cut.remove();

@@ -107,9 +107,6 @@ export default class Text {
   get chooseAppLabel() {
     return `Switch app`;
   }
-  get signOutLabel() {
-    return `Sign out`;
-  }
   get writeTaleLabel() {
     return `Compose`;
   }
@@ -146,8 +143,8 @@ export default class Text {
   get paymentMethodsLabel() {
     return `Payment methods`;
   }
-  get usageReportsLabel() {
-    return `Usage reports`;
+  get usageReportLabel() {
+    return `Usage report`;
   }
   get chatAppName() {
     return `Chat`;
@@ -160,6 +157,12 @@ export default class Text {
   }
   get changeAvatarLabel() {
     return `Update`;
+  }
+  get switchAccountButtonLabel() {
+    return `Switch account`;
+  }
+  get signOutButtonLabel() {
+    return `Sign out`;
   }
   get chooseAvatarLabel() {
     return `Choose an image file`;

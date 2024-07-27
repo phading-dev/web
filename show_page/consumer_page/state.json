@@ -1,6 +1,34 @@
 [{
+  "name": "Page",
+  "enum": {
+    "values": [{
+      "name": "ACCOUNT",
+      "value": 1
+    }, {
+      "name": "PLAY",
+      "value": 2
+    }, {
+      "name": "RECOMMENDATION",
+      "value": 3
+    }]
+  }
+}, {
   "name": "ConsumerPageState",
   "message": {
-    "fields": []
+    "fields": [{
+      "name": "page",
+      "type": "Page"
+    }, {
+      "name": "account",
+      "type": "AccountPageState",
+      "import": "./account_page/state"
+    }, {
+      "name": "episodeId",
+      "type": "string"
+    }, {
+      "name": "recommendation",
+      "type": "RecommendationPageState",
+      "import": "./recommendation_page/state"
+    }]
   }
 }]

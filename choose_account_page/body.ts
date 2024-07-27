@@ -16,9 +16,7 @@ export interface ChooseAccountPage {
 }
 
 export class ChooseAccountPage extends EventEmitter {
-  public static create(
-    appendBodiesFn: AddBodiesFn,
-  ): ChooseAccountPage {
+  public static create(appendBodiesFn: AddBodiesFn): ChooseAccountPage {
     return new ChooseAccountPage(
       CreateAccountPage.create,
       ListAccountsPage.create,

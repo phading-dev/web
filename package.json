@@ -23,7 +23,8 @@
     ".jpeg",
     ".webp",
     ".bin",
-    ".mp4"
+    ".mp4",
+    ".webm"
   ],
   "devDependencies": {
     "@selfage/bundler_cli": "^5.1.5",
