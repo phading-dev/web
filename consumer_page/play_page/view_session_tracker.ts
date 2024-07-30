@@ -1,4 +1,4 @@
-import { USER_ACIVITY_SERVICE_CLIENT } from "../../common/web_service_client";
+import { USER_ACTIVITY_SERVICE_CLIENT } from "../../common/web_service_client";
 import { viewEpisode } from "@phading/user_activity_service_interface/consumer/frontend/show/client_requests";
 import { WebServiceClient } from "@selfage/web_service_client";
 
@@ -6,7 +6,7 @@ export class ViewSessionTracker {
   public static create(episodeId: string): ViewSessionTracker {
     return new ViewSessionTracker(
       () => Date.now(),
-      USER_ACIVITY_SERVICE_CLIENT,
+      USER_ACTIVITY_SERVICE_CLIENT,
       episodeId,
     );
   }

@@ -4,7 +4,7 @@ import { ChooseAccountPage } from "./choose_account_page/body";
 import { AddBodiesFn } from "./common/add_bodies_fn";
 import { LOCAL_SESSION_STORAGE } from "./common/local_session_storage";
 import { PageNavigator } from "./common/page_navigator";
-import { USER_SESSINO_SERVICE_CLIENT } from "./common/web_service_client";
+import { USER_SESSION_SERVICE_CLIENT } from "./common/web_service_client";
 import { ConsumerPage } from "./consumer_page/body";
 import { PublisherPage } from "./publisher_page/body";
 import { RootPageState } from "./root_page_state";
@@ -39,7 +39,7 @@ export class RootPage extends EventEmitter {
   public static create(documentBody: HTMLElement): RootPage {
     return new RootPage(
       LOCAL_SESSION_STORAGE,
-      USER_SESSINO_SERVICE_CLIENT,
+      USER_SESSION_SERVICE_CLIENT,
       BlockingLoop.create,
       AuthPage.create,
       ChooseAccountPage.create,
