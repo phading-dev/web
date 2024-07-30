@@ -7,6 +7,13 @@ export interface HistoryTracker<T> {
 }
 
 export class HistoryTracker<T> extends EventEmitter {
+  public static create<T>(
+    stateDescriptor: MessageDescriptor<T>,
+    queryParamKey: string
+  ): HistoryTracker<T> {
+    return new HistoryTracker(stateDescriptor, queryParamKey, window);
+  }
+
   public constructor(
     private stateDescriptor: MessageDescriptor<T>,
     private queryParamKey: string,
@@ -14,13 +21,6 @@ export class HistoryTracker<T> extends EventEmitter {
   ) {
     super();
     this.window.addEventListener("popstate", () => this.parse());
-  }
-
-  public static create<T>(
-    stateDescriptor: MessageDescriptor<T>,
-    queryParamKey: string
-  ): HistoryTracker<T> {
-    return new HistoryTracker(stateDescriptor, queryParamKey, window);
   }
 
   public parse(): void {

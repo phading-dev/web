@@ -2,7 +2,7 @@ import EventEmitter = require("events");
 import { SCHEME } from "../../common/color_scheme";
 import { createPlusIcon } from "../../common/icons";
 import { AVATAR_M, FONT_M, ICON_M, LINE_HEIGHT_M } from "../../common/sizes";
-import { AccountSnapshot } from "@phading/user_service_interface/self/frontend/account";
+import { AccountOverview } from "@phading/user_service_interface/self/frontend/account";
 import { E } from "@selfage/element/factory";
 
 let ITEM_WIDTH = 17; // rem
@@ -14,13 +14,13 @@ export interface AccountItem {
 }
 
 export class AccountItem extends EventEmitter {
-  public static create(account: AccountSnapshot): AccountItem {
+  public static create(account: AccountOverview): AccountItem {
     return new AccountItem(account);
   }
 
   public body: HTMLDivElement;
 
-  public constructor(account: AccountSnapshot) {
+  public constructor(account: AccountOverview) {
     super();
     this.body = E.div(
       {

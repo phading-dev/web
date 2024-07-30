@@ -1,0 +1,14 @@
+[{
+  "name": "RootPageState",
+  "message": {
+    "fields": [{
+      "name": "consumer",
+      "type": "ConsumerPageState",
+      "import": "./consumer_page/state"
+    }, {
+      "name": "publisher",
+      "type": "PublisherPageState",
+      "import": "./publisher_page/state"
+    }]
+  }
+}]

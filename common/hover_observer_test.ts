@@ -11,7 +11,7 @@ import {
 } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { Ref } from "@selfage/ref";
-import { assertThat, eq, eqArray } from "@selfage/test_matcher";
+import { assertThat, eq, isArray } from "@selfage/test_matcher";
 import "./normalize_body";
 
 TEST_RUNNER.run({
@@ -65,7 +65,7 @@ TEST_RUNNER.run({
         assertThat(delayCaptured, eq(3000), "delayed");
         assertThat(
           idClearedCaptured,
-          eqArray([eq(undefined), eq(1)]),
+          isArray([eq(undefined), eq(1)]),
           "cleared 1",
         );
 
@@ -77,7 +77,7 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(showedTimes, eq(1), "moved but not show again");
-        assertThat(idClearedCaptured, eqArray([eq(2)]), "cleared 2");
+        assertThat(idClearedCaptured, isArray([eq(2)]), "cleared 2");
 
         // Prepare
         idClearedCaptured.length = 0;
@@ -87,7 +87,7 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(showedTimes, eq(1), "downed but not show again");
-        assertThat(idClearedCaptured, eqArray([eq(3)]), "cleared 3");
+        assertThat(idClearedCaptured, isArray([eq(3)]), "cleared 3");
 
         // Execute
         callbackCaptured();
@@ -105,7 +105,7 @@ TEST_RUNNER.run({
         // Verify
         assertThat(showedTimes, eq(2), "key down and show again");
         assertThat(delayCaptured, eq(3000), "delayed");
-        assertThat(idClearedCaptured, eqArray([eq(4)]), "cleared 4");
+        assertThat(idClearedCaptured, isArray([eq(4)]), "cleared 4");
 
         // Execute
         callbackCaptured();

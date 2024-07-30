@@ -1,8 +1,7 @@
 import path = require("path");
 import { SCHEME } from "./color_scheme";
 import { IconButton, TooltipPosition } from "./icon_button";
-import { LikeDislikeButtons } from "./like_dislike_buttons";
-import { Liking } from "@phading/comment_service_interface/show_app/comment";
+import { LikeDislikeButtons, Liking } from "./like_dislike_buttons";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";

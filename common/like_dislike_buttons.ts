@@ -1,5 +1,4 @@
 import EventEmitter = require("events");
-import { SCHEME } from "./color_scheme";
 import { IconButton, TooltipPosition } from "./icon_button";
 import { createFilledThumbUpIcon } from "./icons";
 import { LOCALIZED_TEXT } from "./locales/localized_text";
@@ -18,6 +17,7 @@ export interface LikeDislikeButtons {
   on(event: "postLike", listener: (error?: Error) => void): this;
 }
 
+// TODO: Needs a new set of outlined icons to be filled when chosen.
 export class LikeDislikeButtons extends EventEmitter {
   public static create(
     containerStyle: string,
@@ -41,10 +41,6 @@ export class LikeDislikeButtons extends EventEmitter {
     tooltipPosition: TooltipPosition,
   ) {
     super();
-    let thumbUpIconRef = new Ref<SVGSVGElement>();
-    let thumbUpedIconRef = new Ref<SVGSVGElement>();
-    let thumbDownIconRef = new Ref<SVGSVGElement>();
-    let thumbDownedIconRef = new Ref<SVGSVGElement>();
     this.body = E.div(
       {
         class: "like-dislike-buttons",
@@ -53,8 +49,10 @@ export class LikeDislikeButtons extends EventEmitter {
       assign(
         this.thumbUpButton,
         IconButton.create(
-          `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: ${iconPadding}rem; box-sizing: border-box;`,
-          assign(thumbUpIconRef, createFilledThumbUpIcon(SCHEME.neutral1)),
+          ICON_S,
+          iconPadding,
+          ``,
+          createFilledThumbUpIcon("currentColor"),
           tooltipPosition,
           LOCALIZED_TEXT.likeButtonLabel,
         ),
@@ -62,8 +60,10 @@ export class LikeDislikeButtons extends EventEmitter {
       assign(
         this.thumbUpedButton,
         IconButton.create(
-          `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: ${iconPadding}rem; box-sizing: border-box;`,
-          assign(thumbUpedIconRef, createFilledThumbUpIcon(SCHEME.primary1)),
+          ICON_S,
+          iconPadding,
+          ``,
+          createFilledThumbUpIcon("currentColor"),
           tooltipPosition,
           LOCALIZED_TEXT.likedButtonLabel,
         ),
@@ -71,13 +71,12 @@ export class LikeDislikeButtons extends EventEmitter {
       assign(
         this.thumbDownButton,
         IconButton.create(
-          `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: ${iconPadding}rem; box-sizing: border-box;`,
-          assign(
-            thumbDownIconRef,
-            createFilledThumbUpIcon(
-              SCHEME.neutral1,
-              `transform: rotate(180deg);`,
-            ),
+          ICON_S,
+          iconPadding,
+          ``,
+          createFilledThumbUpIcon(
+            "currenetColor",
+            `transform: rotate(180deg);`,
           ),
           tooltipPosition,
           LOCALIZED_TEXT.dislikeButtonLabel,
@@ -86,14 +85,10 @@ export class LikeDislikeButtons extends EventEmitter {
       assign(
         this.thumbDownedButton,
         IconButton.create(
-          `width: ${ICON_S}rem; height: ${ICON_S}rem; padding: ${iconPadding}rem; box-sizing: border-box;`,
-          assign(
-            thumbDownedIconRef,
-            createFilledThumbUpIcon(
-              SCHEME.primary1,
-              `transform: rotate(180deg);`,
-            ),
-          ),
+          ICON_S,
+          iconPadding,
+          ``,
+          createFilledThumbUpIcon("currentColor", `transform: rotate(180deg);`),
           tooltipPosition,
           LOCALIZED_TEXT.dislikedButtonLabel,
         ),

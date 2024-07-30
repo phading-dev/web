@@ -10,7 +10,7 @@ import { FONT_L } from "../../common/sizes";
 import { USER_SERVICE_CLIENT } from "../../common/web_service_client";
 import { AccountItem, AddAccountItem } from "./account_item";
 import { AccountType } from "@phading/user_service_interface/account_type";
-import { AccountSnapshot } from "@phading/user_service_interface/self/frontend/account";
+import { AccountOverview } from "@phading/user_service_interface/self/frontend/account";
 import {
   listAccounts,
   switchAccount,
@@ -45,7 +45,7 @@ export class ListAccountsPage extends EventEmitter {
   public constructor(
     private localSessionStorage: LocalSessionStorage,
     private webServiceClient: WebServiceClient,
-    private createAccountItem: (account: AccountSnapshot) => AccountItem,
+    private createAccountItem: (account: AccountOverview) => AccountItem,
     private createAddAccountItem: () => AddAccountItem,
   ) {
     super();
