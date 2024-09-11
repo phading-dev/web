@@ -13,7 +13,7 @@ import { ICON_S } from "../../../common/sizes";
 import { COMMENT_SERVICE_CLIENT } from "../../../common/web_service_client";
 import { CARD_SIDE_PADDING } from "../common/styles";
 import { CommentEntry } from "./comment_entry";
-import { postComment } from "@phading/comment_service_interface/frontend/show/client_requests";
+import { postComment } from "@phading/comment_service_interface/frontend/show/client";
 import { Comment } from "@phading/comment_service_interface/frontend/show/comment";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";

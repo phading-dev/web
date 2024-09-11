@@ -9,20 +9,16 @@ export enum Page {
 
 export let PAGE: EnumDescriptor<Page> = {
   name: 'Page',
-  values: [
-    {
-      name: 'PROFILE',
-      value: 1,
-    },
-    {
-      name: 'PAYMENT_METHODS',
-      value: 2,
-    },
-    {
-      name: 'USAGE_REPORT',
-      value: 3,
-    },
-  ]
+  values: [{
+    name: 'PROFILE',
+    value: 1,
+  }, {
+    name: 'PAYMENT_METHODS',
+    value: 2,
+  }, {
+    name: 'USAGE_REPORT',
+    value: 3,
+  }]
 }
 
 export interface AccountPageState {
@@ -32,14 +28,13 @@ export interface AccountPageState {
 
 export let ACCOUNT_PAGE_STATE: MessageDescriptor<AccountPageState> = {
   name: 'AccountPageState',
-  fields: [
-    {
-      name: 'page',
-      enumType: PAGE,
-    },
-    {
-      name: 'usageReport',
-      messageType: USAGE_REPORT_PAGE_STATE,
-    },
-  ]
+  fields: [{
+    name: 'page',
+    index: 1,
+    enumType: PAGE,
+  }, {
+    name: 'usageReport',
+    index: 2,
+    messageType: USAGE_REPORT_PAGE_STATE,
+  }],
 };

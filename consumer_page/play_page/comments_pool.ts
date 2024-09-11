@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { COMMENT_SERVICE_CLIENT } from "../../common/web_service_client";
-import { getComments } from "@phading/comment_service_interface/frontend/show/client_requests";
+import { getComments } from "@phading/comment_service_interface/frontend/show/client";
 import { Comment } from "@phading/comment_service_interface/frontend/show/comment";
 import { WebServiceClient } from "@selfage/web_service_client";
 

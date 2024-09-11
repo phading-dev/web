@@ -1,6 +1,6 @@
 [{
-  "name": "Page",
   "enum": {
+    "name": "Page",
     "values": [{
       "name": "PROFILE",
       "value": 1
@@ -13,15 +13,17 @@
     }]
   }
 }, {
-  "name": "AccountPageState",
   "message": {
+    "name": "AccountPageState",
     "fields": [{
       "name": "page",
-      "type": "Page"
+      "type": "Page",
+      "index": 1
     }, {
       "name": "usageReport",
       "type": "UsageReportPageState",
-      "import": "./usage_report_page/state"
+      "import": "./consumer_page/account_page/usage_report_page/state",
+      "index": 2
     }]
   }
 }]

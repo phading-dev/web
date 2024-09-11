@@ -25,7 +25,7 @@ import {
   listMeterReadingsPerDay,
   listMeterReadingsPerMonth,
   listMeterReadingsPerSeason,
-} from "@phading/commerce_service_interface/consumer/frontend/show/client_requests";
+} from "@phading/commerce_service_interface/consumer/frontend/show/client";
 import { Money } from "@phading/commerce_service_interface/money";
 import { E } from "@selfage/element/factory";
 import { copyMessage } from "@selfage/message/copier";

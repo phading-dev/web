@@ -8,7 +8,7 @@ import { USER_SESSION_SERVICE_CLIENT } from "./common/web_service_client";
 import { ConsumerPage } from "./consumer_page/body";
 import { PublisherPage } from "./publisher_page/body";
 import { RootPageState } from "./root_page_state";
-import { checkCapability } from "@phading/user_session_service_interface/frontend/client_requests";
+import { checkCapability } from "@phading/user_session_service_interface/frontend/client";
 import { CheckCapabilityResponse } from "@phading/user_session_service_interface/frontend/interface";
 import { BlockingLoop, Style } from "@selfage/blocking_loop";
 import { HttpError, StatusCode } from "@selfage/http_error";

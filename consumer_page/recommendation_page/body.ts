@@ -15,7 +15,7 @@ import { PRODUCT_RECOMMENDATION_SERVICE_CLIENT } from "../../common/web_service_
 import { PublisherContextItem } from "./publisher_context_item";
 import { SeasonItem } from "./season_item";
 import { RecommendationPageState } from "./state";
-import { recommendSeasons } from "@phading/product_recommendation_service_interface/consumer/frontend/show/client_requests";
+import { recommendSeasons } from "@phading/product_recommendation_service_interface/consumer/frontend/show/client";
 import { PublisherDetail } from "@phading/product_recommendation_service_interface/consumer/frontend/show/publisher_detail";
 import { SeasonOverview } from "@phading/product_recommendation_service_interface/consumer/frontend/show/season_overview";
 import { E } from "@selfage/element/factory";

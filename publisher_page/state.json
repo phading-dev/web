@@ -1,6 +1,6 @@
 [{
-  "name": "PublisherPageState",
   "message": {
+    "name": "PublisherPageState",
     "fields": []
   }
 }]

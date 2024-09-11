@@ -1,5 +1,5 @@
 import { USER_ACTIVITY_SERVICE_CLIENT } from "../../common/web_service_client";
-import { viewEpisode } from "@phading/user_activity_service_interface/consumer/frontend/show/client_requests";
+import { viewEpisode } from "@phading/user_activity_service_interface/consumer/frontend/show/client";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export class ViewSessionTracker {

@@ -17,7 +17,7 @@ import {
 import { formatSecondsAsHHMMSS } from "../../../common/timestamp_formatter";
 import { COMMERCE_SERVICE_CLIENT } from "../../../common/web_service_client";
 import { CARD_SIDE_PADDING } from "../common/styles";
-import { getPricing } from "@phading/commerce_service_interface/consumer/frontend/show/client_requests";
+import { getPricing } from "@phading/commerce_service_interface/consumer/frontend/show/client";
 import { GetPricingResponse } from "@phading/commerce_service_interface/consumer/frontend/show/interface";
 import {
   EpisodeSummary,

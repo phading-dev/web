@@ -14,7 +14,7 @@ import { ExpMonthInput, ExpYearInput } from "./exp_date_input";
 import {
   deletePaymentMethod,
   updatePaymentMethod,
-} from "@phading/commerce_service_interface/consumer/frontend/client_requests";
+} from "@phading/commerce_service_interface/consumer/frontend/client";
 import {
   UpdatePaymentMethodRequestBody,
   UpdatePaymentMethodResponse,

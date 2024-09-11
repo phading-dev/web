@@ -1,12 +1,14 @@
 [{
-  "name": "RecommendationPageState",
   "message": {
+    "name": "RecommendationPageState",
     "fields": [{
       "name": "query",
-      "type": "string"
+      "type": "string",
+      "index": 1
     }, {
       "name": "accountId",
-      "type": "string"
+      "type": "string",
+      "index": 2
     }]
   }
 }]

@@ -13,7 +13,7 @@ import { CardPaymentItem } from "./card_payment_item/body";
 import {
   createStripeSessionToAddPaymentMethod,
   listPaymentMethods,
-} from "@phading/commerce_service_interface/consumer/frontend/client_requests";
+} from "@phading/commerce_service_interface/consumer/frontend/client";
 import { CreateStripeSessionToAddPaymentMethodResponse } from "@phading/commerce_service_interface/consumer/frontend/interface";
 import { PaymentMethodMasked } from "@phading/commerce_service_interface/consumer/frontend/payment_method_masked";
 import { E } from "@selfage/element/factory";

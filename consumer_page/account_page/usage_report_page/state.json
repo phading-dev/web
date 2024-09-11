@@ -1,6 +1,6 @@
 [{
-  "name": "Granularity",
   "enum": {
+    "name": "Granularity",
     "values": [{
       "name": "DAY",
       "value": 1
@@ -10,43 +10,50 @@
     }]
   }
 }, {
-  "name": "DateRange",
   "message": {
+    "name": "DateRange",
     "fields": [{
       "name": "startDate",
       "type": "string",
+      "index": 1,
       "comment": "ISO date string"
     }, {
       "name": "endDate",
       "type": "string",
+      "index": 2,
       "comment": "ISO date string"
     }]
   }
 }, {
-  "name": "MonthRange",
   "message": {
+    "name": "MonthRange",
     "fields": [{
       "name": "startMonth",
       "type": "string",
+      "index": 1,
       "comment": "ISO date string"
     }, {
       "name": "endMonth",
       "type": "string",
+      "index": 2,
       "comment": "ISO date string"
     }]
   }
 }, {
-  "name": "UsageReportPageState",
   "message": {
+    "name": "UsageReportPageState",
     "fields": [{
       "name": "granularity",
-      "type": "Granularity"
+      "type": "Granularity",
+      "index": 1
     }, {
       "name": "dateRange",
-      "type": "DateRange"
+      "type": "DateRange",
+      "index": 2
     }, {
       "name": "monthRange",
-      "type": "MonthRange"
+      "type": "MonthRange",
+      "index": 3
     }]
   }
 }]

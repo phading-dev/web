@@ -1,4 +1,4 @@
-import { MessageDescriptor, PrimitiveType } from '@selfage/message/descriptor';
+import { PrimitiveType, MessageDescriptor } from '@selfage/message/descriptor';
 
 export interface RecommendationPageState {
   query?: string,
@@ -7,14 +7,13 @@ export interface RecommendationPageState {
 
 export let RECOMMENDATION_PAGE_STATE: MessageDescriptor<RecommendationPageState> = {
   name: 'RecommendationPageState',
-  fields: [
-    {
-      name: 'query',
-      primitiveType: PrimitiveType.STRING,
-    },
-    {
-      name: 'accountId',
-      primitiveType: PrimitiveType.STRING,
-    },
-  ]
+  fields: [{
+    name: 'query',
+    index: 1,
+    primitiveType: PrimitiveType.STRING,
+  }, {
+    name: 'accountId',
+    index: 2,
+    primitiveType: PrimitiveType.STRING,
+  }],
 };

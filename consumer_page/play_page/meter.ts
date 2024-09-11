@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { PRODUCT_METER_SERVICE_CLIENT } from "../../common/web_service_client";
-import { syncMeterReading } from "@phading/product_meter_service_interface/consumer/frontend/show/client_requests";
+import { syncMeterReading } from "@phading/product_meter_service_interface/consumer/frontend/show/client";
 import { BlockingLoop, Style } from "@selfage/blocking_loop";
 import { WebServiceClient } from "@selfage/web_service_client";
 

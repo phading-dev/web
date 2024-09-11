@@ -1,6 +1,6 @@
 [{
-  "name": "Page",
   "enum": {
+    "name": "Page",
     "values": [{
       "name": "ACCOUNT",
       "value": 1
@@ -13,22 +13,26 @@
     }]
   }
 }, {
-  "name": "ConsumerPageState",
   "message": {
+    "name": "ConsumerPageState",
     "fields": [{
       "name": "page",
-      "type": "Page"
+      "type": "Page",
+      "index": 1
     }, {
       "name": "account",
       "type": "AccountPageState",
-      "import": "./account_page/state"
+      "import": "./consumer_page/account_page/state",
+      "index": 2
     }, {
       "name": "episodeId",
-      "type": "string"
+      "type": "string",
+      "index": 3
     }, {
       "name": "recommendation",
       "type": "RecommendationPageState",
-      "import": "./recommendation_page/state"
+      "import": "./consumer_page/recommendation_page/state",
+      "index": 4
     }]
   }
 }]
