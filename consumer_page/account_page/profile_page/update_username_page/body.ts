@@ -5,7 +5,7 @@ import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_i
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { USERNAME_LENGTH_LIMIT } from "../../../../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../../../../common/web_service_client";
-import { updateUsername } from "@phading/user_service_interface/self/frontend/client_requests";
+import { updateUsername } from "@phading/user_service_interface/self/frontend/client";
 import {
   UpdateUsernameRequestBody,
   UpdateUsernameResponse,

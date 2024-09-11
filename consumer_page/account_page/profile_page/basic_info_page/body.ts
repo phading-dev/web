@@ -10,7 +10,7 @@ import { AVATAR_M, FONT_M } from "../../../../common/sizes";
 import { TextValuesGroup } from "../../../../common/text_values_group";
 import { USER_SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { AccountAndUser } from "@phading/user_service_interface/self/frontend/account";
-import { getAccountAndUser } from "@phading/user_service_interface/self/frontend/client_requests";
+import { getAccountAndUser } from "@phading/user_service_interface/self/frontend/client";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";

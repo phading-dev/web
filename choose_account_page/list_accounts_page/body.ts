@@ -14,7 +14,7 @@ import { AccountOverview } from "@phading/user_service_interface/self/frontend/a
 import {
   listAccounts,
   switchAccount,
-} from "@phading/user_service_interface/self/frontend/client_requests";
+} from "@phading/user_service_interface/self/frontend/client";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";

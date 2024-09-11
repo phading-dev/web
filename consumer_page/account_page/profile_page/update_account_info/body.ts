@@ -13,7 +13,7 @@ import {
 } from "../../../../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { AccountAndUser } from "@phading/user_service_interface/self/frontend/account";
-import { updateAccount } from "@phading/user_service_interface/self/frontend/client_requests";
+import { updateAccount } from "@phading/user_service_interface/self/frontend/client";
 import {
   UpdateAccountRequestBody,
   UpdateAccountResponse,

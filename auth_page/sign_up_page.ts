@@ -18,7 +18,7 @@ import {
 import { USER_SERVICE_CLIENT } from "../common/web_service_client";
 import { SWITCH_TEXT_STYLE } from "./styles";
 import { AccountType } from "@phading/user_service_interface/account_type";
-import { signUp } from "@phading/user_service_interface/self/frontend/client_requests";
+import { signUp } from "@phading/user_service_interface/self/frontend/client";
 import {
   SignUpRequestBody,
   SignUpResponse,

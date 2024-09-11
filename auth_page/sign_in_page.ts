@@ -8,7 +8,7 @@ import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
 import { USER_SERVICE_CLIENT } from "../common/web_service_client";
 import { SWITCH_TEXT_STYLE } from "./styles";
-import { signIn } from "@phading/user_service_interface/self/frontend/client_requests";
+import { signIn } from "@phading/user_service_interface/self/frontend/client";
 import {
   SignInRequestBody,
   SignInResponse,

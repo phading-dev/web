@@ -33,7 +33,7 @@ import {
   getEpisodeToPlay,
   getPlayerSettings,
   savePlayerSettings,
-} from "@phading/product_service_interface/consumer/frontend/show/client_requests";
+} from "@phading/product_service_interface/consumer/frontend/show/client";
 import {
   Episode,
   EpisodeToPlay,

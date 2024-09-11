@@ -16,7 +16,7 @@ import {
 } from "../../../../common/page_style";
 import { AVATAR_M, AVATAR_S, FONT_M } from "../../../../common/sizes";
 import { USER_SERVICE_CLIENT } from "../../../../common/web_service_client";
-import { uploadAccountAvatar } from "@phading/user_service_interface/self/frontend/client_requests";
+import { uploadAccountAvatar } from "@phading/user_service_interface/self/frontend/client";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";

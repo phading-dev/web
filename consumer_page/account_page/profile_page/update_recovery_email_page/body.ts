@@ -5,7 +5,7 @@ import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_i
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { RECOVERY_EMAIL_LENGTH_LIMIT } from "../../../../common/user_limits";
 import { USER_SERVICE_CLIENT } from "../../../../common/web_service_client";
-import { updateRecoveryEmail } from "@phading/user_service_interface/self/frontend/client_requests";
+import { updateRecoveryEmail } from "@phading/user_service_interface/self/frontend/client";
 import {
   UpdateRecoveryEmailRequestBody,
   UpdateRecoveryEmailResponse,
