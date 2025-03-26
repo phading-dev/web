@@ -1,3 +1,4 @@
+import "../../common/normalize_body";
 import path = require("path");
 import { ChooseAccountPage } from "./body";
 import { CreateAccountPageMock } from "./create_account_page/body_mock";
@@ -6,7 +7,6 @@ import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import "../common/normalize_body";
 
 TEST_RUNNER.run({
   name: "ChooseAccountPage",
@@ -20,7 +20,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut = new ChooseAccountPage(
-          (accountType) => new CreateAccountPageMock(accountType),
+          () => new CreateAccountPageMock(),
           () => new ListAccountsPageMock(),
           (...bodies) => document.body.append(...bodies),
         );
@@ -43,81 +43,40 @@ TEST_RUNNER.run({
         assertThat(chosen, eq(true), "switched");
 
         // Execute
-        this.cut.listAccountsPage.emit("createConsumer");
+        this.cut.listAccountsPage.emit("createAccount");
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/choose_account_page_create_consumer.png"),
+          path.join(__dirname, "/choose_account_page_create_account.png"),
           path.join(
             __dirname,
-            "/golden/choose_account_page_create_consumer.png",
+            "/golden/choose_account_page_create_account.png",
           ),
-          path.join(__dirname, "/choose_account_page_create_consumer_diff.png"),
+          path.join(__dirname, "/choose_account_page_create_account_diff.png"),
         );
 
         // Prepare
         chosen = false;
 
         // Execute
-        this.cut.createConsumerPage.emit("created");
+        this.cut.createAccountPage.emit("created");
 
         // Verify
         assertThat(chosen, eq(true), "switched");
 
         // Execute
-        this.cut.createConsumerPage.emit("back");
+        this.cut.createAccountPage.emit("back");
 
         // Verify
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/choose_account_page_back_from_create_consumer.png",
+            "/choose_account_page_back_from_create_account.png",
           ),
           path.join(__dirname, "/golden/choose_account_page_default.png"),
           path.join(
             __dirname,
-            "/choose_account_page_back_from_create_consumer_diff.png",
-          ),
-        );
-
-        // Execute
-        this.cut.listAccountsPage.emit("createPublisher");
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/choose_account_page_create_publisher.png"),
-          path.join(
-            __dirname,
-            "/golden/choose_account_page_create_publisher.png",
-          ),
-          path.join(
-            __dirname,
-            "/choose_account_page_create_publisher_diff.png",
-          ),
-        );
-
-        // Prepare
-        chosen = false;
-
-        // Execute
-        this.cut.createPublisherPage.emit("created");
-
-        // Verify
-        assertThat(chosen, eq(true), "switched");
-
-        // Execute
-        this.cut.createPublisherPage.emit("back");
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/choose_account_page_back_from_create_publisher.png",
-          ),
-          path.join(__dirname, "/golden/choose_account_page_default.png"),
-          path.join(
-            __dirname,
-            "/choose_account_page_back_from_create_publisher_diff.png",
+            "/choose_account_page_back_from_create_account_diff.png",
           ),
         );
       }

@@ -1,6 +1,7 @@
+import "../../../common/normalize_body";
 import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
-import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
+import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
 import { AccountItem, AddAccountItem } from "./account_item";
 import { ListAccountsPage } from "./body";
 import { AccountType } from "@phading/user_service_interface/account_type";
@@ -10,7 +11,7 @@ import {
   SWITCH_ACCOUNT,
   SWITCH_ACCOUNT_REQUEST_BODY,
   SwitchAccountResponse,
-} from "@phading/user_service_interface/self/frontend/interface";
+} from "@phading/user_service_interface/web/self/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
 import {
   mouseMove,
@@ -21,7 +22,6 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
-import "../../common/normalize_body";
 
 TEST_RUNNER.run({
   name: "ListAccountsPageTest",
@@ -41,8 +41,14 @@ TEST_RUNNER.run({
                   {
                     accountId: "consumer 1",
                     accountType: AccountType.CONSUMER,
-                    avatarSmallPath: userImage,
+                    avatarSmallUrl: userImage,
                     naturalName: "First Consumer",
+                  },
+                  {
+                    accountId: "publisher 1",
+                    accountType: AccountType.PUBLISHER,
+                    avatarSmallUrl: userImage,
+                    naturalName: "First Publisher",
                   },
                 ],
               } as ListAccountsResponse;
@@ -99,44 +105,44 @@ TEST_RUNNER.run({
                     {
                       accountId: "consumer 1",
                       accountType: AccountType.CONSUMER,
-                      avatarSmallPath: userImage,
+                      avatarSmallUrl: userImage,
                       naturalName: "First Consumer",
                     },
                     {
                       accountId: "consumer 2",
                       accountType: AccountType.CONSUMER,
-                      avatarSmallPath: userImage,
+                      avatarSmallUrl: userImage,
                       naturalName:
                         "Second Consumer Second Consumer Second Consumer Second Consumer Second Consumer",
                     },
                     {
                       accountId: "consumer 3",
                       accountType: AccountType.CONSUMER,
-                      avatarSmallPath: userImage,
+                      avatarSmallUrl: userImage,
                       naturalName: "Third Consumer",
                     },
                     {
                       accountId: "consumer 4",
                       accountType: AccountType.CONSUMER,
-                      avatarSmallPath: userImage,
+                      avatarSmallUrl: userImage,
                       naturalName: "4th Consumer",
                     },
                     {
                       accountId: "consumer 5",
                       accountType: AccountType.CONSUMER,
-                      avatarSmallPath: userImage,
+                      avatarSmallUrl: userImage,
                       naturalName: "5th Consumer",
                     },
                     {
                       accountId: "consumer 6",
                       accountType: AccountType.CONSUMER,
-                      avatarSmallPath: userImage,
+                      avatarSmallUrl: userImage,
                       naturalName: "6th Consumer",
                     },
                     {
                       accountId: "publisher 1",
                       accountType: AccountType.PUBLISHER,
-                      avatarSmallPath: userImage,
+                      avatarSmallUrl: userImage,
                       naturalName: "First Publisher",
                     },
                   ],
@@ -163,7 +169,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.consumerItems[1].click();
+        this.cut.accountItems[1].click();
         await new Promise<void>((resolve) =>
           this.cut.once("switched", resolve),
         );
@@ -186,53 +192,18 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let createConsumer = false;
-        this.cut.on("createConsumer", () => (createConsumer = true));
+        let createAccount = false;
+        this.cut.on("createAccount", () => (createAccount = true));
 
         // Execute
-        this.cut.addConsumerItem.val.click();
+        this.cut.addAccountItem.val.click();
 
         // Verify
-        assertThat(createConsumer, eq(true), "create consumer");
-
-        // Prepare
-        LOCAL_SESSION_STORAGE.clear();
-
-        // Execute
-        this.cut.publisherItems[0].click();
-        await new Promise<void>((resolve) =>
-          this.cut.once("switched", resolve),
-        );
-
-        // Verify
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
-            {
-              accountId: "publisher 1",
-            },
-            SWITCH_ACCOUNT_REQUEST_BODY,
-          ),
-          "switch to first publisher",
-        );
-        assertThat(
-          LOCAL_SESSION_STORAGE.read(),
-          eq("session 1"),
-          "stored publisher session",
-        );
-
-        // Prepare
-        let createPublisher = false;
-        this.cut.on("createPublisher", () => (createPublisher = true));
-
-        // Execute
-        this.cut.addPublisherItem.val.click();
-
-        // Verify
-        assertThat(createPublisher, eq(true), "create publisher");
+        assertThat(createAccount, eq(true), "create account");
       }
       public tearDown() {
         this.cut.remove();
+        LOCAL_SESSION_STORAGE.clear();
       }
     })(),
     new (class implements TestCase {
@@ -266,6 +237,7 @@ TEST_RUNNER.run({
       }
       public tearDown() {
         this.cut.remove();
+        LOCAL_SESSION_STORAGE.clear();
       }
     })(),
   ],

@@ -1,8 +1,8 @@
 import EventEmitter = require("events");
-import { SCHEME } from "../../common/color_scheme";
-import { createPlusIcon } from "../../common/icons";
-import { AVATAR_M, FONT_M, ICON_M, LINE_HEIGHT_M } from "../../common/sizes";
-import { AccountOverview } from "@phading/user_service_interface/self/frontend/account";
+import { SCHEME } from "../../../common/color_scheme";
+import { createPlusIcon } from "../../../common/icons";
+import { AVATAR_M, FONT_M, ICON_M, LINE_HEIGHT_M } from "../../../common/sizes";
+import { AccountSummary } from "@phading/user_service_interface/web/self/account";
 import { E } from "@selfage/element/factory";
 
 let ITEM_WIDTH = 17; // rem
@@ -14,13 +14,13 @@ export interface AccountItem {
 }
 
 export class AccountItem extends EventEmitter {
-  public static create(account: AccountOverview): AccountItem {
+  public static create(account: AccountSummary): AccountItem {
     return new AccountItem(account);
   }
 
   public body: HTMLDivElement;
 
-  public constructor(account: AccountOverview) {
+  public constructor(account: AccountSummary) {
     super();
     this.body = E.div(
       {
@@ -30,7 +30,7 @@ export class AccountItem extends EventEmitter {
       E.image({
         class: "account-item-avatar",
         style: `width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: 100%;`,
-        src: account.avatarSmallPath,
+        src: account.avatarSmallUrl,
       }),
       E.div(
         {

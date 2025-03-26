@@ -80,17 +80,8 @@ export default class Text {
   get cancelButtonLabel() {
     return `Cancel`;
   }
-  get createConsumerTitle() {
-    return `Add a consumer account`;
-  }
-  get createConsumerButtonLabel() {
-    return `Add`;
-  }
-  get createConsumerError() {
-    return `Failed to add a new consumer account. Please try again later.`;
-  }
-  get createPublisherTitle() {
-    return `Add a publisher account`;
+  get createAccountTitle() {
+    return `Add an account`;
   }
   get createAccountButtonLabel() {
     return `Add`;
@@ -98,11 +89,8 @@ export default class Text {
   get createAccountError() {
     return `Failed to add a new account. Please try again later.`;
   }
-  get chooseConsumer() {
-    return `Choose a consumer account`;
-  }
-  get choosePublisher() {
-    return `Choose a publisher account`;
+  get chooseAccount() {
+    return `Choose an account`;
   }
   get chooseAppLabel() {
     return `Switch app`;

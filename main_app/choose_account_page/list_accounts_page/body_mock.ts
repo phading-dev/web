@@ -2,7 +2,7 @@ import userImage = require("./test_data/user_image.jpg");
 import { AccountItem, AddAccountItem } from "./account_item";
 import { ListAccountsPage } from "./body";
 import { AccountType } from "@phading/user_service_interface/account_type";
-import { ListAccountsResponse } from "@phading/user_service_interface/self/frontend/interface";
+import { ListAccountsResponse } from "@phading/user_service_interface/web/self/interface";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 export class ListAccountsPageMock extends ListAccountsPage {
@@ -10,23 +10,23 @@ export class ListAccountsPageMock extends ListAccountsPage {
     super(
       undefined,
       new (class extends WebServiceClientMock {
-        public async send(request: any): Promise<ListAccountsResponse> {
+        public async send(): Promise<any> {
           return {
             accounts: [
               {
                 accountId: "consumer 1",
                 accountType: AccountType.CONSUMER,
-                avatarSmallPath: userImage,
+                avatarSmallUrl: userImage,
                 naturalName: "First Consumer",
               },
               {
                 accountId: "publisher 1",
                 accountType: AccountType.PUBLISHER,
-                avatarSmallPath: userImage,
+                avatarSmallUrl: userImage,
                 naturalName: "First Publisher",
               },
             ],
-          };
+          } as ListAccountsResponse;
         }
       })(),
       AccountItem.create,

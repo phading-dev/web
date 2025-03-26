@@ -1,44 +1,8 @@
+import { ENV_VARS } from "../env_vars";
 import { LOCAL_SESSION_STORAGE } from "./local_session_storage";
 import { WebServiceClient } from "@selfage/web_service_client";
-import "../environment";
 
-export let USER_SERVICE_CLIENT = WebServiceClient.create(LOCAL_SESSION_STORAGE);
-USER_SERVICE_CLIENT.baseUrl = globalThis.USER_SERVICE_BASE_URL;
-
-export let USER_SESSION_SERVICE_CLIENT = WebServiceClient.create(
+export let SERVICE_CLIENT = WebServiceClient.create(
   LOCAL_SESSION_STORAGE,
+  ENV_VARS.externalOrigin,
 );
-USER_SESSION_SERVICE_CLIENT.baseUrl = globalThis.USER_SESSION_SERVICE_BASE_URL;
-
-export let COMMERCE_SERVICE_CLIENT = WebServiceClient.create(
-  LOCAL_SESSION_STORAGE,
-);
-COMMERCE_SERVICE_CLIENT.baseUrl = globalThis.COMMENT_SERVICE_SERVICE_BASE_URL;
-
-export let PRODUCT_SERVICE_CLIENT = WebServiceClient.create(
-  LOCAL_SESSION_STORAGE,
-);
-PRODUCT_SERVICE_CLIENT.baseUrl = globalThis.PRODUCT_SERVICE_BASE_URL;
-
-export let USER_ACTIVITY_SERVICE_CLIENT = WebServiceClient.create(
-  LOCAL_SESSION_STORAGE,
-);
-USER_ACTIVITY_SERVICE_CLIENT.baseUrl =
-  globalThis.USER_ACTIVITY_SERVICE_BASE_URL;
-
-export let PRODUCT_METER_SERVICE_CLIENT = WebServiceClient.create(
-  LOCAL_SESSION_STORAGE,
-);
-PRODUCT_METER_SERVICE_CLIENT.baseUrl =
-  globalThis.PRODUCT_METER_SERVICE_BASE_URL;
-
-export let PRODUCT_RECOMMENDATION_SERVICE_CLIENT = WebServiceClient.create(
-  LOCAL_SESSION_STORAGE,
-);
-PRODUCT_RECOMMENDATION_SERVICE_CLIENT.baseUrl =
-  PRODUCT_RECOMMENDATION_SERVICE_BASE_URL;
-
-export let COMMENT_SERVICE_CLIENT = WebServiceClient.create(
-  LOCAL_SESSION_STORAGE,
-);
-COMMENT_SERVICE_CLIENT.baseUrl = COMMENT_SERVICE_SERVICE_BASE_URL;

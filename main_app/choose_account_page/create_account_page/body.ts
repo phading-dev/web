@@ -1,19 +1,23 @@
 import EventEmitter = require("events");
-import { InputFormPage } from "../../common/input_form_page/body";
+import { InputFormPage } from "../../../common/input_form_page/body";
+import {
+  OptionButton,
+  OptionInput,
+} from "../../../common/input_form_page/option_input";
 import {
   TextInputWithErrorMsg,
   ValidationResult,
-} from "../../common/input_form_page/text_input";
-import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
-import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
-import { NATURAL_NAME_LENGTH_LIMIT } from "../../common/user_limits";
-import { USER_SERVICE_CLIENT } from "../../common/web_service_client";
+} from "../../../common/input_form_page/text_input";
+import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
+import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import { NATURAL_NAME_LENGTH_LIMIT } from "../../../common/user_limits";
+import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { AccountType } from "@phading/user_service_interface/account_type";
-import { createAccount } from "@phading/user_service_interface/self/frontend/client";
+import { newCreateAccountRequest } from "@phading/user_service_interface/web/self/client";
 import {
   CreateAccountRequestBody,
   CreateAccountResponse,
-} from "@phading/user_service_interface/self/frontend/interface";
+} from "@phading/user_service_interface/web/self/interface";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
@@ -25,16 +29,15 @@ export interface CreateAccountPage {
 }
 
 export class CreateAccountPage extends EventEmitter {
-  public static create(accountType: AccountType): CreateAccountPage {
-    return new CreateAccountPage(
-      LOCAL_SESSION_STORAGE,
-      USER_SERVICE_CLIENT,
-      accountType,
-    );
+  public static create(): CreateAccountPage {
+    return new CreateAccountPage(LOCAL_SESSION_STORAGE, SERVICE_CLIENT);
   }
 
   public naturalNameInput = new Ref<
     TextInputWithErrorMsg<CreateAccountRequestBody>
+  >();
+  public accountTypeInput = new Ref<
+    OptionInput<AccountType, CreateAccountRequestBody>
   >();
   public inputFormPage: InputFormPage<
     CreateAccountRequestBody,
@@ -43,12 +46,11 @@ export class CreateAccountPage extends EventEmitter {
 
   public constructor(
     private localSessionStorage: LocalSessionStorage,
-    private webServiceClient: WebServiceClient,
-    private accountType: AccountType,
+    private serviceClient: WebServiceClient,
   ) {
     super();
     this.inputFormPage = InputFormPage.create(
-      this.getCreateAccountTitle(),
+      LOCALIZED_TEXT.createAccountTitle,
       [
         assign(
           this.naturalNameInput,
@@ -65,30 +67,40 @@ export class CreateAccountPage extends EventEmitter {
             (value) => this.checkNaturalNameInput(value),
           ),
         ).body,
+        assign(
+          this.accountTypeInput,
+          OptionInput.create(
+            LOCALIZED_TEXT.chooseUserTypeLabel,
+            "",
+            [
+              OptionButton.create(
+                LOCALIZED_TEXT.userTypeConsumerLabel,
+                AccountType.CONSUMER,
+                "",
+              ),
+              OptionButton.create(
+                LOCALIZED_TEXT.userTypePublisherLabel,
+                AccountType.PUBLISHER,
+                "",
+              ),
+            ],
+            AccountType.CONSUMER,
+            (request, value) => {
+              request.accountType = value;
+            },
+          ),
+        ).body,
       ],
-      [this.naturalNameInput.val],
+      [this.naturalNameInput.val, this.accountTypeInput.val],
       LOCALIZED_TEXT.createAccountButtonLabel,
       (request) => this.createAccount(request),
       (response, error) => this.postCreateAccount(response, error),
-      {
-        accountType,
-      },
+      {},
     ).addBackButton();
 
     this.inputFormPage.on("submitError", () => this.emit("createError"));
     this.inputFormPage.on("submitted", () => this.emit("created"));
     this.inputFormPage.on("back", () => this.emit("back"));
-  }
-
-  private getCreateAccountTitle(): string {
-    switch (this.accountType) {
-      case AccountType.CONSUMER:
-        return LOCALIZED_TEXT.createConsumerTitle;
-      case AccountType.PUBLISHER:
-        return LOCALIZED_TEXT.createPublisherTitle;
-      default:
-        throw new Error("Unsupported account type for getCreateAccountTitle.");
-    }
   }
 
   private checkNaturalNameInput(value: string): ValidationResult {
@@ -107,7 +119,7 @@ export class CreateAccountPage extends EventEmitter {
   private createAccount(
     requset: CreateAccountRequestBody,
   ): Promise<CreateAccountResponse> {
-    return createAccount(this.webServiceClient, requset);
+    return this.serviceClient.send(newCreateAccountRequest(requset));
   }
 
   private postCreateAccount(
