@@ -2,6 +2,62 @@ export default class Text {
   get locale() {
     return "en";
   }
+  get marketingConsumerTabButtonLabel() {
+    return `As a Viewer`;
+  }
+  get marketingPublisherTabButtonLabel() {
+    return `As a Creator`;
+  }
+  get marketingExplanationTitle() {
+    return `How it works`;
+  }
+  get marketingConsumerCtaButtonLabel() {
+    return `Start watching`;
+  }
+  get marketingConsumerTabTitle() {
+    return `Watch Without Subscriptions`;
+  }
+  get marketingConsumerTabMainMessage() {
+    return `Enjoy high quality content without any subscription fees. Pay only for the time you watch.`;
+  }
+  get marketingConsumerTabExplanationPoint1() {
+    return `• Watch movies, cartoons, documentaries, and tutorials without any subscription fees.`;
+  }
+  get marketingConsumerTabExplanationPoint2() {
+    return `• Each video displays an hourly rate, set by the publisher based on quality and popularity.`;
+  }
+  get marketingConsumerTabExplanationPoint3() {
+    return `• You are charged per second of watch time.`;
+  }
+  get marketingConsumerTabExplanationPoint4() {
+    return `• At the end of each month, your total watch time is calculated, and your payment method is charged accordingly.`;
+  }
+  get marketingPublisherCtaButtonLabel() {
+    return `Start earning`;
+  }
+  get marketingPublisherTabTitle() {
+    return `Monetize Your Video`;
+  }
+  get marketingPublisherTabMainMessage() {
+    return `Take full control of your earnings. Publish your video and set your own price.`;
+  }
+  get marketingPublisherTabExplanationPoint1() {
+    return `• Upload any type of videos—movies, cartoons, documentaries, tutorials and more.`;
+  }
+  get marketingPublisherTabExplanationPoint2() {
+    return `• Set an hourly rate (e.g., $1.00/hour) for each video and update it anytime based on quality and popularity.`;
+  }
+  get marketingPublisherTabExplanationPoint3() {
+    return `• You earn for every second watched.`;
+  }
+  get marketingPublisherTabExplanationPoint4() {
+    return [
+      `• At the end of each month, your earnings (after a `,
+      ` platform fee and `,
+      `service fees`,
+      `) are calculated and paid out.`, // TODO: Mention within X days.
+    ];
+  }
   get signUpTitle() {
     return `Create your new account`;
   }
