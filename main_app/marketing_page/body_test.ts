@@ -1,7 +1,7 @@
 import "../../dev/env";
 import "../../common/normalize_body";
 import path = require("path");
-import { MarketingPage } from "./marketing_page";
+import { MarketingPage } from "./body";
 import { AccountType } from "@phading/user_service_interface/account_type";
 import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
