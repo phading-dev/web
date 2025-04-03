@@ -101,7 +101,7 @@ export default class Text {
     return `Your username is too long`;
   }
   get usernameIsUsedError() {
-    return `The username is already taken`;
+    return `The username is already taken.`;
   }
   get passwordTooLongError() {
     return `Your password is too long`;
@@ -147,6 +147,9 @@ export default class Text {
   }
   get chooseAccount() {
     return `Choose an account`;
+  }
+  get accountNotFoundError() {
+    return `The requested account is not owned by you. You can sign out and sign in to the correct user.`;
   }
   get chooseAppLabel() {
     return `Switch app`;

@@ -55,6 +55,9 @@ export class DarkScheme {
   get primaryContrast0() {
     return GREY_95;
   }
+  get link() {
+    return BLUE_60;
+  }
   get error0() {
     return RED_50;
   }

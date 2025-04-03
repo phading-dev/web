@@ -1,3 +1,4 @@
+import "./normalize_body";
 import path = require("path");
 import {
   BlockingButton,
@@ -6,10 +7,10 @@ import {
   TextBlockingButton,
 } from "./blocking_button";
 import { E } from "@selfage/element/factory";
+import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import "./normalize_body";
 
 class RenderCase implements TestCase {
   private container: HTMLDivElement;
@@ -24,10 +25,11 @@ class RenderCase implements TestCase {
     private disabledScreenshotDiffPath: string,
     private enabledScreenshotPath: string,
     private enabledScreenshotGoldenPath: string,
-    private enabledScreenshotDiffPath: string
+    private enabledScreenshotDiffPath: string,
   ) {}
   public async execute() {
     // Prepare
+    await setViewport(200, 200);
     let cut = this.buttonFactoryFn("")
       .append(E.text("some button"))
       .enable()
@@ -41,12 +43,14 @@ class RenderCase implements TestCase {
 
     // Execute
     document.body.append(this.container);
-
     // Verify
     await asyncAssertScreenshot(
       this.renderScreenshotPath,
       this.renderScreenshotGoldenPath,
-      this.renderScreenshotDiffPath
+      this.renderScreenshotDiffPath,
+      {
+        threshold: 0.05,
+      },
     );
 
     // Execute
@@ -56,7 +60,7 @@ class RenderCase implements TestCase {
     await asyncAssertScreenshot(
       this.disabledScreenshotPath,
       this.disabledScreenshotGoldenPath,
-      this.disabledScreenshotDiffPath
+      this.disabledScreenshotDiffPath,
     );
 
     // Execute
@@ -66,7 +70,7 @@ class RenderCase implements TestCase {
     await asyncAssertScreenshot(
       this.enabledScreenshotPath,
       this.enabledScreenshotGoldenPath,
-      this.enabledScreenshotDiffPath
+      this.enabledScreenshotDiffPath,
     );
   }
   public tearDown() {
@@ -88,7 +92,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/filled_blocking_button_disabled_diff.png"),
       path.join(__dirname, "/filled_blocking_button_enabled.png"),
       path.join(__dirname, "/golden/filled_blocking_button_default.png"),
-      path.join(__dirname, "/filled_blocking_button_enabled_diff.png")
+      path.join(__dirname, "/filled_blocking_button_enabled_diff.png"),
     ),
     new RenderCase(
       "RenderOutlineButton",
@@ -101,7 +105,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/outline_blocking_button_disabled_diff.png"),
       path.join(__dirname, "/outline_blocking_button_enabled.png"),
       path.join(__dirname, "/golden/outline_blocking_button_default.png"),
-      path.join(__dirname, "/outline_blocking_button_enabled_diff.png")
+      path.join(__dirname, "/outline_blocking_button_enabled_diff.png"),
     ),
     new RenderCase(
       "RenderTextButton",
@@ -114,7 +118,7 @@ TEST_RUNNER.run({
       path.join(__dirname, "/text_blocking_button_disabled_diff.png"),
       path.join(__dirname, "/text_blocking_button_enabled.png"),
       path.join(__dirname, "/golden/text_blocking_button_default.png"),
-      path.join(__dirname, "/text_blocking_button_enabled_diff.png")
+      path.join(__dirname, "/text_blocking_button_enabled_diff.png"),
     ),
     {
       name: "DisabledButtonNotClickable",

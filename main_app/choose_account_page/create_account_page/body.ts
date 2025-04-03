@@ -10,8 +10,8 @@ import {
 } from "../../../common/input_form_page/text_input";
 import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { NATURAL_NAME_LENGTH_LIMIT } from "../../../common/user_limits";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
+import { MAX_NATURAL_NAME_LENGTH } from "@phading/constants/account";
 import { AccountType } from "@phading/user_service_interface/account_type";
 import { newCreateAccountRequest } from "@phading/user_service_interface/web/self/client";
 import {
@@ -104,7 +104,7 @@ export class CreateAccountPage extends EventEmitter {
   }
 
   private checkNaturalNameInput(value: string): ValidationResult {
-    if (value.length > NATURAL_NAME_LENGTH_LIMIT) {
+    if (value.length > MAX_NATURAL_NAME_LENGTH) {
       return {
         valid: false,
         errorMsg: LOCALIZED_TEXT.naturalNameTooLongError,

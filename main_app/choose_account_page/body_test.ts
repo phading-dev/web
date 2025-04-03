@@ -21,8 +21,10 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new ChooseAccountPage(
           () => new CreateAccountPageMock(),
-          () => new ListAccountsPageMock(),
+          (preSelectedAccountId) =>
+            new ListAccountsPageMock(preSelectedAccountId),
           (...bodies) => document.body.append(...bodies),
+          "consumer 1",
         );
 
         // Verify
@@ -37,10 +39,10 @@ TEST_RUNNER.run({
         this.cut.on("chosen", () => (chosen = true));
 
         // Execute
-        this.cut.listAccountsPage.emit("switched");
+        this.cut.listAccountsPage.emit("chosen");
 
         // Verify
-        assertThat(chosen, eq(true), "switched");
+        assertThat(chosen, eq(true), "chosen");
 
         // Execute
         this.cut.listAccountsPage.emit("createAccount");
@@ -62,7 +64,7 @@ TEST_RUNNER.run({
         this.cut.createAccountPage.emit("created");
 
         // Verify
-        assertThat(chosen, eq(true), "switched");
+        assertThat(chosen, eq(true), "chosen");
 
         // Execute
         this.cut.createAccountPage.emit("back");
@@ -73,12 +75,25 @@ TEST_RUNNER.run({
             __dirname,
             "/choose_account_page_back_from_create_account.png",
           ),
-          path.join(__dirname, "/golden/choose_account_page_default.png"),
+          path.join(
+            __dirname,
+            "/golden/choose_account_page_back_from_create_account.png",
+          ),
           path.join(
             __dirname,
             "/choose_account_page_back_from_create_account_diff.png",
           ),
         );
+
+        // Prepare
+        let signOut = false;
+        this.cut.on("signOut", () => (signOut = true));
+
+        // Execute
+        this.cut.listAccountsPage.emit("signOut");
+
+        // Verify
+        assertThat(signOut, eq(true), "signOut");
       }
       public tearDown() {
         this.cut.remove();

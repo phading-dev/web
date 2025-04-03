@@ -1,19 +1,20 @@
-export class PageNavigator<Page> {
-  private currentPage: Page;
+export class PageNavigator<Page, Args = any> {
+  public currentPage: Page;
 
   public constructor(
-    private addPage: (page: Page) => void,
+    private addPage: (page: Page, args?: Args) => void,
     private removePage: (page: Page) => void,
-    private updatePage: (page: Page) => void = () => {},
+    private updatePage: (page: Page, args?: Args) => void = () => {},
   ) {}
 
-  private goToInternal = (page: Page): void => {
+  private goToInternal = (page: Page, args?: Args): void => {
     if (this.currentPage !== page) {
       this.removePage(this.currentPage);
       this.currentPage = page;
-      this.addPage(this.currentPage);
+      this.addPage(this.currentPage, args);
+      this.updatePage(this.currentPage, args);
     } else {
-      this.updatePage(this.currentPage);
+      this.updatePage(this.currentPage, args);
     }
   };
 

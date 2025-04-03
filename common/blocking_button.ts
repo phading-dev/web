@@ -1,8 +1,7 @@
 import EventEmitter = require("events");
 import {
-  FILLED_BUTTON_STYLE,
-  OUTLINE_BUTTON_STYLE,
-  TEXT_BUTTON_STYLE,
+  COMMON_FILLED_BUTTON_STYLE,
+  COMMON_TEXT_BUTTON_STYLE,
 } from "./button_styles";
 import { SCHEME } from "./color_scheme";
 import { E } from "@selfage/element/factory";
@@ -93,15 +92,17 @@ export class FilledBlockingButton extends BlockingButton {
   }
 
   public constructor(customStyle: string) {
-    super(`${FILLED_BUTTON_STYLE} ${customStyle}`);
+    super(`${COMMON_FILLED_BUTTON_STYLE} ${customStyle}`);
   }
 
   protected enableOverride(): void {
     this.container.style.backgroundColor = SCHEME.primary1;
+    this.container.style.borderColor = SCHEME.primary1;
   }
 
   protected disableOverride(): void {
     this.container.style.backgroundColor = SCHEME.primary2;
+    this.container.style.borderColor = SCHEME.primary2;
   }
 }
 
@@ -111,7 +112,7 @@ export class OutlineBlockingButton extends BlockingButton {
   }
 
   public constructor(customStyle: string) {
-    super(`${OUTLINE_BUTTON_STYLE} ${customStyle}`);
+    super(`${COMMON_TEXT_BUTTON_STYLE} ${customStyle}`);
   }
 
   protected enableOverride(): void {
@@ -131,14 +132,16 @@ export class TextBlockingButton extends BlockingButton {
   }
 
   public constructor(customStyle: string) {
-    super(`${TEXT_BUTTON_STYLE} ${customStyle}`);
+    super(`${COMMON_TEXT_BUTTON_STYLE} ${customStyle}`);
   }
 
   protected enableOverride(): void {
     this.container.style.color = SCHEME.neutral0;
+    // this.container.style.borderColor = SCHEME.neutral1;
   }
 
   protected disableOverride(): void {
     this.container.style.color = SCHEME.neutral2;
+    // this.container.style.borderColor = SCHEME.neutral2;
   }
 }

@@ -6,7 +6,7 @@ import { ListAccountsResponse } from "@phading/user_service_interface/web/self/i
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 export class ListAccountsPageMock extends ListAccountsPage {
-  public constructor() {
+  public constructor(preSelectedAccountId?: string) {
     super(
       undefined,
       new (class extends WebServiceClientMock {
@@ -31,6 +31,7 @@ export class ListAccountsPageMock extends ListAccountsPage {
       })(),
       AccountItem.create,
       AddAccountItem.create,
+      preSelectedAccountId,
     );
   }
 }
