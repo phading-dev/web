@@ -92,13 +92,14 @@ export class CreateAccountPage extends EventEmitter {
         ).body,
       ],
       [this.naturalNameInput.val, this.accountTypeInput.val],
-      LOCALIZED_TEXT.createAccountButtonLabel,
-      (request) => this.createAccount(request),
-      (response, error) => this.postCreateAccount(response, error),
       {},
+      LOCALIZED_TEXT.createAccountButtonLabel,
     ).addBackButton();
 
-    this.inputFormPage.on("submitError", () => this.emit("createError"));
+    this.inputFormPage.addPrimaryAction(
+      (request) => this.createAccount(request),
+      (response, error) => this.postCreateAccount(response, error),
+    );
     this.inputFormPage.on("submitted", () => this.emit("created"));
     this.inputFormPage.on("back", () => this.emit("back"));
   }

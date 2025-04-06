@@ -17,7 +17,6 @@ import { WebServiceClient } from "@selfage/web_service_client";
 export interface UpdateRecoveryEmailPage {
   on(event: "back", listener: () => void): this;
   on(event: "updated", listener: () => void): this;
-  on(event: "updateError", listener: () => void): this;
 }
 
 export class UpdateRecoveryEmailPage extends EventEmitter {
@@ -81,13 +80,14 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
         ).body,
       ],
       [this.newRecoveryEmailInput.val, this.currentPasswordInput.val],
-      LOCALIZED_TEXT.updateButtonLabel,
-      (request) => this.updateRecoveryEmail(request),
-      (response, error) => this.postUpdateRecoveryEmail(error),
       {},
+      LOCALIZED_TEXT.updateButtonLabel,
     ).addBackButton();
 
-    this.inputFormPage.on("submitError", () => this.emit("updateError"));
+    this.inputFormPage.addPrimaryAction(
+      (request) => this.updateRecoveryEmail(request),
+      (response, error) => this.postUpdateRecoveryEmail(error),
+    );
     this.inputFormPage.on("submitted", () => this.emit("updated"));
     this.inputFormPage.on("back", () => this.emit("back"));
   }

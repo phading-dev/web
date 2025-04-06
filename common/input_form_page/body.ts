@@ -12,54 +12,72 @@ import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
-export interface InputFormPage<Request, Response> {
+export interface InputFormPage<
+  PrimaryRequest,
+  PrimaryResponse,
+  SecondaryRequest,
+  SecondaryResponse,
+> {
   on(event: "submitted", listener: () => void): this;
-  on(event: "submitError", listener: () => void): this;
-  on(event: "secondaryActionSuccess", listener: () => void): this;
-  on(event: "secondaryActionError", listener: () => void): this;
+  on(event: "primaryDone", listener: () => void): this;
+  on(event: "secondaryDone", listener: () => void): this;
   on(event: "back", listener: () => void): this;
 }
 
-export class InputFormPage<Request, Response> extends EventEmitter {
-  public static create<Request, Response>(
+export class InputFormPage<
+  PrimaryRequest,
+  PrimaryResponse,
+  SecondaryRequest = void,
+  SecondaryResponse = void,
+> extends EventEmitter {
+  public static create<
+    PrimaryRequest,
+    PrimaryResponse,
+    SecondaryRequest = void,
+    SecondaryResponse = void,
+  >(
     title: string,
     lines: Array<HTMLElement>,
-    inputs: Array<InputField<Request>>,
-    submitButtonLabel: string,
-    submitRequestFn: (request: Request) => Promise<Response>,
-    postSubmitFn: (response: Response, error?: Error) => string,
-    initRequest: Request,
-  ): InputFormPage<Request, Response> {
-    return new InputFormPage(
-      title,
-      lines,
-      inputs,
-      submitButtonLabel,
-      submitRequestFn,
-      postSubmitFn,
-      initRequest,
-    );
+    inputs: Array<InputField<PrimaryRequest>>,
+    initRequest: PrimaryRequest,
+    primaryButtonLabel: string,
+  ) {
+    return new InputFormPage<
+      PrimaryRequest,
+      PrimaryResponse,
+      SecondaryRequest,
+      SecondaryResponse
+    >(title, lines, inputs, initRequest, primaryButtonLabel);
   }
 
   public body: HTMLDivElement;
   private card = new Ref<HTMLFormElement>();
   private buttonsLine = new Ref<HTMLDivElement>();
-  private submitButton = new Ref<BlockingButton>();
   private actionError = new Ref<HTMLDivElement>();
-  private backButton = new Ref<IconButton>();
-  private secondaryBlockingButton = new Ref<BlockingButton>();
-  private secondaryActionCustomFn: () => Promise<void>;
-  private postSecondaryActionCustomFn: (error?: Error) => string;
-  private response: Response;
+  public primaryButton = new Ref<BlockingButton<PrimaryResponse>>();
+  public backButton = new Ref<IconButton>();
+  public secondaryBlockingButton = new Ref<BlockingButton<SecondaryResponse>>();
+  private primaryActionFn: (
+    request: PrimaryRequest,
+  ) => Promise<PrimaryResponse>;
+  private postPrimaryActionFn: (
+    response?: PrimaryResponse,
+    error?: Error,
+  ) => string;
+  private secondaryActionFn: (
+    request?: SecondaryRequest,
+  ) => Promise<SecondaryResponse>;
+  private postSecondaryActionFn: (
+    response?: SecondaryResponse,
+    error?: Error,
+  ) => string;
 
   public constructor(
     title: string,
     lines: Array<HTMLElement>,
-    private inputs: Array<InputField<Request>>,
-    submitButtonLabel: string,
-    private submitRequestFn: (request: Request) => Promise<Response>,
-    private postSubmitFn: (response: Response, error?: Error) => string,
-    private request: Request,
+    private inputs: Array<InputField<PrimaryRequest>>,
+    private request: PrimaryRequest,
+    primaryButtonLabel: string,
   ) {
     super();
     this.body = E.div(
@@ -85,58 +103,69 @@ export class InputFormPage<Request, Response> extends EventEmitter {
           this.buttonsLine,
           {
             class: "input-form-buttons-line",
-            style: `display: flex; flex-flow: row-reverse nowrap; gap: 1rem;`,
+            style: `width: 100%; display: flex; flex-flow: row-reverse wrap; justify-content: flex-start; align-items: center; gap: 2rem;`,
           },
           assign(
-            this.submitButton,
-            FilledBlockingButton.create(``).append(E.text(submitButtonLabel)),
+            this.primaryButton,
+            FilledBlockingButton.create<PrimaryResponse>(``).append(
+              E.text(primaryButtonLabel),
+            ),
           ).body,
-        ),
-        E.divRef(
-          this.actionError,
-          {
-            class: "input-form-action-error",
-            style: `visibility: hidden; align-self: flex-end; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
-          },
-          E.text("1"),
+          E.divRef(
+            this.actionError,
+            {
+              class: "input-form-action-error",
+              style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
+            },
+            E.text("1"),
+          ),
         ),
       ),
     );
+    this.refreshPrimaryButton();
 
-    this.refreshSubmitButton();
     for (let input of this.inputs) {
-      input.on("validated", () => this.refreshSubmitButton());
-      input.on("submit", () => this.submitButton.val.click());
+      input.on("validated", () => this.refreshPrimaryButton());
+      input.on("submit", () => this.primaryButton.val.click());
     }
-    this.submitButton.val.on("action", () => this.submitRequest());
-    this.submitButton.val.on("postAction", (error) =>
-      this.postSubmitRequest(error),
+    this.primaryButton.val.addAction(
+      () => this.primaryAction(),
+      (response, error) => this.postPrimaryAction(response, error),
     );
   }
 
-  private async submitRequest(): Promise<void> {
+  public addPrimaryAction(
+    primaryActionFn: (request: PrimaryRequest) => Promise<PrimaryResponse>,
+    postPrimaryActionFn: (response?: PrimaryResponse, error?: Error) => string,
+  ): this {
+    this.primaryActionFn = primaryActionFn;
+    this.postPrimaryActionFn = postPrimaryActionFn;
+    return this;
+  }
+
+  private primaryAction(): Promise<PrimaryResponse> {
     this.actionError.val.style.visibility = "hidden";
     for (let input of this.inputs) {
       input.fillInRequest(this.request);
     }
-    this.response = await this.submitRequestFn(this.request);
+    return this.primaryActionFn(this.request);
   }
 
-  private postSubmitRequest(error?: Error): void {
+  private postPrimaryAction(response?: PrimaryResponse, error?: Error): void {
     if (error) {
       console.error(error);
     }
-    let errorMsg = this.postSubmitFn(this.response, error);
+    let errorMsg = this.postPrimaryActionFn(response, error);
     if (errorMsg) {
       this.actionError.val.style.visibility = "visible";
       this.actionError.val.textContent = errorMsg;
-      this.emit("submitError");
     } else {
       this.emit("submitted");
     }
+    this.emit("primaryDone");
   }
 
-  private refreshSubmitButton(): void {
+  private refreshPrimaryButton(): void {
     let allValid = true;
     for (let input of this.inputs) {
       if (!input.isValid) {
@@ -145,9 +174,9 @@ export class InputFormPage<Request, Response> extends EventEmitter {
       }
     }
     if (allValid) {
-      this.submitButton.val.enable();
+      this.primaryButton.val.enable();
     } else {
-      this.submitButton.val.disable();
+      this.primaryButton.val.disable();
     }
   }
 
@@ -159,63 +188,56 @@ export class InputFormPage<Request, Response> extends EventEmitter {
     return this;
   }
 
-  public addSecondaryBlockingButton(
+  public addSecondaryButton(
     buttonLabel: string,
-    actionFn: () => Promise<void>,
-    postActionFn: (error?: Error) => string,
+    actionFn: (request?: SecondaryRequest) => Promise<SecondaryResponse>,
+    postActionFn: (response?: SecondaryResponse, error?: Error) => string,
   ): this {
-    this.buttonsLine.val.append(
+    this.buttonsLine.val.insertBefore(
       assign(
         this.secondaryBlockingButton,
-        TextBlockingButton.create(``)
+        TextBlockingButton.create<SecondaryResponse>(``)
           .append(E.text(buttonLabel))
           .enable()
           .show(),
       ).body,
+      this.actionError.val,
     );
-    this.secondaryActionCustomFn = actionFn;
-    this.postSecondaryActionCustomFn = postActionFn;
+    this.secondaryActionFn = actionFn;
+    this.postSecondaryActionFn = postActionFn;
 
-    this.secondaryBlockingButton.val.on("action", () =>
-      this.secondaryBlockingButtonAction(),
-    );
-    this.secondaryBlockingButton.val.on("postAction", (error) =>
-      this.postSecondaryButtonAction(error),
+    this.secondaryBlockingButton.val.addAction(
+      () => this.secondaryBlockingButtonAction(),
+      (response, error) => this.postSecondaryButtonAction(response, error),
     );
     return this;
   }
 
-  private async secondaryBlockingButtonAction(): Promise<void> {
+  private secondaryBlockingButtonAction(): Promise<SecondaryResponse> {
     this.actionError.val.style.visibility = "hidden";
-    await this.secondaryActionCustomFn();
+    return this.secondaryActionFn();
   }
 
-  private postSecondaryButtonAction(error?: Error): void {
+  private postSecondaryButtonAction(
+    response?: SecondaryResponse,
+    error?: Error,
+  ): void {
     if (error) {
       console.error(error);
     }
-    let errorMsg = this.postSecondaryActionCustomFn(error);
+    let errorMsg = this.postSecondaryActionFn(response, error);
     if (errorMsg) {
       this.actionError.val.style.visibility = "visible";
       this.actionError.val.textContent = errorMsg;
-      this.emit("secondaryActionError");
-    } else {
-      this.emit("secondaryActionSuccess");
     }
+    this.emit("secondaryDone");
+  }
+
+  public submit(): void {
+    this.primaryButton.val.click();
   }
 
   public remove(): void {
     this.body.remove();
-  }
-
-  // Visible for testing
-  public submit(): void {
-    this.submitButton.val.click();
-  }
-  public clickBackButton(): void {
-    this.backButton.val.click();
-  }
-  public clickSecondaryBlockingButton(): void {
-    this.secondaryBlockingButton.val.click();
   }
 }

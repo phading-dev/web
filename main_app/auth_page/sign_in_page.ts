@@ -21,7 +21,6 @@ import { LocalSessionStorage } from "@selfage/web_service_client/local_session_s
 export interface SignInPage {
   on(event: "signUp", listener: () => void): this;
   on(event: "signedIn", listener: () => void): this;
-  on(event: "signInError", listener: () => void): this;
 }
 
 export class SignInPage extends EventEmitter {
@@ -82,17 +81,18 @@ export class SignInPage extends EventEmitter {
         ),
       ],
       [this.usernameInput.val, this.passwordInput.val],
-      LOCALIZED_TEXT.signInButtonLabel,
-      (request) => this.signIn(request),
-      (response, error) => this.postSignIn(response, error),
       {},
+      LOCALIZED_TEXT.signInButtonLabel,
     );
 
     this.switchToSignUpButton.val.addEventListener("click", () =>
       this.emit("signUp"),
     );
+    this.inputFormPage.addPrimaryAction(
+      (request) => this.signIn(request),
+      (response, error) => this.postSignIn(response, error),
+    );
     this.inputFormPage.on("submitted", () => this.emit("signedIn"));
-    this.inputFormPage.on("submitError", () => this.emit("signInError"));
   }
 
   private checkUsernameInput(value: string): ValidationResult {
@@ -123,7 +123,7 @@ export class SignInPage extends EventEmitter {
     return await this.serviceClient.send(newSignInRequest(request));
   }
 
-  private postSignIn(response: SignInResponse, error?: Error): string {
+  private postSignIn(response?: SignInResponse, error?: Error): string {
     if (error) {
       return LOCALIZED_TEXT.signInError;
     } else {

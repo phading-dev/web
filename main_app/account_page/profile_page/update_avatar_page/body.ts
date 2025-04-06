@@ -4,10 +4,7 @@ import {
   OutlineBlockingButton,
 } from "../../../../common/blocking_button";
 import { SCHEME } from "../../../../common/color_scheme";
-import {
-  IconButton,
-  createBackButton,
-} from "../../../../common/icon_button";
+import { IconButton, createBackButton } from "../../../../common/icon_button";
 import { ImageCropper } from "../../../../common/image_cropper/body";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import {
@@ -24,8 +21,8 @@ import { WebServiceClient } from "@selfage/web_service_client";
 export interface UpdateAvatarPage {
   on(event: "back", listener: () => void): this;
   on(event: "imageLoaded", listener: () => void): this;
-  on(event: "updateError", listener: () => void): this;
   on(event: "updated", listener: () => void): this;
+  on(event: "uploaded", listener: () => void): this;
 }
 
 export class UpdateAvatarPage extends EventEmitter {
@@ -154,11 +151,11 @@ export class UpdateAvatarPage extends EventEmitter {
     );
 
     this.backButton.val.on("action", () => this.emit("back"));
-    this.chooseFileButton.val.on("action", () => this.chooseFile());
+    this.chooseFileButton.val.addAction(() => this.chooseFile());
     this.imageCropper.val.on("change", () => this.preview());
-    this.uploadButton.val.on("action", () => this.uploadAvatar());
-    this.uploadButton.val.on("postAction", (error) =>
-      this.postUploadAvatar(error),
+    this.uploadButton.val.addAction(
+      () => this.uploadAvatar(),
+      (response, error) => this.postUploadAvatar(error),
     );
   }
 
@@ -245,10 +242,10 @@ export class UpdateAvatarPage extends EventEmitter {
       console.error(error);
       this.uploadStatusText.val.textContent = LOCALIZED_TEXT.uploadAvatarError;
       this.uploadStatusText.val.style.visibility = "visible";
-      this.emit("updateError");
     } else {
       this.emit("updated");
     }
+    this.emit("uploaded");
   }
 
   public remove(): void {

@@ -72,7 +72,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) =>
-          this.cut.once("signUpError", () => resolve()),
+          this.cut.inputFormPage.once("primaryDone", () => resolve()),
         );
 
         // Verify
@@ -113,7 +113,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) =>
-          this.cut.once("signUpError", () => resolve()),
+          this.cut.inputFormPage.once("primaryDone", () => resolve()),
         );
 
         // Verify

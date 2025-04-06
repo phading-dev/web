@@ -116,7 +116,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.uploadButton.val.click();
         await new Promise<void>((resolve) =>
-          this.cut.once("updateError", resolve),
+          this.cut.once("uploaded", resolve),
         );
 
         // Verify

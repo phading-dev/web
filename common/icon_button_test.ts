@@ -1,3 +1,4 @@
+import "./normalize_body";
 import path = require("path");
 import {
   BlockingIconButton,
@@ -11,7 +12,6 @@ import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import "./normalize_body";
 
 let container: HTMLDivElement;
 
@@ -325,7 +325,7 @@ TEST_RUNNER.run({
         // Prepare
         let resolveFn: Function;
         let promise = new Promise<void>((resolve) => (resolveFn = resolve));
-        this.cut.on("action", () => promise);
+        this.cut.addAction(() => promise);
 
         // Execute
         this.cut.click();

@@ -24,7 +24,6 @@ import { WebServiceClient } from "@selfage/web_service_client";
 export interface UpdateAccountInfoPage {
   on(event: "back", listener: () => void): this;
   on(event: "updated", listener: () => void): this;
-  on(event: "updateError", listener: () => void): this;
 }
 
 export class UpdateAccountInfoPage extends EventEmitter {
@@ -105,13 +104,14 @@ export class UpdateAccountInfoPage extends EventEmitter {
         this.emailInput.val,
         this.descriptionInput.val,
       ],
-      LOCALIZED_TEXT.updateButtonLabel,
-      (request) => this.updateAccountInfo(request),
-      (response, error) => this.postUpdateAccountInfo(error),
       {},
+      LOCALIZED_TEXT.updateButtonLabel,
     ).addBackButton();
 
-    this.inputFormPage.on("submitError", () => this.emit("updateError"));
+    this.inputFormPage.addPrimaryAction(
+      (request) => this.updateAccountInfo(request),
+      (response, error) => this.postUpdateAccountInfo(error),
+    );
     this.inputFormPage.on("submitted", () => this.emit("updated"));
     this.inputFormPage.on("back", () => this.emit("back"));
   }

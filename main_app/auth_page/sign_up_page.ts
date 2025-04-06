@@ -31,7 +31,6 @@ import { LocalSessionStorage } from "@selfage/web_service_client/local_session_s
 export interface SignUpPage {
   on(event: "signIn", listener: () => void): this;
   on(event: "signedUp", listener: () => void): this;
-  on(event: "signUpError", listener: () => void): this;
 }
 
 export class SignUpPage extends EventEmitter {
@@ -162,16 +161,17 @@ export class SignUpPage extends EventEmitter {
         this.repeatPasswordInput.val,
         this.accountTypeInput.val,
       ],
-      LOCALIZED_TEXT.signUpButtonLabel,
-      (request) => this.signUp(request),
-      (response, error) => this.postSignUp(response, error),
       {},
+      LOCALIZED_TEXT.signUpButtonLabel,
     );
 
     this.switchToSignInButton.val.addEventListener("click", () =>
       this.emit("signIn"),
     );
-    this.inputFormPage.on("submitError", () => this.emit("signUpError"));
+    this.inputFormPage.addPrimaryAction(
+      (request) => this.signUp(request),
+      (response, error) => this.postSignUp(response, error),
+    );
     this.inputFormPage.on("submitted", () => this.emit("signedUp"));
   }
 

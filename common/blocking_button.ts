@@ -6,15 +6,15 @@ import {
 import { SCHEME } from "./color_scheme";
 import { E } from "@selfage/element/factory";
 
-export interface BlockingButton {
-  on(event: "action", listener: () => Promise<void>): this;
-  on(event: "postAction", listener: (error?: Error) => void): this;
-}
+type ActionFn<Response> = () => Promise<Response>;
+type PostActionFn<Response> = (response?: Response, error?: Error) => void;
 
-export abstract class BlockingButton extends EventEmitter {
+export abstract class BlockingButton<Response = void> extends EventEmitter {
   protected container: HTMLButtonElement;
   private displayStyle: string;
   private cursorStyle: string;
+  private action: ActionFn<Response>;
+  private postAction: PostActionFn<Response>;
 
   public constructor(customStyle: string) {
     super();
@@ -31,19 +31,29 @@ export abstract class BlockingButton extends EventEmitter {
 
   private async handleClick(): Promise<void> {
     this.disable();
+    let response: Response;
     try {
-      await Promise.all(this.listeners("action").map((callback) => callback()));
+      response = await this.action();
     } catch (e) {
       this.enable();
-      this.emit("postAction", e);
+      this.postAction(undefined, e as Error);
       return;
     }
     this.enable();
-    this.emit("postAction");
+    this.postAction(response);
   }
 
   public append(...childNodes: Array<Node>): this {
     this.container.append(...childNodes);
+    return this;
+  }
+
+  public addAction(
+    action: ActionFn<Response>,
+    postActionFn: PostActionFn<Response> = () => {},
+  ): this {
+    this.action = action;
+    this.postAction = postActionFn;
     return this;
   }
 
@@ -86,9 +96,13 @@ export abstract class BlockingButton extends EventEmitter {
   }
 }
 
-export class FilledBlockingButton extends BlockingButton {
-  public static create(customStyle: string): FilledBlockingButton {
-    return new FilledBlockingButton(customStyle);
+export class FilledBlockingButton<
+  Response = void,
+> extends BlockingButton<Response> {
+  public static create<Response = void>(
+    customStyle: string,
+  ): FilledBlockingButton<Response> {
+    return new FilledBlockingButton<Response>(customStyle);
   }
 
   public constructor(customStyle: string) {
@@ -106,13 +120,17 @@ export class FilledBlockingButton extends BlockingButton {
   }
 }
 
-export class OutlineBlockingButton extends BlockingButton {
-  public static create(customStyle: string): OutlineBlockingButton {
-    return new OutlineBlockingButton(customStyle);
+export class OutlineBlockingButton<
+  Response = void,
+> extends BlockingButton<Response> {
+  public static create<Response = void>(
+    customStyle: string,
+  ): OutlineBlockingButton<Response> {
+    return new OutlineBlockingButton<Response>(customStyle);
   }
 
   public constructor(customStyle: string) {
-    super(`${COMMON_TEXT_BUTTON_STYLE} ${customStyle}`);
+    super(`${COMMON_FILLED_BUTTON_STYLE} ${customStyle}`);
   }
 
   protected enableOverride(): void {
@@ -126,9 +144,13 @@ export class OutlineBlockingButton extends BlockingButton {
   }
 }
 
-export class TextBlockingButton extends BlockingButton {
-  public static create(customStyle: string): TextBlockingButton {
-    return new TextBlockingButton(customStyle);
+export class TextBlockingButton<
+  Response = void,
+> extends BlockingButton<Response> {
+  public static create<Response = void>(
+    customStyle: string,
+  ): TextBlockingButton<Response> {
+    return new TextBlockingButton<Response>(customStyle);
   }
 
   public constructor(customStyle: string) {

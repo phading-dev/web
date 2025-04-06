@@ -91,7 +91,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.inputFormPage.submit();
         await new Promise<void>((resolve) =>
-          this.cut.once("createError", resolve),
+          this.cut.inputFormPage.once("primaryDone", resolve),
         );
 
         // Verify
@@ -148,7 +148,7 @@ TEST_RUNNER.run({
         this.cut.on("back", () => (back = true));
 
         // Execute
-        this.cut.inputFormPage.clickBackButton();
+        this.cut.inputFormPage.backButton.val.click();
 
         // Verify
         assertThat(back, eq(true), "went back");

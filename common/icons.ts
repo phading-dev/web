@@ -691,3 +691,44 @@ export function createMenuIcon(color: string): SVGSVGElement {
     }),
   );
 }
+
+export function createCheckmarkIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "checkmark-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 -3 32 32",
+    },
+    E.path({
+      d: `M548.783,1040.2 C547.188,1038.57 544.603,1038.57 543.008,1040.2 L528.569,1054.92 L524.96,1051.24 C523.365,1049.62 520.779,1049.62 519.185,1051.24 C517.59,1052.87 517.59,1055.51 519.185,1057.13 L525.682,1063.76 C527.277,1065.39 529.862,1065.39 531.457,1063.76 L548.783,1046.09 C550.378,1044.46 550.378,1041.82 548.783,1040.2`,
+      transform: `translate(-518, -1039)`,
+    }),
+  );
+}
+
+export function createExclamationMarkInACycle(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "exclamation-mark-in-a-cycle-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "-101.2 -101.2 714.4 714.4",
+    },
+    E.path({
+      d: `M256,362.549c12.439,0,29.89-54.93,34.382-70.985c13.943-46.482,25.398-109.859,25.398-162.266 C315.78,66.761,298.338,0,256,0c-42.338,0-59.78,66.761-59.78,129.298c0,52.407,11.472,115.784,25.415,162.266 C226.11,307.619,243.551,362.549,256,362.549z  M256,401.424c-30.391,0-55.288,24.906-55.288,55.288C200.712,487.086,225.609,512,256,512 c30.392,0,55.297-24.914,55.297-55.288C311.297,426.33,286.391,401.424,256,401.424z  M256,-101.2 a357.2,357.2,0,1,1,-.1,0z  M256,-31.2 a287.2,287.2,0,1,0,.1,0z`,
+    }),
+  );
+}
+
+// A horizontal line in a circle.
+export function createForbiddenIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "error-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "-101.2 -101.2 714.4 714.4",
+    },
+    E.path({
+      d: `M256,-101.2 a357.2,357.2,0,1,1,-.1,0z  M256,-31.2 a287.2,287.2,0,1,0,.1,0z  M68.8,221 l374.4,0 a35,35,0,1,1,0,70 l-374.4,0 a35,35,0,1,1,0,-70z`,
+    }),
+  );
+}

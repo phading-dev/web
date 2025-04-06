@@ -30,15 +30,15 @@ class RenderCase implements TestCase {
   public async execute() {
     // Prepare
     await setViewport(200, 200);
-    let cut = this.buttonFactoryFn("")
-      .append(E.text("some button"))
-      .enable()
-      .show();
     let resolveFn: Function;
     let resovablePromise = new Promise<void>((resolve) => {
       resolveFn = resolve;
     });
-    cut.on("action", () => resovablePromise);
+    let cut = this.buttonFactoryFn("")
+      .append(E.text("some button"))
+      .enable()
+      .show()
+      .addAction(() => resovablePromise);
     this.container = E.div({}, cut.body);
 
     // Execute
@@ -121,12 +121,37 @@ TEST_RUNNER.run({
       path.join(__dirname, "/text_blocking_button_enabled_diff.png"),
     ),
     {
+      name: "PassResponseToAction",
+      async execute() {
+        // Prepare
+        let actioned = false;
+        let cut = FilledBlockingButton.create<number>("")
+          .enable()
+          .show()
+          .addAction(
+            async () => {
+              return 1;
+            },
+            (response) => {
+              assertThat(response, eq(1), "action response");
+              actioned = true;
+            },
+          );
+
+        // Execute
+        cut.click();
+        await new Promise<void>((resolve) => setTimeout(resolve));
+
+        // Verify
+        assertThat(actioned, eq(true), "actioned");
+      },
+    },
+    {
       name: "DisabledButtonNotClickable",
       async execute() {
         // Prepare
         let actioned = false;
-        let cut = FilledBlockingButton.create("");
-        cut.on("action", async () => {
+        let cut = FilledBlockingButton.create("").addAction(async () => {
           actioned = true;
         });
 

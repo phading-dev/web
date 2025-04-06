@@ -52,9 +52,9 @@ export default class Text {
   }
   get marketingPublisherTabExplanationPoint4() {
     return [
-      `• At the end of each month, your earnings (after a `,
+      `• At the end of each month, your earnings (after a `, // e.g. 20%
       ` platform fee and `,
-      `service fees`,
+      `service fees`, // Wrap in a link
       `) are calculated and paid out.`, // TODO: Mention within X days.
     ];
   }
@@ -274,6 +274,66 @@ export default class Text {
   get updateGenericFailure() {
     return `Failed to update. Please try again later.`;
   }
+  get billingStatusTitle() {
+    return `Billing status`;
+  }
+  get billingStatusHealthy() {
+    return [`No overdue payments. Next payment, if any, is scheduled on `, `.`];
+  }
+  get billingStatusWarning() {
+    return `There are failed payments. Please check or update your payment method and retry.`;
+  }
+  get billingStatusRetryingPayments() {
+    return `Retrying failed payments. Please check back later.`;
+  }
+  get retryPaymentsLabel() {
+    return `Retry payments`;
+  }
+  get retryPaymentsGenericFailure() {
+    return `Failed to retry payments. Please try again later.`;
+  }
+  get billingStatusSuspended() {
+    return [`Your account is currently suspended. Please contact at `, `.`];
+  }
+  get paymentMethodTitle() {
+    return `Payment method`;
+  }
+  get addCardPaymentLabel() {
+    return `Add`;
+  }
+  get cardExpires() {
+    return [
+      `Expires `, // E.g. 12/2023
+      ``,
+    ];
+  }
+  get cardExpired() {
+    return `Expired`;
+  }
+  get addPaymentMethodGenericFailure() {
+    return `Failed to add payment method. Please try again later.`;
+  }
+  get updateCardPaymentLabel() {
+    return `Update`;
+  }
+  get paymentActivitiesTitle() {
+    return `Payment activities`;
+  }
+  get invalidPaymentActivityRange() {
+    return `Invalid range`;
+  }
+  get noPaymentActivities() {
+    return `No activities`;
+  }
+  get paymentStateProcessing() {
+    return `Processing`;
+  }
+  get paymentStatePaid() {
+    return `Paid`;
+  }
+  get paymentStateFailed() {
+    return `Failed`;
+  }
   get chooseLayoutLabel() {
     return `Choose a layout from below`;
   }
@@ -453,51 +513,6 @@ export default class Text {
   }
   get usageReportEndDateSmallerThanStartDate() {
     return `End date cannot be smaller than start date.`;
-  }
-  get paymentMethodsListTitle() {
-    return `Payment methods`;
-  }
-  get paymentMethodPrimary() {
-    return `Primary`;
-  }
-  get paymentMethodBackup() {
-    return `Backup`;
-  }
-  get cardExpiresPartOne() {
-    return `Expires `;
-  }
-  get cardExpiresPartTwo() {
-    return ``;
-  }
-  get cardExpired() {
-    return `Expired`;
-  }
-  get startToAddPaymentMethodsFailed() {
-    return `Failed to add payment method. Please try again later.`;
-  }
-  get updatePaymentMethodTitle() {
-    return `Update payment method`;
-  }
-  get updatePaymentMethodExpiresLabel() {
-    return `Expires`;
-  }
-  get cardIsSavedAsLabel() {
-    return `Saved`;
-  }
-  get cardIsUsedAsPrimaryPaymentMethodLabel() {
-    return `As primary`;
-  }
-  get cardIsUsedAsBackupPaymentMethodLabel() {
-    return `As backup`;
-  }
-  get cardIsSavedForFutureLabel() {
-    return `For future`;
-  }
-  get deleteButtonLabel() {
-    return `Delete`;
-  }
-  get deletePaymentMethodFailure() {
-    return `Failed to delete the payment method. Please try again later.`;
   }
   get likeButtonLabel() {
     return `Like`;

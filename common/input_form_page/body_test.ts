@@ -1,3 +1,4 @@
+import "../normalize_body";
 import path = require("path");
 import { InputFormPage } from "./body";
 import { TextInputWithErrorMsg } from "./text_input";
@@ -5,7 +6,6 @@ import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import "../normalize_body";
 
 interface Request {
   username?: string;
@@ -49,7 +49,9 @@ TEST_RUNNER.run({
           "A title",
           [input.body],
           [input],
+          {},
           "Update",
+        ).addPrimaryAction(
           async (request) => {
             requestSubmitted = request;
             if (callError) {
@@ -67,7 +69,6 @@ TEST_RUNNER.run({
               return "";
             }
           },
-          {},
         );
         document.body.append(this.cut.body);
 
@@ -91,15 +92,18 @@ TEST_RUNNER.run({
 
         // Prepare
         callError = new Error("Fake error");
+        let submitted = false;
+        this.cut.on("submitted", () => (submitted = true));
 
         // Execute
         this.cut.submit();
         await new Promise<void>((resolve) =>
-          this.cut.once("submitError", resolve),
+          this.cut.once("primaryDone", resolve),
         );
 
         // Verify
         assertThat(requestSubmitted.username, eq("Joe"), "request");
+        assertThat(submitted, eq(false), "not submitted");
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_submit_error.png"),
           path.join(__dirname, "/golden/input_form_page_submit_error.png"),
@@ -115,10 +119,11 @@ TEST_RUNNER.run({
         // Execute
         input.dispatchEnter();
         await new Promise<void>((resolve) =>
-          this.cut.once("submitError", resolve),
+          this.cut.once("primaryDone", resolve),
         );
 
         // Verify
+        assertThat(submitted, eq(false), "not submitted");
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_error_in_response.png"),
           path.join(__dirname, "/golden/input_form_page_error_in_response.png"),
@@ -131,10 +136,11 @@ TEST_RUNNER.run({
         // Execute
         this.cut.submit();
         await new Promise<void>((resolve) =>
-          this.cut.once("submitted", resolve),
+          this.cut.once("primaryDone", resolve),
         );
 
         // Verify
+        assertThat(submitted, eq(true), "submitted");
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_submitted.png"),
           path.join(__dirname, "/golden/input_form_page_valid.png"),
@@ -146,7 +152,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "SecondaryDeleteButton_DeleteFailed_DeleteSucceeded";
+      public name = "SecondaryDeleteButton_DeleteFailed_WrapErrorMessage_DeleteSucceeded";
       private cut: InputFormPage<Request, Response>;
       public async execute() {
         // Prepare
@@ -167,29 +173,32 @@ TEST_RUNNER.run({
           "A title",
           [input.body],
           [input],
-          "Update",
-          async (request) => {
-            return {};
-          },
-          (response, error) => {
-            return "";
-          },
           {},
-        ).addSecondaryBlockingButton(
-          "Delete",
-          async () => {
-            if (deleteError) {
-              throw deleteError;
-            }
-          },
-          (error) => {
-            if (error) {
-              return "Failed to delete";
-            } else {
+          "Update",
+        )
+          .addPrimaryAction(
+            async (request) => {
+              return {};
+            },
+            (response, error) => {
               return "";
-            }
-          },
-        );
+            },
+          )
+          .addSecondaryButton(
+            "Delete",
+            async () => {
+              if (deleteError) {
+                throw deleteError;
+              }
+            },
+            (response, error) => {
+              if (error) {
+                return "Failed to delete delete delete delete!!!";
+              } else {
+                return "";
+              }
+            },
+          );
         document.body.append(this.cut.body);
 
         // Verify
@@ -203,9 +212,9 @@ TEST_RUNNER.run({
         deleteError = new Error("Fake error");
 
         // Execute
-        this.cut.clickSecondaryBlockingButton();
+        this.cut.secondaryBlockingButton.val.click();
         await new Promise<void>((resolve) =>
-          this.cut.once("secondaryActionError", resolve),
+          this.cut.once("secondaryDone", resolve),
         );
 
         // Verify
@@ -215,13 +224,24 @@ TEST_RUNNER.run({
           path.join(__dirname, "/input_form_page_delete_error_diff.png"),
         );
 
+        // Execute
+        await setViewport(400, 600);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_wrap_error.png"),
+          path.join(__dirname, "/golden/input_form_page_wrap_error.png"),
+          path.join(__dirname, "/input_form_page_wrap_error_diff.png"),
+        );
+
         // Cleanup
         deleteError = undefined;
+        await setViewport(1000, 600);
 
         // Execute
-        this.cut.clickSecondaryBlockingButton();
+        this.cut.secondaryBlockingButton.val.click();
         await new Promise<void>((resolve) =>
-          this.cut.once("secondaryActionSuccess", resolve),
+          this.cut.once("secondaryDone", resolve),
         );
 
         // Verify
@@ -256,14 +276,8 @@ TEST_RUNNER.run({
           "A title",
           [input.body],
           [input],
-          "Update",
-          async (request) => {
-            return {};
-          },
-          (response, error) => {
-            return "";
-          },
           {},
+          "Update",
         ).addBackButton();
         document.body.append(this.cut.body);
 
@@ -279,7 +293,7 @@ TEST_RUNNER.run({
         this.cut.on("back", () => (back = true));
 
         // Execute
-        this.cut.clickBackButton();
+        this.cut.backButton.val.click();
 
         // Verify
         assertThat(back, eq(true), "went back");

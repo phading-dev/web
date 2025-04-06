@@ -296,16 +296,22 @@ export class IconTooltipButton extends EventEmitter {
   }
 }
 
-export class BlockingIconButton extends BlockingButton {
-  public static create(
+export interface BlockingIconButton {
+  on(event: "tooltipShowed", listener: () => void): this;
+}
+
+export class BlockingIconButton<
+  Response = void,
+> extends BlockingButton<Response> {
+  public static create<Response = void>(
     size: number, // rem
     padding: number, // rem
     customStyle: string,
     iconElement: Element, // SVG needs to use "fill: currentColor;".
     position: TooltipPosition,
     text: string,
-  ): BlockingIconButton {
-    return new BlockingIconButton(
+  ) {
+    return new BlockingIconButton<Response>(
       size,
       padding,
       customStyle,
