@@ -319,10 +319,10 @@ export default class Text {
   get paymentActivitiesTitle() {
     return `Payment activities`;
   }
-  get invalidPaymentActivityRange() {
+  get invalidActivityRange() {
     return `Invalid range`;
   }
-  get noPaymentActivities() {
+  get noActivities() {
     return `No activities`;
   }
   get paymentStateProcessing() {
@@ -333,6 +333,34 @@ export default class Text {
   }
   get paymentStateFailed() {
     return `Failed`;
+  }
+  get earningsManagementTitle() {
+    return `Manage earnings`;
+  }
+  get completeOnboardInStripe() {
+    return [
+      `New here? `,
+      `Complete your Stripe onboarding`,
+      ` to start receiving payouts.`,
+    ];
+  }
+  get managePayoutInStripe() {
+    return [
+      `View your Stripe dashboard`,
+      ` to manage your bank details and payout status. Payouts are typically sent at the start of each month and may take a few days to process.`,
+    ];
+  }
+  get payoutActivitiesTitle() {
+    return `Payout activities`;
+  }
+  get payoutStateProcessing() {
+    return `Processing`;
+  }
+  get payoutStatePaid() {
+    return `Sent`;
+  }
+  get payoutStateDisabled() {
+    return `Queued`;
   }
   get chooseLayoutLabel() {
     return `Choose a layout from below`;
