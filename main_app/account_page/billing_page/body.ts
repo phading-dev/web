@@ -67,7 +67,7 @@ export class BillingPage extends EventEmitter {
   public constructor(
     public serviceClient: WebServiceClient,
     private window: Window,
-    private nowDate: () => Date,
+    private getNowDate: () => Date,
   ) {
     super();
     this.body = E.div({
@@ -81,8 +81,8 @@ export class BillingPage extends EventEmitter {
     let response = await this.serviceClient.send(
       newGetBillingProfileInfoRequest({}),
     );
-    let now = this.nowDate();
-    let startMonth = getLastMonth(toDateWrtTimezone(now));
+    let nowDate = this.getNowDate();
+    let startMonth = getLastMonth(toDateWrtTimezone(nowDate));
     let endMonth = startMonth;
     this.body.append(
       E.div(
@@ -120,7 +120,7 @@ export class BillingPage extends EventEmitter {
             },
             E.text(
               this.getStatusText(
-                now.valueOf(),
+                nowDate.valueOf(),
                 response.paymentAfterMs,
                 response.state,
               ),
@@ -168,8 +168,10 @@ export class BillingPage extends EventEmitter {
           style: `height: 1rem;`,
         }),
         response.primaryPaymentMethod
-          ? new CardPaymentItem(now.valueOf(), response.primaryPaymentMethod)
-              .body
+          ? new CardPaymentItem(
+              nowDate.valueOf(),
+              response.primaryPaymentMethod,
+            ).body
           : new AddCardPaymentItem().body,
         E.div({
           style: `height: 1.5rem;`,
@@ -315,7 +317,7 @@ export class BillingPage extends EventEmitter {
             class: "billing-page-invalid-payment-activity-range",
             style: `width: 100%; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
           },
-          E.text(LOCALIZED_TEXT.invalidPaymentActivityRange),
+          E.text(LOCALIZED_TEXT.invalidActivityRange),
         ),
       );
       return;
@@ -342,7 +344,7 @@ export class BillingPage extends EventEmitter {
             class: "billing-page-no-payment-activity",
             style: `width: 100%; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
           },
-          E.text(LOCALIZED_TEXT.noPaymentActivities),
+          E.text(LOCALIZED_TEXT.noActivities),
         ),
       );
     } else {
