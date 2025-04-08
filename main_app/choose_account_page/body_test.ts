@@ -1,9 +1,9 @@
 import "../../common/normalize_body";
 import path = require("path");
+import { setDesktopView } from "../../common/view_port";
 import { ChooseAccountPage } from "./body";
 import { CreateAccountPageMock } from "./create_account_page/body_mock";
 import { ListAccountsPageMock } from "./list_accounts_page/body_mock";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -12,11 +12,11 @@ TEST_RUNNER.run({
   name: "ChooseAccountPage",
   cases: [
     new (class implements TestCase {
-      public name = "Default";
+      public name = "Desktop";
       private cut: ChooseAccountPage;
       public async execute() {
         // Prepare
-        await setViewport(800, 600);
+        await setDesktopView();
 
         // Execute
         this.cut = new ChooseAccountPage(

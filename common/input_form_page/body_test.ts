@@ -1,8 +1,8 @@
 import "../normalize_body";
 import path = require("path");
+import { setDesktopView, setPhoneView, setTabletView } from "../view_port";
 import { InputFormPage } from "./body";
 import { TextInputWithErrorMsg } from "./text_input";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -24,7 +24,7 @@ TEST_RUNNER.run({
       private cut: InputFormPage<Request, Response>;
       public async execute() {
         // Prepare
-        await setViewport(1000, 600);
+        await setDesktopView();
         let input = TextInputWithErrorMsg.create<Request>(
           "Input",
           "",
@@ -152,11 +152,12 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "SecondaryDeleteButton_DeleteFailed_WrapErrorMessage_DeleteSucceeded";
+      public name =
+        "SecondaryDeleteButton_DeleteFailed_PhoneView_DeleteSucceeded";
       private cut: InputFormPage<Request, Response>;
       public async execute() {
         // Prepare
-        await setViewport(1000, 600);
+        await setTabletView();
         let input = TextInputWithErrorMsg.create<Request>(
           "Input",
           "",
@@ -225,18 +226,24 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await setViewport(400, 600);
+        await setPhoneView();
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/input_form_page_wrap_error.png"),
-          path.join(__dirname, "/golden/input_form_page_wrap_error.png"),
-          path.join(__dirname, "/input_form_page_wrap_error_diff.png"),
+          path.join(__dirname, "/input_form_page_delete_error_phone_view.png"),
+          path.join(
+            __dirname,
+            "/golden/input_form_page_delete_error_phone_view.png",
+          ),
+          path.join(
+            __dirname,
+            "/input_form_page_delete_error_phone_view_diff.png",
+          ),
         );
 
         // Cleanup
         deleteError = undefined;
-        await setViewport(1000, 600);
+        await setTabletView();
 
         // Execute
         this.cut.secondaryBlockingButton.val.click();
@@ -260,7 +267,7 @@ TEST_RUNNER.run({
       private cut: InputFormPage<Request, Response>;
       public async execute() {
         // Prepare
-        await setViewport(1000, 600);
+        await setDesktopView();
         let input = TextInputWithErrorMsg.create<Request>(
           "Input",
           "",
@@ -297,6 +304,67 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(back, eq(true), "went back");
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "ManyInputs_ScrollToBottom";
+      private cut: InputFormPage<Request, Response>;
+      public async execute() {
+        // Prepare
+        await setPhoneView();
+        let inputs: TextInputWithErrorMsg<Request>[] = [];
+        for (let i = 0; i < 77; i++) {
+          inputs.push(
+            TextInputWithErrorMsg.create<Request>(
+              `Input ${i + 1}`,
+              "",
+              { type: "text" },
+              (request, value) => {},
+              (value) => {
+                return { valid: false };
+              },
+            ),
+          );
+        }
+
+        // Execute
+        this.cut = new InputFormPage<Request, Response>(
+          "A title",
+          inputs.map((input) => input.body),
+          inputs,
+          {},
+          "Update",
+        );
+        document.body.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_many_inputs.png"),
+          path.join(__dirname, "/golden/input_form_page_many_inputs.png"),
+          path.join(__dirname, "/input_form_page_many_inputs_diff.png"),
+        );
+
+        // Execute
+        window.scrollTo(0, document.body.scrollHeight);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/input_form_page_many_inputs_scroll_to_bottom.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/input_form_page_many_inputs_scroll_to_bottom.png",
+          ),
+          path.join(
+            __dirname,
+            "/input_form_page_many_inputs_scroll_to_bottom_diff.png",
+          ),
+        );
       }
       public tearDown() {
         this.cut.remove();

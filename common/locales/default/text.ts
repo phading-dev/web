@@ -274,16 +274,16 @@ export default class Text {
   get updateGenericFailure() {
     return `Failed to update. Please try again later.`;
   }
-  get billingStatusTitle() {
-    return `Billing status`;
+  get paymentStatusTitle() {
+    return `Payment status`;
   }
-  get billingStatusHealthy() {
+  get paymentStatusHealthy() {
     return [`No overdue payments. Next payment, if any, is scheduled on `, `.`];
   }
-  get billingStatusWarning() {
+  get paymentStatusWarning() {
     return `There are failed payments. Please check or update your payment method and retry.`;
   }
-  get billingStatusRetryingPayments() {
+  get paymentStatusRetryingPayments() {
     return `Retrying failed payments. Please check back later.`;
   }
   get retryPaymentsLabel() {
@@ -292,7 +292,7 @@ export default class Text {
   get retryPaymentsGenericFailure() {
     return `Failed to retry payments. Please try again later.`;
   }
-  get billingStatusSuspended() {
+  get paymentStatusSuspended() {
     return [`Your account is currently suspended. Please contact at `, `.`];
   }
   get paymentMethodTitle() {
@@ -340,8 +340,8 @@ export default class Text {
   get paymentStateFailed() {
     return `Failed`;
   }
-  get earningsManagementTitle() {
-    return `Manage earnings`;
+  get payoutManagementTitle() {
+    return `Manage payout`;
   }
   get completeOnboardInStripe() {
     return [

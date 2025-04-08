@@ -1,5 +1,6 @@
 import "../../../common/normalize_body";
 import path = require("path");
+import { setPhoneView, setTabletView } from "../../../common/view_port";
 import { StatementsPage } from "./body";
 import {
   LIST_TRANSACTION_STATEMENTS,
@@ -9,7 +10,6 @@ import {
 import { ProductID } from "@phading/price";
 import { AmountType } from "@phading/price/amount_type";
 import { eqMessage } from "@selfage/message/test_matcher";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -24,7 +24,7 @@ TEST_RUNNER.run({
       private cut: StatementsPage;
       public async execute() {
         // Prepare
-        await setViewport(360, 600);
+        await setPhoneView();
         let serviceClientMock = new WebServiceClientMock();
         serviceClientMock.response = {
           statements: [],
@@ -209,7 +209,7 @@ TEST_RUNNER.run({
       private cut: StatementsPage;
       public async execute() {
         // Prepare
-        await setViewport(800, 600);
+        await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
         serviceClientMock.response = {
           statements: [

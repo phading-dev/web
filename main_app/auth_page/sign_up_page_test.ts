@@ -1,6 +1,7 @@
 import "../../common/normalize_body";
 import path = require("path");
 import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
+import { setDesktopView } from "../../common/view_port";
 import { SignUpPage } from "./sign_up_page";
 import { AccountType } from "@phading/user_service_interface/account_type";
 import {
@@ -9,7 +10,6 @@ import {
   SignUpResponse,
 } from "@phading/user_service_interface/web/self/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -27,11 +27,11 @@ TEST_RUNNER.run({
   name: "SignUpPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "LargeScreen_EnterAllFields_SignUpFailed_SignUpSuccess";
+      public name = "EnterAllFields_SignUpFailed_SignUpSuccess";
       private cut: SignUpPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 1000);
+        await setDesktopView();
         let webServiceClientMock = new WebServiceClientMock();
 
         // Execute
@@ -40,9 +40,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/sign_up_page_tall.png"),
-          path.join(__dirname, "/golden/sign_up_page_tall.png"),
-          path.join(__dirname, "/sign_up_page_tall_diff.png"),
+          path.join(__dirname, "/sign_up_page_render.png"),
+          path.join(__dirname, "/golden/sign_up_page_render.png"),
+          path.join(__dirname, "/sign_up_page_render_diff.png"),
         );
 
         // Execute
@@ -151,11 +151,11 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "SmallScreenWithInitPubliserType";
+      public name = "InitPubliserType";
       private cut: SignUpPage;
       public async execute() {
         // Prepare
-        await setViewport(500, 400);
+        await setDesktopView();
 
         // Execute
         this.cut = new SignUpPage(undefined, undefined, AccountType.PUBLISHER);
@@ -163,22 +163,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/sign_up_page_short.png"),
-          path.join(__dirname, "/golden/sign_up_page_short.png"),
-          path.join(__dirname, "/sign_up_page_short_diff.png"),
-        );
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/sign_up_page_short_scroll_to_bottom.png"),
-          path.join(
-            __dirname,
-            "/golden/sign_up_page_short_scroll_to_bottom.png",
-          ),
-          path.join(__dirname, "/sign_up_page_short_scroll_to_bottom_diff.png"),
+          path.join(__dirname, "/sign_up_page_publisher.png"),
+          path.join(__dirname, "/golden/sign_up_page_publisher.png"),
+          path.join(__dirname, "/sign_up_page_publisher_diff.png"),
         );
       }
       public tearDown() {
@@ -190,7 +177,7 @@ TEST_RUNNER.run({
       private cut: SignUpPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 1000);
+        await setDesktopView();
         this.cut = new SignUpPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
 
@@ -237,7 +224,7 @@ TEST_RUNNER.run({
       private cut: SignUpPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 1000);
+        await setDesktopView();
         this.cut = new SignUpPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
 
@@ -281,7 +268,7 @@ TEST_RUNNER.run({
       private cut: SignUpPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 1000);
+        await setDesktopView();
         this.cut = new SignUpPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
 
@@ -325,7 +312,7 @@ TEST_RUNNER.run({
       private cut: SignUpPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 1000);
+        await setDesktopView();
         this.cut = new SignUpPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
         this.cut.passwordInput.val.value = "123123";

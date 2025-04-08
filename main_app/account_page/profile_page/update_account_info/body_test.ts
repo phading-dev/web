@@ -1,5 +1,6 @@
 import "../../../../common/normalize_body";
 import path = require("path");
+import { setDesktopView } from "../../../../common/view_port";
 import { UpdateAccountInfoPage } from "./body";
 import {
   UPDATE_ACCOUNT,
@@ -8,7 +9,6 @@ import {
 } from "@phading/user_service_interface/web/self/interface";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -43,7 +43,7 @@ TEST_RUNNER.run({
       private cut: UpdateAccountInfoPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 600);
+        await setDesktopView();
         let webServiceClientMock = new WebServiceClientMock();
 
         // Execute
@@ -147,7 +147,7 @@ TEST_RUNNER.run({
       private cut: UpdateAccountInfoPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 600);
+        await setDesktopView();
         let webServiceClientMock = new WebServiceClientMock();
 
         // Execute
@@ -199,7 +199,7 @@ TEST_RUNNER.run({
       private cut: UpdateAccountInfoPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 600);
+        await setDesktopView();
         let webServiceClientMock = new WebServiceClientMock();
 
         // Execute
@@ -250,7 +250,7 @@ TEST_RUNNER.run({
       private cut: UpdateAccountInfoPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 600);
+        await setDesktopView();
         this.cut = new UpdateAccountInfoPage(undefined, {
           naturalName: "First last",
         });
@@ -305,7 +305,7 @@ TEST_RUNNER.run({
       private cut: UpdateAccountInfoPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 600);
+        await setDesktopView();
         this.cut = new UpdateAccountInfoPage(undefined, {
           naturalName: "First last",
         });
@@ -340,7 +340,7 @@ TEST_RUNNER.run({
       private cut: UpdateAccountInfoPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 600);
+        await setDesktopView();
         this.cut = new UpdateAccountInfoPage(undefined, {
           naturalName: "First last",
         });

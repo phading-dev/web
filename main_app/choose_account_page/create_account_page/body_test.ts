@@ -1,6 +1,7 @@
 import "../../../common/normalize_body";
 import path = require("path");
 import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
+import { setDesktopView } from "../../../common/view_port";
 import { CreateAccountPage } from "./body";
 import { AccountType } from "@phading/user_service_interface/account_type";
 import {
@@ -9,7 +10,6 @@ import {
   CreateAccountResponse,
 } from "@phading/user_service_interface/web/self/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -31,7 +31,7 @@ TEST_RUNNER.run({
       private cut: CreateAccountPage;
       public async execute() {
         // Prepare
-        await setViewport(800, 600);
+        await setDesktopView();
         let serviceClientMock = new WebServiceClientMock();
         this.cut = new CreateAccountPage(
           LOCAL_SESSION_STORAGE,
@@ -163,7 +163,7 @@ TEST_RUNNER.run({
       private cut: CreateAccountPage;
       public async execute() {
         // Prepare
-        await setViewport(800, 600);
+        await setDesktopView();
         let serviceClientMock = new WebServiceClientMock();
         serviceClientMock.response = {
           signedSession: "session 1",

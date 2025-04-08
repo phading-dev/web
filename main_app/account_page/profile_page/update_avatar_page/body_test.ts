@@ -2,13 +2,10 @@ import "../../../../common/normalize_body";
 import nonImageFile = require("./test_data/non_image.bin");
 import wideImage = require("./test_data/wide.jpeg");
 import path = require("path");
+import { setDesktopView, setTabletView } from "../../../../common/view_port";
 import { UpdateAvatarPage } from "./body";
 import { UploadAccountAvatarResponse } from "@phading/user_service_interface/web/self/interface";
-import {
-  setViewport,
-  supplyFiles,
-  writeFile,
-} from "@selfage/puppeteer_test_executor_api";
+import { supplyFiles, writeFile } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import {
   asyncAssertImage,
@@ -21,11 +18,11 @@ TEST_RUNNER.run({
   name: "UpdateAvatarPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "Default_Load_Resize";
+      public name = "PhoneView_Load_Resize";
       private cut: UpdateAvatarPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 800);
+        await setTabletView();
 
         // Execute
         this.cut = new UpdateAvatarPage(undefined);
@@ -73,7 +70,7 @@ TEST_RUNNER.run({
       private cut: UpdateAvatarPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 1100);
+        await setTabletView();
         this.cut = new UpdateAvatarPage(undefined);
         document.body.append(this.cut.body);
 
@@ -99,8 +96,8 @@ TEST_RUNNER.run({
       private cut: UpdateAvatarPage;
       public async execute() {
         // Prepare
+        await setDesktopView();
         let clientMock = new WebServiceClientMock();
-        await setViewport(1000, 1100);
         this.cut = new UpdateAvatarPage(clientMock);
         document.body.append(this.cut.body);
 
@@ -118,6 +115,7 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) =>
           this.cut.once("uploaded", resolve),
         );
+        window.scrollTo(0, document.body.scrollHeight);
 
         // Verify
         await asyncAssertScreenshot(

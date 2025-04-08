@@ -1,11 +1,12 @@
 import "../../common/normalize_body";
 import path = require("path");
+import { setDesktopView } from "../../common/view_port";
 import { AuthPage } from "./body";
 import { SignInPageMock } from "./sign_in_page_mock";
 import { SignUpPageMock } from "./sign_up_page_mock";
+import { AccountType } from "@phading/user_service_interface/account_type";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
-import { AccountType } from "@phading/user_service_interface/account_type";
 
 TEST_RUNNER.run({
   name: "AuthPageTest",
@@ -14,6 +15,9 @@ TEST_RUNNER.run({
       public name = "Render";
       private cut: AuthPage;
       public async execute() {
+        // Prepare
+        await setDesktopView();
+
         // Execute
         this.cut = new AuthPage(
           () => new SignInPageMock(),
@@ -65,6 +69,9 @@ TEST_RUNNER.run({
       public name = "SignUpInitConsumerType";
       private cut: AuthPage;
       public async execute() {
+        // Prepare
+        await setDesktopView();
+
         // Execute
         this.cut = new AuthPage(
           () => new SignInPageMock(),
@@ -76,8 +83,14 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/auth_page_navigator_consumer_sign_up.png"),
-          path.join(__dirname, "/golden/auth_page_navigator_consumer_sign_up.png"),
-          path.join(__dirname, "/auth_page_navigator_consumer_sign_up_diff.png"),
+          path.join(
+            __dirname,
+            "/golden/auth_page_navigator_consumer_sign_up.png",
+          ),
+          path.join(
+            __dirname,
+            "/auth_page_navigator_consumer_sign_up_diff.png",
+          ),
         );
       }
       public tearDown() {
@@ -88,6 +101,9 @@ TEST_RUNNER.run({
       public name = "SignUpInitPublisherType";
       private cut: AuthPage;
       public async execute() {
+        // Prepare
+        await setDesktopView();
+
         // Execute
         this.cut = new AuthPage(
           () => new SignInPageMock(),
@@ -99,8 +115,14 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/auth_page_navigator_publisher_sign_up.png"),
-          path.join(__dirname, "/golden/auth_page_navigator_publisher_sign_up.png"),
-          path.join(__dirname, "/auth_page_navigator_publisher_sign_up_diff.png"),
+          path.join(
+            __dirname,
+            "/golden/auth_page_navigator_publisher_sign_up.png",
+          ),
+          path.join(
+            __dirname,
+            "/auth_page_navigator_publisher_sign_up_diff.png",
+          ),
         );
       }
       public tearDown() {

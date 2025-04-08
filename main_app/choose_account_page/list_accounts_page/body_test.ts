@@ -22,6 +22,7 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+import { setDesktopView, setPhoneView, setTabletView } from "../../../common/view_port";
 
 TEST_RUNNER.run({
   name: "ListAccountsPageTest",
@@ -31,7 +32,7 @@ TEST_RUNNER.run({
       private cut: ListAccountsPage;
       public async execute() {
         // Prepare
-        await setViewport(600, 300);
+        await setPhoneView();
         this.cut = new ListAccountsPage(
           LOCAL_SESSION_STORAGE,
           new (class extends WebServiceClientMock {
@@ -93,7 +94,7 @@ TEST_RUNNER.run({
       private cut: ListAccountsPage;
       public async execute() {
         // Prepare
-        await setViewport(1200, 800);
+        await setDesktopView();
         let requestCaptured: any;
         this.cut = new ListAccountsPage(
           LOCAL_SESSION_STORAGE,
@@ -212,7 +213,7 @@ TEST_RUNNER.run({
       private cut: ListAccountsPage;
       public async execute() {
         // Prepare
-        await setViewport(600, 800);
+        await setTabletView();
         this.cut = new ListAccountsPage(
           LOCAL_SESSION_STORAGE,
           new (class extends WebServiceClientMock {

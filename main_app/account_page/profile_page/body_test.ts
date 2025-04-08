@@ -1,16 +1,13 @@
 import "../../../common/normalize_body";
 import path = require("path");
+import { setDesktopView } from "../../../common/view_port";
 import { ProfilePage } from "./body";
 import { InfoPageMock } from "./info_page/body_mock";
 import { UpdateAccountInfoPageMock } from "./update_account_info/body_mock";
 import { UpdateAvatarPageMock } from "./update_avatar_page/body_mock";
 import { UpdatePasswordPageMock } from "./update_password_page/body_mock";
 import { UpdateRecoveryEmailPageMock } from "./update_recovery_email_page/body_mock";
-import {
-  deleteFile,
-  screenshot,
-  setViewport,
-} from "@selfage/puppeteer_test_executor_api";
+import { deleteFile, screenshot } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 
@@ -32,7 +29,7 @@ class NavigateForwardAndBack implements TestCase {
 
   public async execute() {
     // Prepare
-    await setViewport(1000, 800);
+    await setDesktopView();
     this.cut = new ProfilePage(
       () => new InfoPageMock(),
       () => new UpdateAvatarPageMock(),
@@ -92,7 +89,7 @@ TEST_RUNNER.run({
       private cut: ProfilePage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 800);
+        await setDesktopView();
 
         // Execute
         this.cut = new ProfilePage(

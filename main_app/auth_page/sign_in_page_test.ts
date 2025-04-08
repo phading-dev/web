@@ -8,21 +8,21 @@ import {
   SignInResponse,
 } from "@phading/user_service_interface/web/self/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+import { setDesktopView } from "../../common/view_port";
 
 TEST_RUNNER.run({
   name: "SignInPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "LargeScreen_SubmitFailure_SubmitSuccess";
+      public name = "SubmitFailure_SubmitSuccess";
       private cut: SignInPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 1000);
+        await setDesktopView();
         let serviceClientMock = new WebServiceClientMock();
 
         // Execute
@@ -31,9 +31,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/sign_in_page_tall.png"),
-          path.join(__dirname, "/golden/sign_in_page_tall.png"),
-          path.join(__dirname, "/sign_in_page_tall_diff.png"),
+          path.join(__dirname, "/sign_in_page_render.png"),
+          path.join(__dirname, "/golden/sign_in_page_render.png"),
+          path.join(__dirname, "/sign_in_page_render_diff.png"),
         );
 
         // Execute
@@ -109,41 +109,6 @@ TEST_RUNNER.run({
       public tearDown() {
         this.cut.remove();
         LOCAL_SESSION_STORAGE.clear();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "SmallScreen";
-      private cut: SignInPage;
-      public async execute() {
-        // Prepare
-        await setViewport(500, 200);
-
-        // Execute
-        this.cut = new SignInPage(undefined, undefined);
-        document.body.appendChild(this.cut.body);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/sign_in_page_short.png"),
-          path.join(__dirname, "/golden/sign_in_page_short.png"),
-          path.join(__dirname, "/sign_in_page_short_diff.png"),
-        );
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/sign_in_page_short_scroll_to_bottom.png"),
-          path.join(
-            __dirname,
-            "/golden/sign_in_page_short_scroll_to_bottom.png",
-          ),
-          path.join(__dirname, "/sign_in_page_short_scroll_to_bottom_diff.png"),
-        );
-      }
-      public tearDown() {
-        this.cut.remove();
       }
     })(),
     {

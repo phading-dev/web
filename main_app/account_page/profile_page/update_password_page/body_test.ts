@@ -1,5 +1,6 @@
 import "../../../../common/normalize_body";
 import path = require("path");
+import { setDesktopView } from "../../../../common/view_port";
 import { UpdatePasswordPage } from "./body";
 import {
   UPDATE_PASSWORD,
@@ -7,7 +8,6 @@ import {
 } from "@phading/user_service_interface/web/self/interface";
 import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -42,7 +42,7 @@ TEST_RUNNER.run({
       private cut: UpdatePasswordPage;
       public async execute() {
         // Prepare
-        await setViewport(1000, 600);
+        await setDesktopView();
         let clientMock = new WebServiceClientMock();
 
         // Execute

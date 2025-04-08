@@ -1,6 +1,11 @@
 import "../../../../common/normalize_body";
 import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
+import {
+  setDesktopView,
+  setPhoneView,
+  setTabletView,
+} from "../../../../common/view_port";
 import { InfoPage } from "./body";
 import {
   ACCOUNT_AND_USER,
@@ -12,11 +17,7 @@ import {
   GetAccountAndUserResponse,
 } from "@phading/user_service_interface/web/self/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
-import {
-  mouseMove,
-  mouseWheel,
-  setViewport,
-} from "@selfage/puppeteer_test_executor_api";
+import { mouseMove, mouseWheel } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -37,11 +38,11 @@ TEST_RUNNER.run({
   name: "InfoPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "Default_HoverAvatar_LeaveAvatar_UpdateAvatar";
+      public name = "PhoneView_HoverAvatar_LeaveAvatar_UpdateAvatar";
       private cut: InfoPage;
       public async execute() {
         // Prepare
-        await setViewport(800, 800);
+        await setDesktopView();
         let webServiceClientMock = new WebServiceClientMock();
         webServiceClientMock.response = createAccountAndUserResponse();
         this.cut = new InfoPage(webServiceClientMock);
@@ -68,7 +69,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseMove(400, 70, 1);
+        await mouseMove(600, 70, 1);
         await new Promise<void>((resolve) =>
           this.cut.once("avatarUpdateHintTransitionEnded", resolve),
         );
@@ -115,7 +116,7 @@ TEST_RUNNER.run({
       private cut: InfoPage;
       public async execute() {
         // Prepare
-        await setViewport(800, 800);
+        await setTabletView();
         let webServiceClientMock = new WebServiceClientMock();
         webServiceClientMock.response = {
           account: {
@@ -150,7 +151,7 @@ TEST_RUNNER.run({
       private cut: InfoPage;
       public async execute() {
         // Prepare
-        await setViewport(350, 600);
+        await setPhoneView();
         let webServiceClientMock = new WebServiceClientMock();
         webServiceClientMock.response = createAccountAndUserResponse();
         this.cut = new InfoPage(webServiceClientMock);
