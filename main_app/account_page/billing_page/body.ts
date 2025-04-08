@@ -7,7 +7,6 @@ import { SCHEME } from "../../../common/color_scheme";
 import {
   getFirstDayOfNextMonth,
   getLastMonth,
-  getMonthDifference,
   toDateWrtTimezone,
 } from "../../../common/date_helper";
 import {
@@ -15,7 +14,6 @@ import {
   createExclamationMarkInACycle,
   createForbiddenIcon,
 } from "../../../common/icons";
-import { BASIC_INPUT_STYLE } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
   PAGE_BACKGROUND_STYLE,
@@ -24,6 +22,7 @@ import {
 import { FONT_M, FONT_WEIGHT_600, ICON_XS } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
+import { MonthRangeInput } from "../common/month_range_input";
 import { AddCardPaymentItem, CardPaymentItem } from "./card_payment_item";
 import { BillingProfileState } from "@phading/commerce_service_interface/web/billing/billing_profile_state";
 import {
@@ -34,7 +33,6 @@ import {
 } from "@phading/commerce_service_interface/web/billing/client";
 import { CreateStripeSessionToAddPaymentMethodResponse } from "@phading/commerce_service_interface/web/billing/interface";
 import { PaymentState } from "@phading/commerce_service_interface/web/billing/payment";
-import { MAX_MONTH_RANGE } from "@phading/constants/commerce";
 import { CURRENCY_TO_CENTS } from "@phading/price_config/amount_conversion";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -59,8 +57,7 @@ export class BillingPage extends EventEmitter {
     BlockingButton<CreateStripeSessionToAddPaymentMethodResponse>
   >();
   public addPaymentMethodErrorMessage = new Ref<HTMLDivElement>();
-  public startMonthInput = new Ref<HTMLInputElement>();
-  public endMonthInput = new Ref<HTMLInputElement>();
+  public monthRangeInput = new Ref<MonthRangeInput>();
   public paymentActivityList = new Ref<HTMLDivElement>();
   private listRequestIndex = 0;
 
@@ -71,7 +68,7 @@ export class BillingPage extends EventEmitter {
   ) {
     super();
     this.body = E.div({
-      class: "billing-page",
+      class: "payment-page",
       style: PAGE_BACKGROUND_STYLE,
     });
     this.load();
@@ -87,12 +84,12 @@ export class BillingPage extends EventEmitter {
     this.body.append(
       E.div(
         {
-          class: "billing-page-card",
+          class: "payment-page-card",
           style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
         },
         E.div(
           {
-            class: "billing-page-status-title",
+            class: "payment-page-status-title",
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
           },
           E.text(LOCALIZED_TEXT.billingStatusTitle),
@@ -102,12 +99,12 @@ export class BillingPage extends EventEmitter {
         }),
         E.div(
           {
-            class: "billing-page-status-line",
+            class: "payment-page-status-line",
             style: `display: flex; flex-flow: row nowrap; gap: 1rem; align-items: center;`,
           },
           E.div(
             {
-              class: "billing-page-status-icon",
+              class: "payment-page-status-icon",
               style: `width: ${ICON_XS}rem; height: ${ICON_XS}rem;`,
             },
             this.getIcon(response.state),
@@ -115,7 +112,7 @@ export class BillingPage extends EventEmitter {
           E.divRef(
             this.billingStatusContent,
             {
-              class: "billing-page-status-content",
+              class: "payment-page-status-content",
               style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
@@ -134,23 +131,23 @@ export class BillingPage extends EventEmitter {
               }),
               E.div(
                 {
-                  class: "billing-page-retry-payments-line",
-                  style: `width: 100%; display: flex; flex-flow: row nowrap; gap: 1rem; align-items: center; justify-content: flex-end;`,
+                  class: "payment-page-retry-payments-line",
+                  style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: 1rem; align-items: center; justify-content: flex-start;`,
                 },
-                E.divRef(
-                  this.retryPaymentsErrorMessage,
-                  {
-                    class: "billing-page-retry-payments-error-message",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
-                  },
-                  E.text("1"),
-                ),
                 assign(
                   this.retryPaymentsButton,
                   FilledBlockingButton.create("")
                     .append(E.text(LOCALIZED_TEXT.retryPaymentsLabel))
                     .enable(),
                 ).body,
+                E.divRef(
+                  this.retryPaymentsErrorMessage,
+                  {
+                    class: "payment-page-retry-payments-error-message",
+                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
+                  },
+                  E.text("1"),
+                ),
               ),
             ]
           : []),
@@ -159,7 +156,7 @@ export class BillingPage extends EventEmitter {
         }),
         E.div(
           {
-            class: "billing-page-payment-methods-title",
+            class: "payment-page-payment-methods-title",
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
           },
           E.text(LOCALIZED_TEXT.paymentMethodTitle),
@@ -178,17 +175,9 @@ export class BillingPage extends EventEmitter {
         }),
         E.div(
           {
-            class: "billing-page-add-payment-method-line",
-            style: `width: 100%; display: flex; flex-flow: row nowrap; gap: 1rem; align-items: center; justify-content: flex-end;`,
+            class: "payment-page-add-payment-method-line",
+            style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: 1rem; align-items: center; justify-content: flex-start;`,
           },
-          E.divRef(
-            this.addPaymentMethodErrorMessage,
-            {
-              class: "billing-page-add-payment-method-error-message",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
-            },
-            E.text("1"),
-          ),
           assign(
             this.addPaymentMethodButton,
             FilledBlockingButton.create<CreateStripeSessionToAddPaymentMethodResponse>(
@@ -203,13 +192,21 @@ export class BillingPage extends EventEmitter {
               )
               .enable(),
           ).body,
+          E.divRef(
+            this.addPaymentMethodErrorMessage,
+            {
+              class: "payment-page-add-payment-method-error-message",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
+            },
+            E.text("1"),
+          ),
         ),
         E.div({
           style: `height: 3rem;`,
         }),
         E.div(
           {
-            class: "billing-page-payment-activities-title",
+            class: "payment-page-payment-activities-title",
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
           },
           E.text(LOCALIZED_TEXT.paymentActivitiesTitle),
@@ -217,44 +214,23 @@ export class BillingPage extends EventEmitter {
         E.div({
           style: `height: 1rem;`,
         }),
-        E.div(
-          {
-            class: "billing-page-payment-activities-date-inputs",
-            style: `width: 100%; display: flex; flex-flow: row wrap; align-items: center; justify-content: flex-end;`,
-          },
-          E.inputRef(this.startMonthInput, {
-            type: "month",
-            pattern: "[0-9]{4}-[0-9]{2}",
-            class: "billing-page-start-month-input",
-            style: `${BASIC_INPUT_STYLE} width: 15rem; border-color: ${SCHEME.neutral1};`,
-            value: startMonth,
-          }),
-          E.div({
-            style: `height: .2rem; width: 1rem; background-color: ${SCHEME.neutral1}; margin: 0 2rem;`,
-          }),
-          E.inputRef(this.endMonthInput, {
-            type: "month",
-            pattern: "[0-9]{4}-[0-9]{2}",
-            class: "billing-page-end-month-input",
-            style: `${BASIC_INPUT_STYLE} width: 15rem; border-color: ${SCHEME.neutral1};`,
-            value: endMonth,
-          }),
-        ),
+        assign(
+          this.monthRangeInput,
+          MonthRangeInput.create(startMonth, endMonth),
+        ).body,
         E.div({
           style: `height: 1.5rem;`,
         }),
         E.divRef(this.paymentActivityList, {
-          class: "billing-page-payment-activities-list",
-          style: `display: flex; flex-flow: column nowrap; width: 100%; gap: 1rem;`,
+          class: "payment-page-payment-activities-list",
+          style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
         }),
       ),
     );
     this.listPayments();
 
-    this.startMonthInput.val.addEventListener("input", () =>
-      this.listPayments(),
-    );
-    this.endMonthInput.val.addEventListener("input", () => this.listPayments());
+    this.monthRangeInput.val.on("input", () => this.listPayments());
+    this.monthRangeInput.val.on("invalid", () => this.showInvalidRange());
     if (this.retryPaymentsButton.val) {
       this.retryPaymentsButton.val.addAction(
         async () => this.retryFailedPayments(),
@@ -296,34 +272,26 @@ export class BillingPage extends EventEmitter {
     }
   }
 
+  private showInvalidRange(): void {
+    this.listRequestIndex++;
+    while (this.paymentActivityList.val.lastElementChild) {
+      this.paymentActivityList.val.lastElementChild.remove();
+    }
+    this.paymentActivityList.val.append(
+      E.div(
+        {
+          class: "payment-page-invalid-activity-range",
+          style: `width: 100%; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+        },
+        E.text(LOCALIZED_TEXT.invaliRange),
+      ),
+    );
+  }
+
   private async listPayments(): Promise<void> {
     this.listRequestIndex++;
-    let startMonth = this.startMonthInput.val.value;
-    let endMonth = this.endMonthInput.val.value;
-    let startDate = new Date(startMonth);
-    let endDate = new Date(endMonth);
-    if (
-      isNaN(startDate.valueOf()) ||
-      isNaN(endDate.valueOf()) ||
-      startDate.valueOf() > endDate.valueOf() ||
-      getMonthDifference(startDate, endDate) > MAX_MONTH_RANGE
-    ) {
-      while (this.paymentActivityList.val.lastElementChild) {
-        this.paymentActivityList.val.lastElementChild.remove();
-      }
-      this.paymentActivityList.val.append(
-        E.div(
-          {
-            class: "billing-page-invalid-payment-activity-range",
-            style: `width: 100%; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
-          },
-          E.text(LOCALIZED_TEXT.invalidActivityRange),
-        ),
-      );
-      return;
-    }
-
     let currentIndex = this.listRequestIndex;
+    let { startMonth, endMonth } = this.monthRangeInput.val.getValues();
     let response = await this.serviceClient.send(
       newListPaymentsRequest({
         startMonth,
@@ -341,7 +309,7 @@ export class BillingPage extends EventEmitter {
       this.paymentActivityList.val.append(
         E.div(
           {
-            class: "billing-page-no-payment-activity",
+            class: "payment-page-no-activity",
             style: `width: 100%; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
           },
           E.text(LOCALIZED_TEXT.noActivities),
@@ -356,28 +324,27 @@ export class BillingPage extends EventEmitter {
         this.paymentActivityList.val.append(
           E.div(
             {
-              class: "billing-page-payment-activity",
-
-              style: `width: 100%; display: flex; flex-flow: row nowrap; justify-content: space-evenly;`,
+              class: "payment-page-activity",
+              style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: row nowrap; gap: 1rem;`,
             },
             E.div(
               {
-                class: "billing-page-payment-month",
+                class: "payment-page-payment-month",
                 style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
               },
               E.text(payment.month),
             ),
             E.div(
               {
-                class: "billing-page-payment-amount",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; min-width: 20rem;`,
+                class: "payment-page-payment-amount",
+                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 1 0 auto; text-align: end;`,
               },
               E.text(amount),
             ),
             E.div(
               {
-                class: "billing-page-payment-state",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; min-width: 10rem;`,
+                class: "payment-page-payment-state",
+                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 1 0 10rem; text-align: end;`,
               },
               E.text(this.getPaymentStateText(payment.state)),
             ),

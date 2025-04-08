@@ -42,7 +42,7 @@
   "dependencies": {
     "@phading/cluster": "^1.0.6",
     "@phading/comment_service_interface": "^1.0.1",
-    "@phading/commerce_service_interface": "^1.1.6",
+    "@phading/commerce_service_interface": "^1.1.7",
     "@phading/constants": "^0.3.7",
     "@phading/meter_service_interface": "^1.0.0",
     "@phading/play_activity_service_interface": "^1.0.5",

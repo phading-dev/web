@@ -319,7 +319,13 @@ export default class Text {
   get paymentActivitiesTitle() {
     return `Payment activities`;
   }
-  get invalidActivityRange() {
+  get rangeStart() {
+    return `From`;
+  }
+  get rangeEnd() {
+    return `To`;
+  }
+  get invaliRange() {
     return `Invalid range`;
   }
   get noActivities() {
@@ -361,6 +367,15 @@ export default class Text {
   }
   get payoutStateDisabled() {
     return `Queued`;
+  }
+  get earningsStatementsTitle() {
+    return `Earnings statements`;
+  }
+  get billingStatementsTitle() {
+    return `Billing statements`;
+  }
+  get noStatements() {
+    return `No statements`;
   }
   get chooseLayoutLabel() {
     return `Choose a layout from below`;

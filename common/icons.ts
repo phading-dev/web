@@ -732,3 +732,17 @@ export function createForbiddenIcon(color: string): SVGSVGElement {
     }),
   );
 }
+
+// A line going down and to the right.
+export function createCornerIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "down-and-right-line-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 0 20 20",
+    },
+    E.path({
+      d: `M0,0 l0,20 l20,0 l0,-5 l-15,0 l0,-15z`,
+    })
+  )
+}

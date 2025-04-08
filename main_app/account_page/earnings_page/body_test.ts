@@ -22,11 +22,11 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "OnboardingAndEmptyList_StartMonthLargerThanEndMonth_ListPayouts";
+        "PhoneView_OnboardingAndEmptyList_StartMonthLargerThanEndMonth_ListPayouts_TabletView";
       private cut: EarningsPage;
       public async execute() {
         // Prepare
-        await setViewport(600, 800);
+        await setViewport(360, 600);
         let serviceClientMock = new (class extends WebServiceClientMock {
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {
@@ -84,8 +84,10 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.startMonthInput.val.value = "2025-04";
-        this.cut.startMonthInput.val.dispatchEvent(new Event("input"));
+        this.cut.monthRangeInput.val.startMonthInput.val.value = "2025-04";
+        this.cut.monthRangeInput.val.startMonthInput.val.dispatchEvent(
+          new Event("input"),
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -118,21 +120,23 @@ TEST_RUNNER.run({
             {
               month: "2025-06",
               currency: "USD",
-              amount: 10,
+              amount: 99000000,
               state: PayoutState.PAID,
             },
             {
               month: "2025-05",
               currency: "USD",
-              amount: 900,
+              amount: 10,
               state: PayoutState.PAID,
             },
           ],
         } as ListPayoutsResponse;
 
         // Execute
-        this.cut.endMonthInput.val.value = "2026-12";
-        this.cut.endMonthInput.val.dispatchEvent(new Event("input"));
+        this.cut.monthRangeInput.val.endMonthInput.val.value = "2026-12";
+        this.cut.monthRangeInput.val.endMonthInput.val.dispatchEvent(
+          new Event("input"),
+        );
         await new Promise((resolve) => this.cut.once("listed", resolve));
 
         // Verify
@@ -152,6 +156,16 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/earnings_page_list_payouts.png"),
           path.join(__dirname, "/earnings_page_list_payouts_diff.png"),
         );
+
+        // Execute
+        await setViewport(800, 600);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/earnings_page_list_payouts_tablet.png"),
+          path.join(__dirname, "/golden/earnings_page_list_payouts_tablet.png"),
+          path.join(__dirname, "/earnings_page_list_payouts_tablet_diff.png"),
+        );
       }
       public tearDown() {
         this.cut.remove();
@@ -162,7 +176,7 @@ TEST_RUNNER.run({
       private cut: EarningsPage;
       public async execute() {
         // Prepare
-        await setViewport(600, 800);
+        await setViewport(800, 600);
         let serviceClientMock = new (class extends WebServiceClientMock {
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {

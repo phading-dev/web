@@ -27,7 +27,6 @@ class CardBrandTestCase implements TestCase {
 
     // Execute
     let cut = new CardPaymentItem(timeEpochInMillisecond, {
-      paymentMethodId: "id1",
       card: {
         brand: this.cardBrand,
         expMonth: 12,
@@ -125,7 +124,6 @@ TEST_RUNNER.run({
 
         // Execute
         let cut = new CardPaymentItem(timeEpochInMillisecond, {
-          paymentMethodId: "id1",
           card: {
             brand: CardBrand.AMEX,
             expMonth: 11,

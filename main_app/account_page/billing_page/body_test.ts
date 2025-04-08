@@ -27,11 +27,11 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "HealthyWithNoPaymentMethodAndEmptyList_StartMonthLargerThanEndMonth_ListActivitiesWithMultipleStates";
+        "PhoneView_HealthyWithNoPaymentMethodAndEmptyList_StartMonthLargerThanEndMonth_ListActivitiesWithMultipleStates_TabletView";
       private cut: BillingPage;
       public async execute() {
         // Prepare
-        await setViewport(600, 800);
+        await setViewport(360, 600);
         let serviceClientMock = new (class extends WebServiceClientMock {
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {
@@ -87,8 +87,10 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.startMonthInput.val.value = "2025-04";
-        this.cut.startMonthInput.val.dispatchEvent(new Event("input"));
+        this.cut.monthRangeInput.val.startMonthInput.val.value = "2025-04";
+        this.cut.monthRangeInput.val.startMonthInput.val.dispatchEvent(
+          new Event("input"),
+        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -134,8 +136,10 @@ TEST_RUNNER.run({
         } as ListPaymentsResponse;
 
         // Execute
-        this.cut.endMonthInput.val.value = "2026-12";
-        this.cut.endMonthInput.val.dispatchEvent(new Event("input"));
+        this.cut.monthRangeInput.val.endMonthInput.val.value = "2026-12";
+        this.cut.monthRangeInput.val.endMonthInput.val.dispatchEvent(
+          new Event("input"),
+        );
         await new Promise((resolve) => this.cut.once("listed", resolve));
 
         // Verify
@@ -155,6 +159,16 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/billing_page_list_payments.png"),
           path.join(__dirname, "/billing_page_list_payments_diff.png"),
         );
+
+        // Execute
+        await setViewport(800, 600);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/billing_page_list_payments_tablet.png"),
+          path.join(__dirname, "/golden/billing_page_list_payments_tablet.png"),
+          path.join(__dirname, "/billing_page_list_payments_tablet_diff.png"),
+        );
       }
       public async tearDown() {
         this.cut.body.remove();
@@ -165,7 +179,7 @@ TEST_RUNNER.run({
       private cut: BillingPage;
       public async execute() {
         // Prepare
-        await setViewport(600, 800);
+        await setViewport(800, 600);
         let serviceClientMock = new (class extends WebServiceClientMock {
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {
@@ -213,11 +227,12 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "WithFailedPayments_RetryFailed_RetrySuccess";
+      public name =
+        "PhoneView_WithFailedPayments_RetryFailed_TabletView_RetrySuccess";
       private cut: BillingPage;
       public async execute() {
         // Prepare
-        await setViewport(600, 800);
+        await setViewport(360, 600);
         let serviceClientMock = new (class extends WebServiceClientMock {
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {
@@ -281,6 +296,25 @@ TEST_RUNNER.run({
           ),
         );
 
+        // Execute
+        await setViewport(800, 600);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/billing_page_with_failed_payments_retry_failed_tablet.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/billing_page_with_failed_payments_retry_failed_tablet.png",
+          ),
+          path.join(
+            __dirname,
+            "/billing_page_with_failed_payments_retry_failed_tablet_diff.png",
+          ),
+        );
+
         // Prepare
         serviceClientMock.error = undefined;
         serviceClientMock.response = {} as RetryFailedPaymentsResponse;
@@ -310,11 +344,11 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "WithVisaCard_AddFailed_AddSuccess";
+      public name = "PhoneView_WithVisaCard_AddFailed_TabletView_AddSuccess";
       private cut: BillingPage;
       public async execute() {
         // Prepare
-        await setViewport(600, 800);
+        await setViewport(360, 600);
         let serviceClientMock = new (class extends WebServiceClientMock {
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {
@@ -379,6 +413,19 @@ TEST_RUNNER.run({
           path.join(__dirname, "/billing_page_add_card_failed.png"),
           path.join(__dirname, "/golden/billing_page_add_card_failed.png"),
           path.join(__dirname, "/billing_page_add_card_failed_diff.png"),
+        );
+
+        // Execute
+        await setViewport(800, 600);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/billing_page_add_card_failed_tablet.png"),
+          path.join(
+            __dirname,
+            "/golden/billing_page_add_card_failed_tablet.png",
+          ),
+          path.join(__dirname, "/billing_page_add_card_failed_tablet_diff.png"),
         );
 
         // Prepare
