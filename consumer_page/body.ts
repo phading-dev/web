@@ -1,5 +1,4 @@
 import EventEmitter = require("events");
-import LRU = require("lru-cache");
 import { AddBodiesFn } from "../common/add_bodies_fn";
 import { PageNavigator } from "../common/page_navigator";
 import { AccountPage } from "./account_page/body";
@@ -7,6 +6,7 @@ import { PlayPage } from "./play_page/body";
 import { RecommendationPage } from "./recommendation_page/body";
 import { RecommendationPageState } from "./recommendation_page/state";
 import { ConsumerPageState, Page } from "./state";
+import { LRUCache } from "lru-cache";
 
 export interface ConsumerPage {
   on(event: "signOut", listener: () => void): this;
@@ -27,7 +27,7 @@ export class ConsumerPage extends EventEmitter {
   public accountPage: AccountPage;
   public playPage: PlayPage;
   public recommendationPage: RecommendationPage;
-  private recommendationPageCache = new LRU<string, RecommendationPage>({
+  private recommendationPageCache = new LRUCache<string, RecommendationPage>({
     max: 10,
   });
   private pageNavigator: PageNavigator<Page>;

@@ -20,6 +20,7 @@ let ORANGE_60 = "rgb(255,153,51)";
 let ORANGE_40 = "rgb(204,102,0)";
 let GREEN_60 = "rgb(51,255,51)";
 let GREEN_40 = "rgb(0,204,0)";
+let YELLOW_50 = "rgb(255,255,0)";
 
 export class DarkScheme {
   get logoOrange() {
@@ -86,6 +87,9 @@ export class DarkScheme {
   }
   get progress() {
     return RED_50;
+  }
+  get star() {
+    return YELLOW_50;
   }
 }
 
@@ -154,6 +158,9 @@ export class LightScheme {
   }
   get progress() {
     return RED_50;
+  }
+  get star() {
+    return YELLOW_50;
   }
 }
 

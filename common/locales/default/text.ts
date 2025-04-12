@@ -524,12 +524,6 @@ export default class Text {
   get noAccountDescription() {
     return `They didn't say anything about themself.`;
   }
-  get usageReportRangeFrom() {
-    return `From`;
-  }
-  get usageReportRangeTo() {
-    return `to`;
-  }
   get usageReportRangeGranularityAsDay() {
     return `Day`;
   }
@@ -629,14 +623,11 @@ export default class Text {
   get interruptReasonNoConnectivity() {
     return `Video stopped. No internet connection.`;
   }
-  get gradePricing() {
-    return `Grade `;
+  get pricingRateShortened() {
+    return [``, ` / hr`];
   }
-  get pricingRate1() {
-    return ``;
-  }
-  get pricingRate2() {
-    return ` / hour`;
+  get pricingRate() {
+    return [``, `/hour`];
   }
   get danmakuSettingsLabel() {
     return `Settings for scrolling comments`;
