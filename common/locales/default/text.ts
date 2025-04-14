@@ -178,11 +178,11 @@ export default class Text {
   get uploadLabel() {
     return `Upload`;
   }
-  get historyLabel() {
-    return `Activities`;
+  get activityLabel() {
+    return `Activity`;
   }
-  get searchLabel() {
-    return `Search`;
+  get exploreLabel() {
+    return `Explore`;
   }
   get securitySettingsLabel() {
     return `Security settings`;
@@ -627,7 +627,16 @@ export default class Text {
     return [``, ` / hr`];
   }
   get pricingRate() {
-    return [``, `/hour`];
+    return [``, ` / hour`];
+  }
+  get continueWatchingTitle() {
+    return `Continue watching`;
+  }
+  get recentPremiereTitle() {
+    return `Recent premieres`;
+  }
+  get viewMoreLink() {
+    return `View more >`;
   }
   get danmakuSettingsLabel() {
     return `Settings for scrolling comments`;

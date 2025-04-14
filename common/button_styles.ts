@@ -10,4 +10,5 @@ export let COMMON_TEXT_BUTTON_STYLE = COMMON_BUTTON_STYLE;
 export let TEXT_BUTTON_STYLE = `${COMMON_TEXT_BUTTON_STYLE} color: ${SCHEME.neutral0};`;
 export let OUTLINE_BUTTON_STYLE = `${COMMON_TEXT_BUTTON_STYLE} border-color: ${SCHEME.neutral1}; color: ${SCHEME.neutral0};`;
 
+// Needs font-size.
 export let CLICKABLE_TEXT_STYLE = `color: ${SCHEME.link}; cursor: pointer; text-decoration: underline;`;

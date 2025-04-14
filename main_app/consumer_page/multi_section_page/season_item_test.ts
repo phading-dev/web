@@ -1,10 +1,11 @@
+import "../../../dev/env";
 import "../../../common/normalize_body";
-import coverImage = require("./test_data/cover.jpg");
+import coverImage = require("./test_data/cover_tall.jpg");
 import path = require("path");
 import { SCHEME } from "../../../common/color_scheme";
+import { setPhoneView, setTabletView } from "../../../common/view_port";
 import { SeasonItem } from "./season_item";
 import { E } from "@selfage/element/factory";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -13,43 +14,25 @@ TEST_RUNNER.run({
   name: "SeasonItemTest",
   cases: [
     new (class implements TestCase {
-      public name = "Large";
+      public name = "Render";
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await setViewport(302, 600);
+        await setTabletView();
         this.container = E.div({
-          style: `background-color: ${SCHEME.neutral4};`,
+          style: `background-color: ${SCHEME.neutral4}; display: inline-block;`,
         });
         document.body.append(this.container);
         let cut = new SeasonItem(
           {
             seasonId: "season1",
+            name: "Re:Zero -Starting Life in Another World-",
             coverImageUrl: coverImage,
             grade: 18,
-            averageRating: 4,
+            ratingsCount: 12345,
+            averageRating: 4.09,
           },
-          {
-            episodeId: "episode1",
-            index: 1,
-            name: "The beginning of a suuuuuuuuuuper long title",
-            videoDurationSec: 24 * 60,
-            continueTimeMs: (10 * 60 + 24) * 1000,
-          },
-          new Intl.NumberFormat("en-US", {
-            maximumFractionDigits: 1,
-            minimumFractionDigits: 1,
-          }),
-          new Intl.NumberFormat("en-US", {
-            notation: "compact",
-            compactDisplay: "short",
-          }),
-          1,
-          100,
-          new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-          }),
+          "width: 300px;",
         );
 
         // Execute
@@ -63,7 +46,8 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await setViewport(202, 600);
+        await setPhoneView();
+        cut.body.style.width = "165px";
 
         // Verify
         await asyncAssertScreenshot(
@@ -74,28 +58,51 @@ TEST_RUNNER.run({
 
         // Prepare
         let detailsSeason: string;
-        cut.on("details", (seasonId) => {
+        cut.on("showDetails", (seasonId) => {
           detailsSeason = seasonId;
-        });
-        let playSeason: string;
-        let playEpisode: string;
-        cut.on("play", (seasonId, episodeId) => {
-          playSeason = seasonId;
-          playEpisode = episodeId;
         });
 
         // Execute
-        cut.seasonInfo.val.click();
+        cut.body.click();
 
         // Verify
         assertThat(detailsSeason, eq("season1"), "details with seasonId");
+      }
+      public tearDown() {
+        this.container.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "LongName";
+      private container: HTMLDivElement;
+      public async execute() {
+        // Prepare
+        await setPhoneView();
+        this.container = E.div({
+          style: `background-color: ${SCHEME.neutral4}; display: inline-block;`,
+        });
+        document.body.append(this.container);
+        let cut = new SeasonItem(
+          {
+            seasonId: "season1",
+            name: "Re:Zero -Starting Life in Another World- Re:Zero -Starting Life in Another World-",
+            coverImageUrl: coverImage,
+            grade: 1000,
+            ratingsCount: 0,
+            averageRating: 0,
+          },
+          "width: 165px;",
+        );
 
         // Execute
-        cut.episodeInfo.val.click();
+        this.container.append(cut.body);
 
         // Verify
-        assertThat(playSeason, eq("season1"), "play with seasonId");
-        assertThat(playEpisode, eq("episode1"), "play with episodeId");
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/season_item_long.png"),
+          path.join(__dirname, "/golden/season_item_long.png"),
+          path.join(__dirname, "/season_item_long_diff.png"),
+        );
       }
       public tearDown() {
         this.container.remove();

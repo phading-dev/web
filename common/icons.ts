@@ -759,3 +759,37 @@ export function createStarIcon(color: string): SVGSVGElement {
     }),
   );
 }
+
+export function createCircularProgressIcon(
+  mainColor: string,
+  backgroundColor: string,
+  percentage: number,
+): SVGSVGElement {
+  if (percentage >= 1) {
+    percentage = 0.99999; // Avoid 100% to prevent drawing issues
+  } else if (percentage <= 0) {
+    percentage = 0.00001; // Avoid 0% to prevent drawing issues
+  }
+  let radius = 100;
+  let centerX = 100;
+  let centerY = 100;
+  let endX = centerX + Math.sin(2 * Math.PI * percentage) * radius;
+  let endY = centerY - Math.cos(2 * Math.PI * percentage) * radius;
+  let largeArcFlag = percentage > 0.5 ? 1 : 0;
+  let svg = E.svg(
+    {
+      class: "circular-progress-icon",
+      style: `height: 100%; fill: none; stroke-width: 80;`,
+      viewBox: "-40 -40 280 280",
+    },
+    E.path({
+      stroke: mainColor,
+      d: `M${centerX},${centerY - radius} A${radius},${radius} 0 ${largeArcFlag},1 ${endX},${endY}`,
+    }),
+    E.path({
+      stroke: backgroundColor,
+      d: `M${endX},${endY} A${radius},${radius} 0 ${1 - largeArcFlag},1 ${centerX},${centerY - radius}`,
+    }),
+  );
+  return svg;
+}

@@ -11,7 +11,8 @@ export let LINE_HEIGHT_M = 1.8; // rem
 export let LINE_HEIGHT_L = 2; // rem
 export let LINE_HEIGHT_XL = 2.2; // rem
 
-export let ICON_XS = 1.6; // rem
-export let ICON_S = 3; // rem
-export let ICON_M = 4; // rem
-export let ICON_L = 5; // rem
+export let ICON_M = 1.6; // rem
+
+export let ICON_BUTTON_S = 3; // rem
+export let ICON_BUTTON_M = 4; // rem
+export let ICON_BUTTON_L = 5; // rem
