@@ -25,7 +25,7 @@ import { AccountDetails } from "@phading/user_service_interface/web/third_person
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
-export function fullPage(...elements: Array<HTMLElement>): HTMLDivElement {
+export function eFullPage(...elements: Array<HTMLElement>): HTMLDivElement {
   return E.div(
     {
       class: "full-page",
@@ -35,7 +35,7 @@ export function fullPage(...elements: Array<HTMLElement>): HTMLDivElement {
   );
 }
 
-export function seasonItemContainer(
+export function eSeasonItemContainer(
   title: string,
   contentContainer: Ref<HTMLDivElement>,
   ...elements: Array<HTMLElement>
@@ -60,7 +60,7 @@ export function seasonItemContainer(
   );
 }
 
-export function seasonItem(
+export function eSeasonItem(
   season: SeasonSummary,
   customStyle?: string,
 ): HTMLDivElement {
@@ -126,7 +126,7 @@ export function seasonItem(
   );
 }
 
-export function episodeItemContainer(
+export function eEpisodeItemContainer(
   title: string,
   contentContainer: Ref<HTMLDivElement>,
   ...elements: Array<HTMLElement>
@@ -151,7 +151,7 @@ export function episodeItemContainer(
   );
 }
 
-export function episodeItem(
+export function eEpisodeItem(
   season: SeasonSummary,
   episode: EpisodeSummary,
   customStyle?: string,
@@ -219,7 +219,7 @@ export function episodeItem(
   );
 }
 
-export function publisherItemContainer(
+export function ePublisherItemContainer(
   title: string,
   contentContainer: Ref<HTMLDivElement>,
   ...elements: Array<HTMLElement>
@@ -244,7 +244,7 @@ export function publisherItemContainer(
   );
 }
 
-export function publisherItem(
+export function ePublisherItem(
   publisher: AccountDetails,
   customStyle?: string,
 ): HTMLDivElement {

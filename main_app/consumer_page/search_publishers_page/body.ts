@@ -2,9 +2,9 @@ import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
-  fullPage,
-  publisherItem,
-  publisherItemContainer,
+  eFullPage,
+  ePublisherItem,
+  ePublisherItemContainer,
 } from "../common/elements";
 import { newSearchPublishersRequest } from "@phading/user_service_interface/web/third_person/client";
 import { Ref, assign } from "@selfage/ref";
@@ -34,8 +34,8 @@ export class SearchPublishersPage extends EventEmitter {
     private query: string,
   ) {
     super();
-    this.body = fullPage(
-      publisherItemContainer(
+    this.body = eFullPage(
+      ePublisherItemContainer(
         `${LOCALIZED_TEXT.searchResultTitle[0]}${this.query}${LOCALIZED_TEXT.searchResultTitle[1]}`,
         this.contentContainer,
       ),
@@ -56,7 +56,7 @@ export class SearchPublishersPage extends EventEmitter {
       }),
     );
     response.accounts.forEach((account) => {
-      let item = publisherItem(account);
+      let item = ePublisherItem(account);
       item.addEventListener("click", () => {
         this.emit("showroom", account.accountId);
       });

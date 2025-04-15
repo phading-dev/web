@@ -4,11 +4,11 @@ import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { FONT_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
-  episodeItem,
-  episodeItemContainer,
-  fullPage,
-  seasonItem,
-  seasonItemContainer,
+  eEpisodeItem,
+  eEpisodeItemContainer,
+  eFullPage,
+  eSeasonItem,
+  eSeasonItemContainer,
 } from "../common/elements";
 import {
   newListContinueWatchingSeasonsRequest,
@@ -40,7 +40,7 @@ export class MultiSectionPage extends EventEmitter {
 
   public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.body = fullPage();
+    this.body = eFullPage();
     this.load();
   }
 
@@ -63,7 +63,7 @@ export class MultiSectionPage extends EventEmitter {
     this.body.append(
       ...(continueWatchingSeasonsResponse.continues.length > 0
         ? [
-            episodeItemContainer(
+            eEpisodeItemContainer(
               LOCALIZED_TEXT.continueWatchingTitle,
               episodeContent,
               E.divRef(
@@ -77,7 +77,7 @@ export class MultiSectionPage extends EventEmitter {
             ),
           ]
         : []),
-      seasonItemContainer(
+      eSeasonItemContainer(
         LOCALIZED_TEXT.recentPremieresTitle,
         seasonContent,
         E.divRef(
@@ -93,7 +93,7 @@ export class MultiSectionPage extends EventEmitter {
     if (episodeContent.val) {
       episodeContent.val.append(
         ...continueWatchingSeasonsResponse.continues.map((continueSeason) => {
-          let item = episodeItem(continueSeason.season, continueSeason.episode);
+          let item = eEpisodeItem(continueSeason.season, continueSeason.episode);
           item.addEventListener("click", () => {
             this.emit(
               "play",
@@ -107,7 +107,7 @@ export class MultiSectionPage extends EventEmitter {
     }
     seasonContent.val.append(
       ...recentPremiereSeasonsResponse.seasons.map((season) => {
-        let item = seasonItem(season);
+        let item = eSeasonItem(season);
         item.addEventListener("click", () => {
           this.emit("showDetails", season.seasonId);
         });

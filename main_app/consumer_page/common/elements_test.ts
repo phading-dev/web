@@ -5,7 +5,7 @@ import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
 import { SCHEME } from "../../../common/color_scheme";
 import { setPhoneView, setTabletView } from "../../../common/view_port";
-import { episodeItem, publisherItem, seasonItem } from "./elements";
+import { eEpisodeItem, ePublisherItem, eSeasonItem } from "./elements";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -23,7 +23,7 @@ TEST_RUNNER.run({
           style: `background-color: ${SCHEME.neutral4}; display: inline-block;`,
         });
         document.body.append(this.container);
-        let cut = episodeItem(
+        let cut = eEpisodeItem(
           {
             seasonId: "season1",
             name: "Re:Zero -Starting Life in Another World-",
@@ -74,7 +74,7 @@ TEST_RUNNER.run({
           style: `background-color: ${SCHEME.neutral4}; display: inline-block;`,
         });
         document.body.append(this.container);
-        let cut = episodeItem(
+        let cut = eEpisodeItem(
           {
             seasonId: "season1",
             name: "Re:Zero -Starting Life in Another World- Re:Zero -Starting Life in Another World- Re:Zero -Starting Life in Another World- Re:Zero -Starting Life in Another World-",
@@ -114,7 +114,7 @@ TEST_RUNNER.run({
           style: `background-color: ${SCHEME.neutral4}; display: inline-block;`,
         });
         document.body.append(this.container);
-        let cut = seasonItem(
+        let cut = eSeasonItem(
           {
             seasonId: "season1",
             name: "Re:Zero -Starting Life in Another World-",
@@ -161,7 +161,7 @@ TEST_RUNNER.run({
           style: `background-color: ${SCHEME.neutral4}; display: inline-block;`,
         });
         document.body.append(this.container);
-        let cut = seasonItem(
+        let cut = eSeasonItem(
           {
             seasonId: "season1",
             name: "Re:Zero -Starting Life in Another World- Re:Zero -Starting Life in Another World-",
@@ -197,7 +197,7 @@ TEST_RUNNER.run({
           style: `background-color: ${SCHEME.neutral4}; display: inline-block;`,
         });
         document.body.append(this.container);
-        let cut = publisherItem(
+        let cut = ePublisherItem(
           {
             accountId: "publisher1",
             naturalName: "Publisher Name",
@@ -242,7 +242,7 @@ TEST_RUNNER.run({
           style: `background-color: ${SCHEME.neutral4}; display: inline-block;`,
         });
         document.body.append(this.container);
-        let cut = publisherItem(
+        let cut = ePublisherItem(
           {
             accountId: "123e4567-e89b-12d3-a456-426614174000",
             naturalName:

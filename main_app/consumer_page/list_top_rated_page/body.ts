@@ -1,7 +1,7 @@
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import { fullPage, seasonItem, seasonItemContainer } from "../common/elements";
+import { eFullPage, eSeasonItem, eSeasonItemContainer } from "../common/elements";
 import { newListSeasonsByRatingRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -27,8 +27,8 @@ export class ListTopRatedPage extends EventEmitter {
 
   public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.body = fullPage(
-      seasonItemContainer(LOCALIZED_TEXT.topRatedTitle, this.contentContainer),
+    this.body = eFullPage(
+      eSeasonItemContainer(LOCALIZED_TEXT.topRatedTitle, this.contentContainer),
       assign(this.loadingSection, new ScrollLoadingSection()).body,
     );
     this.loadingSection.val.startLoading(() => this.load());
@@ -45,7 +45,7 @@ export class ListTopRatedPage extends EventEmitter {
       }),
     );
     response.seasons.forEach((season) => {
-      let item = seasonItem(season);
+      let item = eSeasonItem(season);
       item.addEventListener("click", () => {
         this.emit("showDetails", season.seasonId);
       });

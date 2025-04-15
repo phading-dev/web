@@ -1,7 +1,7 @@
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import { fullPage, seasonItem, seasonItemContainer } from "../common/elements";
+import { eFullPage, eSeasonItem, eSeasonItemContainer } from "../common/elements";
 import { newSearchSeasonsRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -30,8 +30,8 @@ export class SearchSeasonsPage extends EventEmitter {
     private query: string,
   ) {
     super();
-    this.body = fullPage(
-      seasonItemContainer(
+    this.body = eFullPage(
+      eSeasonItemContainer(
         `${LOCALIZED_TEXT.searchResultTitle[0]}${this.query}${LOCALIZED_TEXT.searchResultTitle[1]}`,
         this.contentContainer,
       ),
@@ -52,7 +52,7 @@ export class SearchSeasonsPage extends EventEmitter {
       }),
     );
     response.seasons.forEach((season) => {
-      let item = seasonItem(season);
+      let item = eSeasonItem(season);
       item.addEventListener("click", () => {
         this.emit("showDetails", season.seasonId);
       });
