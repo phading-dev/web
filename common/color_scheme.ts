@@ -29,11 +29,11 @@ export class DarkScheme {
   get logoBlue() {
     return BLUE_60;
   }
-  // Main.
+  // Primary.
   get neutral0() {
     return GREY_95;
   }
-  // Borders. Shadow. Filled.
+  // Secondary. Borders. Shadow. Filled.
   get neutral1() {
     return GREY_85;
   }
@@ -100,11 +100,11 @@ export class LightScheme {
   get logoBlue() {
     return BLUE_60;
   }
-  // Main.
+  // Primary.
   get neutral0() {
     return GREY_5;
   }
-  // Borders. Shadow. Filled.
+  // Secondary. Borders. Shadow. Filled.
   get neutral1() {
     return GREY_15;
   }

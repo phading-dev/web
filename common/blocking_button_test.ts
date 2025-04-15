@@ -6,8 +6,8 @@ import {
   OutlineBlockingButton,
   TextBlockingButton,
 } from "./blocking_button";
+import { setTabletView } from "./view_port";
 import { E } from "@selfage/element/factory";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -29,7 +29,7 @@ class RenderCase implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    await setViewport(200, 200);
+    await setTabletView();
     let resolveFn: Function;
     let resovablePromise = new Promise<void>((resolve) => {
       resolveFn = resolve;

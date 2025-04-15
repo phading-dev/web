@@ -31,19 +31,11 @@ export class UpdateAccountInfoPage extends EventEmitter {
     return new UpdateAccountInfoPage(SERVICE_CLIENT, account);
   }
 
-  public naturalNameInput = new Ref<
-    TextInputWithErrorMsg<UpdateAccountRequestBody>
-  >();
-  public emailInput = new Ref<
-    TextInputWithErrorMsg<UpdateAccountRequestBody>
-  >();
-  public descriptionInput = new Ref<
-    TextAreaInputWithErrorMsg<UpdateAccountRequestBody>
-  >();
-  public inputFormPage: InputFormPage<
-    UpdateAccountRequestBody,
-    UpdateAccountResponse
-  >;
+  public naturalNameInput = new Ref<TextInputWithErrorMsg>();
+  public emailInput = new Ref<TextInputWithErrorMsg>();
+  public descriptionInput = new Ref<TextAreaInputWithErrorMsg>();
+  public inputFormPage: InputFormPage<UpdateAccountResponse>;
+  private request: UpdateAccountRequestBody = {};
 
   public constructor(
     private serviceClient: WebServiceClient,
@@ -63,10 +55,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
               autocomplete: "name",
               value: account.naturalName ?? "",
             },
-            (request, value) => {
-              request.naturalName = value;
-            },
-            (value) => this.checkNaturalNameInput(value),
+            (value) => this.validateOrTakeNaturalNameInput(value),
           ),
         ).body,
         assign(
@@ -79,10 +68,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
               autocomplete: "email",
               value: account.contactEmail ?? "",
             },
-            (request, value) => {
-              request.contactEmail = value;
-            },
-            (value) => this.checkEmailInput(value),
+            (value) => this.validateOrTakeEmailInput(value),
           ),
         ).body,
         assign(
@@ -92,10 +78,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
             "",
             {},
             account.description ?? "",
-            (request, value) => {
-              request.description = value;
-            },
-            (value) => this.checkDescriptionInput(value),
+            (value) => this.validateOrTakeDescriptionInput(value),
           ),
         ).body,
       ],
@@ -104,19 +87,18 @@ export class UpdateAccountInfoPage extends EventEmitter {
         this.emailInput.val,
         this.descriptionInput.val,
       ],
-      {},
       LOCALIZED_TEXT.updateButtonLabel,
     ).addBackButton();
 
     this.inputFormPage.addPrimaryAction(
-      (request) => this.updateAccountInfo(request),
+      () => this.updateAccountInfo(),
       (response, error) => this.postUpdateAccountInfo(error),
     );
     this.inputFormPage.on("submitted", () => this.emit("updated"));
     this.inputFormPage.on("back", () => this.emit("back"));
   }
 
-  private checkNaturalNameInput(value: string): ValidationResult {
+  private validateOrTakeNaturalNameInput(value: string): ValidationResult {
     if (value.length > MAX_NATURAL_NAME_LENGTH) {
       return {
         valid: false,
@@ -125,36 +107,37 @@ export class UpdateAccountInfoPage extends EventEmitter {
     } else if (value.length === 0) {
       return { valid: false };
     } else {
+      this.request.naturalName = value;
       return { valid: true };
     }
   }
 
-  private checkEmailInput(value: string): ValidationResult {
+  private validateOrTakeEmailInput(value: string): ValidationResult {
     if (value.length > MAX_EMAIL_LENGTH) {
       return {
         valid: false,
         errorMsg: LOCALIZED_TEXT.contactEmailTooLongError,
       };
     } else {
+      this.request.contactEmail = value;
       return { valid: true };
     }
   }
 
-  private checkDescriptionInput(value: string): ValidationResult {
+  private validateOrTakeDescriptionInput(value: string): ValidationResult {
     if (value.length > MAX_DESCRIPTION_LENGTH) {
       return {
         valid: false,
         errorMsg: LOCALIZED_TEXT.accountDescrptionTooLongError,
       };
     } else {
+      this.request.description = value;
       return { valid: true };
     }
   }
 
-  private updateAccountInfo(
-    request: UpdateAccountRequestBody,
-  ): Promise<UpdateAccountResponse> {
-    return this.serviceClient.send(newUpdateAccountRequest(request));
+  private updateAccountInfo(): Promise<UpdateAccountResponse> {
+    return this.serviceClient.send(newUpdateAccountRequest(this.request));
   }
 
   private postUpdateAccountInfo(error?: Error): string {

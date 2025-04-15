@@ -2,7 +2,7 @@ import EventEmitter = require("events");
 import { InputFormPage } from "../../../common/input_form_page/body";
 import {
   OptionButton,
-  OptionInput,
+  RadioOptionInput,
 } from "../../../common/input_form_page/option_input";
 import {
   TextInputWithErrorMsg,
@@ -33,16 +33,10 @@ export class CreateAccountPage extends EventEmitter {
     return new CreateAccountPage(LOCAL_SESSION_STORAGE, SERVICE_CLIENT);
   }
 
-  public naturalNameInput = new Ref<
-    TextInputWithErrorMsg<CreateAccountRequestBody>
-  >();
-  public accountTypeInput = new Ref<
-    OptionInput<AccountType, CreateAccountRequestBody>
-  >();
-  public inputFormPage: InputFormPage<
-    CreateAccountRequestBody,
-    CreateAccountResponse
-  >;
+  public naturalNameInput = new Ref<TextInputWithErrorMsg>();
+  public accountTypeInput = new Ref<RadioOptionInput<AccountType>>();
+  public inputFormPage: InputFormPage<CreateAccountResponse>;
+  private request: CreateAccountRequestBody = {};
 
   public constructor(
     private localSessionStorage: LocalSessionStorage,
@@ -61,15 +55,12 @@ export class CreateAccountPage extends EventEmitter {
               type: "text",
               autocomplete: "name",
             },
-            (request, value) => {
-              request.naturalName = value;
-            },
-            (value) => this.checkNaturalNameInput(value),
+            (value) => this.validateOrTakeNaturalNameInput(value),
           ),
         ).body,
         assign(
           this.accountTypeInput,
-          OptionInput.create(
+          RadioOptionInput.create(
             LOCALIZED_TEXT.chooseUserTypeLabel,
             "",
             [
@@ -85,26 +76,25 @@ export class CreateAccountPage extends EventEmitter {
               ),
             ],
             AccountType.CONSUMER,
-            (request, value) => {
-              request.accountType = value;
+            (value) => {
+              this.request.accountType = value;
             },
           ),
         ).body,
       ],
       [this.naturalNameInput.val, this.accountTypeInput.val],
-      {},
       LOCALIZED_TEXT.createAccountButtonLabel,
     ).addBackButton();
 
     this.inputFormPage.addPrimaryAction(
-      (request) => this.createAccount(request),
+      () => this.createAccount(),
       (response, error) => this.postCreateAccount(response, error),
     );
     this.inputFormPage.on("submitted", () => this.emit("created"));
     this.inputFormPage.on("back", () => this.emit("back"));
   }
 
-  private checkNaturalNameInput(value: string): ValidationResult {
+  private validateOrTakeNaturalNameInput(value: string): ValidationResult {
     if (value.length > MAX_NATURAL_NAME_LENGTH) {
       return {
         valid: false,
@@ -113,14 +103,13 @@ export class CreateAccountPage extends EventEmitter {
     } else if (value.length === 0) {
       return { valid: false };
     } else {
+      this.request.naturalName = value;
       return { valid: true };
     }
   }
 
-  private createAccount(
-    requset: CreateAccountRequestBody,
-  ): Promise<CreateAccountResponse> {
-    return this.serviceClient.send(newCreateAccountRequest(requset));
+  private createAccount(): Promise<CreateAccountResponse> {
+    return this.serviceClient.send(newCreateAccountRequest(this.request));
   }
 
   private postCreateAccount(

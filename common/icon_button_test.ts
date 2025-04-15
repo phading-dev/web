@@ -7,8 +7,8 @@ import {
   TooltipPosition,
 } from "./icon_button";
 import { createCommentIcon } from "./icons";
+import { setTabletView } from "./view_port";
 import { E } from "@selfage/element/factory";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -26,7 +26,7 @@ class RenderOversizeCentering implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    await setViewport(400, 400);
+    await setTabletView();
     this.cut = new IconButton(
       2,
       0,
@@ -67,7 +67,7 @@ class RenderCenteringWithin implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    await setViewport(400, 400);
+    await setTabletView();
     this.cut = new IconButton(
       20,
       3,
@@ -228,7 +228,7 @@ TEST_RUNNER.run({
       private cut: IconTooltipButton;
       public async execute() {
         // Prepare
-        await setViewport(400, 400);
+        await setTabletView();
         this.cut = new IconTooltipButton(
           12,
           2,
@@ -281,7 +281,7 @@ TEST_RUNNER.run({
       private cut: BlockingIconButton;
       public async execute() {
         // Prepare
-        await setViewport(400, 400);
+        await setTabletView();
         this.cut = new BlockingIconButton(
           12,
           2,

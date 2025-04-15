@@ -6,31 +6,30 @@ import { E, ElementAttributeMap } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
 export let NULLIFIED_INPUT_STYLE = `padding: 0; margin: 0; outline: none; border: 0; font-family: inherit; background-color: initial;`;
-// Missing border-color.
-export let BASIC_INPUT_STYLE = `${NULLIFIED_INPUT_STYLE} font-size: ${FONT_M}rem; line-height: 140%; color: ${SCHEME.neutral0}; border-bottom: .1rem solid;`;
+// Missing border-color and width.
+export let COMMON_BASIC_INPUT_STYLE = `${NULLIFIED_INPUT_STYLE} font-size: ${FONT_M}rem; line-height: 140%; color: ${SCHEME.neutral0}; border-bottom: .1rem solid;`;
+// Needs width or flex.
+export let BASIC_INPUT_STYLE = `${COMMON_BASIC_INPUT_STYLE} border-color: ${SCHEME.neutral1};`;
 
 export interface ValidationResult {
   valid: boolean;
   errorMsg?: string;
 }
 
-export class TextInputWithErrorMsg<Request>
-  extends EventEmitter
-  implements InputField<Request>
-{
-  public static create<Request>(
+export class TextInputWithErrorMsg extends EventEmitter implements InputField {
+  public static create(
     label: string,
     customStyle: string,
     otherInputAttributes: ElementAttributeMap = {},
-    fillInRequestFn: (request: Request, value: string) => void,
-    validateFn: (value: string) => Promise<ValidationResult> | ValidationResult,
-  ): TextInputWithErrorMsg<Request> {
-    return new TextInputWithErrorMsg<Request>(
+    validateAndTakeFn: (
+      value: string,
+    ) => Promise<ValidationResult> | ValidationResult,
+  ): TextInputWithErrorMsg {
+    return new TextInputWithErrorMsg(
       label,
       customStyle,
       otherInputAttributes,
-      fillInRequestFn,
-      validateFn,
+      validateAndTakeFn,
     );
   }
 
@@ -43,8 +42,7 @@ export class TextInputWithErrorMsg<Request>
     label: string,
     customStyle: string,
     otherInputAttributes: ElementAttributeMap,
-    private fillInRequestFn: (request: Request, value: string) => void,
-    private validateFn: (
+    private validateAndTakeFn: (
       value: string,
     ) => Promise<ValidationResult> | ValidationResult,
   ) {
@@ -68,7 +66,7 @@ export class TextInputWithErrorMsg<Request>
       }),
       E.inputRef(inputRef, {
         class: "text-input-input",
-        style: `${BASIC_INPUT_STYLE} width: 100%;`,
+        style: `${COMMON_BASIC_INPUT_STYLE} width: 100%;`,
         ...otherInputAttributes,
       }),
       E.div({
@@ -100,7 +98,7 @@ export class TextInputWithErrorMsg<Request>
 
   private async validate(): Promise<void> {
     this.resetError();
-    let result = await this.validateFn(this.input.value);
+    let result = await this.validateAndTakeFn(this.input.value);
     if (result.valid) {
       this.valid = true;
     } else {
@@ -125,10 +123,6 @@ export class TextInputWithErrorMsg<Request>
 
   public get isValid() {
     return this.valid;
-  }
-
-  public fillInRequest(request: Request): void {
-    this.fillInRequestFn(request, this.input.value);
   }
 
   public remove(): void {

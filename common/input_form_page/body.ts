@@ -12,12 +12,7 @@ import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
-export interface InputFormPage<
-  PrimaryRequest,
-  PrimaryResponse,
-  SecondaryRequest,
-  SecondaryResponse,
-> {
+export interface InputFormPage<PrimaryResponse, SecondaryResponse> {
   on(event: "submitted", listener: () => void): this;
   on(event: "primaryDone", listener: () => void): this;
   on(event: "secondaryDone", listener: () => void): this;
@@ -25,29 +20,21 @@ export interface InputFormPage<
 }
 
 export class InputFormPage<
-  PrimaryRequest,
   PrimaryResponse,
-  SecondaryRequest = void,
   SecondaryResponse = void,
 > extends EventEmitter {
-  public static create<
-    PrimaryRequest,
-    PrimaryResponse,
-    SecondaryRequest = void,
-    SecondaryResponse = void,
-  >(
+  public static create<PrimaryResponse, SecondaryResponse = void>(
     title: string,
     lines: Array<HTMLElement>,
-    inputs: Array<InputField<PrimaryRequest>>,
-    initRequest: PrimaryRequest,
+    inputs: Array<InputField>,
     primaryButtonLabel: string,
   ) {
-    return new InputFormPage<
-      PrimaryRequest,
-      PrimaryResponse,
-      SecondaryRequest,
-      SecondaryResponse
-    >(title, lines, inputs, initRequest, primaryButtonLabel);
+    return new InputFormPage<PrimaryResponse, SecondaryResponse>(
+      title,
+      lines,
+      inputs,
+      primaryButtonLabel,
+    );
   }
 
   public body: HTMLDivElement;
@@ -57,16 +44,12 @@ export class InputFormPage<
   public primaryButton = new Ref<BlockingButton<PrimaryResponse>>();
   public backButton = new Ref<IconButton>();
   public secondaryBlockingButton = new Ref<BlockingButton<SecondaryResponse>>();
-  private primaryActionFn: (
-    request: PrimaryRequest,
-  ) => Promise<PrimaryResponse>;
+  private primaryActionFn: () => Promise<PrimaryResponse>;
   private postPrimaryActionFn: (
     response?: PrimaryResponse,
     error?: Error,
   ) => string;
-  private secondaryActionFn: (
-    request?: SecondaryRequest,
-  ) => Promise<SecondaryResponse>;
+  private secondaryActionFn: () => Promise<SecondaryResponse>;
   private postSecondaryActionFn: (
     response?: SecondaryResponse,
     error?: Error,
@@ -75,8 +58,7 @@ export class InputFormPage<
   public constructor(
     title: string,
     lines: Array<HTMLElement>,
-    private inputs: Array<InputField<PrimaryRequest>>,
-    private request: PrimaryRequest,
+    private inputs: Array<InputField>,
     primaryButtonLabel: string,
   ) {
     super();
@@ -135,7 +117,7 @@ export class InputFormPage<
   }
 
   public addPrimaryAction(
-    primaryActionFn: (request: PrimaryRequest) => Promise<PrimaryResponse>,
+    primaryActionFn: () => Promise<PrimaryResponse>,
     postPrimaryActionFn: (response?: PrimaryResponse, error?: Error) => string,
   ): this {
     this.primaryActionFn = primaryActionFn;
@@ -145,10 +127,7 @@ export class InputFormPage<
 
   private primaryAction(): Promise<PrimaryResponse> {
     this.actionError.val.style.visibility = "hidden";
-    for (let input of this.inputs) {
-      input.fillInRequest(this.request);
-    }
-    return this.primaryActionFn(this.request);
+    return this.primaryActionFn();
   }
 
   private postPrimaryAction(response?: PrimaryResponse, error?: Error): void {
@@ -190,7 +169,7 @@ export class InputFormPage<
 
   public addSecondaryButton(
     buttonLabel: string,
-    actionFn: (request?: SecondaryRequest) => Promise<SecondaryResponse>,
+    actionFn: () => Promise<SecondaryResponse>,
     postActionFn: (response?: SecondaryResponse, error?: Error) => string,
   ): this {
     this.buttonsLine.val.insertBefore(

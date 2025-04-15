@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
-import { FONT_M } from "../sizes";
+import { FONT_M, LINE_HEIGHT_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -13,7 +13,7 @@ export class OptionButton<ValueType> extends EventEmitter {
   public static create<ValueType>(
     label: string,
     value: ValueType,
-    customStyle: string
+    customStyle: string,
   ): OptionButton<ValueType> {
     return new OptionButton(label, value, customStyle);
   }
@@ -23,15 +23,15 @@ export class OptionButton<ValueType> extends EventEmitter {
   public constructor(
     label: string,
     private value_: ValueType,
-    customStyle: string
+    customStyle: string,
   ) {
     super();
     this.container = E.div(
       {
         class: "option-button",
-        style: `flex: 0 0 auto; display: flex; justify-content: center; align-items: center; padding: .8rem 1.2rem; font-size: ${FONT_M}rem; border: .1rem solid; border-radius: .5rem; cursor: pointer; ${customStyle}`,
+        style: `flex: 0 0 auto; display: flex; justify-content: center; align-items: center; font-size: ${FONT_M}rem; border-radius: ${LINE_HEIGHT_M}rem; cursor: pointer; ${customStyle}`,
       },
-      E.text(label)
+      E.text(label),
     );
 
     this.container.addEventListener("click", () => this.select());
@@ -47,14 +47,16 @@ export class OptionButton<ValueType> extends EventEmitter {
 
   public select(): this {
     this.container.style.color = SCHEME.primary0;
-    this.container.style.borderColor = SCHEME.primary1;
+    this.container.style.padding = ".4rem .9rem";
+    this.container.style.border = `.2rem solid ${SCHEME.primary1}`;
     this.emit("select", this.value);
     return this;
   }
 
   public unselect(): this {
     this.container.style.color = SCHEME.neutral0;
-    this.container.style.borderColor = SCHEME.neutral1;
+    this.container.style.padding = ".5rem 1rem";
+    this.container.style.border = `.1rem solid ${SCHEME.neutral1}`;
     return this;
   }
 
@@ -64,23 +66,23 @@ export class OptionButton<ValueType> extends EventEmitter {
   }
 }
 
-export class OptionInput<ValueType, Request>
+export class RadioOptionInput<ValueType>
   extends EventEmitter
-  implements InputField<Request>
+  implements InputField
 {
-  public static create<ValueType, Request>(
+  public static create<ValueType>(
     label: string,
     customStyle: string,
     options: Array<OptionButton<ValueType>>,
     defaultValue: ValueType,
-    fillInRequestFn: (request: Request, value: ValueType) => void
-  ): OptionInput<ValueType, Request> {
-    return new OptionInput(
+    selectValueFn: (value: ValueType) => void,
+  ): RadioOptionInput<ValueType> {
+    return new RadioOptionInput(
       label,
       customStyle,
       options,
       defaultValue,
-      fillInRequestFn
+      selectValueFn,
     );
   }
 
@@ -93,29 +95,26 @@ export class OptionInput<ValueType, Request>
     customStyle: string,
     private options: Array<OptionButton<ValueType>>,
     defaultValue: ValueType,
-    private fillInRequestFn: (request: Request, value: ValueType) => void
+    private selectValueFn: (value: ValueType) => void,
   ) {
     super();
     let optionsListRef = new Ref<HTMLDivElement>();
     this.container = E.div(
       {
         class: "options-input",
-        style: `display: flex; flex-flow: column nowrap; ${customStyle}`,
+        style: `display: flex; flex-flow: column nowrap; gap: 1rem; ${customStyle}`,
       },
       E.div(
         {
           class: "options-input-label",
           style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
-        E.text(label)
+        E.text(label),
       ),
-      E.div({
-        style: `height: 1rem;`,
-      }),
       E.divRef(optionsListRef, {
         class: "options-list",
         style: `display: flex; flex-flow: row wrap; align-items: center; gap: 1.5rem;`,
-      })
+      }),
     );
 
     for (let i = 0; i < options.length; i++) {
@@ -137,7 +136,7 @@ export class OptionInput<ValueType, Request>
     }
     this.lastOption = optionButton;
     this.value_ = optionButton.value;
-    this.emit("select", this.value_);
+    this.selectValueFn(this.value_);
   }
 
   public get body() {
@@ -146,10 +145,6 @@ export class OptionInput<ValueType, Request>
 
   public get isValid() {
     return true;
-  }
-
-  public fillInRequest(requset: Request): void {
-    this.fillInRequestFn(requset, this.value_);
   }
 
   public remove(): void {

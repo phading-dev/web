@@ -1,6 +1,5 @@
-export interface InputField<Request> {
+export interface InputField {
   readonly isValid: boolean;
-  fillInRequest(request: Request): void;
   on(event: "validated", listener: () => void): this;
   on(event: "submit", listener: () => void): this;
 }

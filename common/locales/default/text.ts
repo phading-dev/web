@@ -184,6 +184,18 @@ export default class Text {
   get exploreLabel() {
     return `Explore`;
   }
+  get quickAccessLabel() {
+    return `Quick links`;
+  }
+  get recentPremieresLabel() {
+    return `Recent premieres`;
+  }
+  get topRatedLabel() {
+    return `Top rated`;
+  }
+  get continueWatchingLabel() {
+    return `Continue watching`;
+  }
   get securitySettingsLabel() {
     return `Security settings`;
   }
@@ -504,7 +516,7 @@ export default class Text {
     return `Previous`;
   }
   get noMoreContent() {
-    return `You have reached the end of universe`;
+    return `You have reached the end.`;
   }
   get tryReloadLabel() {
     return `Try reload`;
@@ -629,14 +641,20 @@ export default class Text {
   get pricingRate() {
     return [``, ` / hour`];
   }
+  get viewMoreLink() {
+    return `View more >`;
+  }
   get continueWatchingTitle() {
     return `Continue watching`;
   }
-  get recentPremiereTitle() {
+  get recentPremieresTitle() {
     return `Recent premieres`;
   }
-  get viewMoreLink() {
-    return `View more >`;
+  get topRatedTitle() {
+    return `Top rated`;
+  }
+  get searchResultTitle() {
+    return [`Searching for "`, `"`];
   }
   get danmakuSettingsLabel() {
     return `Settings for scrolling comments`;

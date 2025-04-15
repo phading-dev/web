@@ -1,10 +1,11 @@
+import "./normalize_body";
 import path = require("path");
 import { Orientation, Slider } from "./slider";
+import { setTabletView } from "./view_port";
 import {
   mouseDown,
   mouseMove,
   mouseUp,
-  setViewport,
   touchEnd,
   touchMove,
   touchStart,
@@ -13,7 +14,6 @@ import {
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import "./normalize_body";
 
 TEST_RUNNER.run({
   name: "SliderTest",
@@ -31,7 +31,7 @@ TEST_RUNNER.run({
       private cut: Slider;
       public async execute() {
         // Prepare
-        await setViewport(200, 200);
+        await setTabletView();
         let valueCaptured: number;
         this.cut = new Slider(
           Orientation.HORIZONTAL,
@@ -122,7 +122,7 @@ TEST_RUNNER.run({
       private cut: Slider;
       public async execute() {
         // Prepare
-        await setViewport(200, 200);
+        await setTabletView();
         let valueCaptured: number;
         this.cut = new Slider(
           Orientation.VERTICAL,

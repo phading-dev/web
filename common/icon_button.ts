@@ -5,7 +5,7 @@ import { SCHEME } from "./color_scheme";
 import { HoverObserver, Mode } from "./hover_observer";
 import { createArrowIcon } from "./icons";
 import { LOCALIZED_TEXT } from "./locales/localized_text";
-import { FONT_M, ICON_M } from "./sizes";
+import { FONT_M, ICON_BUTTON_L } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
@@ -375,7 +375,7 @@ export class BlockingIconButton<
 
 export function createBackButton(customStyle = ""): IconButton {
   return IconButton.create(
-    ICON_M,
+    ICON_BUTTON_L,
     1,
     `position: absolute; top: 0; left: 0; ${customStyle}`,
     createArrowIcon(SCHEME.neutral1),

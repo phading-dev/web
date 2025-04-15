@@ -1,10 +1,10 @@
+import "./normalize_body";
 import path = require("path");
 import { Direction, DropdownList } from "./dropdown_list";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
+import { setTabletView } from "./view_port";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import "./normalize_body";
 
 enum Location {
   TOP,
@@ -21,7 +21,7 @@ TEST_RUNNER.run({
       private cut: DropdownList<Location>;
       public async execute() {
         // Prepare
-        await setViewport(400, 400);
+        await setTabletView();
         this.cut = new DropdownList<Location>(
           [
             {
@@ -118,7 +118,7 @@ TEST_RUNNER.run({
       private cut: DropdownList<Location>;
       public async execute() {
         // Prepare
-        await setViewport(400, 400);
+        await setTabletView();
         this.cut = new DropdownList<Location>(
           [
             {

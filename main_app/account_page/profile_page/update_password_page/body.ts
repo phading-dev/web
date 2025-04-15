@@ -24,20 +24,11 @@ export class UpdatePasswordPage extends EventEmitter {
     return new UpdatePasswordPage(SERVICE_CLIENT, username);
   }
 
-  public inputFormPage: InputFormPage<
-    UpdatePasswordRequestBody,
-    UpdatePasswordResponse
-  >;
-  public newPasswordInput = new Ref<
-    TextInputWithErrorMsg<UpdatePasswordRequestBody>
-  >();
-  public newPasswordRepeatInput = new Ref<
-    TextInputWithErrorMsg<UpdatePasswordRequestBody>
-  >();
-  public currentPasswordInput = new Ref<
-    TextInputWithErrorMsg<UpdatePasswordRequestBody>
-  >();
-  private newPassword: string;
+  public inputFormPage: InputFormPage<UpdatePasswordResponse>;
+  public newPasswordInput = new Ref<TextInputWithErrorMsg>();
+  public newPasswordRepeatInput = new Ref<TextInputWithErrorMsg>();
+  public currentPasswordInput = new Ref<TextInputWithErrorMsg>();
+  private request: UpdatePasswordRequestBody = {};
 
   public constructor(
     private serviceClient: WebServiceClient,
@@ -62,10 +53,7 @@ export class UpdatePasswordPage extends EventEmitter {
               type: "password",
               autocomplete: "new-password",
             },
-            (request, value) => {
-              request.newPassword = value;
-            },
-            (value) => this.checkNewPassword(value),
+            (value) => this.validateOrTakeNewPassword(value),
           ),
         ).body,
         assign(
@@ -77,8 +65,7 @@ export class UpdatePasswordPage extends EventEmitter {
               type: "password",
               autocomplete: "new-password",
             },
-            () => {},
-            (value) => this.checkNewPasswordRepeat(value),
+            (value) => this.validateNewPasswordRepeat(value),
           ),
         ).body,
         assign(
@@ -90,10 +77,7 @@ export class UpdatePasswordPage extends EventEmitter {
               type: "password",
               autocomplete: "current-password",
             },
-            (request, value) => {
-              request.currentPassword = value;
-            },
-            (value) => this.checkCurrentPassword(value),
+            (value) => this.validateOrTakeCurrentPassword(value),
           ),
         ).body,
       ],
@@ -102,20 +86,18 @@ export class UpdatePasswordPage extends EventEmitter {
         this.newPasswordRepeatInput.val,
         this.currentPasswordInput.val,
       ],
-      {},
       LOCALIZED_TEXT.updateButtonLabel,
     ).addBackButton();
 
     this.inputFormPage.addPrimaryAction(
-      (request) => this.updatePassword(request),
+      () => this.updatePassword(),
       (response, error) => this.postUpdatePassword(error),
     );
     this.inputFormPage.on("submitted", () => this.emit("updated"));
     this.inputFormPage.on("back", () => this.emit("back"));
   }
 
-  private checkNewPassword(value: string): ValidationResult {
-    this.newPassword = value;
+  private validateOrTakeNewPassword(value: string): ValidationResult {
     if (value.length > MAX_PASSWORD_LENGTH) {
       return {
         valid: false,
@@ -124,12 +106,20 @@ export class UpdatePasswordPage extends EventEmitter {
     } else if (value.length === 0) {
       return { valid: false };
     } else {
+      this.request.newPassword = value;
       return { valid: true };
     }
   }
 
-  private checkNewPasswordRepeat(value: string): ValidationResult {
-    if (value === this.newPassword) {
+  private validateNewPasswordRepeat(value: string): ValidationResult {
+    if (
+      !this.request.newPassword ||
+      this.request.newPassword.length === 0 ||
+      value.length === 0
+    ) {
+      return { valid: false };
+    }
+    if (value === this.request.newPassword) {
       return { valid: true };
     } else {
       return {
@@ -139,18 +129,17 @@ export class UpdatePasswordPage extends EventEmitter {
     }
   }
 
-  private checkCurrentPassword(value: string): ValidationResult {
+  private validateOrTakeCurrentPassword(value: string): ValidationResult {
     if (value.length === 0) {
       return { valid: false };
     } else {
+      this.request.currentPassword = value;
       return { valid: true };
     }
   }
 
-  private updatePassword(
-    requset: UpdatePasswordRequestBody,
-  ): Promise<UpdatePasswordResponse> {
-    return this.serviceClient.send(newUpdatePasswordRequest(requset));
+  private updatePassword(): Promise<UpdatePasswordResponse> {
+    return this.serviceClient.send(newUpdatePasswordRequest(this.request));
   }
 
   private postUpdatePassword(error?: Error): string {

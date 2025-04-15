@@ -74,6 +74,11 @@ TEST_RUNNER.run({
         );
 
         // Execute
+        this.cut.newPasswordInput.val.value = "a new password";
+        this.cut.newPasswordInput.val.dispatchInput();
+        await new Promise<void>((resolve) =>
+          this.cut.newPasswordInput.val.once("validated", resolve),
+        );
         this.cut.newPasswordRepeatInput.val.value = "some password";
         this.cut.newPasswordRepeatInput.val.dispatchInput();
         await new Promise<void>((resolve) =>
@@ -98,11 +103,6 @@ TEST_RUNNER.run({
         this.cut.currentPasswordInput.val.dispatchInput();
         await new Promise<void>((resolve) =>
           this.cut.currentPasswordInput.val.once("validated", resolve),
-        );
-        this.cut.newPasswordInput.val.value = "a new password";
-        this.cut.newPasswordInput.val.dispatchInput();
-        await new Promise<void>((resolve) =>
-          this.cut.newPasswordInput.val.once("validated", resolve),
         );
         this.cut.newPasswordRepeatInput.val.value = "a new password";
         this.cut.newPasswordRepeatInput.val.dispatchInput();

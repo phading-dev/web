@@ -1,21 +1,17 @@
+import "../normalize_body";
 import path = require("path");
 import { TextInputWithErrorMsg } from "./text_input";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import "../normalize_body";
-
-interface Request {
-  username?: string;
-}
 
 TEST_RUNNER.run({
   name: "TextInputTest",
   cases: [
     new (class implements TestCase {
       public name = "Default_InvalidWithErrors_Valid_InvalidWithoutErrors";
-      private cut: TextInputWithErrorMsg<Request>;
+      private cut: TextInputWithErrorMsg;
       private followingLine: HTMLDivElement;
       public async execute() {
         // Execute
@@ -25,9 +21,6 @@ TEST_RUNNER.run({
           {
             type: "text",
             autocomplete: "username",
-          },
-          (request, value) => {
-            request.username = value;
           },
           (value) => {
             if (value.length > 10) {
@@ -121,13 +114,10 @@ TEST_RUNNER.run({
       name: "SubmitEvent",
       execute() {
         // Prepare
-        let cut = TextInputWithErrorMsg.create<Request>(
+        let cut = TextInputWithErrorMsg.create(
           "Label",
           "",
           { type: "text" },
-          (request, value) => {
-            request.username = value;
-          },
           (value) => {
             return { valid: true };
           },
@@ -140,31 +130,6 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(submitted, eq(true), "submitted");
-      },
-    },
-    {
-      name: "FillInRequest",
-      execute() {
-        // Prepare
-        let cut = TextInputWithErrorMsg.create<Request>(
-          "Label",
-          "",
-          { type: "text" },
-          (request, value) => {
-            request.username = value;
-          },
-          (value) => {
-            return { valid: true };
-          },
-        );
-        cut.value = "123";
-        let request: Request = {};
-
-        // Execute
-        cut.fillInRequest(request);
-
-        // Verify
-        assertThat(request.username, eq("123"), "username filled in");
       },
     },
   ],

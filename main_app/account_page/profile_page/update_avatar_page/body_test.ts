@@ -18,7 +18,7 @@ TEST_RUNNER.run({
   name: "UpdateAvatarPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "PhoneView_Load_Resize";
+      public name = "Load_Resize";
       private cut: UpdateAvatarPage;
       public async execute() {
         // Prepare
@@ -62,6 +62,7 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
+        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),

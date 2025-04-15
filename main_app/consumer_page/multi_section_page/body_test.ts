@@ -1,7 +1,7 @@
 import "../../../dev/env";
 import "../../../common/normalize_body";
-import coverImage = require("./test_data/cover_tall.jpg");
-import coverImage2 = require("./test_data/cover_tall2.jpg");
+import coverImage = require("../common/test_data/cover_tall.jpg");
+import coverImage2 = require("../common/test_data/cover_tall2.jpg");
 import path = require("path");
 import {
   setDesktopView,
@@ -15,6 +15,7 @@ import {
   ListContinueWatchingSeasonsResponse,
   ListSeasonsByRecentPremiereTimeResponse,
 } from "@phading/product_service_interface/show/web/consumer/interface";
+import { mouseClick } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { ClientRequestInterface } from "@selfage/service_descriptor/client_request_interface";
@@ -26,7 +27,7 @@ TEST_RUNNER.run({
   name: "MultiSectionPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "OneForEachSection";
+      public name = "OneForEachSection_ClickToPlay_ClickToShowDetails";
       private cut: MultiSectionPage;
       public async execute() {
         // Prepare
@@ -84,9 +85,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/multi_section_page_one_item.png"),
-          path.join(__dirname, "/golden/multi_section_page_one_item.png"),
-          path.join(__dirname, "/multi_section_page_one_item_diff.png"),
+          path.join(__dirname, "/home_page_one_item.png"),
+          path.join(__dirname, "/golden/home_page_one_item.png"),
+          path.join(__dirname, "/home_page_one_item_diff.png"),
         );
 
         // Execute
@@ -94,12 +95,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/multi_section_page_one_item_tablet.png"),
-          path.join(
-            __dirname,
-            "/golden/multi_section_page_one_item_tablet.png",
-          ),
-          path.join(__dirname, "/multi_section_page_one_item_tablet_diff.png"),
+          path.join(__dirname, "/home_page_one_item_tablet.png"),
+          path.join(__dirname, "/golden/home_page_one_item_tablet.png"),
+          path.join(__dirname, "/home_page_one_item_tablet_diff.png"),
         );
 
         // Execute
@@ -107,10 +105,37 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/multi_section_page_one_item_phone.png"),
-          path.join(__dirname, "/golden/multi_section_page_one_item_phone.png"),
-          path.join(__dirname, "/multi_section_page_one_item_phone_diff.png"),
+          path.join(__dirname, "/home_page_one_item_phone.png"),
+          path.join(__dirname, "/golden/home_page_one_item_phone.png"),
+          path.join(__dirname, "/home_page_one_item_phone_diff.png"),
         );
+
+        // Prepare
+        let playSeasonId: string;
+        let playEpisodeId: string;
+        this.cut.on("play", (seasonId, episodeId) => {
+          playSeasonId = seasonId;
+          playEpisodeId = episodeId;
+        });
+
+        // Execute
+        await mouseClick(100, 50);
+
+        // Verify
+        assertThat(playSeasonId, eq("season1"), "playSeasonId");
+        assertThat(playEpisodeId, eq("episode1"), "playEpisodeId");
+
+        // Prepare
+        let showDetailsId: string;
+        this.cut.on("showDetails", (id) => {
+          showDetailsId = id;
+        });
+
+        // Execute
+        await mouseClick(100, 450);
+
+        // Verify
+        assertThat(showDetailsId, eq("season2"), "showDetailsId");
       }
       public tearDown() {
         this.cut.body.remove();
@@ -223,9 +248,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/multi_section_page_three_items.png"),
-          path.join(__dirname, "/golden/multi_section_page_three_items.png"),
-          path.join(__dirname, "/multi_section_page_three_items_diff.png"),
+          path.join(__dirname, "/home_page_three_items.png"),
+          path.join(__dirname, "/golden/home_page_three_items.png"),
+          path.join(__dirname, "/home_page_three_items_diff.png"),
         );
 
         // Execute
@@ -233,15 +258,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/multi_section_page_three_items_tablet.png"),
-          path.join(
-            __dirname,
-            "/golden/multi_section_page_three_items_tablet.png",
-          ),
-          path.join(
-            __dirname,
-            "/multi_section_page_three_items_tablet_diff.png",
-          ),
+          path.join(__dirname, "/home_page_three_items_tablet.png"),
+          path.join(__dirname, "/golden/home_page_three_items_tablet.png"),
+          path.join(__dirname, "/home_page_three_items_tablet_diff.png"),
         );
 
         // Execute
@@ -251,15 +270,15 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/multi_section_page_three_items_tablet_scroll_to_bottom.png",
+            "/home_page_three_items_tablet_scroll_to_bottom.png",
           ),
           path.join(
             __dirname,
-            "/golden/multi_section_page_three_items_tablet_scroll_to_bottom.png",
+            "/golden/home_page_three_items_tablet_scroll_to_bottom.png",
           ),
           path.join(
             __dirname,
-            "/multi_section_page_three_items_tablet_scroll_to_bottom_diff.png",
+            "/home_page_three_items_tablet_scroll_to_bottom_diff.png",
           ),
         );
 
@@ -269,15 +288,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/multi_section_page_three_items_phone.png"),
-          path.join(
-            __dirname,
-            "/golden/multi_section_page_three_items_phone.png",
-          ),
-          path.join(
-            __dirname,
-            "/multi_section_page_three_items_phone_diff.png",
-          ),
+          path.join(__dirname, "/home_page_three_items_phone.png"),
+          path.join(__dirname, "/golden/home_page_three_items_phone.png"),
+          path.join(__dirname, "/home_page_three_items_phone_diff.png"),
         );
 
         // Execute
@@ -287,15 +300,15 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/multi_section_page_three_items_phone_scroll_to_bottom.png",
+            "/home_page_three_items_phone_scroll_to_bottom.png",
           ),
           path.join(
             __dirname,
-            "/golden/multi_section_page_three_items_phone_scroll_to_bottom.png",
+            "/golden/home_page_three_items_phone_scroll_to_bottom.png",
           ),
           path.join(
             __dirname,
-            "/multi_section_page_three_items_phone_scroll_to_bottom_diff.png",
+            "/home_page_three_items_phone_scroll_to_bottom_diff.png",
           ),
         );
       }
@@ -317,8 +330,7 @@ TEST_RUNNER.run({
             switch (request.descriptor) {
               case LIST_CONTINUE_WATCHING_SEASONS:
                 return {
-                  continues: [
-                  ],
+                  continues: [],
                 } as ListContinueWatchingSeasonsResponse;
               case LIST_SEASONS_BY_RECENT_PREMIERE_TIME:
                 return {
@@ -346,9 +358,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/multi_section_page_no_continue_watching.png"),
-          path.join(__dirname, "/golden/multi_section_page_no_continue_watching.png"),
-          path.join(__dirname, "/multi_section_page_no_continue_watching_diff.png"),
+          path.join(__dirname, "/home_page_no_continue_watching.png"),
+          path.join(__dirname, "/golden/home_page_no_continue_watching.png"),
+          path.join(__dirname, "/home_page_no_continue_watching_diff.png"),
         );
       }
       public tearDown() {
@@ -384,7 +396,7 @@ TEST_RUNNER.run({
                         continueTimeMs: 134000,
                         videoDurationSec: 3600,
                       },
-                    }
+                    },
                   ],
                 } as ListContinueWatchingSeasonsResponse;
               case LIST_SEASONS_BY_RECENT_PREMIERE_TIME:
@@ -420,7 +432,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.recentPremiereViewMore.val.click();
+        this.cut.recentPremieresViewMore.val.click();
 
         // Verify
         assertThat(

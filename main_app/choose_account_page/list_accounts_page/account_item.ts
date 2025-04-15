@@ -1,7 +1,7 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../common/color_scheme";
 import { createPlusIcon } from "../../../common/icons";
-import { AVATAR_M, FONT_M, ICON_M, LINE_HEIGHT_M } from "../../../common/sizes";
+import { AVATAR_M, FONT_M, LINE_HEIGHT_M } from "../../../common/sizes";
 import { AccountSummary } from "@phading/user_service_interface/web/self/account";
 import { E } from "@selfage/element/factory";
 
@@ -79,7 +79,7 @@ export class AddAccountItem extends EventEmitter {
       E.div(
         {
           class: "add-account-item-icon",
-          style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
+          style: `width: 4rem; height: 4rem;`,
         },
         createPlusIcon(SCHEME.neutral1),
       ),

@@ -1,7 +1,7 @@
 import EventEmitter = require("events");
 import { SCHEME } from "./color_scheme";
 import { createArrowIcon } from "./icons";
-import { FONT_M, ICON_XS } from "./sizes";
+import { FONT_M, ICON_M } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
@@ -104,7 +104,7 @@ export class DropdownList<T> extends EventEmitter {
         E.div(
           {
             class: "dropdown-list-option-arrow",
-            style: `width: ${ICON_XS}rem; height: ${ICON_XS}rem; box-sizing: border-box; padding: .3rem; transform: rotate(-90deg);`,
+            style: `width: ${ICON_M}rem; height: ${ICON_M}rem; box-sizing: border-box; padding: .3rem; transform: rotate(-90deg);`,
           },
           createArrowIcon(SCHEME.neutral1),
         ),

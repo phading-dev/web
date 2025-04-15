@@ -316,6 +316,7 @@ TEST_RUNNER.run({
         this.cut = new SignUpPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
         this.cut.passwordInput.val.value = "123123";
+        this.cut.passwordInput.val.dispatchInput();
 
         // Execute
         this.cut.repeatPasswordInput.val.value = "1111";

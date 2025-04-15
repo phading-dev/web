@@ -1,7 +1,7 @@
 import EventEmitter = require("events");
 import {
   OptionButton,
-  OptionInput,
+  RadioOptionInput,
 } from "../../common/input_form_page//option_input";
 import { InputFormPage } from "../../common/input_form_page/body";
 import {
@@ -42,18 +42,14 @@ export class SignUpPage extends EventEmitter {
     );
   }
 
-  public naturalNameInput = new Ref<TextInputWithErrorMsg<SignUpRequestBody>>();
-  public usernameInput = new Ref<TextInputWithErrorMsg<SignUpRequestBody>>();
-  public passwordInput = new Ref<TextInputWithErrorMsg<SignUpRequestBody>>();
-  public repeatPasswordInput = new Ref<
-    TextInputWithErrorMsg<SignUpRequestBody>
-  >();
-  public accountTypeInput = new Ref<
-    OptionInput<AccountType, SignUpRequestBody>
-  >();
+  public naturalNameInput = new Ref<TextInputWithErrorMsg>();
+  public usernameInput = new Ref<TextInputWithErrorMsg>();
+  public passwordInput = new Ref<TextInputWithErrorMsg>();
+  public repeatPasswordInput = new Ref<TextInputWithErrorMsg>();
+  public accountTypeInput = new Ref<RadioOptionInput<AccountType>>();
   public switchToSignInButton = new Ref<HTMLDivElement>();
-  public inputFormPage: InputFormPage<SignUpRequestBody, SignUpResponse>;
-  private password: string;
+  public inputFormPage: InputFormPage<SignUpResponse>;
+  private request: SignUpRequestBody = {};
 
   public constructor(
     private localSessionStorage: LocalSessionStorage,
@@ -73,10 +69,7 @@ export class SignUpPage extends EventEmitter {
               type: "text",
               autocomplete: "name",
             },
-            (request, value) => {
-              request.naturalName = value;
-            },
-            (value) => this.checkNaturalNameInput(value),
+            (value) => this.validateOrTakeNaturalNameInput(value),
           ),
         ).body,
         assign(
@@ -88,10 +81,7 @@ export class SignUpPage extends EventEmitter {
               type: "text",
               autocomplete: "username",
             },
-            (request, value) => {
-              request.username = value;
-            },
-            (value) => this.checkUsernameInput(value),
+            (value) => this.validateOrTakeUsernameInput(value),
           ),
         ).body,
         assign(
@@ -103,10 +93,7 @@ export class SignUpPage extends EventEmitter {
               type: "password",
               autocomplete: "new-password",
             },
-            (request, value) => {
-              request.password = value;
-            },
-            (value) => this.checkPasswordInput(value),
+            (value) => this.validateOrTakePasswordInput(value),
           ),
         ).body,
         assign(
@@ -118,13 +105,12 @@ export class SignUpPage extends EventEmitter {
               type: "password",
               autocomplete: "new-password",
             },
-            () => {},
-            (value) => this.checkRepeatPasswordInput(value),
+            (value) => this.validateRepeatPasswordInput(value),
           ),
         ).body,
         assign(
           this.accountTypeInput,
-          OptionInput.create(
+          RadioOptionInput.create(
             LOCALIZED_TEXT.chooseUserTypeLabel,
             "",
             [
@@ -140,8 +126,8 @@ export class SignUpPage extends EventEmitter {
               ),
             ],
             initAccountType ?? AccountType.CONSUMER,
-            (request, value) => {
-              request.accountType = value;
+            (value) => {
+              this.request.accountType = value;
             },
           ),
         ).body,
@@ -161,7 +147,6 @@ export class SignUpPage extends EventEmitter {
         this.repeatPasswordInput.val,
         this.accountTypeInput.val,
       ],
-      {},
       LOCALIZED_TEXT.signUpButtonLabel,
     );
 
@@ -169,13 +154,13 @@ export class SignUpPage extends EventEmitter {
       this.emit("signIn"),
     );
     this.inputFormPage.addPrimaryAction(
-      (request) => this.signUp(request),
+      () => this.signUp(),
       (response, error) => this.postSignUp(response, error),
     );
     this.inputFormPage.on("submitted", () => this.emit("signedUp"));
   }
 
-  private checkNaturalNameInput(value: string): ValidationResult {
+  private validateOrTakeNaturalNameInput(value: string): ValidationResult {
     if (value.length > MAX_NATURAL_NAME_LENGTH) {
       return {
         valid: false,
@@ -184,11 +169,12 @@ export class SignUpPage extends EventEmitter {
     } else if (value.length === 0) {
       return { valid: false };
     } else {
+      this.request.naturalName = value;
       return { valid: true };
     }
   }
 
-  private checkUsernameInput(value: string): ValidationResult {
+  private validateOrTakeUsernameInput(value: string): ValidationResult {
     if (value.length > MAX_USERNAME_LENGTH) {
       return {
         valid: false,
@@ -197,12 +183,12 @@ export class SignUpPage extends EventEmitter {
     } else if (value.length === 0) {
       return { valid: false };
     } else {
+      this.request.username = value;
       return { valid: true };
     }
   }
 
-  private checkPasswordInput(value: string): ValidationResult {
-    this.password = value;
+  private validateOrTakePasswordInput(value: string): ValidationResult {
     if (value.length > MAX_PASSWORD_LENGTH) {
       return {
         valid: false,
@@ -211,12 +197,17 @@ export class SignUpPage extends EventEmitter {
     } else if (value.length === 0) {
       return { valid: false };
     } else {
+      this.request.password = value;
       return { valid: true };
     }
   }
 
-  private checkRepeatPasswordInput(value: string): ValidationResult {
-    if (value !== this.password) {
+  private validateRepeatPasswordInput(value: string): ValidationResult {
+    if (!this.request.password || this.request.password.length === 0 || value.length === 0) {
+      return {
+        valid: false,
+      };
+    } else if (value !== this.request.password) {
       return {
         valid: false,
         errorMsg: LOCALIZED_TEXT.repeatNewPasswordNotMatchError,
@@ -226,8 +217,8 @@ export class SignUpPage extends EventEmitter {
     }
   }
 
-  private signUp(requset: SignUpRequestBody): Promise<SignUpResponse> {
-    return this.serviceClient.send(newSignUpRequest(requset));
+  private signUp(): Promise<SignUpResponse> {
+    return this.serviceClient.send(newSignUpRequest(this.request));
   }
 
   private postSignUp(response: SignUpResponse, error?: Error): string {

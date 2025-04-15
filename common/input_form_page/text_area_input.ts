@@ -11,25 +11,25 @@ export interface ValidationResult {
   errorMsg?: string;
 }
 
-export class TextAreaInputWithErrorMsg<Request>
+export class TextAreaInputWithErrorMsg
   extends EventEmitter
-  implements InputField<Request>
+  implements InputField
 {
-  public static create<Request>(
+  public static create(
     label: string,
     customStyle: string,
     otherInputAttributes: ElementAttributeMap,
     value: string,
-    fillInRequestFn: (request: Request, value: string) => void,
-    validateFn: (value: string) => Promise<ValidationResult> | ValidationResult
-  ): TextAreaInputWithErrorMsg<Request> {
-    return new TextAreaInputWithErrorMsg<Request>(
+    validateOrTakeFn: (
+      value: string,
+    ) => Promise<ValidationResult> | ValidationResult,
+  ): TextAreaInputWithErrorMsg {
+    return new TextAreaInputWithErrorMsg(
       label,
       customStyle,
       otherInputAttributes,
       value,
-      fillInRequestFn,
-      validateFn
+      validateOrTakeFn,
     );
   }
 
@@ -43,10 +43,9 @@ export class TextAreaInputWithErrorMsg<Request>
     customStyle: string,
     otherInputAttributes: ElementAttributeMap,
     value: string,
-    private fillInRequestFn: (request: Request, value: string) => void,
-    private validateFn: (
-      value: string
-    ) => Promise<ValidationResult> | ValidationResult
+    private validateOrTakeFn: (
+      value: string,
+    ) => Promise<ValidationResult> | ValidationResult,
   ) {
     super();
     let inputRef = new Ref<HTMLTextAreaElement>();
@@ -61,7 +60,7 @@ export class TextAreaInputWithErrorMsg<Request>
           class: "text-input-label",
           style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
-        E.text(label)
+        E.text(label),
       ),
       E.div({
         style: `height: 1rem;`,
@@ -74,7 +73,7 @@ export class TextAreaInputWithErrorMsg<Request>
           rows: "3",
           ...otherInputAttributes,
         },
-        E.text(value)
+        E.text(value),
       ),
       E.div({
         style: `height: .5rem;`,
@@ -85,8 +84,8 @@ export class TextAreaInputWithErrorMsg<Request>
           class: "text-input-error-label",
           style: `align-self: flex-end; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
         },
-        E.text("1")
-      )
+        E.text("1"),
+      ),
     );
     this.input = inputRef.val;
     this.errorMsg = errorMsgRef.val;
@@ -97,7 +96,7 @@ export class TextAreaInputWithErrorMsg<Request>
 
   private async validate(): Promise<void> {
     this.resetError();
-    let result = await this.validateFn(this.input.value);
+    let result = await this.validateOrTakeFn(this.input.value);
     if (result.valid) {
       this.valid = true;
     } else {
@@ -122,10 +121,6 @@ export class TextAreaInputWithErrorMsg<Request>
 
   public get isValid() {
     return this.valid;
-  }
-
-  public fillInRequest(request: Request): void {
-    this.fillInRequestFn(request, this.input.value);
   }
 
   public remove(): void {

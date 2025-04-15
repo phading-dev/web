@@ -1,18 +1,15 @@
 import EventEmitter = require("events");
 import { CLICKABLE_TEXT_STYLE } from "../../../common/button_styles";
-import { SCHEME } from "../../../common/color_scheme";
-import {
-  createAccountIcon,
-  createHistoryIcon,
-  createHomeIcon,
-  createSearchIcon,
-} from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { FULL_PAGE_CARD_STYLE } from "../../../common/page_style";
-import { FONT_M, FONT_S, FONT_WEIGHT_600 } from "../../../common/sizes";
+import { FONT_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import { ContinueEpisodeItem } from "./continue_episode_item";
-import { SeasonItem } from "./season_item";
+import {
+  episodeItem,
+  episodeItemContainer,
+  fullPage,
+  seasonItem,
+  seasonItemContainer,
+} from "../common/elements";
 import {
   newListContinueWatchingSeasonsRequest,
   newListSeasonsByRecentPremiereTimeRequest,
@@ -37,114 +34,13 @@ export class MultiSectionPage extends EventEmitter {
     return new MultiSectionPage(SERVICE_CLIENT);
   }
 
-  private static NAVIGATION_BUTTON_STYLE = `flex: 1 0 0; padding: .5rem 0; display: flex; flex-flow: column nowrap; align-items: center; cursor: pointer;`;
-  private static NAVIGATION_ICON_STYLE = `width: 2.6rem;`;
-  private static NAVIGATION_TEXT_STYLE = `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0}; padding-top: .5rem;`;
   public body: HTMLDivElement;
   public continueWatchingViewMore = new Ref<HTMLDivElement>();
-  public recentPremiereViewMore = new Ref<HTMLDivElement>();
+  public recentPremieresViewMore = new Ref<HTMLDivElement>();
 
   public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.body = E.div(
-      {
-        class: "multi-section-page",
-        style: `${FULL_PAGE_CARD_STYLE} padding: 1rem 1rem 7rem 1rem; gap: 2rem;`,
-      },
-      E.div(
-        {
-          class: "multi-section-navigation-bar-container",
-          style: `position: fixed; left: 0; bottom: 0; z-index: 1; width: 100%; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center;`,
-        },
-        E.div(
-          {
-            class: "multi-section-navigation-bar",
-            style: `background-color: ${SCHEME.neutral4}; width: 100%; max-width: 60rem; border-top-left-radius: .5rem; border-top-right-radius: .5rem; display: flex; flex-flow: row nowrap; gap: 1rem;`,
-          },
-          E.div(
-            {
-              class: "multi-section-navigation-bar-home-button",
-              style: MultiSectionPage.NAVIGATION_BUTTON_STYLE,
-            },
-            E.div(
-              {
-                class: "multi-section-navigation-bar-home-icon",
-                style: MultiSectionPage.NAVIGATION_ICON_STYLE,
-              },
-              createHomeIcon(SCHEME.neutral1),
-            ),
-            E.div(
-              {
-                class: "multi-section-navigation-bar-home-text",
-                style: MultiSectionPage.NAVIGATION_TEXT_STYLE,
-              },
-              E.text(LOCALIZED_TEXT.homeLabel),
-            ),
-          ),
-          E.div(
-            {
-              class: "multi-section-navigation-bar-explore-button",
-              style: MultiSectionPage.NAVIGATION_BUTTON_STYLE,
-            },
-            E.div(
-              {
-                class: "multi-section-navigation-bar-explore-icon",
-                style: MultiSectionPage.NAVIGATION_ICON_STYLE,
-              },
-              createSearchIcon(SCHEME.neutral1),
-            ),
-            E.div(
-              {
-                class: "multi-section-navigation-bar-explore-text",
-                style: MultiSectionPage.NAVIGATION_TEXT_STYLE,
-              },
-              E.text(LOCALIZED_TEXT.exploreLabel),
-            ),
-          ),
-          E.div(
-            {
-              class: "multi-section-navigation-bar-activity-button",
-              style: MultiSectionPage.NAVIGATION_BUTTON_STYLE,
-            },
-            E.div(
-              {
-                class: "multi-section-navigation-bar-activity-icon",
-                style: MultiSectionPage.NAVIGATION_ICON_STYLE,
-              },
-              createHistoryIcon(SCHEME.neutral1),
-            ),
-            E.div(
-              {
-                class: "multi-section-navigation-bar-activity-text",
-                style: MultiSectionPage.NAVIGATION_TEXT_STYLE,
-              },
-              E.text(LOCALIZED_TEXT.activityLabel),
-            ),
-          ),
-          E.div(
-            {
-              class: "multi-section-navigation-bar-account-button",
-              style: MultiSectionPage.NAVIGATION_BUTTON_STYLE,
-            },
-            E.div(
-              {
-                class: "multi-section-navigation-bar-account-icon",
-                style: MultiSectionPage.NAVIGATION_ICON_STYLE,
-              },
-              createAccountIcon(SCHEME.neutral1),
-            ),
-            E.div(
-              {
-                class: "multi-section-navigation-bar-account-text",
-                style: MultiSectionPage.NAVIGATION_TEXT_STYLE,
-              },
-              E.text(LOCALIZED_TEXT.accountLabel),
-            ),
-          ),
-        ),
-      ),
-    );
-
+    this.body = fullPage();
     this.load();
   }
 
@@ -162,38 +58,14 @@ export class MultiSectionPage extends EventEmitter {
           }),
         ),
       ]);
+    let episodeContent = new Ref<HTMLDivElement>();
+    let seasonContent = new Ref<HTMLDivElement>();
     this.body.append(
       ...(continueWatchingSeasonsResponse.continues.length > 0
         ? [
-            E.div(
-              {
-                class: "multi-section-continue-watching-section",
-                style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
-              },
-              E.div(
-                {
-                  class: "multi-section-continue-watching-title",
-                  style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.continueWatchingTitle),
-              ),
-              E.div(
-                {
-                  class: "multi-section-continue-watching-content",
-                  style: `width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr)); gap: 1rem;`,
-                },
-                ...continueWatchingSeasonsResponse.continues.map((season) => {
-                  let item = new ContinueEpisodeItem(
-                    season.season,
-                    season.episode,
-                    `flex: 1 0 37rem; max-width: 58rem;`,
-                  );
-                  item.on("play", (seasonId, episodeId) => {
-                    this.emit("play", seasonId, episodeId);
-                  });
-                  return item.body;
-                }),
-              ),
+            episodeItemContainer(
+              LOCALIZED_TEXT.continueWatchingTitle,
+              episodeContent,
               E.divRef(
                 this.continueWatchingViewMore,
                 {
@@ -205,33 +77,11 @@ export class MultiSectionPage extends EventEmitter {
             ),
           ]
         : []),
-      E.div(
-        {
-          class: "multi-section-recent-premiere-section",
-          style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
-        },
-        E.div(
-          {
-            class: "multi-section-recent-premiere-title",
-            style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
-          },
-          E.text(LOCALIZED_TEXT.recentPremiereTitle),
-        ),
-        E.div(
-          {
-            class: "multi-section-recent-premiere-content",
-            style: `width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(17.6rem, 1fr)); gap: 1rem;`,
-          },
-          ...recentPremiereSeasonsResponse.seasons.map((season) => {
-            let item = new SeasonItem(season, `width: 100%;`);
-            item.on("showDetails", (seasonId) => {
-              this.emit("showDetails", seasonId);
-            });
-            return item.body;
-          }),
-        ),
+      seasonItemContainer(
+        LOCALIZED_TEXT.recentPremieresTitle,
+        seasonContent,
         E.divRef(
-          this.recentPremiereViewMore,
+          this.recentPremieresViewMore,
           {
             class: "multi-section-recent-premiere-view-more",
             style: `${CLICKABLE_TEXT_STYLE} font-size: ${FONT_M}rem; align-self: flex-end;`,
@@ -240,13 +90,37 @@ export class MultiSectionPage extends EventEmitter {
         ),
       ),
     );
+    if (episodeContent.val) {
+      episodeContent.val.append(
+        ...continueWatchingSeasonsResponse.continues.map((continueSeason) => {
+          let item = episodeItem(continueSeason.season, continueSeason.episode);
+          item.addEventListener("click", () => {
+            this.emit(
+              "play",
+              continueSeason.season.seasonId,
+              continueSeason.episode.episodeId,
+            );
+          });
+          return item;
+        }),
+      );
+    }
+    seasonContent.val.append(
+      ...recentPremiereSeasonsResponse.seasons.map((season) => {
+        let item = seasonItem(season);
+        item.addEventListener("click", () => {
+          this.emit("showDetails", season.seasonId);
+        });
+        return item;
+      }),
+    );
 
-    if (continueWatchingSeasonsResponse.continues.length > 0) {
+    if (this.continueWatchingViewMore.val) {
       this.continueWatchingViewMore.val.addEventListener("click", () => {
         this.emit("listContinueWatching");
       });
     }
-    this.recentPremiereViewMore.val.addEventListener("click", () => {
+    this.recentPremieresViewMore.val.addEventListener("click", () => {
       this.emit("listRecentPremieres");
     });
     this.emit("loaded");

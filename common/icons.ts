@@ -92,6 +92,7 @@ export function createArrowIcon(color: string): SVGSVGElement {
   );
 }
 
+// Points to left
 export function createArrowWithBarIcon(
   color: string,
   customStyle = "",
@@ -108,11 +109,15 @@ export function createArrowWithBarIcon(
   );
 }
 
-export function createDoubleArrowsIcon(color: string): SVGSVGElement {
+// Points to left
+export function createDoubleArrowsIcon(
+  color: string,
+  customStyle = "",
+): SVGSVGElement {
   return E.svg(
     {
       class: "double-arrows-icon",
-      style: `height: 100%; fill: none; stroke-width: 21.2132; stroke: ${color};`,
+      style: `height: 100%; fill: none; stroke-width: 21.2132; stroke: ${color}; ${customStyle}`,
       viewBox: "-123.5 -7.5 131 131",
     },
     E.path({

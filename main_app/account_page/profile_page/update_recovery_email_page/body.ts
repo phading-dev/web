@@ -23,16 +23,11 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
   public static create(username: string): UpdateRecoveryEmailPage {
     return new UpdateRecoveryEmailPage(SERVICE_CLIENT, username);
   }
-  public inputFormPage: InputFormPage<
-    UpdateRecoveryEmailRequestBody,
-    UpdateRecoveryEmailResponse
-  >;
-  public newRecoveryEmailInput = new Ref<
-    TextInputWithErrorMsg<UpdateRecoveryEmailRequestBody>
-  >();
-  public currentPasswordInput = new Ref<
-    TextInputWithErrorMsg<UpdateRecoveryEmailRequestBody>
-  >();
+
+  public inputFormPage: InputFormPage<UpdateRecoveryEmailResponse>;
+  public newRecoveryEmailInput = new Ref<TextInputWithErrorMsg>();
+  public currentPasswordInput = new Ref<TextInputWithErrorMsg>();
+  private request: UpdateRecoveryEmailRequestBody = {};
 
   public constructor(
     private serviceClient: WebServiceClient,
@@ -57,10 +52,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
               type: "email",
               autocomplete: "email",
             },
-            (request, value) => {
-              request.newEmail = value;
-            },
-            (value) => this.checkNewEmail(value),
+            (value) => this.validateOrTakeNewEmail(value),
           ),
         ).body,
         assign(
@@ -72,27 +64,23 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
               type: "password",
               autocomplete: "current-password",
             },
-            (request, value) => {
-              request.currentPassword = value;
-            },
-            (value) => this.checkCurrentPassword(value),
+            (value) => this.validateOrTakeCurrentPassword(value),
           ),
         ).body,
       ],
       [this.newRecoveryEmailInput.val, this.currentPasswordInput.val],
-      {},
       LOCALIZED_TEXT.updateButtonLabel,
     ).addBackButton();
 
     this.inputFormPage.addPrimaryAction(
-      (request) => this.updateRecoveryEmail(request),
+      () => this.updateRecoveryEmail(),
       (response, error) => this.postUpdateRecoveryEmail(error),
     );
     this.inputFormPage.on("submitted", () => this.emit("updated"));
     this.inputFormPage.on("back", () => this.emit("back"));
   }
 
-  private checkNewEmail(value: string): ValidationResult {
+  private validateOrTakeNewEmail(value: string): ValidationResult {
     if (value.length > MAX_EMAIL_LENGTH) {
       return {
         valid: false,
@@ -101,22 +89,22 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
     } else if (value.length === 0) {
       return { valid: false };
     } else {
+      this.request.newEmail = value;
       return { valid: true };
     }
   }
 
-  private checkCurrentPassword(value: string): ValidationResult {
+  private validateOrTakeCurrentPassword(value: string): ValidationResult {
     if (value.length === 0) {
       return { valid: false };
     } else {
+      this.request.currentPassword = value;
       return { valid: true };
     }
   }
 
-  private updateRecoveryEmail(
-    requset: UpdateRecoveryEmailRequestBody,
-  ): Promise<UpdateRecoveryEmailResponse> {
-    return this.serviceClient.send(newUpdateRecoveryEmailRequest(requset));
+  private updateRecoveryEmail(): Promise<UpdateRecoveryEmailResponse> {
+    return this.serviceClient.send(newUpdateRecoveryEmailRequest(this.request));
   }
 
   private postUpdateRecoveryEmail(error?: Error): string {

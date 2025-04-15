@@ -38,7 +38,7 @@ TEST_RUNNER.run({
   name: "InfoPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "PhoneView_HoverAvatar_LeaveAvatar_UpdateAvatar";
+      public name = "HoverAvatar_LeaveAvatar_UpdateAvatar";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -162,9 +162,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_narrow.png"),
-          path.join(__dirname, "/golden/info_page_narrow.png"),
-          path.join(__dirname, "/info_page_narrow_diff.png"),
+          path.join(__dirname, "/info_page_phone.png"),
+          path.join(__dirname, "/golden/info_page_phone.png"),
+          path.join(__dirname, "/info_page_phone_diff.png"),
         );
 
         // Execute
@@ -173,9 +173,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_scroll_to_bottom.png"),
-          path.join(__dirname, "/golden/info_page_scroll_to_bottom.png"),
-          path.join(__dirname, "/info_page_scroll_to_bottom_diff.png"),
+          path.join(__dirname, "/info_page_phone_scroll_to_bottom.png"),
+          path.join(__dirname, "/golden/info_page_phone_scroll_to_bottom.png"),
+          path.join(__dirname, "/info_page_phone_scroll_to_bottom_diff.png"),
         );
       }
       public async tearDown() {

@@ -7,7 +7,7 @@ import {
   PAGE_BACKGROUND_STYLE,
   PAGE_MEDIUM_CARD_STYLE,
 } from "../../../common/page_style";
-import { FONT_M, FONT_WEIGHT_600, ICON_XS } from "../../../common/sizes";
+import { FONT_M, FONT_WEIGHT_600, ICON_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { MonthRangeInput } from "../common/month_range_input";
 import { newListTransactionStatementsRequest } from "@phading/commerce_service_interface/web/statements/client";
@@ -177,7 +177,7 @@ export class StatementsPage extends EventEmitter {
             expandIcon,
             {
               class: "statements-page-expand-button",
-              style: `height: ${ICON_XS}rem; box-sizing: border-box; padding: .2rem; transition: transform .2s;`,
+              style: `height: ${ICON_M}rem; box-sizing: border-box; padding: .2rem; transition: transform .2s;`,
             },
             createArrowIcon(SCHEME.neutral1),
           ),
@@ -215,7 +215,7 @@ export class StatementsPage extends EventEmitter {
               E.div(
                 {
                   class: "statements-page-line-item-leading-line",
-                  style: `height: ${ICON_XS}rem; box-sizing: border-box; padding: 0 0 .6rem .6rem;`,
+                  style: `height: ${ICON_M}rem; box-sizing: border-box; padding: 0 0 .6rem .6rem;`,
                 },
                 createCornerIcon(SCHEME.neutral1),
               ),
@@ -254,6 +254,9 @@ export class StatementsPage extends EventEmitter {
       } else {
         this.hideLineItemList(expandIcon.val, lineItemList.val);
       }
+    });
+    lineItemList.val.addEventListener("transitionend", () => {
+      lineItemList.val.style.height = `auto`;
     });
     return elements;
   }

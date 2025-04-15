@@ -28,10 +28,11 @@ export class SignInPage extends EventEmitter {
     return new SignInPage(LOCAL_SESSION_STORAGE, SERVICE_CLIENT);
   }
 
-  public usernameInput = new Ref<TextInputWithErrorMsg<SignInRequestBody>>();
-  public passwordInput = new Ref<TextInputWithErrorMsg<SignInRequestBody>>();
+  public usernameInput = new Ref<TextInputWithErrorMsg>();
+  public passwordInput = new Ref<TextInputWithErrorMsg>();
   public switchToSignUpButton = new Ref<HTMLDivElement>();
-  public inputFormPage: InputFormPage<SignInRequestBody, SignInResponse>;
+  public inputFormPage: InputFormPage<SignInResponse>;
+  private request: SignInRequestBody = {};
 
   public constructor(
     private localSessionStorage: LocalSessionStorage,
@@ -43,32 +44,26 @@ export class SignInPage extends EventEmitter {
       [
         assign(
           this.usernameInput,
-          TextInputWithErrorMsg.create<SignInRequestBody>(
+          TextInputWithErrorMsg.create(
             LOCALIZED_TEXT.usernameLabel,
             "",
             {
               type: "text",
               autocomplete: "username",
             },
-            (request, value) => {
-              request.username = value;
-            },
-            (value) => this.checkUsernameInput(value),
+            (value) => this.validateOrTakeUsernameInput(value),
           ),
         ).body,
         assign(
           this.passwordInput,
-          TextInputWithErrorMsg.create<SignInRequestBody>(
+          TextInputWithErrorMsg.create(
             LOCALIZED_TEXT.passwordLabel,
             "",
             {
               type: "password",
               autocomplete: "current-password",
             },
-            (request, value) => {
-              request.password = value;
-            },
-            (value) => this.checkPasswordInput(value),
+            (value) => this.validateOrTakePasswordInput(value),
           ),
         ).body,
         E.divRef(
@@ -81,7 +76,6 @@ export class SignInPage extends EventEmitter {
         ),
       ],
       [this.usernameInput.val, this.passwordInput.val],
-      {},
       LOCALIZED_TEXT.signInButtonLabel,
     );
 
@@ -89,14 +83,15 @@ export class SignInPage extends EventEmitter {
       this.emit("signUp"),
     );
     this.inputFormPage.addPrimaryAction(
-      (request) => this.signIn(request),
+      () => this.signIn(),
       (response, error) => this.postSignIn(response, error),
     );
     this.inputFormPage.on("submitted", () => this.emit("signedIn"));
   }
 
-  private checkUsernameInput(value: string): ValidationResult {
+  private validateOrTakeUsernameInput(value: string): ValidationResult {
     if (value.length > 0) {
+      this.request.username = value;
       return {
         valid: true,
       };
@@ -107,8 +102,9 @@ export class SignInPage extends EventEmitter {
     }
   }
 
-  private checkPasswordInput(value: string): ValidationResult {
+  private validateOrTakePasswordInput(value: string): ValidationResult {
     if (value.length > 0) {
+      this.request.password = value;
       return {
         valid: true,
       };
@@ -119,8 +115,8 @@ export class SignInPage extends EventEmitter {
     }
   }
 
-  private async signIn(request: SignInRequestBody): Promise<SignInResponse> {
-    return await this.serviceClient.send(newSignInRequest(request));
+  private async signIn(): Promise<SignInResponse> {
+    return await this.serviceClient.send(newSignInRequest(this.request));
   }
 
   private postSignIn(response?: SignInResponse, error?: Error): string {
