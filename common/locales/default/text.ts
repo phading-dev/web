@@ -641,6 +641,9 @@ export default class Text {
   get pricingRate() {
     return [``, ` / hour`];
   }
+  get viewHistoryLink() {
+    return `View history >`;
+  }
   get viewMoreLink() {
     return `View more >`;
   }
@@ -655,6 +658,18 @@ export default class Text {
   }
   get searchResultTitle() {
     return [`Searching for "`, `"`];
+  }
+  get estimatedChargeTitle() {
+    return `Estimated charge`;
+  }
+  get billingMonth() {
+    return [`Current billing month is `, `.`];
+  }
+  get viewDetailedUsageLabel() {
+    return `View full breakdown >`;
+  }
+  get watchHistoryTitle() {
+    return `Watch history`;
   }
   get danmakuSettingsLabel() {
     return `Settings for scrolling comments`;

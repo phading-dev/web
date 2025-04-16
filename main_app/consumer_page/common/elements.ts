@@ -126,7 +126,7 @@ export function eSeasonItem(
   );
 }
 
-export function eEpisodeItemContainer(
+export function eContinueEpisodeItemContainer(
   title: string,
   contentContainer: Ref<HTMLDivElement>,
   ...elements: Array<HTMLElement>
@@ -151,9 +151,10 @@ export function eEpisodeItemContainer(
   );
 }
 
-export function eEpisodeItem(
+export function eContinueEpisodeItem(
   season: SeasonSummary,
   episode: EpisodeSummary,
+  continueTimeMs: number,
   customStyle?: string,
 ): HTMLDivElement {
   return E.div(
@@ -202,7 +203,7 @@ export function eEpisodeItem(
           createCircularProgressIcon(
             SCHEME.progress,
             SCHEME.neutral2,
-            episode.continueTimeMs / 1000 / episode.videoDurationSec,
+            continueTimeMs / 1000 / episode.videoDurationSec,
           ),
         ),
         E.div(
@@ -211,7 +212,7 @@ export function eEpisodeItem(
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(
-            `${formatSecondsAsHHMMSS(Math.round(episode.continueTimeMs / 1000))} / ${formatSecondsAsHHMMSS(episode.videoDurationSec)}`,
+            `${formatSecondsAsHHMMSS(Math.round(continueTimeMs / 1000))} / ${formatSecondsAsHHMMSS(episode.videoDurationSec)}`,
           ),
         ),
       ),

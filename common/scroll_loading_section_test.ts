@@ -87,6 +87,22 @@ TEST_RUNNER.run({
             "/scroll_loading_section_scrolled_no_more_diff.png",
           ),
         );
+
+        // Prepare
+        itemLength = 2;
+        hasMore = false;
+
+        // Execute
+        cut.val.tryReloadButton.val.click();
+        await new Promise<void>((resolve) => cut.val.once("loaded", resolve));
+        window.scrollTo(0, document.body.scrollHeight);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/scroll_loading_section_reloaded.png"),
+          path.join(__dirname, "/golden/scroll_loading_section_reloaded.png"),
+          path.join(__dirname, "/scroll_loading_section_reloaded_diff.png"),
+        );
       }
       public tearDown() {
         this.container.remove();

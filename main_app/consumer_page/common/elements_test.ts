@@ -4,8 +4,17 @@ import coverImage = require("./test_data/cover_tall.jpg");
 import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
 import { SCHEME } from "../../../common/color_scheme";
-import { setDesktopView, setPhoneView, setTabletView } from "../../../common/view_port";
-import { eEpisodeItem, ePublisherContextItem, ePublisherItem, eSeasonItem } from "./elements";
+import {
+  setDesktopView,
+  setPhoneView,
+  setTabletView,
+} from "../../../common/view_port";
+import {
+  eContinueEpisodeItem,
+  ePublisherContextItem,
+  ePublisherItem,
+  eSeasonItem,
+} from "./elements";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -14,7 +23,7 @@ TEST_RUNNER.run({
   name: "ElementsTest",
   cases: [
     new (class implements TestCase {
-      public name = "EpisodeItem";
+      public name = "ContinueEpisodeItem";
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
@@ -23,7 +32,7 @@ TEST_RUNNER.run({
           style: `background-color: ${SCHEME.neutral4}; display: inline-block;`,
         });
         document.body.append(this.container);
-        let cut = eEpisodeItem(
+        let cut = eContinueEpisodeItem(
           {
             seasonId: "season1",
             name: "Re:Zero -Starting Life in Another World-",
@@ -33,9 +42,9 @@ TEST_RUNNER.run({
           {
             episodeId: "episode1",
             name: "Episode 1",
-            continueTimeMs: 0,
             videoDurationSec: 3600,
           },
+          0,
           "width: 580px;",
         );
 
@@ -65,7 +74,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "EpisodeItemLong";
+      public name = "ContinueEpisodeItemLong";
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
@@ -74,7 +83,7 @@ TEST_RUNNER.run({
           style: `background-color: ${SCHEME.neutral4}; display: inline-block;`,
         });
         document.body.append(this.container);
-        let cut = eEpisodeItem(
+        let cut = eContinueEpisodeItem(
           {
             seasonId: "season1",
             name: "Re:Zero -Starting Life in Another World- Re:Zero -Starting Life in Another World- Re:Zero -Starting Life in Another World- Re:Zero -Starting Life in Another World-",
@@ -84,9 +93,9 @@ TEST_RUNNER.run({
           {
             episodeId: "episode1",
             name: "S3 E54 - Operation: Take Back the Government Office S3 E54 - Operation: Take Back the Government Office",
-            continueTimeMs: 3600000,
             videoDurationSec: 3600,
           },
+          3600000,
           "width: 340px;",
         );
 
@@ -273,7 +282,7 @@ TEST_RUNNER.run({
       private cut: HTMLDivElement;
       public async execute() {
         // Prepare
-        await setPhoneView()
+        await setPhoneView();
         this.cut = ePublisherContextItem(
           {
             accountId: "123e4567-e89b-12d3-a456-426614174000",

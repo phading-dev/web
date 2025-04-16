@@ -53,9 +53,9 @@ TEST_RUNNER.run({
                       episode: {
                         episodeId: "episode1",
                         name: "Episode 1",
-                        continueTimeMs: 134000,
                         videoDurationSec: 3600,
                       },
+                      continueTimeMs: 134000,
                     },
                   ],
                 } as ListContinueWatchingSeasonsResponse;
@@ -168,9 +168,9 @@ TEST_RUNNER.run({
                       episode: {
                         episodeId: "episode1",
                         name: "Episode 1",
-                        continueTimeMs: 134000,
                         videoDurationSec: 3600,
                       },
+                      continueTimeMs: 134000,
                     },
                     {
                       season: {
@@ -184,9 +184,9 @@ TEST_RUNNER.run({
                       episode: {
                         episodeId: "episode2",
                         name: "Episode 2",
-                        continueTimeMs: 120000,
                         videoDurationSec: 3600,
                       },
+                      continueTimeMs: 120000,
                     },
                     {
                       season: {
@@ -200,9 +200,26 @@ TEST_RUNNER.run({
                       episode: {
                         episodeId: "episode3",
                         name: "Episode 3",
-                        continueTimeMs: 60000,
                         videoDurationSec: 3600,
                       },
+                      continueTimeMs: 60000,
+                    },
+                    {
+                      // This item will be ignored
+                      season: {
+                        seasonId: "season4",
+                        name: "Demon Slayer",
+                        coverImageUrl: coverImage2,
+                        grade: 10,
+                        ratingsCount: 2345,
+                        averageRating: 4.9,
+                      },
+                      episode: {
+                        episodeId: "episode4",
+                        name: "Episode 4",
+                        videoDurationSec: 3600,
+                      },
+                      continueTimeMs: 30000,
                     },
                   ],
                 } as ListContinueWatchingSeasonsResponse;
@@ -393,9 +410,9 @@ TEST_RUNNER.run({
                       episode: {
                         episodeId: "episode1",
                         name: "Episode 1",
-                        continueTimeMs: 134000,
                         videoDurationSec: 3600,
                       },
+                      continueTimeMs: 134000,
                     },
                   ],
                 } as ListContinueWatchingSeasonsResponse;
@@ -412,9 +429,9 @@ TEST_RUNNER.run({
           this.cut.once("loaded", () => resolve()),
         );
 
-        let listContinueWatching = false;
-        this.cut.on("listContinueWatching", () => {
-          listContinueWatching = true;
+        let listWatchHistory = false;
+        this.cut.on("listWatchHistory", () => {
+          listWatchHistory = true;
         });
         let listRecentPremieres = false;
         this.cut.on("listRecentPremieres", () => {
@@ -426,9 +443,9 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          listContinueWatching,
+          listWatchHistory,
           eq(true),
-          "listContinueWatching should be emitted",
+          "listWatchHistory should be emitted",
         );
 
         // Execute
