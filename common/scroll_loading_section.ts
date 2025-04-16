@@ -81,4 +81,8 @@ export class ScrollLoadingSection extends EventEmitter {
     this.loadingIcon.val.style.display = "none";
     this.emit("loaded");
   }
+
+  public stopLoading(): void {
+    this.loadingObserver?.disconnect();
+  }
 }

@@ -1,20 +1,26 @@
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import { eFullPage, eSeasonItem, eSeasonItemContainer } from "../common/elements";
-import { newSearchSeasonsRequest } from "@phading/product_service_interface/show/web/consumer/client";
+import {
+  eFullPage,
+  ePublisherContextItem,
+  eSeasonItem,
+  eSeasonItemContainer,
+} from "../common/elements";
+import { newListSeasonsByRecentPremiereTimeAndPublisherRequest } from "@phading/product_service_interface/show/web/consumer/client";
+import { newGetAccountDetailsRequest } from "@phading/user_service_interface/web/third_person/client";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
 
-export interface SearchSeasonsPage {
+export interface PublisherShowroomPage {
   on(event: "showDetails", listener: (seasonId: string) => void): this;
   on(event: "loaded", listener: () => void): this;
 }
 
-export class SearchSeasonsPage extends EventEmitter {
-  public static create(query: string): SearchSeasonsPage {
-    return new SearchSeasonsPage(SERVICE_CLIENT, query);
+export class PublisherShowroomPage extends EventEmitter {
+  public static create(accountId: string): PublisherShowroomPage {
+    return new PublisherShowroomPage(SERVICE_CLIENT, accountId);
   }
 
   private static LIMIT = 10;
@@ -22,32 +28,42 @@ export class SearchSeasonsPage extends EventEmitter {
   public body: HTMLElement;
   private contentContainer = new Ref<HTMLDivElement>();
   public loadingSection = new Ref<ScrollLoadingSection>();
-  private scoreCursor: number;
+  private premiereTimeCursor: number;
   private createdTimeCursor: number;
 
   public constructor(
     private serviceClient: WebServiceClient,
-    private query: string,
+    private accountId: string,
   ) {
     super();
-    this.body = eFullPage(
+    this.body = eFullPage();
+    this.loadPublisher();
+  }
+
+  private async loadPublisher(): Promise<void> {
+    let response = await this.serviceClient.send(
+      newGetAccountDetailsRequest({
+        accountId: this.accountId,
+      }),
+    );
+    this.body.append(
+      ePublisherContextItem(response.account, `width: 100%;`),
       eSeasonItemContainer(
-        `${LOCALIZED_TEXT.searchResultTitle[0]}${this.query}${LOCALIZED_TEXT.searchResultTitle[1]}`,
+        LOCALIZED_TEXT.recentPremieresTitle,
         this.contentContainer,
       ),
       assign(this.loadingSection, new ScrollLoadingSection()).body,
     );
     this.loadingSection.val.startLoading(() => this.load());
-
     this.loadingSection.val.on("loaded", () => this.emit("loaded"));
   }
 
   private async load(): Promise<boolean> {
     let response = await this.serviceClient.send(
-      newSearchSeasonsRequest({
-        limit: SearchSeasonsPage.LIMIT,
-        query: this.query,
-        scoreCursor: this.scoreCursor,
+      newListSeasonsByRecentPremiereTimeAndPublisherRequest({
+        publisherId: this.accountId,
+        limit: PublisherShowroomPage.LIMIT,
+        premiereTimeCursor: this.premiereTimeCursor,
         createdTimeCursor: this.createdTimeCursor,
       }),
     );
@@ -59,13 +75,13 @@ export class SearchSeasonsPage extends EventEmitter {
       this.contentContainer.val.append(item);
     });
 
-    this.scoreCursor = response.scoreCursor;
+    this.premiereTimeCursor = response.premiereTimeCursor;
     this.createdTimeCursor = response.createdTimeCursor;
-    return Boolean(response.scoreCursor);
+    return Boolean(response.premiereTimeCursor);
   }
 
   public remove(): void {
     this.body.remove();
-    this.loadingSection.val.stopLoading();
+    this.loadingSection.val?.stopLoading();
   }
 }

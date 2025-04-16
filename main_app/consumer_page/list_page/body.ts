@@ -85,36 +85,6 @@ export class ListPage extends EventEmitter {
           class: "recommendation-page-content-container",
           style: `width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(20.2rem, 30.2rem)); justify-content: center; gap: .1rem;`,
         }),
-        E.divRef(
-          this.loadingSection,
-          {
-            class: "recommendation-page-loading-section",
-            style: `display: flex; flex-flow: column nowrap; align-items: center; padding: 2rem; gap: 2rem;`,
-          },
-          E.div(
-            {
-              class: "recommendation-page-end-of-loading",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(LOCALIZED_TEXT.noMoreContent),
-          ),
-          E.divRef(
-            this.tryReloadButton,
-            {
-              class: "recommendation-page-load-button",
-              style: `${FILLED_BUTTON_STYLE} background-color: ${SCHEME.primary1};`,
-            },
-            E.text(LOCALIZED_TEXT.tryReloadLabel),
-          ),
-          E.divRef(
-            this.loadingIcon,
-            {
-              class: "recommendation-page-loading-icon",
-              style: `height: ${ICON_S}rem; padding .5rem; box-sizing: border-box;`,
-            },
-            createLoadingIcon(SCHEME.neutral1),
-          ),
-        ),
       ),
       E.div(
         {
@@ -256,7 +226,7 @@ export class ListPage extends EventEmitter {
   }
 
   private enterToSearch(event: KeyboardEvent): void {
-    if (event.key === "Enter") {
+    if (event.code === "Enter") {
       this.trySearch();
     }
   }

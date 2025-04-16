@@ -266,24 +266,75 @@ export function ePublisherItem(
       },
       E.div(
         {
-          class: "publisher-name",
+          class: "publisher-item-name",
           style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
         },
         E.text(publisher.naturalName),
       ),
       E.div(
         {
-          class: "publisher-id",
+          class: "publisher-item-id",
           style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
         },
         E.text(`${AT_USER}${publisher.accountId}`),
       ),
       E.div(
         {
-          class: "publisher-description",
+          class: "publisher-item-description",
           style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
         },
         E.text(publisher.description ?? ""),
+      ),
+    ),
+  );
+}
+
+export function ePublisherContextItem(
+  publisher: AccountDetails,
+  customStyle?: string,
+): HTMLDivElement {
+  return E.div(
+    {
+      class: "publisher-context-item-container",
+      style: `width: 100%; display: flex; flex-flow: row nowrap; justify-content: center; ${customStyle ?? ""}`,
+    },
+    E.div(
+      {
+        class: "publisher-context-item",
+        style: `flex: 1; max-width: 60rem; display: flex; flex-flow: row nowrap; gap: 1rem;`,
+      },
+      E.image({
+        class: "publisher-context-item-avatar",
+        style: `width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: 100%;`,
+        src: publisher.avatarLargeUrl,
+        alt: publisher.naturalName,
+      }),
+      E.div(
+        {
+          class: "publisher-context-item-info",
+          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
+        },
+        E.div(
+          {
+            class: "publisher-context-item-name",
+            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem;`,
+          },
+          E.text(publisher.naturalName),
+        ),
+        E.div(
+          {
+            class: "publisher-context-item-id",
+            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+          },
+          E.text(`${AT_USER}${publisher.accountId}`),
+        ),
+        E.div(
+          {
+            class: "publisher-context-item-description",
+            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem;`,
+          },
+          E.text(publisher.description ?? ""),
+        ),
       ),
     ),
   );

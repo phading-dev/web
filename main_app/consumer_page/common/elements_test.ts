@@ -4,8 +4,8 @@ import coverImage = require("./test_data/cover_tall.jpg");
 import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
 import { SCHEME } from "../../../common/color_scheme";
-import { setPhoneView, setTabletView } from "../../../common/view_port";
-import { eEpisodeItem, ePublisherItem, eSeasonItem } from "./elements";
+import { setDesktopView, setPhoneView, setTabletView } from "../../../common/view_port";
+import { eEpisodeItem, ePublisherContextItem, ePublisherItem, eSeasonItem } from "./elements";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -266,6 +266,48 @@ TEST_RUNNER.run({
       }
       public tearDown() {
         this.container.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "PublisherContextItemLong_Wide";
+      private cut: HTMLDivElement;
+      public async execute() {
+        // Prepare
+        await setPhoneView()
+        this.cut = ePublisherContextItem(
+          {
+            accountId: "123e4567-e89b-12d3-a456-426614174000",
+            naturalName:
+              "Publisher Name That Is Extremely Long And Keeps Going To Test The Layout Handling Of Very Long Names In A Constrained Space",
+            avatarLargeUrl: userImage,
+            description:
+              "This is a very long description that goes on and on and on to test how the layout handles extremely verbose text in a constrained space.",
+          },
+          `background-color: ${SCHEME.neutral4};`,
+        );
+
+        // Execute
+        document.body.append(this.cut);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/publisher_context_item_long.png"),
+          path.join(__dirname, "/golden/publisher_context_item_long.png"),
+          path.join(__dirname, "/publisher_context_item_long_diff.png"),
+        );
+
+        // Execute
+        await setDesktopView();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/publisher_context_item_wide.png"),
+          path.join(__dirname, "/golden/publisher_context_item_wide.png"),
+          path.join(__dirname, "/publisher_context_item_wide_diff.png"),
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
       }
     })(),
   ],
