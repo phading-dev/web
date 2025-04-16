@@ -20,6 +20,7 @@ import { ProductID } from "@phading/price";
 import { CURRENCY_TO_CENTS } from "@phading/price_config/amount_conversion";
 import { calculateMoney } from "@phading/price_config/calculator";
 import { newGetSeasonAndEpisodeSummaryRequest } from "@phading/product_service_interface/show/web/consumer/client";
+import { SeasonAndEpisodeSummary } from "@phading/product_service_interface/show/web/consumer/summary";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -147,38 +148,55 @@ export class HistoryPage extends EventEmitter {
         createdTimeCursor: this.createdTimeCursor,
       }),
     );
+    // console.log(JSON.stringify(response));
+    let summaries = new Array<SeasonAndEpisodeSummary>(
+      response.sessions.length,
+    );
     await Promise.all(
-      response.sessions.map(async (session) => {
-        let summaryResponse = await this.serviceClient.send(
-          newGetSeasonAndEpisodeSummaryRequest({
-            seasonId: session.seasonId,
-            episodeId: session.episodeId,
-          }),
-        );
-
-        let createdDate = toDateISOString(
-          toDateWrtTimezone(new Date(session.createdTimeMs)),
-        );
-        let contentContainer = this.dateToContentContainer.get(createdDate);
-        if (!contentContainer) {
-          contentContainer = new Ref<HTMLDivElement>();
-          this.body.insertBefore(
-            eContinueEpisodeItemContainer(createdDate, contentContainer),
-            this.loadingSection.val.body,
+      response.sessions.map(async (session, i) => {
+        try {
+          let summaryResponse = await this.serviceClient.send(
+            newGetSeasonAndEpisodeSummaryRequest({
+              seasonId: session.seasonId,
+              episodeId: session.episodeId,
+            }),
           );
-          this.dateToContentContainer.set(createdDate, contentContainer);
+          summaries[i] = summaryResponse.summary;
+        } catch (e) {
+          console.log(e);
+          return;
         }
-        let item = eContinueEpisodeItem(
-          summaryResponse.summary.season,
-          summaryResponse.summary.episode,
-          session.latestWatchedTimeMs,
-        );
-        item.addEventListener("click", () => {
-          this.emit("play", session.seasonId, session.episodeId);
-        });
-        contentContainer.val.append(item);
       }),
     );
+
+    response.sessions.forEach((session, i) => {
+      let summary = summaries[i];
+      if (!summary) {
+        return;
+      }
+
+      let createdDate = toDateISOString(
+        toDateWrtTimezone(new Date(session.createdTimeMs)),
+      );
+      let contentContainer = this.dateToContentContainer.get(createdDate);
+      if (!contentContainer) {
+        contentContainer = new Ref<HTMLDivElement>();
+        this.body.insertBefore(
+          eContinueEpisodeItemContainer(createdDate, contentContainer),
+          this.loadingSection.val.body,
+        );
+        this.dateToContentContainer.set(createdDate, contentContainer);
+      }
+      let item = eContinueEpisodeItem(
+        summary.season,
+        summary.episode,
+        session.latestWatchedTimeMs,
+      );
+      item.addEventListener("click", () => {
+        this.emit("play", session.seasonId, session.episodeId);
+      });
+      contentContainer.val.append(item);
+    });
     this.createdTimeCursor = response.createdTimeCursor;
     return Boolean(response.createdTimeCursor);
   }
