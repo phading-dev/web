@@ -86,7 +86,7 @@ export class MonthRangeInput extends EventEmitter {
     if (
       isNaN(startDate.valueOf()) ||
       isNaN(endDate.valueOf()) ||
-      startDate.valueOf() > endDate.valueOf() ||
+      startDate > endDate ||
       getMonthDifference(startDate, endDate) > MAX_MONTH_RANGE
     ) {
       this.emit("invalid");

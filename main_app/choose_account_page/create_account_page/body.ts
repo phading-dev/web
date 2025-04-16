@@ -82,7 +82,7 @@ export class CreateAccountPage extends EventEmitter {
           ),
         ).body,
       ],
-      [this.naturalNameInput.val, this.accountTypeInput.val],
+      [this.naturalNameInput.val],
       LOCALIZED_TEXT.createAccountButtonLabel,
     ).addBackButton();
 

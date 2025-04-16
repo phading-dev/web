@@ -145,7 +145,6 @@ export class SignUpPage extends EventEmitter {
         this.usernameInput.val,
         this.passwordInput.val,
         this.repeatPasswordInput.val,
-        this.accountTypeInput.val,
       ],
       LOCALIZED_TEXT.signUpButtonLabel,
     );

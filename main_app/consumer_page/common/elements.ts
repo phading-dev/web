@@ -14,6 +14,7 @@ import {
   AVATAR_M,
   FONT_M,
   FONT_WEIGHT_600,
+  ICON_L,
   ICON_M,
   LINE_HEIGHT_M,
 } from "../../../common/sizes";
@@ -96,12 +97,12 @@ export function eSeasonItem(
       E.div(
         {
           class: "season-item-rating-icon",
-          style: `width: ${ICON_M}rem; box-sizing: border-box; padding: .1rem;`,
+          style: `width: ${ICON_M}rem;`,
         },
         createStarIcon(SCHEME.star),
       ),
       E.div({
-        style: `flex: 0 0 .4rem;`,
+        style: `flex: 0 0 .5rem;`,
       }),
       E.div(
         {
@@ -113,7 +114,7 @@ export function eSeasonItem(
         ),
       ),
       E.div({
-        style: `flex: 1 0 0;`,
+        style: `flex: 1 0 .5rem;`,
       }),
       E.div(
         {
@@ -198,7 +199,7 @@ export function eContinueEpisodeItem(
         E.div(
           {
             class: "continue-episode-progress-icon",
-            style: `width: ${ICON_M}rem;`,
+            style: `width: ${ICON_L}rem;`,
           },
           createCircularProgressIcon(
             SCHEME.progress,

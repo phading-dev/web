@@ -1,7 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
 import { FONT_M, LINE_HEIGHT_M } from "../sizes";
-import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
@@ -66,10 +65,7 @@ export class OptionButton<ValueType> extends EventEmitter {
   }
 }
 
-export class RadioOptionInput<ValueType>
-  extends EventEmitter
-  implements InputField
-{
+export class RadioOptionInput<ValueType> extends EventEmitter {
   public static create<ValueType>(
     label: string,
     customStyle: string,
@@ -141,10 +137,6 @@ export class RadioOptionInput<ValueType>
 
   public get body() {
     return this.container;
-  }
-
-  public get isValid() {
-    return true;
   }
 
   public remove(): void {
