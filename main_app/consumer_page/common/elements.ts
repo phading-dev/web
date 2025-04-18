@@ -1,13 +1,15 @@
 import { AT_USER } from "../../../common/at_user";
 import { SCHEME } from "../../../common/color_scheme";
 import { formatShowPriceShortened } from "../../../common/formatter/price";
-import { formatRating, formatRatingsCount } from "../../../common/formatter/rating";
+import {
+  formatRating,
+  formatRatingsCount,
+} from "../../../common/formatter/rating";
 import { formatSecondsAsHHMMSS } from "../../../common/formatter/timestamp";
 import {
   createCircularProgressIcon,
   createStarIcon,
 } from "../../../common/icons";
-import { PAGE_PADDING_BOTTOM } from "../../../common/page_style";
 import {
   AVATAR_M,
   FONT_M,
@@ -17,9 +19,9 @@ import {
   LINE_HEIGHT_M,
 } from "../../../common/sizes";
 import {
-  EpisodeSummary,
+  Episode,
   SeasonSummary,
-} from "@phading/product_service_interface/show/web/consumer/summary";
+} from "@phading/product_service_interface/show/web/consumer/info";
 import { AccountDetails } from "@phading/user_service_interface/web/third_person/account";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -28,7 +30,7 @@ export function eFullPage(...elements: Array<HTMLElement>): HTMLDivElement {
   return E.div(
     {
       class: "full-page",
-      style: `width: 100%; min-height: 100%; background-color: ${SCHEME.neutral4}; padding: 1rem 1rem ${PAGE_PADDING_BOTTOM}rem 1rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+      style: `width: 100%; min-height: 100%; background-color: ${SCHEME.neutral4}; padding: 1rem 1rem 7rem 1rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; gap: 2rem;`,
     },
     ...elements,
   );
@@ -153,7 +155,7 @@ export function eContinueEpisodeItemContainer(
 
 export function eContinueEpisodeItem(
   season: SeasonSummary,
-  episode: EpisodeSummary,
+  episode: Episode,
   continueTimeMs: number,
   customStyle?: string,
 ): HTMLDivElement {

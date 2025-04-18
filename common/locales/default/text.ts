@@ -686,6 +686,9 @@ export default class Text {
   get usageReportSelectMonths() {
     return `Months`;
   }
+  get watchLaterTitle() {
+    return `Watch later`;
+  }
   get danmakuSettingsLabel() {
     return `Settings for scrolling comments`;
   }

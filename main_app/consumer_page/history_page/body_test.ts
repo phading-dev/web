@@ -19,8 +19,8 @@ import {
   ListWatchSessionsResponse,
 } from "@phading/play_activity_service_interface/show/web/interface";
 import {
-  GET_SEASON_AND_EPISODE_SUMMARY,
-  GetSeasonAndEpisodeSummaryResponse,
+  GET_EPISODE_WITH_SEASON_SUMMARY,
+  GetEpisodeWithSeasonSummaryResponse,
 } from "@phading/product_service_interface/show/web/consumer/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { mouseClick } from "@selfage/puppeteer_test_executor_api";
@@ -57,7 +57,7 @@ TEST_RUNNER.run({
               case LIST_WATCH_SESSIONS:
                 this.request = request;
                 return this.response;
-              case GET_SEASON_AND_EPISODE_SUMMARY:
+              case GET_EPISODE_WITH_SEASON_SUMMARY:
                 if (request.body.seasonId === "season1") {
                   if (request.body.episodeId === "episode1") {
                     return {
@@ -76,7 +76,7 @@ TEST_RUNNER.run({
                           videoDurationSec: 3700,
                         },
                       },
-                    } as GetSeasonAndEpisodeSummaryResponse;
+                    } as GetEpisodeWithSeasonSummaryResponse;
                   } else if (request.body.episodeId === "episode2") {
                     return {
                       summary: {
@@ -94,7 +94,7 @@ TEST_RUNNER.run({
                           videoDurationSec: 3890,
                         },
                       },
-                    } as GetSeasonAndEpisodeSummaryResponse;
+                    } as GetEpisodeWithSeasonSummaryResponse;
                   } else {
                     throw new Error(
                       `${request.body.seasonId} ${request.body.episodeId} Not found`,
@@ -118,7 +118,7 @@ TEST_RUNNER.run({
                           videoDurationSec: 2700,
                         },
                       },
-                    } as GetSeasonAndEpisodeSummaryResponse;
+                    } as GetEpisodeWithSeasonSummaryResponse;
                   } else if (request.body.episodeId === "episode2") {
                     return {
                       summary: {
@@ -136,7 +136,7 @@ TEST_RUNNER.run({
                           videoDurationSec: 2700,
                         },
                       },
-                    } as GetSeasonAndEpisodeSummaryResponse;
+                    } as GetEpisodeWithSeasonSummaryResponse;
                   } else {
                     throw new Error(
                       `${request.body.seasonId} ${request.body.episodeId} Not found`,

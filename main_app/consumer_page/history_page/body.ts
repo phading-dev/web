@@ -14,8 +14,8 @@ import { newListMeterReadingsPerMonthRequest } from "@phading/meter_service_inte
 import { newListWatchSessionsRequest } from "@phading/play_activity_service_interface/show/web/client";
 import { ProductID } from "@phading/price";
 import { calculateMoney } from "@phading/price_config/calculator";
-import { newGetSeasonAndEpisodeSummaryRequest } from "@phading/product_service_interface/show/web/consumer/client";
-import { SeasonAndEpisodeSummary } from "@phading/product_service_interface/show/web/consumer/summary";
+import { newGetEpisodeWithSeasonSummaryRequest } from "@phading/product_service_interface/show/web/consumer/client";
+import { SeasonSummaryAndEpisode } from "@phading/product_service_interface/show/web/consumer/info";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { TzDate } from "@selfage/tz_date";
@@ -139,15 +139,14 @@ export class HistoryPage extends EventEmitter {
         createdTimeCursor: this.createdTimeCursor,
       }),
     );
-    // console.log(JSON.stringify(response));
-    let summaries = new Array<SeasonAndEpisodeSummary>(
+    let summaries = new Array<SeasonSummaryAndEpisode>(
       response.sessions.length,
     );
     await Promise.all(
       response.sessions.map(async (session, i) => {
         try {
           let summaryResponse = await this.serviceClient.send(
-            newGetSeasonAndEpisodeSummaryRequest({
+            newGetEpisodeWithSeasonSummaryRequest({
               seasonId: session.seasonId,
               episodeId: session.episodeId,
             }),
