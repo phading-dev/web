@@ -671,6 +671,21 @@ export default class Text {
   get watchHistoryTitle() {
     return `Watch history`;
   }
+  get usageReportTitle() {
+    return `Usage report`;
+  }
+  get usageReportSelectOneDayLabel() {
+    return `One day`;
+  }
+  get usageReportSelectDaysLabel() {
+    return `Days`;
+  }
+  get usageReportSelectOneMonthLabel() {
+    return `One month`;
+  }
+  get usageReportSelectMonths() {
+    return `Months`;
+  }
   get danmakuSettingsLabel() {
     return `Settings for scrolling comments`;
   }

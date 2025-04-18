@@ -1,15 +1,13 @@
 import EventEmitter = require("events");
 import { InputFormPage } from "../../../common/input_form_page/body";
-import {
-  OptionButton,
-  RadioOptionInput,
-} from "../../../common/input_form_page/option_input";
+import { RadioOptionInput } from "../../../common/input_form_page/option_input";
 import {
   TextInputWithErrorMsg,
   ValidationResult,
 } from "../../../common/input_form_page/text_input";
 import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import { OptionPill } from "../../../common/option_pills";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { MAX_NATURAL_NAME_LENGTH } from "@phading/constants/account";
 import { AccountType } from "@phading/user_service_interface/account_type";
@@ -64,12 +62,11 @@ export class CreateAccountPage extends EventEmitter {
             LOCALIZED_TEXT.chooseUserTypeLabel,
             "",
             [
-              OptionButton.create(
+              OptionPill.create(
                 LOCALIZED_TEXT.userTypeConsumerLabel,
                 AccountType.CONSUMER,
-                "",
               ),
-              OptionButton.create(
+              OptionPill.create(
                 LOCALIZED_TEXT.userTypePublisherLabel,
                 AccountType.PUBLISHER,
                 "",

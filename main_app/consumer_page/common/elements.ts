@@ -1,15 +1,13 @@
 import { AT_USER } from "../../../common/at_user";
 import { SCHEME } from "../../../common/color_scheme";
 import { formatShowPriceShortened } from "../../../common/formatter/price";
-import {
-  RATINGS_COUNT_FORMATTER,
-  RATING_FORMATTER,
-} from "../../../common/formatter/rating";
+import { formatRating, formatRatingsCount } from "../../../common/formatter/rating";
 import { formatSecondsAsHHMMSS } from "../../../common/formatter/timestamp";
 import {
   createCircularProgressIcon,
   createStarIcon,
 } from "../../../common/icons";
+import { PAGE_PADDING_BOTTOM } from "../../../common/page_style";
 import {
   AVATAR_M,
   FONT_M,
@@ -30,7 +28,7 @@ export function eFullPage(...elements: Array<HTMLElement>): HTMLDivElement {
   return E.div(
     {
       class: "full-page",
-      style: `width: 100%; min-height: 100%; background-color: ${SCHEME.neutral4}; padding: 1rem 1rem 7rem 1rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+      style: `width: 100%; min-height: 100%; background-color: ${SCHEME.neutral4}; padding: 1rem 1rem ${PAGE_PADDING_BOTTOM}rem 1rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; gap: 2rem;`,
     },
     ...elements,
   );
@@ -63,6 +61,7 @@ export function eSeasonItemContainer(
 
 export function eSeasonItem(
   season: SeasonSummary,
+  date: string,
   customStyle?: string,
 ): HTMLDivElement {
   return E.div(
@@ -110,7 +109,7 @@ export function eSeasonItem(
           style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(
-          `${RATING_FORMATTER.format(season.averageRating)} (${RATINGS_COUNT_FORMATTER.format(season.ratingsCount)})`,
+          `${formatRating(season.averageRating)} (${formatRatingsCount(season.ratingsCount)})`,
         ),
       ),
       E.div({
@@ -121,7 +120,7 @@ export function eSeasonItem(
           class: "season-item-price",
           style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
-        E.text(formatShowPriceShortened(season.grade)),
+        E.text(formatShowPriceShortened(season.grade, date)),
       ),
     ),
   );

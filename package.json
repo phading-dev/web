@@ -46,8 +46,8 @@
     "@phading/constants": "^0.3.7",
     "@phading/meter_service_interface": "^1.0.0",
     "@phading/play_activity_service_interface": "^1.0.5",
-    "@phading/price_config": "^0.3.4",
-    "@phading/product_service_interface": "^1.0.13",
+    "@phading/price_config": "^0.7.0",
+    "@phading/product_service_interface": "^1.0.15",
     "@phading/user_service_interface": "^1.2.4",
     "@phading/user_session_service_interface": "^1.1.0",
     "@phading/web_interface": "^1.0.3",
@@ -59,6 +59,7 @@
     "@selfage/once": "^1.1.1",
     "@selfage/ref": "^1.0.4",
     "@selfage/tabs": "^3.0.1",
+    "@selfage/tz_date": "^1.0.1",
     "@selfage/web_service_client": "^3.3.2",
     "lru-cache": "^11.1.0"
   }

@@ -54,7 +54,7 @@ TEST_RUNNER.run({
         this.cut.passwordInput.val.dispatchInput();
         this.cut.repeatPasswordInput.val.value = "123123";
         this.cut.repeatPasswordInput.val.dispatchInput();
-        this.cut.accountTypeInput.val.optionButtons[1].select();
+        this.cut.accountTypeInput.val.radioOptionPills.val.pills[1].click();
 
         // Verify
         await asyncAssertScreenshot(

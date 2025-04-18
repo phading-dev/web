@@ -317,5 +317,51 @@ TEST_RUNNER.run({
         this.cut.remove();
       }
     })(),
+    new (class implements TestCase {
+      public name = "TabletView_NoEstimatedCharge_NoHistory";
+      private cut: HistoryPage;
+      public async execute() {
+        // Prepare
+        await setTabletView();
+        let serviceClientMock = new (class extends WebServiceClientMock {
+          public async send(
+            request: ClientRequestInterface<any>,
+          ): Promise<any> {
+            switch (request.descriptor) {
+              case LIST_METER_READINGS_PER_MONTH:
+                return {
+                  readings: [],
+                } as ListMeterReadingsPerMonthResponse;
+              case LIST_WATCH_SESSIONS:
+                this.request = request;
+                return this.response;
+              default:
+                throw new Error(`Unexpected`);
+            }
+          }
+        })();
+        serviceClientMock.response = {
+          sessions: [],
+        } as ListWatchSessionsResponse;
+        this.cut = new HistoryPage(
+          serviceClientMock,
+          () => new Date("2023-10-11"),
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/history_page_tablet_nothing.png"),
+          path.join(__dirname, "/golden/history_page_tablet_nothing.png"),
+          path.join(__dirname, "/history_page_tablet_nothing_diff.png"),
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
   ],
 });

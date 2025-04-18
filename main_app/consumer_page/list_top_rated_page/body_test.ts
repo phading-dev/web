@@ -120,7 +120,10 @@ TEST_RUNNER.run({
           ratingCursor: 4,
           createdTimeCursor: 1000,
         } as ListSeasonsByRatingResponse;
-        this.cut = new ListTopRatedPage(serviceClientMock);
+        this.cut = new ListTopRatedPage(
+          serviceClientMock,
+          () => new Date("2024-01-01"),
+        );
 
         // Execute
         document.body.append(this.cut.body);

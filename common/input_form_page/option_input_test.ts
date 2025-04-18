@@ -1,6 +1,9 @@
 import "../normalize_body";
 import path = require("path");
-import { OptionButton, RadioOptionInput } from "./option_input";
+import { SCHEME } from "../color_scheme";
+import { OptionPill } from "../option_pills";
+import { RadioOptionInput } from "./option_input";
+import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -15,23 +18,29 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name = "Default_ChooseSecondOption";
-      private cut: RadioOptionInput<ValueType>;
+      private container: HTMLDivElement;
       public async execute() {
         // Execute
+        this.container = E.div({
+          style: `width: 100%; background-color: ${SCHEME.neutral4};`,
+        });
+        document.body.append(this.container);
+
+        // Execute
         let selectedValue: ValueType;
-        this.cut = new RadioOptionInput(
+        let cut = new RadioOptionInput(
           "Choose",
           "",
           [
-            new OptionButton("Walk", ValueType.WALK, ""),
-            new OptionButton("Run", ValueType.RUN, ""),
+            new OptionPill("Walk", ValueType.WALK),
+            new OptionPill("Run", ValueType.RUN),
           ],
           ValueType.WALK,
           (value) => {
             selectedValue = value;
           },
         );
-        document.body.append(this.cut.body);
+        this.container.append(cut.body);
 
         // Verify
         assertThat(selectedValue, eq(ValueType.WALK), "selected value");
@@ -43,7 +52,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.optionButtons[1].click();
+        cut.radioOptionPills.val.pills[1].click();
 
         // Verify
         assertThat(selectedValue, eq(ValueType.RUN), "selected value 2");
@@ -55,7 +64,7 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        this.cut.remove();
+        this.container.remove();
       }
     })(),
   ],

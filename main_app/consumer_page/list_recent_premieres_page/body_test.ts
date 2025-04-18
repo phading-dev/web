@@ -121,7 +121,10 @@ TEST_RUNNER.run({
           premiereTimeCursor: 2000,
           createdTimeCursor: 1000,
         } as ListSeasonsByRecentPremiereTimeResponse;
-        this.cut = new ListRecentPremieresPage(serviceClientMock);
+        this.cut = new ListRecentPremieresPage(
+          serviceClientMock,
+          () => new Date("2024-01-01"),
+        );
 
         // Execute
         document.body.append(this.cut.body);

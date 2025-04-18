@@ -1,15 +1,13 @@
 import EventEmitter = require("events");
-import {
-  OptionButton,
-  RadioOptionInput,
-} from "../../common/input_form_page//option_input";
 import { InputFormPage } from "../../common/input_form_page/body";
+import { RadioOptionInput } from "../../common/input_form_page/option_input";
 import {
   TextInputWithErrorMsg,
   ValidationResult,
 } from "../../common/input_form_page/text_input";
 import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
+import { OptionPill } from "../../common/option_pills";
 import { SERVICE_CLIENT } from "../../common/web_service_client";
 import { SWITCH_TEXT_STYLE } from "./styles";
 import {
@@ -114,12 +112,12 @@ export class SignUpPage extends EventEmitter {
             LOCALIZED_TEXT.chooseUserTypeLabel,
             "",
             [
-              OptionButton.create(
+              OptionPill.create(
                 LOCALIZED_TEXT.userTypeConsumerLabel,
                 AccountType.CONSUMER,
                 "",
               ),
-              OptionButton.create(
+              OptionPill.create(
                 LOCALIZED_TEXT.userTypePublisherLabel,
                 AccountType.PUBLISHER,
                 "",
@@ -202,7 +200,11 @@ export class SignUpPage extends EventEmitter {
   }
 
   private validateRepeatPasswordInput(value: string): ValidationResult {
-    if (!this.request.password || this.request.password.length === 0 || value.length === 0) {
+    if (
+      !this.request.password ||
+      this.request.password.length === 0 ||
+      value.length === 0
+    ) {
       return {
         valid: false,
       };

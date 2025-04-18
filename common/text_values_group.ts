@@ -22,7 +22,7 @@ export class TextValuesGroup extends EventEmitter {
     return new TextValuesGroup(textValues, editable, customeStyle);
   }
 
-  private body_: HTMLDivElement;
+  public body: HTMLDivElement;
 
   public constructor(
     textValues: Array<TextValue>,
@@ -30,7 +30,7 @@ export class TextValuesGroup extends EventEmitter {
     customeStyle: string,
   ) {
     super();
-    this.body_ = E.div(
+    this.body = E.div(
       {
         class: "text-values-group",
         style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 2rem; border: .1rem solid ${SCHEME.neutral1}; border-radius: .5rem; padding: 2rem; ${editable ? "cursor: pointer" : ""}; ${customeStyle}`,
@@ -52,7 +52,7 @@ export class TextValuesGroup extends EventEmitter {
     );
 
     if (editable) {
-      this.body_.addEventListener("click", () => this.emit("action"));
+      this.body.addEventListener("click", () => this.emit("action"));
     }
   }
 
@@ -91,16 +91,11 @@ export class TextValuesGroup extends EventEmitter {
     return elements;
   }
 
-  public get body() {
-    return this.body_;
-  }
-
   public remove(): void {
-    this.body_.remove();
+    this.body.remove();
   }
 
-  // Visible for testing
   public click(): void {
-    this.body_.click();
+    this.body.click();
   }
 }

@@ -75,7 +75,10 @@ TEST_RUNNER.run({
             }
           }
         })();
-        this.cut = new MultiSectionPage(serviceClientMock);
+        this.cut = new MultiSectionPage(
+          serviceClientMock,
+          () => new Date("2024-01-01"),
+        );
 
         // Execute
         document.body.appendChild(this.cut.body);
@@ -255,7 +258,10 @@ TEST_RUNNER.run({
             }
           }
         })();
-        this.cut = new MultiSectionPage(serviceClientMock);
+        this.cut = new MultiSectionPage(
+          serviceClientMock,
+          () => new Date("2024-01-01"),
+        );
 
         // Execute
         document.body.appendChild(this.cut.body);
@@ -365,7 +371,10 @@ TEST_RUNNER.run({
             }
           }
         })();
-        this.cut = new MultiSectionPage(serviceClientMock);
+        this.cut = new MultiSectionPage(
+          serviceClientMock,
+          () => new Date("2024-01-01"),
+        );
 
         // Execute
         document.body.appendChild(this.cut.body);
@@ -423,7 +432,10 @@ TEST_RUNNER.run({
             }
           }
         })();
-        this.cut = new MultiSectionPage(serviceClientMock);
+        this.cut = new MultiSectionPage(
+          serviceClientMock,
+          () => new Date("2024-01-01"),
+        );
         document.body.appendChild(this.cut.body);
         await new Promise<void>((resolve) =>
           this.cut.once("loaded", () => resolve()),

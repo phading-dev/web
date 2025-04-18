@@ -1,8 +1,8 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
+import { BASIC_INPUT_STYLE } from "../input_styles";
 import { FONT_M, FONT_S } from "../sizes";
 import { InputField } from "./input_field";
-import { BASIC_INPUT_STYLE } from "./text_input";
 import { E, ElementAttributeMap } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 

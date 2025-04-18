@@ -1,9 +1,9 @@
 import "../../../common/normalize_body";
 import path = require("path");
+import { setTabletView } from "../../../common/view_port";
 import { AddCardPaymentItem, CardPaymentItem } from "./card_payment_item";
 import { CardBrand } from "@phading/commerce_service_interface/web/payment/payment_method_masked";
 import { E } from "@selfage/element/factory";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 
@@ -18,7 +18,7 @@ class CardBrandTestCase implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    await setViewport(600, 300);
+    await setTabletView();
     this.container = E.div({
       style: `background-color: black;`,
     });
@@ -115,7 +115,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await setViewport(600, 300);
+        await setTabletView();
         this.container = E.div({
           style: `background-color: black;`,
         });
@@ -152,7 +152,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
-        await setViewport(600, 300);
+        await setTabletView();
         this.container = E.div({
           style: `background-color: black;`,
         });

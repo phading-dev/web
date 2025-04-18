@@ -120,7 +120,11 @@ TEST_RUNNER.run({
           scoreCursor: 0.58,
           createdTimeCursor: 1000,
         } as SearchSeasonsResponse;
-        this.cut = new SearchSeasonsPage(serviceClientMock, "some query");
+        this.cut = new SearchSeasonsPage(
+          serviceClientMock,
+          () => new Date("2024-01-01"),
+          "some query",
+        );
 
         // Execute
         document.body.append(this.cut.body);

@@ -52,7 +52,7 @@ TEST_RUNNER.run({
           serviceClientMock.request.body,
           eqMessage(
             {
-              startMonth: "2025-03",
+              startMonth: "2024-10",
               endMonth: "2025-03",
             },
             LIST_TRANSACTION_STATEMENTS_REQUEST_BODY,
@@ -72,8 +72,8 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.monthRangeInput.val.startMonthInput.val.value = "2025-04";
-        this.cut.monthRangeInput.val.startMonthInput.val.dispatchEvent(
+        this.cut.monthRangeInput.val.startRangeInput.val.value = "2025-04";
+        this.cut.monthRangeInput.val.startRangeInput.val.dispatchEvent(
           new Event("input"),
         );
 
@@ -134,8 +134,8 @@ TEST_RUNNER.run({
         } as ListTransactionStatementsResponse;
 
         // Execute
-        this.cut.monthRangeInput.val.endMonthInput.val.value = "2026-04";
-        this.cut.monthRangeInput.val.endMonthInput.val.dispatchEvent(
+        this.cut.monthRangeInput.val.endRangeInput.val.value = "2026-04";
+        this.cut.monthRangeInput.val.endRangeInput.val.dispatchEvent(
           new Event("input"),
         );
         await new Promise((resolve) => this.cut.once("listed", resolve));
@@ -165,7 +165,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.statementLines[0].dispatchEvent(new Event("click"));
+        this.cut.statementLines[1].click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -181,7 +181,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.statementLines[0].dispatchEvent(new Event("click"));
+        this.cut.statementLines[1].click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -279,7 +279,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.statementLines[1].dispatchEvent(new Event("click"));
+        this.cut.statementLines[0].click();
 
         // Verify
         await asyncAssertScreenshot(

@@ -1,50 +1,36 @@
 import { ENV_VARS } from "../../env_vars";
+import { LOCALIZED_TEXT } from "../locales/localized_text";
 import { ProductID } from "@phading/price";
 import { resolvePrice } from "@phading/price_config";
-import { CURRENCY_TO_CENTS } from "@phading/price_config/amount_conversion";
-import { LOCALIZED_TEXT } from "../locales/localized_text";
+import { getDollarAmount } from "@phading/price_config/amount_conversion";
 
-let CURRENCY_FORMATTER = new Intl.NumberFormat([navigator.language], {
-  style: "currency",
-  currency: ENV_VARS.defaultCurrency,
-});
-
-let DOLLAR_TO_CENTS = CURRENCY_TO_CENTS.get(ENV_VARS.defaultCurrency);
-
-let SHOW_PRICE = resolvePrice(
-  ProductID.SHOW,
-  ENV_VARS.defaultCurrency,
-  "2020-01-01", // This price is supposed to be constant.
-);
-
-export function formatShowPriceShortened(showGrade: number): string {
-  return `${LOCALIZED_TEXT.pricingRateShortened[0]}${CURRENCY_FORMATTER.format(
-    (showGrade * SHOW_PRICE.amount * 3600 / SHOW_PRICE.divideBy) / DOLLAR_TO_CENTS,
-  )}${LOCALIZED_TEXT.pricingRateShortened[1]}`;
+export function formatMoney(centAmount: number, currency: string): string {
+  let formatter = new Intl.NumberFormat([navigator.language], {
+    style: "currency",
+    currency,
+  });
+  return formatter.format(getDollarAmount(centAmount, currency));
 }
 
-export function formatShowPrice(showGrade: number): string {
-  return `${LOCALIZED_TEXT.pricingRate[0]}${CURRENCY_FORMATTER.format(
-    (showGrade * SHOW_PRICE.amount * 3600 / SHOW_PRICE.divideBy) / DOLLAR_TO_CENTS,
-  )}${LOCALIZED_TEXT.pricingRate[1]}`;
+export function formatShowPriceShortened(
+  showGrade: number,
+  date: string,
+): string {
+  let price = resolvePrice(ProductID.SHOW, ENV_VARS.defaultCurrency, date);
+  if (price.unit !== "seconds") {
+    throw new Error(
+      `Price for product ${ProductID.SHOW} is not in seconds, but in ${price.unit}`,
+    );
+  }
+  return `${LOCALIZED_TEXT.pricingRateShortened[0]}${formatMoney((showGrade * price.amount * 3600) / price.divideBy, price.currency)}${LOCALIZED_TEXT.pricingRateShortened[1]}`;
 }
 
-function assertAssumption() {
-  if (SHOW_PRICE === undefined) {
+export function formatShowPrice(showGrade: number, date: string): string {
+  let price = resolvePrice(ProductID.SHOW, ENV_VARS.defaultCurrency, date);
+  if (price.unit !== "seconds") {
     throw new Error(
-      `Price for product ${ProductID.SHOW} not found in currency ${ENV_VARS.defaultCurrency}`,
+      `Price for product ${ProductID.SHOW} is not in seconds, but in ${price.unit}`,
     );
   }
-  if (SHOW_PRICE.unit !== "seconds") {
-    throw new Error(
-      `Price for product ${ProductID.SHOW} is not in seconds, but in ${SHOW_PRICE.unit}`,
-    );
-  }
-  if (DOLLAR_TO_CENTS === undefined) {
-    throw new Error(
-      `Dollar to cents conversion for currency ${ENV_VARS.defaultCurrency} not found`,
-    );
-  }
+  return `${LOCALIZED_TEXT.pricingRate[0]}${formatMoney((showGrade * price.amount * 3600) / price.divideBy, price.currency)}${LOCALIZED_TEXT.pricingRate[1]}`;
 }
-
-assertAssumption();

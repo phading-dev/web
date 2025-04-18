@@ -1,22 +1,30 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../common/color_scheme";
-import { getLastMonth, toDateWrtTimezone } from "../../../common/date_helper";
+import { DateRangeInput, DateType } from "../../../common/date_range_input";
+import { formatMoney } from "../../../common/formatter/price";
+import { formatQuantity } from "../../../common/formatter/quantity";
 import { createArrowIcon, createCornerIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
   PAGE_BACKGROUND_STYLE,
   PAGE_MEDIUM_CARD_STYLE,
 } from "../../../common/page_style";
-import { FONT_M, FONT_WEIGHT_600, ICON_S, ICON_XS } from "../../../common/sizes";
+import {
+  FONT_M,
+  FONT_WEIGHT_600,
+  ICON_S,
+  ICON_XS,
+} from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import { MonthRangeInput } from "../common/month_range_input";
+import { ENV_VARS } from "../../../env_vars";
 import { newListTransactionStatementsRequest } from "@phading/commerce_service_interface/web/statements/client";
 import { TransactionStatement } from "@phading/commerce_service_interface/web/statements/transaction_statement";
+import { MAX_MONTH_RANGE } from "@phading/constants/commerce";
 import { ProductID } from "@phading/price";
 import { AmountType } from "@phading/price/amount_type";
-import { CURRENCY_TO_CENTS } from "@phading/price_config/amount_conversion";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
+import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface StatementsPage {
@@ -28,8 +36,10 @@ export class StatementsPage extends EventEmitter {
     return new StatementsPage(SERVICE_CLIENT, () => new Date(), canEarn);
   }
 
+  private static INIT_MONTHS = 5;
+
   public body: HTMLDivElement;
-  public monthRangeInput = new Ref<MonthRangeInput>();
+  public monthRangeInput = new Ref<DateRangeInput>();
   public statementsList = new Ref<HTMLDivElement>();
   public statementLines = new Array<HTMLDivElement>();
   private listRequestIndex = 0;
@@ -44,9 +54,12 @@ export class StatementsPage extends EventEmitter {
     this.positiveAmountType = this.canEarn
       ? AmountType.CREDIT
       : AmountType.DEBIT;
-    let nowDate = this.getNowDate();
-    let startMonth = getLastMonth(toDateWrtTimezone(nowDate));
-    let endMonth = startMonth;
+    let nowDate = TzDate.fromDate(
+      this.getNowDate(),
+      ENV_VARS.timezoneNegativeOffset,
+    );
+    let endMonth = nowDate.clone().moveToFirstDayOfMonth().addMonths(-1);
+    let startMonth = endMonth.clone().addMonths(-StatementsPage.INIT_MONTHS);
     this.body = E.div(
       {
         class: "statements-page",
@@ -73,7 +86,11 @@ export class StatementsPage extends EventEmitter {
         }),
         assign(
           this.monthRangeInput,
-          MonthRangeInput.create(startMonth, endMonth),
+          DateRangeInput.create(
+            DateType.MONTH,
+            MAX_MONTH_RANGE,
+            `width: 100%;`,
+          ).show(),
         ).body,
         E.div({
           style: `height: 1.5rem;`,
@@ -83,6 +100,10 @@ export class StatementsPage extends EventEmitter {
           style: `display: flex; flex-flow: column nowrap; width: 100%; gap: 1rem;`,
         }),
       ),
+    );
+    this.monthRangeInput.val.setValues(
+      startMonth.toLocalMonthISOString(),
+      endMonth.toLocalMonthISOString(),
     );
     this.listStatements();
 
@@ -109,11 +130,11 @@ export class StatementsPage extends EventEmitter {
   private async listStatements(): Promise<void> {
     this.listRequestIndex++;
     let currentIndex = this.listRequestIndex;
-    let { startMonth, endMonth } = this.monthRangeInput.val.getValues();
+    let { startRange, endRange } = this.monthRangeInput.val.getValues();
     let response = await this.serviceClient.send(
       newListTransactionStatementsRequest({
-        startMonth,
-        endMonth,
+        startMonth: startRange,
+        endMonth: endRange,
       }),
     );
     if (currentIndex !== this.listRequestIndex) {
@@ -134,34 +155,27 @@ export class StatementsPage extends EventEmitter {
         ),
       );
     } else {
+      response.statements.sort((a, b) => {
+        if (a.month < b.month) {
+          return -1;
+        } else if (a.month > b.month) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
       for (let statement of response.statements) {
-        this.statementsList.val.append(...this.createStatementLine(statement));
+        this.createStatementLine(statement);
       }
     }
     this.emit("listed");
   }
 
-  private createStatementLine(
-    statement: TransactionStatement,
-  ): Array<HTMLDivElement> {
-    let numberFormatter = new Intl.NumberFormat([navigator.language, "en-US"], {
-      style: "decimal",
-    });
-    let currencyFormatter = new Intl.NumberFormat(
-      [navigator.language, "en-US"],
-      {
-        style: "currency",
-        currency: statement.currency,
-      },
-    );
-    let totalAmount = currencyFormatter.format(
-      (statement.totalAmount / CURRENCY_TO_CENTS.get(statement.currency)) *
-        (statement.totalAmountType === this.positiveAmountType ? 1 : -1),
-    );
+  private createStatementLine(statement: TransactionStatement): void {
     let statementLine = new Ref<HTMLDivElement>();
     let expandIcon = new Ref<HTMLDivElement>();
     let lineItemList = new Ref<HTMLDivElement>();
-    let elements = [
+    this.statementsList.val.append(
       E.div(
         {
           class: "statements-page-statement-item-container",
@@ -193,7 +207,15 @@ export class StatementsPage extends EventEmitter {
               class: "statements-page-amount",
               style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 1 0 auto; text-align: end;`,
             },
-            E.text(totalAmount),
+            E.text(
+              formatMoney(
+                statement.totalAmount *
+                  (statement.totalAmountType === this.positiveAmountType
+                    ? 1
+                    : -1),
+                statement.currency,
+              ),
+            ),
           ),
         ),
         E.divRef(
@@ -203,10 +225,6 @@ export class StatementsPage extends EventEmitter {
             style: `padding: 1rem 1rem 0 2rem; width: 100%; box-sizing: border-box; flex-flow: column nowrap; gap: 1rem; transition: height .2s; overflow: hidden;`,
           },
           ...statement.items.map((item) => {
-            let amount = currencyFormatter.format(
-              (item.amount / CURRENCY_TO_CENTS.get(statement.currency)) *
-                (item.amountType === this.positiveAmountType ? 1 : -1),
-            );
             return E.div(
               {
                 class: "statements-page-line-item",
@@ -231,20 +249,26 @@ export class StatementsPage extends EventEmitter {
                   class: "statements-page-line-item-quantity",
                   style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 3 0 auto; text-align: end;`,
                 },
-                E.text(`${numberFormatter.format(item.quantity)} ${item.unit}`),
+                E.text(formatQuantity(item.quantity, item.unit)),
               ),
               E.div(
                 {
                   class: "statements-page-line-item-amount",
                   style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 1 0 auto; text-align: end;`,
                 },
-                E.text(amount),
+                E.text(
+                  formatMoney(
+                    item.amount *
+                      (item.amountType === this.positiveAmountType ? 1 : -1),
+                    statement.currency,
+                  ),
+                ),
               ),
             );
           }),
         ),
       ),
-    ];
+    );
     this.statementLines.push(statementLine.val);
     this.hideLineItemList(expandIcon.val, lineItemList.val);
 
@@ -258,7 +282,6 @@ export class StatementsPage extends EventEmitter {
     lineItemList.val.addEventListener("transitionend", () => {
       lineItemList.val.style.height = `auto`;
     });
-    return elements;
   }
 
   private showLineItemList(

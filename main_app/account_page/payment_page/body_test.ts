@@ -1,3 +1,4 @@
+import "../../../dev/env";
 import "../../../common/normalize_body";
 import path = require("path");
 import {
@@ -55,11 +56,10 @@ TEST_RUNNER.run({
         serviceClientMock.response = {
           payments: [],
         } as ListPaymentsResponse;
-        // 2025-04-05T08:xx:xx.000Z
         this.cut = new PaymentPage(
           serviceClientMock,
           {} as any,
-          () => new Date(1743867646000),
+          () => new Date("2025-04-05T08:00:00.000Z"),
         );
 
         // Execute
@@ -71,7 +71,7 @@ TEST_RUNNER.run({
           serviceClientMock.request.body,
           eqMessage(
             {
-              startMonth: "2025-03",
+              startMonth: "2024-10",
               endMonth: "2025-03",
             },
             LIST_PAYMENTS_REQUEST_BODY,
@@ -91,8 +91,8 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.monthRangeInput.val.startMonthInput.val.value = "2025-04";
-        this.cut.monthRangeInput.val.startMonthInput.val.dispatchEvent(
+        this.cut.monthRangeInput.val.startRangeInput.val.value = "2025-04";
+        this.cut.monthRangeInput.val.startRangeInput.val.dispatchEvent(
           new Event("input"),
         );
 
@@ -107,28 +107,28 @@ TEST_RUNNER.run({
         serviceClientMock.response = {
           payments: [
             {
-              month: "2026-12",
-              currency: "USD",
-              amount: 1330,
-              state: PaymentState.PAID,
-            },
-            {
               month: "2026-06",
               currency: "USD",
               amount: 13300,
               state: PaymentState.FAILED,
             },
             {
-              month: "2026-01",
+              month: "2026-12",
               currency: "USD",
-              amount: 10000,
-              state: PaymentState.PROCESSING,
+              amount: 1330,
+              state: PaymentState.PAID,
             },
             {
               month: "2025-06",
               currency: "USD",
               amount: 10,
               state: PaymentState.PAID,
+            },
+            {
+              month: "2026-01",
+              currency: "USD",
+              amount: 10000,
+              state: PaymentState.PROCESSING,
             },
             {
               month: "2025-05",
@@ -140,8 +140,8 @@ TEST_RUNNER.run({
         } as ListPaymentsResponse;
 
         // Execute
-        this.cut.monthRangeInput.val.endMonthInput.val.value = "2026-12";
-        this.cut.monthRangeInput.val.endMonthInput.val.dispatchEvent(
+        this.cut.monthRangeInput.val.endRangeInput.val.value = "2026-12";
+        this.cut.monthRangeInput.val.endRangeInput.val.dispatchEvent(
           new Event("input"),
         );
         await new Promise((resolve) => this.cut.once("listed", resolve));

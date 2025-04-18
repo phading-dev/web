@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../common/color_scheme";
-import { getLastMonth, toDateWrtTimezone } from "../../../common/date_helper";
+import { DateRangeInput, DateType } from "../../../common/date_range_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
   PAGE_BACKGROUND_STYLE,
@@ -8,17 +8,19 @@ import {
 } from "../../../common/page_style";
 import { FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import { MonthRangeInput } from "../common/month_range_input";
 import {
   newGetPayoutProfileInfoRequest,
   newListPayoutsRequest,
 } from "@phading/commerce_service_interface/web/payout/client";
 import { LinkType } from "@phading/commerce_service_interface/web/payout/interface";
 import { PayoutState } from "@phading/commerce_service_interface/web/payout/payout";
-import { CURRENCY_TO_CENTS } from "@phading/price_config/amount_conversion";
+import { MAX_MONTH_RANGE } from "@phading/constants/commerce";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
+import { TzDate } from "@selfage/tz_date";
+import { ENV_VARS } from "../../../env_vars";
+import { formatMoney } from "../../../common/formatter/price";
 
 export interface PayoutPage {
   on(event: "listed", listener: () => void): this;
@@ -29,8 +31,10 @@ export class PayoutPage extends EventEmitter {
     return new PayoutPage(SERVICE_CLIENT, () => new Date());
   }
 
+  private static INIT_MONTHS = 5
+
   public body: HTMLDivElement;
-  public monthRangeInput = new Ref<MonthRangeInput>();
+  public monthRangeInput = new Ref<DateRangeInput>();
   public payoutActivityList = new Ref<HTMLDivElement>();
   private listRequestIndex = 0;
 
@@ -50,9 +54,9 @@ export class PayoutPage extends EventEmitter {
     let response = await this.serviceClient.send(
       newGetPayoutProfileInfoRequest({}),
     );
-    let nowDate = this.getNowDate();
-    let startMonth = getLastMonth(toDateWrtTimezone(nowDate));
-    let endMonth = startMonth;
+    let nowDate = TzDate.fromDate(this.getNowDate(), ENV_VARS.timezoneNegativeOffset);
+    let endMonth = nowDate.clone().moveToFirstDayOfMonth().addMonths(-1);
+    let startMonth = endMonth.clone().addMonths(-PayoutPage.INIT_MONTHS);
     this.body.appendChild(
       E.div(
         {
@@ -94,7 +98,11 @@ export class PayoutPage extends EventEmitter {
         }),
         assign(
           this.monthRangeInput,
-          MonthRangeInput.create(startMonth, endMonth),
+          DateRangeInput.create(
+            DateType.MONTH,
+            MAX_MONTH_RANGE,
+            `width: 100%;`,
+          ).show(),
         ).body,
         E.div({
           style: `height: 1.5rem;`,
@@ -104,6 +112,10 @@ export class PayoutPage extends EventEmitter {
           style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
         }),
       ),
+    );
+    this.monthRangeInput.val.setValues(
+      startMonth.toLocalMonthISOString(),
+      endMonth.toLocalMonthISOString(),
     );
     this.listPayouts();
 
@@ -163,11 +175,11 @@ export class PayoutPage extends EventEmitter {
   private async listPayouts() {
     this.listRequestIndex++;
     let currentIndex = this.listRequestIndex;
-    let { startMonth, endMonth } = this.monthRangeInput.val.getValues();
+    let { startRange, endRange } = this.monthRangeInput.val.getValues();
     let response = await this.serviceClient.send(
       newListPayoutsRequest({
-        startMonth,
-        endMonth,
+        startMonth: startRange,
+        endMonth: endRange,
       }),
     );
     if (currentIndex !== this.listRequestIndex) {
@@ -188,11 +200,16 @@ export class PayoutPage extends EventEmitter {
         ),
       );
     } else {
+      response.payouts.sort((a, b) => {
+        if (a.month > b.month) {
+          return -1;
+        } else if (a.month < b.month) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
       for (let payout of response.payouts) {
-        let amount = new Intl.NumberFormat([navigator.language, "en-US"], {
-          style: "currency",
-          currency: payout.currency,
-        }).format(payout.amount / CURRENCY_TO_CENTS.get(payout.currency));
         this.payoutActivityList.val.append(
           E.div(
             {
@@ -211,7 +228,7 @@ export class PayoutPage extends EventEmitter {
                 class: "payout-page-payout-amount",
                 style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 2 0 auto; text-align: end;`,
               },
-              E.text(amount),
+              E.text(formatMoney(payout.amount, payout.currency)),
             ),
             E.div(
               {

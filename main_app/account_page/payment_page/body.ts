@@ -4,11 +4,8 @@ import {
   FilledBlockingButton,
 } from "../../../common/blocking_button";
 import { SCHEME } from "../../../common/color_scheme";
-import {
-  getFirstDayOfNextMonth,
-  getLastMonth,
-  toDateWrtTimezone,
-} from "../../../common/date_helper";
+import { DateRangeInput, DateType } from "../../../common/date_range_input";
+import { formatMoney } from "../../../common/formatter/price";
 import {
   createCheckmarkIcon,
   createExclamationMarkInACycle,
@@ -19,12 +16,10 @@ import {
   PAGE_BACKGROUND_STYLE,
   PAGE_MEDIUM_CARD_STYLE,
 } from "../../../common/page_style";
-import { FONT_M, FONT_WEIGHT_600, ICON_XS } from "../../../common/sizes";
+import { FONT_M, FONT_WEIGHT_600, ICON_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
-import { MonthRangeInput } from "../common/month_range_input";
 import { AddCardPaymentItem, CardPaymentItem } from "./card_payment_item";
-import { PaymentProfileState } from "@phading/commerce_service_interface/web/payment/payment_profile_state";
 import {
   newCreateStripeSessionToAddPaymentMethodRequest,
   newGetPaymentProfileInfoRequest,
@@ -33,9 +28,11 @@ import {
 } from "@phading/commerce_service_interface/web/payment/client";
 import { CreateStripeSessionToAddPaymentMethodResponse } from "@phading/commerce_service_interface/web/payment/interface";
 import { PaymentState } from "@phading/commerce_service_interface/web/payment/payment";
-import { CURRENCY_TO_CENTS } from "@phading/price_config/amount_conversion";
+import { PaymentProfileState } from "@phading/commerce_service_interface/web/payment/payment_profile_state";
+import { MAX_MONTH_RANGE } from "@phading/constants/commerce";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
+import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface PaymentPage {
@@ -49,6 +46,8 @@ export class PaymentPage extends EventEmitter {
     return new PaymentPage(SERVICE_CLIENT, window, () => new Date());
   }
 
+  private static INIT_MONTHS = 5;
+
   public body: HTMLDivElement;
   public paymentStatusContent = new Ref<HTMLDivElement>();
   public retryPaymentsButton = new Ref<BlockingButton>();
@@ -57,7 +56,7 @@ export class PaymentPage extends EventEmitter {
     BlockingButton<CreateStripeSessionToAddPaymentMethodResponse>
   >();
   public addPaymentMethodErrorMessage = new Ref<HTMLDivElement>();
-  public monthRangeInput = new Ref<MonthRangeInput>();
+  public monthRangeInput = new Ref<DateRangeInput>();
   public paymentActivityList = new Ref<HTMLDivElement>();
   private listRequestIndex = 0;
 
@@ -78,9 +77,12 @@ export class PaymentPage extends EventEmitter {
     let response = await this.serviceClient.send(
       newGetPaymentProfileInfoRequest({}),
     );
-    let nowDate = this.getNowDate();
-    let startMonth = getLastMonth(toDateWrtTimezone(nowDate));
-    let endMonth = startMonth;
+    let nowDate = TzDate.fromDate(
+      this.getNowDate(),
+      ENV_VARS.timezoneNegativeOffset,
+    );
+    let endMonth = nowDate.clone().moveToFirstDayOfMonth().addMonths(-1);
+    let startMonth = endMonth.clone().addMonths(-PaymentPage.INIT_MONTHS);
     this.body.append(
       E.div(
         {
@@ -105,7 +107,7 @@ export class PaymentPage extends EventEmitter {
           E.div(
             {
               class: "payment-page-status-icon",
-              style: `width: ${ICON_XS}rem; height: ${ICON_XS}rem;`,
+              style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
             },
             this.getIcon(response.state),
           ),
@@ -117,7 +119,7 @@ export class PaymentPage extends EventEmitter {
             },
             E.text(
               this.getStatusText(
-                nowDate.valueOf(),
+                nowDate,
                 response.paymentAfterMs,
                 response.state,
               ),
@@ -166,7 +168,7 @@ export class PaymentPage extends EventEmitter {
         }),
         response.primaryPaymentMethod
           ? new CardPaymentItem(
-              nowDate.valueOf(),
+              nowDate.toTimestampMs(),
               response.primaryPaymentMethod,
             ).body
           : new AddCardPaymentItem().body,
@@ -216,7 +218,11 @@ export class PaymentPage extends EventEmitter {
         }),
         assign(
           this.monthRangeInput,
-          MonthRangeInput.create(startMonth, endMonth),
+          DateRangeInput.create(
+            DateType.MONTH,
+            MAX_MONTH_RANGE,
+            `width: 100%;`,
+          ).show(),
         ).body,
         E.div({
           style: `height: 1.5rem;`,
@@ -226,6 +232,10 @@ export class PaymentPage extends EventEmitter {
           style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
         }),
       ),
+    );
+    this.monthRangeInput.val.setValues(
+      startMonth.toLocalMonthISOString(),
+      endMonth.toLocalMonthISOString(),
     );
     this.listPayments();
 
@@ -255,16 +265,20 @@ export class PaymentPage extends EventEmitter {
   }
 
   private getStatusText(
-    now: number,
+    nowDate: TzDate,
     paymentAfterMs: number,
     paymentProfileState: PaymentProfileState,
   ): string {
     switch (paymentProfileState) {
       case PaymentProfileState.HEALTHY:
-        let firstDayOfNextMonth = getFirstDayOfNextMonth(
-          toDateWrtTimezone(new Date(Math.max(now, paymentAfterMs))),
-        );
-        return `${LOCALIZED_TEXT.paymentStatusHealthy[0]}${firstDayOfNextMonth}${LOCALIZED_TEXT.paymentStatusHealthy[1]}`;
+        let maxDate =
+          nowDate.toTimestampMs() > paymentAfterMs
+            ? nowDate.clone()
+            : TzDate.fromTimestampMs(
+                paymentAfterMs,
+                ENV_VARS.timezoneNegativeOffset,
+              );
+        return `${LOCALIZED_TEXT.paymentStatusHealthy[0]}${maxDate.moveToFirstDayOfMonth().addMonths(1).toLocalDateISOString()}${LOCALIZED_TEXT.paymentStatusHealthy[1]}`;
       case PaymentProfileState.WITH_FAILED_PAYMENTS:
         return LOCALIZED_TEXT.paymentStatusWarning;
       case PaymentProfileState.SUSPENDED:
@@ -291,11 +305,11 @@ export class PaymentPage extends EventEmitter {
   private async listPayments(): Promise<void> {
     this.listRequestIndex++;
     let currentIndex = this.listRequestIndex;
-    let { startMonth, endMonth } = this.monthRangeInput.val.getValues();
+    let { startRange, endRange } = this.monthRangeInput.val.getValues();
     let response = await this.serviceClient.send(
       newListPaymentsRequest({
-        startMonth,
-        endMonth,
+        startMonth: startRange,
+        endMonth: endRange,
       }),
     );
     if (currentIndex !== this.listRequestIndex) {
@@ -316,11 +330,16 @@ export class PaymentPage extends EventEmitter {
         ),
       );
     } else {
+      response.payments.sort((a, b) => {
+        if (a.month > b.month) {
+          return -1;
+        } else if (a.month < b.month) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
       for (let payment of response.payments) {
-        let amount = new Intl.NumberFormat([navigator.language, "en-US"], {
-          style: "currency",
-          currency: payment.currency,
-        }).format(payment.amount / CURRENCY_TO_CENTS.get(payment.currency));
         this.paymentActivityList.val.append(
           E.div(
             {
@@ -339,7 +358,9 @@ export class PaymentPage extends EventEmitter {
                 class: "payment-page-payment-amount",
                 style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 1 0 auto; text-align: end;`,
               },
-              E.text(amount),
+              E.text(
+                formatMoney(payment.amount, payment.currency),
+              ),
             ),
             E.div(
               {

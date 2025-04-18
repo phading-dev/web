@@ -1,9 +1,5 @@
 import { SCHEME } from "../../../common/color_scheme";
-import {
-  toDateISOString,
-  toDateWrtTimezone,
-  toMonthISOString,
-} from "../../../common/date_helper";
+import { formatMoney } from "../../../common/formatter/price";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { FONT_L, FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
@@ -17,12 +13,12 @@ import {
 import { newListMeterReadingsPerMonthRequest } from "@phading/meter_service_interface/show/web/consumer/client";
 import { newListWatchSessionsRequest } from "@phading/play_activity_service_interface/show/web/client";
 import { ProductID } from "@phading/price";
-import { CURRENCY_TO_CENTS } from "@phading/price_config/amount_conversion";
 import { calculateMoney } from "@phading/price_config/calculator";
 import { newGetSeasonAndEpisodeSummaryRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { SeasonAndEpisodeSummary } from "@phading/product_service_interface/show/web/consumer/summary";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
+import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
 
@@ -58,28 +54,23 @@ export class HistoryPage extends EventEmitter {
   }
 
   private async loadEstimates(): Promise<void> {
-    let formatter = new Intl.NumberFormat([navigator.language], {
-      style: "currency",
-      currency: ENV_VARS.defaultCurrency,
-    });
-    let dollarToCents = CURRENCY_TO_CENTS.get(ENV_VARS.defaultCurrency);
-
-    let thisMonth = toMonthISOString(toDateWrtTimezone(this.getNowDate()));
+    let thisMonthStr = TzDate.fromDate(
+      this.getNowDate(),
+      ENV_VARS.timezoneNegativeOffset,
+    ).toLocalMonthISOString();
     let response = await this.serviceClient.send(
       newListMeterReadingsPerMonthRequest({
-        startMonth: thisMonth,
-        endMonth: thisMonth,
+        startMonth: thisMonthStr,
+        endMonth: thisMonthStr,
       }),
     );
-    let amount: number = 0;
-    if (response.readings.length > 0) {
-      ({ amount } = calculateMoney(
-        ProductID.SHOW,
-        ENV_VARS.defaultCurrency,
-        thisMonth,
-        response.readings[0].watchTimeSecGraded,
-      ));
-    }
+
+    let { amount, price } = calculateMoney(
+      ProductID.SHOW,
+      ENV_VARS.defaultCurrency,
+      thisMonthStr,
+      response.readings[0]?.watchTimeSecGraded ?? 0,
+    );
     this.body.append(
       E.div(
         {
@@ -104,7 +95,7 @@ export class HistoryPage extends EventEmitter {
               class: "history-page-estimates-amount",
               style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
             },
-            E.text(formatter.format(amount / dollarToCents)),
+            E.text(formatMoney(amount, price.currency)),
           ),
           E.div(
             {
@@ -112,7 +103,7 @@ export class HistoryPage extends EventEmitter {
               style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
-              `${LOCALIZED_TEXT.billingMonth[0]}${thisMonth}${LOCALIZED_TEXT.billingMonth[1]}`,
+              `${LOCALIZED_TEXT.billingMonth[0]}${thisMonthStr}${LOCALIZED_TEXT.billingMonth[1]}`,
             ),
           ),
           E.div(
@@ -175,17 +166,18 @@ export class HistoryPage extends EventEmitter {
         return;
       }
 
-      let createdDate = toDateISOString(
-        toDateWrtTimezone(new Date(session.createdTimeMs)),
-      );
-      let contentContainer = this.dateToContentContainer.get(createdDate);
+      let dateStr = TzDate.fromTimestampMs(
+        session.createdTimeMs,
+        ENV_VARS.timezoneNegativeOffset,
+      ).toLocalDateISOString();
+      let contentContainer = this.dateToContentContainer.get(dateStr);
       if (!contentContainer) {
         contentContainer = new Ref<HTMLDivElement>();
         this.body.insertBefore(
-          eContinueEpisodeItemContainer(createdDate, contentContainer),
+          eContinueEpisodeItemContainer(dateStr, contentContainer),
           this.loadingSection.val.body,
         );
-        this.dateToContentContainer.set(createdDate, contentContainer);
+        this.dateToContentContainer.set(dateStr, contentContainer);
       }
       let item = eContinueEpisodeItem(
         summary.season,
