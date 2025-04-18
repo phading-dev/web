@@ -2,7 +2,6 @@ import backgoundImage = require("./background.png");
 import EventEmitter = require("events");
 import { FILLED_BUTTON_STYLE } from "../common/button_styles";
 import { SCHEME } from "../common/color_scheme";
-import { toMonthISOString } from "../common/date_helper";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
 import { PageNavigator } from "../common/page_navigator";
 import { PAGE_BACKGROUND_STYLE } from "../common/page_style";

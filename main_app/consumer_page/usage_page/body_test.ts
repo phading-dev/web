@@ -221,7 +221,7 @@ TEST_RUNNER.run({
           serviceClientMock.request.body,
           eqMessage(
             {
-              date: "2023-12-20",
+              date: "2023-12-19",
             },
             LIST_METER_READING_PER_SEASON_REQUEST_BODY,
           ),
@@ -321,8 +321,8 @@ TEST_RUNNER.run({
           serviceClientMock.request.body,
           eqMessage(
             {
-              startDate: "2023-11-21",
-              endDate: "2023-12-20",
+              startDate: "2023-11-20",
+              endDate: "2023-12-19",
             },
             LIST_METER_READINGS_PER_DAY_REQUEST_BODY,
           ),

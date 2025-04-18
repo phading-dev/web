@@ -44,7 +44,7 @@ export class UsagePage extends EventEmitter {
   }
 
   private static INIT_MONTH = 5;
-  private static INIT_DAYS = 29;
+  private static INIT_DAYS = 30;
 
   public body: HTMLDivElement;
   public rangeTypeInput = new Ref<RadioOptionPills<RangeType>>();
@@ -136,11 +136,14 @@ export class UsagePage extends EventEmitter {
         }),
       ),
     );
-    this.oneDayInput.val.value = nowDate.toLocalDateISOString();
+    this.oneDayInput.val.value = nowDate
+      .clone()
+      .addDays(-1)
+      .toLocalDateISOString();
     this.oneMonthInput.val.value = nowDate.toLocalMonthISOString();
     this.dayRangeInput.val.setValues(
       nowDate.clone().addDays(-UsagePage.INIT_DAYS).toLocalDateISOString(),
-      nowDate.toLocalDateISOString(),
+      nowDate.clone().addDays(-1).toLocalDateISOString(),
     );
     this.monthRangeInput.val.setValues(
       nowDate
@@ -159,9 +162,9 @@ export class UsagePage extends EventEmitter {
     this.oneDayInput.val.addEventListener("input", () => this.loadOneDay());
     this.oneMonthInput.val.addEventListener("input", () => this.loadOneMonth());
     this.dayRangeInput.val.on("input", () => this.loadFromDayRange());
-    this.dayRangeInput.val.on('invalid', () => this.showInvalidRange());
+    this.dayRangeInput.val.on("invalid", () => this.showInvalidRange());
     this.monthRangeInput.val.on("input", () => this.loadFromMonthRange());
-    this.monthRangeInput.val.on('invalid', () => this.showInvalidRange());
+    this.monthRangeInput.val.on("invalid", () => this.showInvalidRange());
   }
 
   private setRangeTypeAndLoad(value: RangeType): void {
