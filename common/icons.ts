@@ -632,7 +632,7 @@ export function createSplitColumnIcon(
   );
 }
 
-export function createInfoIcon(color: string): SVGSVGElement {
+export function createExclamationMarkInACycle(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "info-icon",
@@ -711,19 +711,6 @@ export function createCheckmarkIcon(color: string): SVGSVGElement {
   );
 }
 
-export function createExclamationMarkInACycle(color: string): SVGSVGElement {
-  return E.svg(
-    {
-      class: "exclamation-mark-in-a-cycle-icon",
-      style: `height: 100%; fill: ${color};`,
-      viewBox: "-101.2 -101.2 714.4 714.4",
-    },
-    E.path({
-      d: `M256,362.549c12.439,0,29.89-54.93,34.382-70.985c13.943-46.482,25.398-109.859,25.398-162.266 C315.78,66.761,298.338,0,256,0c-42.338,0-59.78,66.761-59.78,129.298c0,52.407,11.472,115.784,25.415,162.266 C226.11,307.619,243.551,362.549,256,362.549z  M256,401.424c-30.391,0-55.288,24.906-55.288,55.288C200.712,487.086,225.609,512,256,512 c30.392,0,55.297-24.914,55.297-55.288C311.297,426.33,286.391,401.424,256,401.424z  M256,-101.2 a357.2,357.2,0,1,1,-.1,0z  M256,-31.2 a287.2,287.2,0,1,0,.1,0z`,
-    }),
-  );
-}
-
 // A horizontal line in a circle.
 export function createForbiddenIcon(color: string): SVGSVGElement {
   return E.svg(
@@ -755,9 +742,22 @@ export function createCornerIcon(color: string): SVGSVGElement {
 export function createStarIcon(color: string): SVGSVGElement {
   return E.svg(
     {
-      class: "start-icon",
-      style: `height: 100%; fill: ${color};`,
-      viewBox: "0 0 64 64",
+      class: "star-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: "-4 -4 72 72",
+    },
+    E.path({
+      d: `M62.799,23.737c-0.47-1.399-1.681-2.419-3.139-2.642l-16.969-2.593L35.069,2.265  C34.419,0.881,33.03,0,31.504,0c-1.527,0-2.915,0.881-3.565,2.265l-7.623,16.238L3.347,21.096c-1.458,0.223-2.669,1.242-3.138,2.642  c-0.469,1.4-0.115,2.942,0.916,4l12.392,12.707l-2.935,17.977c-0.242,1.488,0.389,2.984,1.62,3.854  c1.23,0.87,2.854,0.958,4.177,0.228l15.126-8.365l15.126,8.365c0.597,0.33,1.254,0.492,1.908,0.492c0.796,0,1.592-0.242,2.269-0.72  c1.231-0.869,1.861-2.365,1.619-3.854l-2.935-17.977l12.393-12.707C62.914,26.68,63.268,25.138,62.799,23.737z`,
+    }),
+  );
+}
+
+export function createFilledStarIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "filled-star-icon",
+      style: `height: 100%; fill: ${color}; stroke: ${color}; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: "-4 -4 72 72",
     },
     E.path({
       d: `M62.799,23.737c-0.47-1.399-1.681-2.419-3.139-2.642l-16.969-2.593L35.069,2.265  C34.419,0.881,33.03,0,31.504,0c-1.527,0-2.915,0.881-3.565,2.265l-7.623,16.238L3.347,21.096c-1.458,0.223-2.669,1.242-3.138,2.642  c-0.469,1.4-0.115,2.942,0.916,4l12.392,12.707l-2.935,17.977c-0.242,1.488,0.389,2.984,1.62,3.854  c1.23,0.87,2.854,0.958,4.177,0.228l15.126-8.365l15.126,8.365c0.597,0.33,1.254,0.492,1.908,0.492c0.796,0,1.592-0.242,2.269-0.72  c1.231-0.869,1.861-2.365,1.619-3.854l-2.935-17.977l12.393-12.707C62.914,26.68,63.268,25.138,62.799,23.737z`,
@@ -797,4 +797,69 @@ export function createCircularProgressIcon(
     }),
   );
   return svg;
+}
+
+export function createClockIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "clock-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 0 64 64",
+    },
+    E.path({
+      d: `M32,0C14.328,0,0,14.328,0,32s14.328,32,32,32s32-14.328,32-32S49.672,0,32,0z M42.844,42.844  c-1.566,1.566-4.168,1.488-5.734-0.078l-7.934-7.934c-0.371-0.367-0.664-0.812-0.867-1.305C28.105,33.039,28,32.523,28,32V16  c0-2.211,1.789-4,4-4s4,1.789,4,4v14.344l6.859,6.859C44.426,38.77,44.406,41.281,42.844,42.844z`,
+    }),
+  );
+}
+
+export function createBookmarkIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "bookmark-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 0 512 512",
+    },
+    E.path({
+      d: `M463.511,0H27.022v512L256,361.971l228.978,150.023V0H463.511z M256,310.645L69.955,432.534V42.933h372.089v389.601L256,310.645z`,
+    }),
+  );
+}
+
+export function createFilledBookmarkIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "filled-bookmark-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 0 512 512",
+    },
+    E.path({
+      d: `M463.511,0H27.022v512L256,361.971l228.978,150.023V0H463.511z`,
+    }),
+  );
+}
+
+export function createShareIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "share-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 0 16 16",
+    },
+    E.path({
+      d: `M11 6C12.6569 6 14 4.65685 14 3C14 1.34315 12.6569 0 11 0C9.34315 0 8 1.34315 8 3C8 3.22371 8.02449 3.44169 8.07092 3.65143L4.86861 5.65287C4.35599 5.24423 3.70652 5 3 5C1.34315 5 0 6.34315 0 8C0 9.65685 1.34315 11 3 11C3.70652 11 4.35599 10.7558 4.86861 10.3471L8.07092 12.3486C8.02449 12.5583 8 12.7763 8 13C8 14.6569 9.34315 16 11 16C12.6569 16 14 14.6569 14 13C14 11.3431 12.6569 10 11 10C10.2935 10 9.644 10.2442 9.13139 10.6529L5.92908 8.65143C5.97551 8.44169 6 8.22371 6 8C6 7.77629 5.97551 7.55831 5.92908 7.34857L9.13139 5.34713C9.644 5.75577 10.2935 6 11 6Z`,
+    }),
+  );
+}
+
+export function createReplayIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "replay-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 0 75 75",
+    },
+    E.path({
+      d: `M33.511,71.013c15.487,0,28.551-10.563,32.375-24.859h9.113L61.055,22L47.111,46.151h8.006   c-3.44,8.563-11.826,14.628-21.605,14.628c-12.837,0-23.28-10.443-23.28-23.28c0-12.836,10.443-23.28,23.28-23.28   c6.604,0,12.566,2.768,16.809,7.196l5.258-9.108c-5.898-5.176-13.619-8.32-22.065-8.32C15.034,3.987,0,19.019,0,37.5   C-0.002,55.981,15.03,71.013,33.511,71.013z`,
+    }),
+  );
 }

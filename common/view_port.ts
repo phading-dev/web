@@ -5,7 +5,7 @@ export async function setPhoneView(): Promise<void> {
 }
 
 export async function setTabletView(): Promise<void> {
-  await setViewport(600, 800);
+  await setViewport(700, 800);
 }
 
 export async function setDesktopView(): Promise<void> {

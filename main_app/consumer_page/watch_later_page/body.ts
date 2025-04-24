@@ -1,9 +1,8 @@
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import { ENV_VARS } from "../../../env_vars";
 import {
-  eFullPage,
+  eFullItemsPage,
   eSeasonItem,
   eSeasonItemContainer,
 } from "../common/elements";
@@ -11,7 +10,6 @@ import { newListFromWatchLaterListRequest } from "@phading/play_activity_service
 import { newGetSeasonSummaryRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { SeasonSummary } from "@phading/product_service_interface/show/web/consumer/info";
 import { Ref, assign } from "@selfage/ref";
-import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
 
@@ -37,7 +35,7 @@ export class WatchLaterPage extends EventEmitter {
     private getNowDate: () => Date,
   ) {
     super();
-    this.body = eFullPage(
+    this.body = eFullItemsPage(
       eSeasonItemContainer(
         LOCALIZED_TEXT.watchLaterTitle,
         this.contentContainer,
@@ -71,15 +69,11 @@ export class WatchLaterPage extends EventEmitter {
         }
       }),
     );
-    let date = TzDate.fromDate(
-      this.getNowDate(),
-      ENV_VARS.timezoneNegativeOffset,
-    ).toLocalDateISOString();
     seasonSummaries.forEach((seasonSummary) => {
       if (!seasonSummary) {
         return;
       }
-      let item = eSeasonItem(seasonSummary, date);
+      let item = eSeasonItem(seasonSummary, this.getNowDate());
       item.addEventListener("click", () => {
         this.emit("showDetails", seasonSummary.seasonId);
       });

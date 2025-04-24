@@ -3,7 +3,7 @@ import { SCHEME } from "../../../common/color_scheme";
 import { DateRangeInput, DateType } from "../../../common/date_range_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
-  PAGE_BACKGROUND_STYLE,
+  PAGE_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CARD_STYLE,
 } from "../../../common/page_style";
 import { FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
@@ -45,7 +45,7 @@ export class PayoutPage extends EventEmitter {
     super();
     this.body = E.div({
       class: "payout-page",
-      style: PAGE_BACKGROUND_STYLE,
+      style: PAGE_CARD_BACKGROUND_STYLE,
     });
     this.load();
   }

@@ -5,7 +5,7 @@ import { SCHEME } from "./color_scheme";
 import { HoverObserver, Mode } from "./hover_observer";
 import { createArrowIcon } from "./icons";
 import { LOCALIZED_TEXT } from "./locales/localized_text";
-import { FONT_M, ICON_BUTTON_L } from "./sizes";
+import { FONT_M, ICON_BUTTON_L, ICON_XL } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
@@ -376,10 +376,10 @@ export class BlockingIconButton<
 export function createBackButton(customStyle = ""): IconButton {
   return IconButton.create(
     ICON_BUTTON_L,
-    1,
+    (ICON_BUTTON_L - ICON_XL) / 2,
     `position: absolute; top: 0; left: 0; ${customStyle}`,
     createArrowIcon(SCHEME.neutral1),
-    TooltipPosition.BOTTOM,
+    TooltipPosition.RIGHT,
     LOCALIZED_TEXT.backLabel,
   );
 }

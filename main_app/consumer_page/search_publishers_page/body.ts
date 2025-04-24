@@ -2,7 +2,7 @@ import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
-  eFullPage,
+  eFullItemsPage,
   ePublisherItem,
   ePublisherItemContainer,
 } from "../common/elements";
@@ -34,7 +34,7 @@ export class SearchPublishersPage extends EventEmitter {
     private query: string,
   ) {
     super();
-    this.body = eFullPage(
+    this.body = eFullItemsPage(
       ePublisherItemContainer(
         `${LOCALIZED_TEXT.searchResultTitle[0]}${this.query}${LOCALIZED_TEXT.searchResultTitle[1]}`,
         this.contentContainer,

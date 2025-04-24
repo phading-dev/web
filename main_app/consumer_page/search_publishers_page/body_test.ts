@@ -3,7 +3,7 @@ import "../../../common/normalize_body";
 import userImage = require("../common/test_data/user_image.jpg");
 import userImage2 = require("../common/test_data/user_image2.png");
 import path from "path";
-import { setTabletView } from "../../../common/view_port";
+import { setDesktopView, setTabletView } from "../../../common/view_port";
 import { SearchPublishersPage } from "./body";
 import {
   SEARCH_PUBLISHERS_REQUEST_BODY,
@@ -100,9 +100,9 @@ TEST_RUNNER.run({
           "request 1",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/search_publishers_page_render.png"),
-          path.join(__dirname, "/golden/search_publishers_page_render.png"),
-          path.join(__dirname, "/search_publishers_page_render_diff.png"),
+          path.join(__dirname, "/search_publishers_page_tablet_render.png"),
+          path.join(__dirname, "/golden/search_publishers_page_tablet_render.png"),
+          path.join(__dirname, "/search_publishers_page_tablet_render_diff.png"),
         );
 
         // Prepare
@@ -150,9 +150,19 @@ TEST_RUNNER.run({
           "request 2",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/search_publishers_page_scrolled.png"),
-          path.join(__dirname, "/golden/search_publishers_page_scrolled.png"),
-          path.join(__dirname, "/search_publishers_page_scrolled_diff.png"),
+          path.join(__dirname, "/search_publishers_page_tablet_scrolled.png"),
+          path.join(__dirname, "/golden/search_publishers_page_tablet_scrolled.png"),
+          path.join(__dirname, "/search_publishers_page_tablet_scrolled_diff.png"),
+        );
+
+        // Execute
+        await setDesktopView();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/search_publishers_page_desktop_scrolled.png"),
+          path.join(__dirname, "/golden/search_publishers_page_desktop_scrolled.png"),
+          path.join(__dirname, "/search_publishers_page_desktop_scrolled_diff.png"),
         );
 
         // Prepare
@@ -165,7 +175,7 @@ TEST_RUNNER.run({
         await mouseClick(100, 50);
 
         // Verify
-        assertThat(showroomId, eq("account4"), "showroom id");
+        assertThat(showroomId, eq("account1"), "showroom id");
       }
       public async tearDown() {
         this.cut.remove();

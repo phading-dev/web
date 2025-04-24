@@ -455,12 +455,6 @@ export default class Text {
   get submitTaleSuccess() {
     return `Successfully submitted your tale!`;
   }
-  get showMoreButtonLabel() {
-    return `Read more`;
-  }
-  get showLessButtonLabel() {
-    return `Show less`;
-  }
   get showRepliesLabel() {
     return `Show replies`;
   }
@@ -639,7 +633,13 @@ export default class Text {
     return [``, ` / hr`];
   }
   get pricingRate() {
-    return [``, ` / hour`];
+    return [``, ` / hour`,];
+  }
+  get billedMonthly() {
+    return ` - Billed monthly based on seconds watched.`;
+  }
+  get newPricingStarting() {
+    return [` - New rate: `, ` starting in `, ` days.`, ` day.`];
   }
   get viewHistoryLink() {
     return `View history >`;
@@ -688,6 +688,39 @@ export default class Text {
   }
   get watchLaterTitle() {
     return `Watch later`;
+  }
+  get watchLaterLabel() {
+    return `Watch later`;
+  }
+  get watchLaterRemoveLabel() {
+    return `Saved for later`;
+  }
+  get shareLabel() {
+    return `Share`;
+  }
+  get shareLinkCopiedLabel() {
+    return `Link copied!`;
+  }
+  get episodePremieredOn() {
+    return `Premiered on `;
+  }
+  get episodePremieresAt() {
+    return `Premieres at `;
+  }
+  get totalEpisodes() {
+    return [``, ` total episodes`];
+  }
+  get showMoreButtonLabel() {
+    return `Read more`;
+  }
+  get showLessButtonLabel() {
+    return `Show less`;
+  }
+  get loadMorePrevEpisodesButtonLabel() {
+    return `More previous episodes`;
+  }
+  get loadMoreNextEpisodesButtonLabel() {
+    return `More next episodes`;
   }
   get danmakuSettingsLabel() {
     return `Settings for scrolling comments`;

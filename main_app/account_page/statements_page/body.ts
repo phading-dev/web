@@ -6,7 +6,7 @@ import { formatQuantity } from "../../../common/formatter/quantity";
 import { createArrowIcon, createCornerIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
-  PAGE_BACKGROUND_STYLE,
+  PAGE_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CARD_STYLE,
 } from "../../../common/page_style";
 import {
@@ -63,7 +63,7 @@ export class StatementsPage extends EventEmitter {
     this.body = E.div(
       {
         class: "statements-page",
-        style: PAGE_BACKGROUND_STYLE,
+        style: PAGE_CARD_BACKGROUND_STYLE,
       },
       E.div(
         {

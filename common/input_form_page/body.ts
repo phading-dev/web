@@ -6,7 +6,7 @@ import {
   TextBlockingButton,
 } from "../blocking_button";
 import { IconButton, createBackButton } from "../icon_button";
-import { PAGE_BACKGROUND_STYLE, PAGE_MEDIUM_CARD_STYLE } from "../page_style";
+import { PAGE_CARD_BACKGROUND_STYLE, PAGE_MEDIUM_CARD_STYLE } from "../page_style";
 import { FONT_L, FONT_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
@@ -65,7 +65,7 @@ export class InputFormPage<
     this.body = E.div(
       {
         class: "input-form",
-        style: PAGE_BACKGROUND_STYLE,
+        style: PAGE_CARD_BACKGROUND_STYLE,
       },
       E.formRef(
         this.card,
@@ -89,7 +89,7 @@ export class InputFormPage<
           },
           assign(
             this.primaryButton,
-            FilledBlockingButton.create<PrimaryResponse>(``).append(
+            FilledBlockingButton.create<PrimaryResponse>().append(
               E.text(primaryButtonLabel),
             ),
           ).body,
@@ -175,7 +175,7 @@ export class InputFormPage<
     this.buttonsLine.val.insertBefore(
       assign(
         this.secondaryBlockingButton,
-        TextBlockingButton.create<SecondaryResponse>(``)
+        TextBlockingButton.create<SecondaryResponse>()
           .append(E.text(buttonLabel))
           .enable()
           .show(),

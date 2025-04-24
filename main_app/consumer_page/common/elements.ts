@@ -8,7 +8,7 @@ import {
 import { formatSecondsAsHHMMSS } from "../../../common/formatter/timestamp";
 import {
   createCircularProgressIcon,
-  createStarIcon,
+  createFilledStarIcon,
 } from "../../../common/icons";
 import {
   AVATAR_M,
@@ -26,11 +26,15 @@ import { AccountDetails } from "@phading/user_service_interface/web/third_person
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
-export function eFullPage(...elements: Array<HTMLElement>): HTMLDivElement {
+export let PAGE_NAVIGATION_PADDING_BOTTOM = 7;
+
+export function eFullItemsPage(
+  ...elements: Array<HTMLElement>
+): HTMLDivElement {
   return E.div(
     {
       class: "full-page",
-      style: `width: 100%; min-height: 100%; background-color: ${SCHEME.neutral4}; padding: 1rem 1rem 7rem 1rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+      style: `width: 100%; min-height: 100%; background-color: ${SCHEME.neutral4}; padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; gap: 2rem;`,
     },
     ...elements,
   );
@@ -63,7 +67,7 @@ export function eSeasonItemContainer(
 
 export function eSeasonItem(
   season: SeasonSummary,
-  date: string,
+  date: Date,
   customStyle?: string,
 ): HTMLDivElement {
   return E.div(
@@ -73,7 +77,7 @@ export function eSeasonItem(
     },
     E.image({
       class: "season-item-cover-image",
-      style: `width: 100%;  aspect-ratio: 2/3; object-fit: contain;`,
+      style: `width: 100%; aspect-ratio: 2/3; object-fit: contain;`,
       src: season.coverImageUrl,
       alt: season.name,
     }),
@@ -98,9 +102,9 @@ export function eSeasonItem(
       E.div(
         {
           class: "season-item-rating-icon",
-          style: `width: ${ICON_M}rem;`,
+          style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
         },
-        createStarIcon(SCHEME.star),
+        createFilledStarIcon(SCHEME.star),
       ),
       E.div({
         style: `flex: 0 0 .5rem;`,
@@ -304,40 +308,40 @@ export function ePublisherContextItem(
     E.div(
       {
         class: "publisher-context-item",
-        style: `flex: 1; max-width: 60rem; display: flex; flex-flow: row nowrap; gap: 1rem;`,
+        style: `flex: 1; max-width: 60rem; display: flow-root;`,
       },
       E.image({
         class: "publisher-context-item-avatar",
-        style: `width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: 100%;`,
+        style: `float: left; margin: 0 1rem .5rem 0; width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: 100%;`,
         src: publisher.avatarLargeUrl,
         alt: publisher.naturalName,
       }),
       E.div(
         {
-          class: "publisher-context-item-info",
-          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
+          class: "publisher-context-item-name",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
         },
-        E.div(
-          {
-            class: "publisher-context-item-name",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem;`,
-          },
-          E.text(publisher.naturalName),
-        ),
-        E.div(
-          {
-            class: "publisher-context-item-id",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
-          },
-          E.text(`${AT_USER}${publisher.accountId}`),
-        ),
-        E.div(
-          {
-            class: "publisher-context-item-description",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem;`,
-          },
-          E.text(publisher.description ?? ""),
-        ),
+        E.text(publisher.naturalName),
+      ),
+      E.div({
+        style: `height: .5rem;`,
+      }),
+      E.div(
+        {
+          class: "publisher-context-item-id",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+        },
+        E.text(`${AT_USER}${publisher.accountId}`),
+      ),
+      E.div({
+        style: `height: 1rem;`,
+      }),
+      E.div(
+        {
+          class: "publisher-context-item-description",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(publisher.description ?? ""),
       ),
     ),
   );

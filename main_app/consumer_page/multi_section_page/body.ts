@@ -3,11 +3,10 @@ import { CLICKABLE_TEXT_STYLE } from "../../../common/button_styles";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { FONT_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import { ENV_VARS } from "../../../env_vars";
 import {
   eContinueEpisodeItem,
   eContinueEpisodeItemContainer,
-  eFullPage,
+  eFullItemsPage,
   eSeasonItem,
   eSeasonItemContainer,
 } from "../common/elements";
@@ -17,7 +16,6 @@ import {
 } from "@phading/product_service_interface/show/web/consumer/client";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
-import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface MultiSectionPage {
@@ -47,7 +45,7 @@ export class MultiSectionPage extends EventEmitter {
     private getNowDate: () => Date,
   ) {
     super();
-    this.body = eFullPage();
+    this.body = eFullItemsPage();
     this.load();
   }
 
@@ -119,12 +117,8 @@ export class MultiSectionPage extends EventEmitter {
         episodeContent.val.append(item);
       }
     }
-    let date = TzDate.fromDate(
-      this.getNowDate(),
-      ENV_VARS.timezoneNegativeOffset,
-    ).toLocalDateISOString();
     recentPremiereSeasonsResponse.seasons.forEach((season) => {
-      let item = eSeasonItem(season, date);
+      let item = eSeasonItem(season, this.getNowDate());
       item.addEventListener("click", () => {
         this.emit("showDetails", season.seasonId);
       });

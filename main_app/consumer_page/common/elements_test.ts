@@ -132,7 +132,7 @@ TEST_RUNNER.run({
             ratingsCount: 12345,
             averageRating: 4.09,
           },
-          "2024-01-01",
+          new Date("2024-01-01"),
           "width: 300px;",
         );
 
@@ -180,7 +180,7 @@ TEST_RUNNER.run({
             ratingsCount: 0,
             averageRating: 0,
           },
-          "2024-01-01",
+          new Date("2024-01-01"),
           "width: 165px;",
         );
 

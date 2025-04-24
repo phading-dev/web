@@ -8,7 +8,7 @@ import { ENV_VARS } from "../../../env_vars";
 import {
   eContinueEpisodeItem,
   eContinueEpisodeItemContainer,
-  eFullPage,
+  eFullItemsPage,
 } from "../common/elements";
 import { newListMeterReadingsPerMonthRequest } from "@phading/meter_service_interface/show/web/consumer/client";
 import { newListWatchSessionsRequest } from "@phading/play_activity_service_interface/show/web/client";
@@ -49,7 +49,7 @@ export class HistoryPage extends EventEmitter {
     private getNowDate: () => Date,
   ) {
     super();
-    this.body = eFullPage();
+    this.body = eFullItemsPage();
     this.loadEstimates();
   }
 

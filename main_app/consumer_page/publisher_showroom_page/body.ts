@@ -1,9 +1,8 @@
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import { ENV_VARS } from "../../../env_vars";
 import {
-  eFullPage,
+  eFullItemsPage,
   ePublisherContextItem,
   eSeasonItem,
   eSeasonItemContainer,
@@ -11,7 +10,6 @@ import {
 import { newListSeasonsByRecentPremiereTimeAndPublisherRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { newGetAccountDetailsRequest } from "@phading/user_service_interface/web/third_person/client";
 import { Ref, assign } from "@selfage/ref";
-import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
 
@@ -43,7 +41,7 @@ export class PublisherShowroomPage extends EventEmitter {
     private accountId: string,
   ) {
     super();
-    this.body = eFullPage();
+    this.body = eFullItemsPage();
     this.loadPublisher();
   }
 
@@ -74,12 +72,8 @@ export class PublisherShowroomPage extends EventEmitter {
         createdTimeCursor: this.createdTimeCursor,
       }),
     );
-    let date = TzDate.fromDate(
-      this.getNowDate(),
-      ENV_VARS.timezoneNegativeOffset,
-    ).toLocalDateISOString();
     response.seasons.forEach((season) => {
-      let item = eSeasonItem(season, date);
+      let item = eSeasonItem(season, this.getNowDate());
       item.addEventListener("click", () => {
         this.emit("showDetails", season.seasonId);
       });

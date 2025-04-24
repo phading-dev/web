@@ -8,7 +8,7 @@ import { IconButton, createBackButton } from "../../../../common/icon_button";
 import { ImageCropper } from "../../../../common/image_cropper/body";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import {
-  PAGE_BACKGROUND_STYLE,
+  PAGE_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CARD_STYLE,
 } from "../../../../common/page_style";
 import { AVATAR_M, AVATAR_S, FONT_M } from "../../../../common/sizes";
@@ -45,7 +45,7 @@ export class UpdateAvatarPage extends EventEmitter {
     this.body = E.div(
       {
         class: "update-avatar",
-        style: PAGE_BACKGROUND_STYLE,
+        style: PAGE_CARD_BACKGROUND_STYLE,
       },
       E.div(
         {

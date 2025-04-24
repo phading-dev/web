@@ -6,7 +6,7 @@ import { DATE_INPUT_STYLE } from "../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { OptionPill, RadioOptionPills } from "../../../common/option_pills";
 import {
-  PAGE_BACKGROUND_STYLE,
+  PAGE_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CARD_STYLE,
 } from "../../../common/page_style";
 import { FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
@@ -26,6 +26,7 @@ import { Ref, assign } from "@selfage/ref";
 import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../common/elements";
 
 export enum RangeType {
   ONE_DAY = 1,
@@ -67,7 +68,7 @@ export class UsagePage extends EventEmitter {
     this.body = E.div(
       {
         class: "usage-page",
-        style: PAGE_BACKGROUND_STYLE,
+        style: `${PAGE_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       },
       E.div(
         {

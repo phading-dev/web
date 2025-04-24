@@ -100,12 +100,12 @@ export class FilledBlockingButton<
   Response = void,
 > extends BlockingButton<Response> {
   public static create<Response = void>(
-    customStyle: string,
+    customStyle: string = "",
   ): FilledBlockingButton<Response> {
     return new FilledBlockingButton<Response>(customStyle);
   }
 
-  public constructor(customStyle: string) {
+  public constructor(customStyle: string = "") {
     super(`${COMMON_FILLED_BUTTON_STYLE} ${customStyle}`);
   }
 
@@ -124,12 +124,12 @@ export class OutlineBlockingButton<
   Response = void,
 > extends BlockingButton<Response> {
   public static create<Response = void>(
-    customStyle: string,
+    customStyle: string = "",
   ): OutlineBlockingButton<Response> {
     return new OutlineBlockingButton<Response>(customStyle);
   }
 
-  public constructor(customStyle: string) {
+  public constructor(customStyle: string = "") {
     super(`${COMMON_FILLED_BUTTON_STYLE} ${customStyle}`);
   }
 
@@ -148,22 +148,20 @@ export class TextBlockingButton<
   Response = void,
 > extends BlockingButton<Response> {
   public static create<Response = void>(
-    customStyle: string,
+    customStyle: string = "",
   ): TextBlockingButton<Response> {
     return new TextBlockingButton<Response>(customStyle);
   }
 
-  public constructor(customStyle: string) {
+  public constructor(customStyle: string = "") {
     super(`${COMMON_TEXT_BUTTON_STYLE} ${customStyle}`);
   }
 
   protected enableOverride(): void {
     this.container.style.color = SCHEME.neutral0;
-    // this.container.style.borderColor = SCHEME.neutral1;
   }
 
   protected disableOverride(): void {
     this.container.style.color = SCHEME.neutral2;
-    // this.container.style.borderColor = SCHEME.neutral2;
   }
 }

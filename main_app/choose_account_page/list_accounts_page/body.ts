@@ -4,7 +4,7 @@ import { SCHEME } from "../../../common/color_scheme";
 import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
-  PAGE_BACKGROUND_STYLE,
+  PAGE_CARD_BACKGROUND_STYLE,
   PAGE_EX_LARGE_CARD_STYLE,
 } from "../../../common/page_style";
 import { FONT_L, FONT_M } from "../../../common/sizes";
@@ -57,7 +57,7 @@ export class ListAccountsPage extends EventEmitter {
     super();
     this.body = E.div({
       class: "list-accounts-page",
-      style: PAGE_BACKGROUND_STYLE,
+      style: PAGE_CARD_BACKGROUND_STYLE,
     });
 
     this.load();

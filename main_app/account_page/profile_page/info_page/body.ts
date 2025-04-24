@@ -3,7 +3,7 @@ import { OUTLINE_BUTTON_STYLE } from "../../../../common/button_styles";
 import { SCHEME } from "../../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import {
-  PAGE_BACKGROUND_STYLE,
+  PAGE_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CARD_STYLE,
 } from "../../../../common/page_style";
 import { AVATAR_M, FONT_M } from "../../../../common/sizes";
@@ -53,7 +53,7 @@ export class InfoPage extends EventEmitter {
     super();
     this.body = E.div({
       class: "account-info",
-      style: PAGE_BACKGROUND_STYLE,
+      style: PAGE_CARD_BACKGROUND_STYLE,
     });
     this.load();
   }
