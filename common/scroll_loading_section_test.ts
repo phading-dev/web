@@ -45,7 +45,7 @@ TEST_RUNNER.run({
         cut.val.startLoading(async () => {
           await new Promise((resolve) => setTimeout(resolve));
           Array.from({ length: itemLength }).forEach(() => {
-            this.container.insertBefore(item(), cut.val.body);
+            cut.val.body.before(item());
           });
           return hasMore;
         });

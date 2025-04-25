@@ -8,6 +8,7 @@ import { GetLatestWatchedTimeOfEpisodeResponse } from "@phading/play_activity_se
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 TEST_RUNNER.run({
@@ -30,16 +31,19 @@ TEST_RUNNER.run({
           () => new Date("2024-02-01T08:00:00Z"),
           "width: 100%;",
           {
+            episodeId: "episode1",
             name: "Episode 1: The Beginning",
             premiereTimeMs: new Date("2024-01-01T08:00:00Z").getTime(),
           },
           {
+            seasonId: "season1",
             name: "Re-Zero: Starting Life in Another World",
             grade: 90,
             coverImageUrl: coverImage,
             totalEpisodes: 25,
           },
           {
+            episodeId: "episode2",
             name: "Episode 2: The Continuation",
             premiereTimeMs: new Date("2024-01-08T08:00:00Z").getTime(),
             videoDurationSec: 24 * 60,
@@ -96,6 +100,21 @@ TEST_RUNNER.run({
             fullPage: true,
           },
         );
+
+        // Prepare
+        let playSeasonId: string;
+        let playEpisodeId: string;
+        cut.on("play", (seasonId, episodeId) => {
+          playSeasonId = seasonId;
+          playEpisodeId = episodeId;
+        });
+
+        // Execute
+        cut.nextEpisodeButton.val.click();
+
+        // Verify
+        assertThat(playSeasonId, eq("season1"), "play season id");
+        assertThat(playEpisodeId, eq("episode2"), "play episode id");
       }
       public tearDown() {
         this.container.remove();

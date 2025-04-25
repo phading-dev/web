@@ -6,7 +6,10 @@ import {
   TextBlockingButton,
 } from "../blocking_button";
 import { IconButton, createBackButton } from "../icon_button";
-import { PAGE_CARD_BACKGROUND_STYLE, PAGE_MEDIUM_CARD_STYLE } from "../page_style";
+import {
+  PAGE_CARD_BACKGROUND_STYLE,
+  PAGE_MEDIUM_CARD_STYLE,
+} from "../page_style";
 import { FONT_L, FONT_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
@@ -172,7 +175,7 @@ export class InputFormPage<
     actionFn: () => Promise<SecondaryResponse>,
     postActionFn: (response?: SecondaryResponse, error?: Error) => string,
   ): this {
-    this.buttonsLine.val.insertBefore(
+    this.primaryButton.val.body.after(
       assign(
         this.secondaryBlockingButton,
         TextBlockingButton.create<SecondaryResponse>()
@@ -180,7 +183,6 @@ export class InputFormPage<
           .enable()
           .show(),
       ).body,
-      this.actionError.val,
     );
     this.secondaryActionFn = actionFn;
     this.postSecondaryActionFn = postActionFn;

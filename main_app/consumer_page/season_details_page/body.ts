@@ -779,9 +779,8 @@ export class SeasonDetailsPage extends EventEmitter {
       }),
     );
     response.episodes.forEach((episode) => {
-      this.episodesList.val.insertBefore(
+      this.loadMorePrevEpisodesButton.val.body.after(
         this.createEpisodeItem(episode),
-        this.loadMorePrevEpisodesButton.val.body.nextSibling,
       );
     });
     this.prevIndexCursor = response.indexCursor;
@@ -804,9 +803,8 @@ export class SeasonDetailsPage extends EventEmitter {
       }),
     );
     response.episodes.forEach((episode) => {
-      this.episodesList.val.insertBefore(
+      this.loadMoreNextEpisodesButton.val.body.before(
         this.createEpisodeItem(episode),
-        this.loadMoreNextEpisodesButton.val.body,
       );
     });
     this.nextIndexCursor = response.indexCursor;

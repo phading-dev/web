@@ -10,6 +10,7 @@ export let FONT_WEIGHT_600 = 600;
 export let LINE_HEIGHT_M = 1.8; // rem
 export let LINE_HEIGHT_L = 2; // rem
 export let LINE_HEIGHT_XL = 2.2; // rem
+export let LINE_HEIGHT_XXL = 3.2; // rem
 
 export let ICON_XS = 1; // rem
 export let ICON_S = 1.2; // rem

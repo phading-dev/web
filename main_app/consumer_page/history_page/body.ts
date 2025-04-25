@@ -172,9 +172,8 @@ export class HistoryPage extends EventEmitter {
       let contentContainer = this.dateToContentContainer.get(dateStr);
       if (!contentContainer) {
         contentContainer = new Ref<HTMLDivElement>();
-        this.body.insertBefore(
+        this.loadingSection.val.body.before(
           eContinueEpisodeItemContainer(dateStr, contentContainer),
-          this.loadingSection.val.body,
         );
         this.dateToContentContainer.set(dateStr, contentContainer);
       }
