@@ -233,7 +233,7 @@ export class SeasonDetailsPage extends EventEmitter {
               style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
-              `${formatShowPrice(seasonDetails.grade, nowDate)}${newPricingStartingText ? newPricingStartingText : LOCALIZED_TEXT.billedMonthly}`,
+              `${LOCALIZED_TEXT.currentRate}${formatShowPrice(seasonDetails.grade, nowDate)}${newPricingStartingText ? newPricingStartingText : LOCALIZED_TEXT.billedMonthly}`,
             ),
           ),
           E.div({

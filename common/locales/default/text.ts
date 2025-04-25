@@ -635,6 +635,9 @@ export default class Text {
   get pricingRate() {
     return [``, ` / hour`,];
   }
+  get currentRate() {
+    return `Current rate: `;
+  }
   get billedMonthly() {
     return ` - Billed monthly based on seconds watched.`;
   }
@@ -720,7 +723,19 @@ export default class Text {
     return `More previous episodes`;
   }
   get loadMoreNextEpisodesButtonLabel() {
-    return `More next episodes`;
+    return `More episodes`;
+  }
+  get currentMetering() {
+    return `Estimated charges: `;
+  }
+  get currentMeteringExplained() {
+    return `Estimated for the current watching session. Charges are not final until the end of the current billing month.`;
+  }
+  get nextEpisode() {
+    return `Next episode:`;
+  }
+  get noNextEpisode() {
+    return `No upcoming episode`;
   }
   get danmakuSettingsLabel() {
     return `Settings for scrolling comments`;

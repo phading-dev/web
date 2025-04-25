@@ -908,6 +908,44 @@ TEST_RUNNER.run({
         playEpisodeId = undefined;
 
         // Execute
+        this.cut.showMoreDescriptionButton.val.click();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "./watch_later_page_phone_1st_time_show_more_description.png",
+          ),
+          path.join(
+            __dirname,
+            "./golden/watch_later_page_phone_1st_time_show_more_description.png",
+          ),
+          path.join(
+            __dirname,
+            "./watch_later_page_phone_1st_time_show_more_description_diff.png",
+          ),
+        );
+
+        // Execute
+        this.cut.showLessDescriptionButton.val.click();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "./watch_later_page_phone_1st_time_show_less_description.png",
+          ),
+          path.join(
+            __dirname,
+            "./golden/watch_later_page_phone_1st_time_share_link_copied.png",
+          ),
+          path.join(
+            __dirname,
+            "./watch_later_page_phone_1st_time_show_less_description_diff.png",
+          ),
+        );
+
+        // Execute
         this.cut.episodeItems[0].click();
 
         // Verify
