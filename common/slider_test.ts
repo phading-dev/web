@@ -3,6 +3,7 @@ import { normalizeBody } from "./normalize_body";
 import { Orientation, Slider } from "./slider";
 import { setTabletView } from "./view_port";
 import {
+  forceMouseUp,
   mouseDown,
   mouseMove,
   mouseUp,
@@ -21,10 +22,10 @@ TEST_RUNNER.run({
   name: "SliderTest",
   environment: {
     setUp: () => {
-      document.body.style.margin = "2rem";
+      document.body.style.padding = "2rem";
     },
     tearDown: () => {
-      document.body.style.margin = "0";
+      document.body.style.padding = "0";
     },
   },
   cases: [
@@ -115,7 +116,7 @@ TEST_RUNNER.run({
           },
         );
       }
-      public tearDown() {
+      public async tearDown() {
         this.cut.remove();
       }
     })(),
@@ -215,7 +216,8 @@ TEST_RUNNER.run({
           },
         );
       }
-      public tearDown() {
+      public async tearDown() {
+        await forceMouseUp();
         this.cut.remove();
       }
     })(),

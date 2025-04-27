@@ -3,6 +3,7 @@ import { normalizeBody } from "./normalize_body";
 import { setTabletView } from "./view_port";
 import { E } from "@selfage/element/factory";
 import {
+  forceMouseUp,
   keyboardDown,
   mouseDown,
   mouseMove,
@@ -115,7 +116,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(hiddenTimes, eq(2), "hide twice");
       }
-      public tearDown() {
+      public async tearDown() {
+        await forceMouseUp();
+        await mouseMove(-1, -1, 1);
         this.anchorElement.remove();
       }
     })(),
@@ -225,7 +228,8 @@ TEST_RUNNER.run({
         // Verify
         assertThat(hiddenTimes, eq(2), "hide twice");
       }
-      public tearDown() {
+      public async tearDown() {
+        await touchEnd();
         this.anchorElement.remove();
       }
     })(),
