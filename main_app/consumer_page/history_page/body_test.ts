@@ -1,8 +1,8 @@
 import "../../../dev/env";
-import "../../../common/normalize_body";
 import coverImage = require("../common/test_data/cover_tall.jpg");
 import coverImage2 = require("../common/test_data/cover_tall2.jpg");
 import path from "path";
+import { normalizeBody } from "../../../common/normalize_body";
 import {
   setDesktopView,
   setPhoneView,
@@ -29,6 +29,8 @@ import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { ClientRequestInterface } from "@selfage/service_descriptor/client_request_interface";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "HistoryPageTest",

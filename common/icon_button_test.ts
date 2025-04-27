@@ -1,4 +1,3 @@
-import "./normalize_body";
 import path = require("path");
 import {
   BlockingIconButton,
@@ -7,11 +6,14 @@ import {
   TooltipPosition,
 } from "./icon_button";
 import { createCommentIcon } from "./icons";
+import { normalizeBody } from "./normalize_body";
 import { setTabletView } from "./view_port";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
+
+normalizeBody();
 
 let container: HTMLDivElement;
 

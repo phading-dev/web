@@ -1,8 +1,9 @@
-import "../../../../common/normalize_body";
 import userImage = require("../../common/test_data/user_image.jpg");
 import userImage2 = require("../../common/test_data/user_image2.png");
 import path from "path";
 import { SCHEME } from "../../../../common/color_scheme";
+import { normalizeBody } from "../../../../common/normalize_body";
+import { setTabletView } from "../../../../common/view_port";
 import { CommentsPanel } from "./body";
 import {
   POST_COMMENT,
@@ -20,6 +21,8 @@ import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
+normalizeBody();
+
 TEST_RUNNER.run({
   name: "CommentsPanelTest",
   cases: [
@@ -28,8 +31,9 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
+        await setTabletView();
         this.container = E.div({
-          style: `width: 60rem; background-color: ${SCHEME.neutral4};`,
+          style: `width: 60rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
         });
         document.body.appendChild(this.container);
         let serviceClientMock = new WebServiceClientMock();
@@ -143,8 +147,9 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
+        await setTabletView();
         this.container = E.div({
-          style: `width: 60rem; background-color: ${SCHEME.neutral4};`,
+          style: `width: 60rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
         });
         document.body.appendChild(this.container);
         let serviceClientMock = new WebServiceClientMock();

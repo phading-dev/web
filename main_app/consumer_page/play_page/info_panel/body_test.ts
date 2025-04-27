@@ -1,8 +1,9 @@
 import "../../../../dev/env";
-import "../../../../common/normalize_body";
 import coverImage = require("../../common/test_data/cover_tall.jpg");
 import path = require("path");
 import { SCHEME } from "../../../../common/color_scheme";
+import { normalizeBody } from "../../../../common/normalize_body";
+import { setTabletView } from "../../../../common/view_port";
 import { InfoPanel } from "./body";
 import { GetLatestWatchedTimeOfEpisodeResponse } from "@phading/play_activity_service_interface/show/web/interface";
 import { E } from "@selfage/element/factory";
@@ -10,6 +11,8 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "InfoPanelTest",
@@ -19,10 +22,11 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
+        await setTabletView();
         this.container = E.div({
           style: `width: 60rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
         });
-        document.body.appendChild(this.container);
+        document.body.append(this.container);
         let serviceClientMock = new WebServiceClientMock();
         serviceClientMock.response =
           {} as GetLatestWatchedTimeOfEpisodeResponse;
@@ -125,10 +129,11 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
+        await setTabletView();
         this.container = E.div({
           style: `width: 60rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
         });
-        document.body.appendChild(this.container);
+        document.body.append(this.container);
         let serviceClientMock = new WebServiceClientMock();
         let cut = new InfoPanel(
           serviceClientMock,
@@ -168,10 +173,11 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
+        await setTabletView();
         this.container = E.div({
           style: `width: 60rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
         });
-        document.body.appendChild(this.container);
+        document.body.append(this.container);
         let serviceClientMock = new WebServiceClientMock();
         serviceClientMock.response =
           {} as GetLatestWatchedTimeOfEpisodeResponse;

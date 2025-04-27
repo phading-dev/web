@@ -1,5 +1,5 @@
-import "../../../common/normalize_body";
 import path = require("path");
+import { normalizeBody } from "../../../common/normalize_body";
 import { setDesktopView } from "../../../common/view_port";
 import { ProfilePage } from "./body";
 import { InfoPageMock } from "./info_page/body_mock";
@@ -10,6 +10,8 @@ import { UpdateRecoveryEmailPageMock } from "./update_recovery_email_page/body_m
 import { deleteFile, screenshot } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+
+normalizeBody();
 
 class NavigateForwardAndBack implements TestCase {
   private cut: ProfilePage;

@@ -1,11 +1,13 @@
-import "../../../common/normalize_body";
 import path = require("path");
+import { normalizeBody } from "../../../common/normalize_body";
 import { setTabletView } from "../../../common/view_port";
 import { AddCardPaymentItem, CardPaymentItem } from "./card_payment_item";
 import { CardBrand } from "@phading/commerce_service_interface/web/payment/payment_method_masked";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+
+normalizeBody();
 
 class CardBrandTestCase implements TestCase {
   private container: HTMLDivElement;

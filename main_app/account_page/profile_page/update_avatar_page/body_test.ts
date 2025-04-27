@@ -1,7 +1,7 @@
-import "../../../../common/normalize_body";
 import nonImageFile = require("./test_data/non_image.bin");
 import wideImage = require("./test_data/wide.jpeg");
 import path = require("path");
+import { normalizeBody } from "../../../../common/normalize_body";
 import { setDesktopView, setTabletView } from "../../../../common/view_port";
 import { UpdateAvatarPage } from "./body";
 import { UploadAccountAvatarResponse } from "@phading/user_service_interface/web/self/interface";
@@ -13,6 +13,8 @@ import {
 } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "UpdateAvatarPageTest",

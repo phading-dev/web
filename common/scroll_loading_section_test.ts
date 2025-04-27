@@ -1,7 +1,7 @@
 import "../dev/env";
-import "./normalize_body";
 import path from "path";
 import { SCHEME } from "./color_scheme";
+import { normalizeBody } from "./normalize_body";
 import { ScrollLoadingSection } from "./scroll_loading_section";
 import { FONT_M } from "./sizes";
 import { setTabletView } from "./view_port";
@@ -9,6 +9,8 @@ import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { Ref, assign } from "@selfage/ref";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+
+normalizeBody();
 
 let index = 0;
 
@@ -105,6 +107,7 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
+        window.scrollTo(0, 0);
         this.container.remove();
       }
     })(),

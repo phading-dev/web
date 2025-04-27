@@ -11,7 +11,6 @@ import { FONT_M, LINE_HEIGHT_XXL } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { CommentWithAuthor } from "../comment_with_author";
 import { CommentEntry } from "./comment_entry";
-import { SIDE_PADDING } from "./styles";
 import { newPostCommentRequest } from "@phading/comment_service_interface/show/web/author/client";
 import { PostCommentResponse } from "@phading/comment_service_interface/show/web/author/interface";
 import { Comment } from "@phading/comment_service_interface/show/web/comment";
@@ -60,7 +59,7 @@ export class CommentsPanel extends EventEmitter {
         this.commentInputLine,
         {
           class: "comments-panel-input-line",
-          style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; align-items: center; padding: .5rem ${SIDE_PADDING}rem; box-sizing: border-box; width: 100%; gap: 1rem;`,
+          style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; align-items: center; padding: .5rem 0; box-sizing: border-box; width: 100%; gap: 1rem;`,
         },
         E.divRef(
           this.pinTimestamp,

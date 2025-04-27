@@ -1,35 +1,22 @@
-import "../../../../common/normalize_body";
 import userImage = require("../../common/test_data/user_image.jpg");
 import path = require("path");
-import { SCHEME } from "../../../../common/color_scheme";
+import { normalizeBody } from "../../../../common/normalize_body";
+import { setTabletView } from "../../../../common/view_port";
 import { CommentEntry } from "./comment_entry";
-import { E } from "@selfage/element/factory";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 
-let container: HTMLDivElement;
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "CommentEntryTest",
-  environment: {
-    setUp() {
-      container = E.div({
-        style: `margin-top: 5rem; background-color: ${SCHEME.neutral4};`,
-      });
-      document.body.append(container);
-    },
-    tearDown() {
-      container.remove();
-    },
-  },
   cases: [
     new (class implements TestCase {
       public name = "Default";
       private cut: CommentEntry;
       public async execute() {
         // Prepare
-        await setViewport(300, 200);
+        await setTabletView();
         this.cut = new CommentEntry({
           comment: {
             content: "Some some content",
@@ -41,7 +28,7 @@ TEST_RUNNER.run({
         });
 
         // Execute
-        container.append(this.cut.body);
+        document.body.append(this.cut.body);
 
         // Verify
         await asyncAssertScreenshot(
@@ -59,7 +46,7 @@ TEST_RUNNER.run({
       private cut: CommentEntry;
       public async execute() {
         // Prepare
-        await setViewport(600, 400);
+        await setTabletView();
         this.cut = new CommentEntry({
           comment: {
             content:
@@ -73,7 +60,7 @@ TEST_RUNNER.run({
         });
 
         // Execute
-        container.append(this.cut.body);
+        document.body.append(this.cut.body);
 
         // Verify
         await asyncAssertScreenshot(

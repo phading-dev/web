@@ -1,10 +1,11 @@
 import { HoverObserver, Mode } from "./hover_observer";
+import { normalizeBody } from "./normalize_body";
+import { setTabletView } from "./view_port";
 import { E } from "@selfage/element/factory";
 import {
   keyboardDown,
   mouseDown,
   mouseMove,
-  setViewport,
   touchEnd,
   touchMove,
   touchStart,
@@ -12,7 +13,8 @@ import {
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { Ref } from "@selfage/ref";
 import { assertThat, eq, isArray } from "@selfage/test_matcher";
-import "./normalize_body";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "HoverObserverTest",
@@ -22,7 +24,7 @@ TEST_RUNNER.run({
       private anchorElement: HTMLDivElement;
       public async execute() {
         // Prepare
-        await setViewport(400, 400);
+        await setTabletView();
         let inputRef = new Ref<HTMLInputElement>();
         this.anchorElement = E.div(
           {
@@ -123,7 +125,7 @@ TEST_RUNNER.run({
       private anchorElement: HTMLDivElement;
       public async execute() {
         // Prepare
-        await setViewport(400, 400);
+        await setTabletView();
         let inputRef = new Ref<HTMLInputElement>();
         this.anchorElement = E.div(
           {

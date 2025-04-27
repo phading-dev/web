@@ -1,5 +1,5 @@
-import "./normalize_body";
 import path = require("path");
+import { normalizeBody } from "./normalize_body";
 import { Orientation, Slider } from "./slider";
 import { setTabletView } from "./view_port";
 import {
@@ -15,6 +15,8 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 
+normalizeBody();
+
 TEST_RUNNER.run({
   name: "SliderTest",
   environment: {
@@ -22,7 +24,7 @@ TEST_RUNNER.run({
       document.body.style.margin = "2rem";
     },
     tearDown: () => {
-      document.body.style.margin = "";
+      document.body.style.margin = "0";
     },
   },
   cases: [

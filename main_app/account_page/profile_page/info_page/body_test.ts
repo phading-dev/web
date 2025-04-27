@@ -1,6 +1,6 @@
-import "../../../../common/normalize_body";
 import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
+import { normalizeBody } from "../../../../common/normalize_body";
 import {
   setDesktopView,
   setPhoneView,
@@ -22,6 +22,8 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+
+normalizeBody();
 
 function createAccountAndUserResponse(): GetAccountAndUserResponse {
   return {
@@ -252,7 +254,7 @@ TEST_RUNNER.run({
           "account info",
         );
       }
-      public tearnDown() {
+      public tearDown() {
         this.cut.remove();
       }
     })(),
@@ -290,7 +292,7 @@ TEST_RUNNER.run({
           "account info",
         );
       }
-      public tearnDown() {
+      public tearDown() {
         this.cut.remove();
       }
     })(),
@@ -313,7 +315,7 @@ TEST_RUNNER.run({
         // Verify
         assertThat(switchAccount, eq(true), "switch account");
       }
-      public tearnDown() {
+      public tearDown() {
         this.cut.remove();
       }
     })(),
@@ -336,7 +338,7 @@ TEST_RUNNER.run({
         // Verify
         assertThat(signOut, eq(true), "sign out");
       }
-      public tearnDown() {
+      public tearDown() {
         this.cut.remove();
       }
     })(),

@@ -1,9 +1,9 @@
 import "../../../dev/env";
-import "../../../common/normalize_body";
 import coverImage = require("./test_data/cover_tall.jpg");
 import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
 import { SCHEME } from "../../../common/color_scheme";
+import { normalizeBody } from "../../../common/normalize_body";
 import {
   setDesktopView,
   setPhoneView,
@@ -18,6 +18,8 @@ import {
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "ElementsTest",

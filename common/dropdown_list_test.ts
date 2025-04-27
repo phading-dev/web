@@ -1,10 +1,12 @@
-import "./normalize_body";
 import path = require("path");
 import { Direction, DropdownList } from "./dropdown_list";
+import { normalizeBody } from "./normalize_body";
 import { setTabletView } from "./view_port";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
+
+normalizeBody();
 
 enum Location {
   TOP,

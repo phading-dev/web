@@ -1,8 +1,8 @@
 import "../../../dev/env";
-import "../../../common/normalize_body";
 import coverImage = require("../common/test_data/cover_tall.jpg");
 import coverImage2 = require("../common/test_data/cover_tall2.jpg");
 import path from "path";
+import { normalizeBody } from "../../../common/normalize_body";
 import { setTabletView } from "../../../common/view_port";
 import { ListTopRatedPage } from "./body";
 import {
@@ -15,6 +15,8 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "ListTopRatedPage",
@@ -204,6 +206,7 @@ TEST_RUNNER.run({
         assertThat(showDetailsId, eq("season8"), "showDetailsId");
       }
       public async tearDown() {
+        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),

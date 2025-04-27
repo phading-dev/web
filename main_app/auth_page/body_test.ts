@@ -1,5 +1,5 @@
-import "../../common/normalize_body";
 import path = require("path");
+import { normalizeBody } from "../../common/normalize_body";
 import { setDesktopView } from "../../common/view_port";
 import { AuthPage } from "./body";
 import { SignInPageMock } from "./sign_in_page_mock";
@@ -7,6 +7,8 @@ import { SignUpPageMock } from "./sign_up_page_mock";
 import { AccountType } from "@phading/user_service_interface/account_type";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "AuthPageTest",

@@ -1,8 +1,8 @@
 import "../../../dev/env";
-import "../../../common/normalize_body";
 import coverImage = require("../common/test_data/cover_tall.jpg");
 import userImage = require("../common/test_data/user_image.jpg");
 import path = require("path");
+import { normalizeBody } from "../../../common/normalize_body";
 import {
   setDesktopView,
   setPhoneView,
@@ -51,6 +51,8 @@ import { ClientRequestInterface } from "@selfage/service_descriptor/client_reque
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
+normalizeBody();
+
 function waitToGetContinueTime(
   cut: SeasonDetailsPage,
   times: number,
@@ -68,7 +70,7 @@ function waitToGetContinueTime(
 }
 
 TEST_RUNNER.run({
-  name: "WatchLaterPageTest",
+  name: "SeasonDetailsPageTest",
   cases: [
     new (class implements TestCase {
       public name =

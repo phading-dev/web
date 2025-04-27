@@ -1,6 +1,7 @@
-import "../../common/normalize_body";
 import path = require("path");
 import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
+import { normalizeBody } from "../../common/normalize_body";
+import { setDesktopView } from "../../common/view_port";
 import { SignInPage } from "./sign_in_page";
 import {
   SIGN_IN,
@@ -12,7 +13,8 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
-import { setDesktopView } from "../../common/view_port";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "SignInPageTest",

@@ -1,7 +1,12 @@
-import "../../../common/normalize_body";
 import userImage = require("./test_data/user_image.jpg");
 import path = require("path");
 import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
+import { normalizeBody } from "../../../common/normalize_body";
+import {
+  setDesktopView,
+  setPhoneView,
+  setTabletView,
+} from "../../../common/view_port";
 import { AccountItem, AddAccountItem } from "./account_item";
 import { ListAccountsPage } from "./body";
 import { AccountType } from "@phading/user_service_interface/account_type";
@@ -22,7 +27,8 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
-import { setDesktopView, setPhoneView, setTabletView } from "../../../common/view_port";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "ListAccountsPageTest",

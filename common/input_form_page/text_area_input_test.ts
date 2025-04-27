@@ -1,10 +1,13 @@
-import "../normalize_body";
 import path = require("path");
+import { normalizeBody } from "../normalize_body";
+import { setTabletView } from "../view_port";
 import { TextAreaInputWithErrorMsg } from "./text_area_input";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "TextAreaInputTest",
@@ -16,6 +19,7 @@ TEST_RUNNER.run({
       private followingLine: HTMLDivElement;
       public async execute() {
         // Execute
+        await setTabletView();
         this.cut = TextAreaInputWithErrorMsg.create(
           "Input",
           "width: 50rem;",
@@ -111,6 +115,7 @@ TEST_RUNNER.run({
       private cut: TextAreaInputWithErrorMsg;
       public async execute() {
         // Execute
+        await setTabletView();
         this.cut = TextAreaInputWithErrorMsg.create(
           "Label",
           "",

@@ -1,5 +1,5 @@
-import "../../../common/normalize_body";
 import path = require("path");
+import { normalizeBody } from "../../../common/normalize_body";
 import { setPhoneView, setTabletView } from "../../../common/view_port";
 import { StatementsPage } from "./body";
 import {
@@ -14,6 +14,8 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "StatementsPageTest",

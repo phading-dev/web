@@ -1,12 +1,15 @@
-import "../normalize_body";
 import path = require("path");
 import { SCHEME } from "../color_scheme";
+import { normalizeBody } from "../normalize_body";
 import { OptionPill } from "../option_pills";
+import { setTabletView } from "../view_port";
 import { RadioOptionInput } from "./option_input";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
+
+normalizeBody();
 
 enum ValueType {
   WALK,
@@ -21,6 +24,7 @@ TEST_RUNNER.run({
       private container: HTMLDivElement;
       public async execute() {
         // Execute
+        await setTabletView();
         this.container = E.div({
           style: `width: 100%; background-color: ${SCHEME.neutral4};`,
         });

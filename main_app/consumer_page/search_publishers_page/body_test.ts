@@ -1,8 +1,8 @@
 import "../../../dev/env";
-import "../../../common/normalize_body";
 import userImage = require("../common/test_data/user_image.jpg");
 import userImage2 = require("../common/test_data/user_image2.png");
 import path from "path";
+import { normalizeBody } from "../../../common/normalize_body";
 import { setDesktopView, setTabletView } from "../../../common/view_port";
 import { SearchPublishersPage } from "./body";
 import {
@@ -15,6 +15,8 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "SearchPublishersPage",
@@ -101,8 +103,14 @@ TEST_RUNNER.run({
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/search_publishers_page_tablet_render.png"),
-          path.join(__dirname, "/golden/search_publishers_page_tablet_render.png"),
-          path.join(__dirname, "/search_publishers_page_tablet_render_diff.png"),
+          path.join(
+            __dirname,
+            "/golden/search_publishers_page_tablet_render.png",
+          ),
+          path.join(
+            __dirname,
+            "/search_publishers_page_tablet_render_diff.png",
+          ),
         );
 
         // Prepare
@@ -151,8 +159,14 @@ TEST_RUNNER.run({
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/search_publishers_page_tablet_scrolled.png"),
-          path.join(__dirname, "/golden/search_publishers_page_tablet_scrolled.png"),
-          path.join(__dirname, "/search_publishers_page_tablet_scrolled_diff.png"),
+          path.join(
+            __dirname,
+            "/golden/search_publishers_page_tablet_scrolled.png",
+          ),
+          path.join(
+            __dirname,
+            "/search_publishers_page_tablet_scrolled_diff.png",
+          ),
         );
 
         // Execute
@@ -161,8 +175,14 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/search_publishers_page_desktop_scrolled.png"),
-          path.join(__dirname, "/golden/search_publishers_page_desktop_scrolled.png"),
-          path.join(__dirname, "/search_publishers_page_desktop_scrolled_diff.png"),
+          path.join(
+            __dirname,
+            "/golden/search_publishers_page_desktop_scrolled.png",
+          ),
+          path.join(
+            __dirname,
+            "/search_publishers_page_desktop_scrolled_diff.png",
+          ),
         );
 
         // Prepare
@@ -178,6 +198,7 @@ TEST_RUNNER.run({
         assertThat(showroomId, eq("account1"), "showroom id");
       }
       public async tearDown() {
+        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),

@@ -1,6 +1,6 @@
 import "../../../dev/env";
-import "../../../common/normalize_body";
 import path from "path";
+import { normalizeBody } from "../../../common/normalize_body";
 import { setDesktopView, setPhoneView } from "../../../common/view_port";
 import { UsagePage } from "./body";
 import {
@@ -24,6 +24,8 @@ import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { ClientRequestInterface } from "@selfage/service_descriptor/client_request_interface";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "UsagePageTest",
@@ -143,6 +145,7 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
+        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),

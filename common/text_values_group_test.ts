@@ -1,10 +1,12 @@
-import "./normalize_body";
 import path = require("path");
+import { normalizeBody } from "./normalize_body";
 import { TextValuesGroup } from "./text_values_group";
 import { setTabletView } from "./view_port";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "TextValuesGroupTest",
@@ -37,9 +39,6 @@ TEST_RUNNER.run({
           path.join(__dirname, "/text_values_group_default.png"),
           path.join(__dirname, "/golden/text_values_group_default.png"),
           path.join(__dirname, "/text_values_group_default_diff.png"),
-          {
-            threshold: 0.001,
-          },
         );
 
         // Prepare
@@ -84,9 +83,6 @@ TEST_RUNNER.run({
           path.join(__dirname, "/text_values_group_not_editable.png"),
           path.join(__dirname, "/golden/text_values_group_not_editable.png"),
           path.join(__dirname, "/text_values_group_not_editable_diff.png"),
-          {
-            threshold: 0.001,
-          },
         );
 
         // Prepare

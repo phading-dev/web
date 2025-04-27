@@ -1,12 +1,14 @@
-import "./normalize_body";
 import path from "path";
 import { SCHEME } from "./color_scheme";
 import { DateRangeInput, DateType } from "./date_range_input";
+import { normalizeBody } from "./normalize_body";
 import { setDesktopView, setPhoneView, setTabletView } from "./view_port";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
+
+normalizeBody();
 
 TEST_RUNNER.run({
   name: "DateRangeInputTest",

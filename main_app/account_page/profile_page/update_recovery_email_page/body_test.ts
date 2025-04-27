@@ -1,17 +1,18 @@
-import "../../../../common/normalize_body";
 import path = require("path");
+import { normalizeBody } from "../../../../common/normalize_body";
 import { setDesktopView } from "../../../../common/view_port";
 import { UpdateRecoveryEmailPage } from "./body";
 import {
   UPDATE_RECOVERY_EMAIL,
   UPDATE_RECOVERY_EMAIL_REQUEST_BODY,
 } from "@phading/user_service_interface/web/self/interface";
-import { E } from "@selfage/element/factory";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+
+normalizeBody();
 
 function createLongString(length: number) {
   let stringArray = new Array<string>();
@@ -21,21 +22,8 @@ function createLongString(length: number) {
   return stringArray.join("");
 }
 
-let menuContainer: HTMLDivElement;
-
 TEST_RUNNER.run({
   name: "UpdateRecoveryEmailPageTest",
-  environment: {
-    setUp: () => {
-      menuContainer = E.div({
-        style: `position: absolute; top: 0; left: 0`,
-      });
-      document.body.append(menuContainer);
-    },
-    tearDown: () => {
-      menuContainer.remove();
-    },
-  },
   cases: [
     new (class implements TestCase {
       public name = "Default_UpdateFailed_UpdateSuccess";

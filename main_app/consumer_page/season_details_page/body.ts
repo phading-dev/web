@@ -378,7 +378,7 @@ export class SeasonDetailsPage extends EventEmitter {
                   E.div(
                     {
                       class: "season-details-watch-later-icon",
-                      style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
+                      style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
                     },
                     createBookmarkIcon(SCHEME.neutral1),
                   ),
@@ -395,7 +395,7 @@ export class SeasonDetailsPage extends EventEmitter {
                   E.div(
                     {
                       class: "season-details-watch-later-icon",
-                      style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
+                      style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
                     },
                     createFilledBookmarkIcon(SCHEME.neutral1),
                   ),
@@ -412,7 +412,7 @@ export class SeasonDetailsPage extends EventEmitter {
               E.div(
                 {
                   class: "season-details-share-icon",
-                  style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
+                  style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
                 },
                 createShareIcon(SCHEME.neutral1),
               ),
@@ -933,7 +933,7 @@ export class SeasonDetailsPage extends EventEmitter {
       E.div(
         {
           class: "season-details-share-link-copied-icon",
-          style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
+          style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
         },
         createCheckmarkIcon(SCHEME.neutral1),
       ),

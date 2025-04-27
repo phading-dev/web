@@ -8,7 +8,6 @@ import {
   LINE_HEIGHT_M,
 } from "../../../../common/sizes";
 import { CommentWithAuthor } from "../comment_with_author";
-import { SIDE_PADDING } from "./styles";
 import { E } from "@selfage/element/factory";
 
 export class CommentEntry extends EventEmitter {
@@ -23,7 +22,7 @@ export class CommentEntry extends EventEmitter {
     this.body = E.div(
       {
         class: "comment-entry",
-        style: `position: relative; padding: .5rem ${SIDE_PADDING}rem; min-height: ${AVATAR_S}rem;`,
+        style: `position: relative; padding: .5rem 0; min-height: ${AVATAR_S}rem;`,
       },
       E.image({
         class: "comment-entry-author-avatar",

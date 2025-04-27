@@ -1,6 +1,6 @@
-import "../../common/normalize_body";
 import path = require("path");
 import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
+import { normalizeBody } from "../../common/normalize_body";
 import { setDesktopView } from "../../common/view_port";
 import { SignUpPage } from "./sign_up_page";
 import { AccountType } from "@phading/user_service_interface/account_type";
@@ -14,6 +14,8 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
+
+normalizeBody();
 
 function createLongString(length: number): string {
   let characters = [];
