@@ -66,8 +66,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setTabletView();
-        let elementCount = new Ref<number>();
-        elementCount.val = 0;
+        let commentCount = new Ref<number>(0);
         let randomNum: number;
         let pausedPosX: number;
         let settings: ChatOverlaySettings = JSON.parse(
@@ -92,18 +91,18 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.play();
-        this.cut.add([createComment(elementCount.val++)]);
+        this.cut.add([createComment(commentCount.val++)]);
         this.cut.pause();
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/danmaku_overlay_one_element.png"),
-          path.join(__dirname, "/golden/danmaku_overlay_one_element.png"),
-          path.join(__dirname, "/danmaku_overlay_one_element_diff.png"),
+          path.join(__dirname, "/danmaku_overlay_one_comment.png"),
+          path.join(__dirname, "/golden/danmaku_overlay_one_comment.png"),
+          path.join(__dirname, "/danmaku_overlay_one_comment_diff.png"),
         );
 
         // Execute
-        this.cut.add(createMultipleComments(elementCount, 15));
+        this.cut.add(createMultipleComments(commentCount, 15));
         this.cut.pause();
 
         // Verify
@@ -123,7 +122,7 @@ TEST_RUNNER.run({
         danmakuEntryMocks[2].emit("fullyDisplayed");
         danmakuEntryMocks[8].pausedPosX = -200;
         danmakuEntryMocks[8].emit("fullyDisplayed");
-        this.cut.add(createMultipleComments(elementCount, 20));
+        this.cut.add(createMultipleComments(commentCount, 20));
         this.cut.pause();
 
         // Verify
@@ -166,8 +165,8 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setTabletView();
-        let elementCount = new Ref<number>();
-        elementCount.val = 0;
+        let commentCount = new Ref<number>();
+        commentCount.val = 0;
         let pausedPosX: number;
         let settings: ChatOverlaySettings = JSON.parse(
           JSON.stringify(SETTINGS),
@@ -186,7 +185,7 @@ TEST_RUNNER.run({
         pausedPosX = 5;
 
         // Execute
-        this.cut.add(createMultipleComments(elementCount, 5));
+        this.cut.add(createMultipleComments(commentCount, 5));
         this.cut.pause();
 
         // Verify
@@ -220,8 +219,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setTabletView();
-        let elementCount = new Ref<number>();
-        elementCount.val = 0;
+        let commentCount = new Ref<number>(0);
         let randomNum: number;
         let pausedPosX: number;
         let settings: ChatOverlaySettings = JSON.parse(
@@ -232,9 +230,9 @@ TEST_RUNNER.run({
         let danmakuEntryMocks = new Array<DanmakuEntryMock>();
         this.cut = new DanmakuOverlay(
           (settings, comment) => {
-            let element = new DanmakuEntryMock(pausedPosX, settings, comment);
-            danmakuEntryMocks.push(element);
-            return element;
+            let entry = new DanmakuEntryMock(pausedPosX, settings, comment);
+            danmakuEntryMocks.push(entry);
+            return entry;
           },
           () => randomNum,
           settings,
@@ -246,7 +244,7 @@ TEST_RUNNER.run({
         pausedPosX = 5;
 
         // Execute
-        this.cut.add(createMultipleComments(elementCount, 5));
+        this.cut.add(createMultipleComments(commentCount, 5));
         this.cut.pause();
 
         // Verify
@@ -271,7 +269,7 @@ TEST_RUNNER.run({
         randomNum = 0.999;
 
         // Execute
-        this.cut.add(createMultipleComments(elementCount, 10));
+        this.cut.add(createMultipleComments(commentCount, 10));
         this.cut.pause();
 
         // Verify
@@ -297,8 +295,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setTabletView();
-        let elementCount = new Ref<number>();
-        elementCount.val = 0;
+        let commentCount = new Ref<number>(0);
         let pausedPosX: number;
         let settings: ChatOverlaySettings = JSON.parse(
           JSON.stringify(SETTINGS),
@@ -317,7 +314,7 @@ TEST_RUNNER.run({
         pausedPosX = 5;
 
         // Execute
-        this.cut.add(createMultipleComments(elementCount, 9));
+        this.cut.add(createMultipleComments(commentCount, 9));
         this.cut.pause();
 
         // Verify

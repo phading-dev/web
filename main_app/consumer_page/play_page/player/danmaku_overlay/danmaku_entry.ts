@@ -1,5 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../../../common/color_scheme";
+import { FONT_SIZE_SCALE } from "../scales";
 import { Comment } from "@phading/comment_service_interface/show/web/comment";
 import { ChatOverlaySettings } from "@phading/user_service_interface/web/self/video_player_settings";
 import { E } from "@selfage/element/factory";
@@ -29,8 +30,6 @@ export class DanmakuEntry extends EventEmitter {
     );
   }
 
-  private static FONT_SIZE_SCALE = 1 / 10;
-
   public body: HTMLDivElement;
   private content = new Ref<HTMLDivElement>();
   private canvasWidth: number;
@@ -50,14 +49,14 @@ export class DanmakuEntry extends EventEmitter {
     super();
     this.body = E.div(
       {
-        class: "danmaku-element",
+        class: "danmaku-entry",
         style: `position: absolute; left: 100%; top: 0; padding: .2rem; visibility: hidden; pointer-events: none;`,
       },
       E.divRef(
         this.content,
         {
-          class: "danmaku-element-content",
-          style: `white-space: nowrap; line-height: 1; color: ${SCHEME.neutral0}; text-shadow: -.1rem 0 .1rem ${SCHEME.neutral4}, 0 .1rem .1rem ${SCHEME.neutral4}, .1rem 0 .1rem ${SCHEME.neutral4}, 0 -.1rem .1rem ${SCHEME.neutral4};`,
+          class: "danmaku-entry-content",
+          style: `white-space: nowrap; line-height: 1; color: ${SCHEME.neutral0}; text-shadow: -.1rem 0 .2rem ${SCHEME.neutral4}, 0 .1rem .2rem ${SCHEME.neutral4}, .1rem 0 .2rem ${SCHEME.neutral4}, 0 -.1rem .2rem ${SCHEME.neutral4};`,
         },
         E.text(comment.content),
       ),
@@ -68,7 +67,7 @@ export class DanmakuEntry extends EventEmitter {
   private render(): void {
     this.content.val.style.opacity = `${this.settings.opacity / 100}`;
     this.content.val.style.fontSize = `${
-      this.settings.fontSize * DanmakuEntry.FONT_SIZE_SCALE
+      this.settings.fontSize * FONT_SIZE_SCALE
     }rem`;
     this.content.val.style.fontFamily = this.settings.fontFamily;
   }
