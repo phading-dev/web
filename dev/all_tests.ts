@@ -38,6 +38,7 @@ import "../main_app/consumer_page/play_page/comments_panel/comment_entry_test";
 import "../main_app/consumer_page/play_page/info_panel/body_test";
 import "../main_app/consumer_page/play_page/player/danmaku_overlay/body_test";
 import "../main_app/consumer_page/play_page/player/danmaku_overlay/danmaku_entry_test";
+import "../main_app/consumer_page/play_page/player/side_chat_overlay/body_test";
 import "../main_app/consumer_page/publisher_showroom_page/body_test";
 import "../main_app/consumer_page/search_publishers_page/body_test";
 import "../main_app/consumer_page/search_seasons_page/body_test";

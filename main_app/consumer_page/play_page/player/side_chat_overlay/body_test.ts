@@ -8,6 +8,7 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { Ref } from "@selfage/ref";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
+import { setTabletView } from "../../../../../common/view_port";
 
 normalizeBody();
 
@@ -55,6 +56,7 @@ TEST_RUNNER.run({
       private cut: SideChatOverlay;
       public async execute() {
         // Prepare
+        await setTabletView();
         let commentCount = new Ref<number>(0);
         let settings: ChatOverlaySettings = JSON.parse(
           JSON.stringify(SETTINGS),

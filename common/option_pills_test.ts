@@ -1,7 +1,7 @@
 import path = require("path");
 import { SCHEME } from "./color_scheme";
 import { normalizeBody } from "./normalize_body";
-import { OptionPill, RadioOptionPills } from "./option_pills";
+import { OptionPill, RadioOptionPillsGroup } from "./option_pills";
 import { setTabletView } from "./view_port";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -16,10 +16,10 @@ enum ValueType {
 }
 
 TEST_RUNNER.run({
-  name: "RadioOptionPillsTest",
+  name: "OptionPillsTest",
   cases: [
     new (class implements TestCase {
-      public name = "Default_ChooseSecondOption";
+      public name = "Default_ChooseTheSameOption_ChooseSecondOption";
       private container: HTMLDivElement;
       public async execute() {
         // Execute
@@ -28,17 +28,16 @@ TEST_RUNNER.run({
           style: `width: 100%; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: row nowrap; gap: 1rem;`,
         });
         document.body.append(this.container);
+        let walkOption = new OptionPill("Walk", ValueType.WALK);
+        let runOption = new OptionPill("Run", ValueType.RUN);
 
         // Execute
+        this.container.append(walkOption.body, runOption.body);
         let selectedValue: ValueType;
-        let cut = new RadioOptionPills([
-          new OptionPill("Walk", ValueType.WALK),
-          new OptionPill("Run", ValueType.RUN),
-        ]);
+        let cut = new RadioOptionPillsGroup([walkOption, runOption]);
         cut.on("selected", (value) => {
           selectedValue = value;
         });
-        this.container.append(...cut.elements);
         cut.setValue(ValueType.WALK);
 
         // Verify
@@ -51,10 +50,26 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.pills[1].click();
+        walkOption.click();
 
         // Verify
-        assertThat(selectedValue, eq(ValueType.RUN), "selected value");
+        assertThat(
+          selectedValue,
+          eq(ValueType.WALK),
+          "selected the same value",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/option_pills_same_option.png"),
+          path.join(__dirname, "/golden/option_pills_default.png"),
+          path.join(__dirname, "/option_pills_same_option_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        runOption.click();
+
+        // Verify
+        assertThat(selectedValue, eq(ValueType.RUN), "selected another value");
         await asyncAssertScreenshot(
           path.join(__dirname, "/option_pills_select_second.png"),
           path.join(__dirname, "/golden/option_pills_select_second.png"),

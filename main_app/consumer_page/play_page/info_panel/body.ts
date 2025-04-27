@@ -81,7 +81,7 @@ export class InfoPanel extends EventEmitter {
     this.body = E.div(
       {
         class: "info-panel",
-        display: `min-width: 35rem; display: flex; flex-flow: columnn nowrap; ${customeStyle}`,
+        display: `display: flex; flex-flow: columnn nowrap; ${customeStyle}`,
       },
       E.div(
         {

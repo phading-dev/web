@@ -1,8 +1,7 @@
 import { SCHEME } from "../color_scheme";
-import { OptionPill, RadioOptionPills } from "../option_pills";
+import { OptionPill, RadioOptionPillsGroup } from "../option_pills";
 import { FONT_M } from "../sizes";
 import { E } from "@selfage/element/factory";
-import { Ref, assign } from "@selfage/ref";
 
 export class RadioOptionInput<ValueType> {
   public static create<ValueType>(
@@ -22,7 +21,7 @@ export class RadioOptionInput<ValueType> {
   }
 
   public body: HTMLDivElement;
-  public radioOptionPills = new Ref<RadioOptionPills<ValueType>>();
+  private radioOptionPillsGroup: RadioOptionPillsGroup<ValueType>;
 
   public constructor(
     label: string,
@@ -48,14 +47,14 @@ export class RadioOptionInput<ValueType> {
           class: "options-list",
           style: `display: flex; flex-flow: row wrap; align-items: center; gap: 1.5rem;`,
         },
-        ...assign(this.radioOptionPills, RadioOptionPills.create(options))
-          .elements,
+        ...options.map((option) => option.body),
       ),
     );
-    this.radioOptionPills.val.setValue(defaultValue);
+    this.radioOptionPillsGroup =
+      RadioOptionPillsGroup.create(options).setValue(defaultValue);
     this.selectValueFn(defaultValue);
 
-    this.radioOptionPills.val.on("selected", (value) =>
+    this.radioOptionPillsGroup.on("selected", (value) =>
       this.selectValueFn(value),
     );
   }

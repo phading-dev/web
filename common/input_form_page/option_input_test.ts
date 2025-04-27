@@ -32,13 +32,12 @@ TEST_RUNNER.run({
 
         // Execute
         let selectedValue: ValueType;
+        let walkOption = new OptionPill("Walk", ValueType.WALK);
+        let runOption = new OptionPill("Run", ValueType.RUN);
         let cut = new RadioOptionInput(
           "Choose",
           "",
-          [
-            new OptionPill("Walk", ValueType.WALK),
-            new OptionPill("Run", ValueType.RUN),
-          ],
+          [walkOption, runOption],
           ValueType.WALK,
           (value) => {
             selectedValue = value;
@@ -56,7 +55,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.radioOptionPills.val.pills[1].click();
+        runOption.click();
 
         // Verify
         assertThat(selectedValue, eq(ValueType.RUN), "selected value 2");

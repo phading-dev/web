@@ -211,7 +211,7 @@ TEST_RUNNER.run({
         } as ListMeterReadingPerSeasonResponse;
 
         // Execute
-        this.cut.rangeTypeInput.val.pills[0].click();
+        this.cut.oneDayOption.val.click();
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
@@ -311,7 +311,7 @@ TEST_RUNNER.run({
         } as ListMeterReadingsPerDayResponse;
 
         // Execute
-        this.cut.rangeTypeInput.val.pills[1].click();
+        this.cut.daysOption.val.click();
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
@@ -441,7 +441,7 @@ TEST_RUNNER.run({
         } as ListMeterReadingsPerMonthResponse;
 
         // Execute
-        this.cut.rangeTypeInput.val.pills[3].click();
+        this.cut.monthsOption.val.click();
 
         // Verify
         assertThat(

@@ -177,7 +177,7 @@ TEST_RUNNER.run({
 
         // Execute
         document.body.append(this.cut.body);
-        this.cut.accountTypeInput.val.radioOptionPills.val.pills[1].click();
+        this.cut.publisherOption.val.click();
 
         // Verify
         await asyncAssertScreenshot(

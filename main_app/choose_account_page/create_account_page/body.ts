@@ -32,7 +32,9 @@ export class CreateAccountPage extends EventEmitter {
   }
 
   public naturalNameInput = new Ref<TextInputWithErrorMsg>();
-  public accountTypeInput = new Ref<RadioOptionInput<AccountType>>();
+  public consumerOption = new Ref<OptionPill<AccountType>>();
+  public publisherOption = new Ref<OptionPill<AccountType>>();
+  private accountTypeInput = new Ref<RadioOptionInput<AccountType>>();
   public inputFormPage: InputFormPage<CreateAccountResponse>;
   private request: CreateAccountRequestBody = {};
 
@@ -62,14 +64,20 @@ export class CreateAccountPage extends EventEmitter {
             LOCALIZED_TEXT.chooseUserTypeLabel,
             "",
             [
-              OptionPill.create(
-                LOCALIZED_TEXT.userTypeConsumerLabel,
-                AccountType.CONSUMER,
+              assign(
+                this.consumerOption,
+                OptionPill.create(
+                  LOCALIZED_TEXT.userTypeConsumerLabel,
+                  AccountType.CONSUMER,
+                ),
               ),
-              OptionPill.create(
-                LOCALIZED_TEXT.userTypePublisherLabel,
-                AccountType.PUBLISHER,
-                "",
+              assign(
+                this.publisherOption,
+                OptionPill.create(
+                  LOCALIZED_TEXT.userTypePublisherLabel,
+                  AccountType.PUBLISHER,
+                  "",
+                ),
               ),
             ],
             AccountType.CONSUMER,

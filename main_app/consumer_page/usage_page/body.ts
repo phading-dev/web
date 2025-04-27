@@ -4,7 +4,7 @@ import { formatMoney } from "../../../common/formatter/price";
 import { formatWatchTimeSeconds } from "../../../common/formatter/quantity";
 import { DATE_INPUT_STYLE } from "../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { OptionPill, RadioOptionPills } from "../../../common/option_pills";
+import { OptionPill, RadioOptionPillsGroup } from "../../../common/option_pills";
 import {
   PAGE_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CARD_STYLE,
@@ -12,6 +12,7 @@ import {
 import { FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../common/elements";
 import { MAX_DAY_RANGE, MAX_MONTH_RANGE } from "@phading/constants/meter";
 import {
   newListMeterReadingPerSeasonRequest,
@@ -26,7 +27,6 @@ import { Ref, assign } from "@selfage/ref";
 import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../common/elements";
 
 export enum RangeType {
   ONE_DAY = 1,
@@ -48,12 +48,16 @@ export class UsagePage extends EventEmitter {
   private static INIT_DAYS = 30;
 
   public body: HTMLDivElement;
-  public rangeTypeInput = new Ref<RadioOptionPills<RangeType>>();
+  public oneDayOption = new Ref<OptionPill<RangeType>>();
+  public daysOption = new Ref<OptionPill<RangeType>>();
+  public oneMonthOption = new Ref<OptionPill<RangeType>>();
+  public monthsOption = new Ref<OptionPill<RangeType>>();
   public dayRangeInput = new Ref<DateRangeInput>();
   public monthRangeInput = new Ref<DateRangeInput>();
   public oneDayInput = new Ref<HTMLInputElement>();
   public oneMonthInput = new Ref<HTMLInputElement>();
   private resultList = new Ref<HTMLDivElement>();
+  private rangeTypeInput: RadioOptionPillsGroup<RangeType>;
   private loadIndex = 0;
 
   public constructor(
@@ -87,27 +91,44 @@ export class UsagePage extends EventEmitter {
             class: "usage-page-graunularity-pills",
             style: `width: 100%; display: flex; flex-flow: row wrap; justify-content: flex-end; align-items: center; gap: 1rem;`,
           },
-          ...assign(
-            this.rangeTypeInput,
-            RadioOptionPills.create([
+          E.div(
+            {
+              style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+            },
+            assign(
+              this.oneDayOption,
               OptionPill.create(
                 LOCALIZED_TEXT.usageReportSelectOneDayLabel,
                 RangeType.ONE_DAY,
               ),
+            ).body,
+            assign(
+              this.daysOption,
               OptionPill.create(
                 LOCALIZED_TEXT.usageReportSelectDaysLabel,
                 RangeType.DAYS,
               ),
+            ).body,
+          ),
+          E.div(
+            {
+              style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+            },
+            assign(
+              this.oneMonthOption,
               OptionPill.create(
                 LOCALIZED_TEXT.usageReportSelectOneMonthLabel,
                 RangeType.ONE_MONTH,
               ),
+            ).body,
+            assign(
+              this.monthsOption,
               OptionPill.create(
                 LOCALIZED_TEXT.usageReportSelectMonths,
                 RangeType.MONTHS,
               ),
-            ]),
-          ).elements,
+            ).body,
+          ),
         ),
         E.inputRef(this.oneDayInput, {
           class: "usage-page-one-day-input",
@@ -137,6 +158,12 @@ export class UsagePage extends EventEmitter {
         }),
       ),
     );
+    this.rangeTypeInput = RadioOptionPillsGroup.create([
+      this.oneDayOption.val,
+      this.daysOption.val,
+      this.oneMonthOption.val,
+      this.monthsOption.val,
+    ]);
     this.oneDayInput.val.value = nowDate
       .clone()
       .addDays(-1)
@@ -154,10 +181,10 @@ export class UsagePage extends EventEmitter {
         .toLocalMonthISOString(),
       nowDate.toLocalMonthISOString(),
     );
-    this.rangeTypeInput.val.setValue(RangeType.ONE_MONTH);
+    this.rangeTypeInput.setValue(RangeType.ONE_MONTH);
     this.setRangeTypeAndLoad(RangeType.ONE_MONTH);
 
-    this.rangeTypeInput.val.on("selected", (value) =>
+    this.rangeTypeInput.on("selected", (value) =>
       this.setRangeTypeAndLoad(value),
     );
     this.oneDayInput.val.addEventListener("input", () => this.loadOneDay());
