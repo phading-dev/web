@@ -33,7 +33,7 @@ export class CommentsPanel extends EventEmitter {
     return new CommentsPanel(SERVICE_CLIENT, customeStyle, seasonId, episodeId);
   }
 
-  private static NUM_COMMENTS_LIMIT = 20;
+  private static NUM_COMMENTS_LIMIT = 30;
 
   public body: HTMLDivElement;
   private commentInputLine = new Ref<HTMLDivElement>();
@@ -53,13 +53,13 @@ export class CommentsPanel extends EventEmitter {
     this.body = E.div(
       {
         class: "comments-panel",
-        style: `min-height: 20rem; display: flex; flex-flow: column nowrap; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customStyle}`,
+        style: `display: flex; flex-flow: column nowrap;  ${customStyle}`,
       },
       E.divRef(
         this.commentInputLine,
         {
           class: "comments-panel-input-line",
-          style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; align-items: center; padding: .5rem 0; box-sizing: border-box; width: 100%; gap: 1rem;`,
+          style: `flex: 0 0 auto; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; padding-bottom: .5rem; gap: 1rem;`,
         },
         E.divRef(
           this.pinTimestamp,

@@ -33,7 +33,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 60rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
+          style: `width: 35rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
         });
         document.body.appendChild(this.container);
         let serviceClientMock = new WebServiceClientMock();
@@ -52,9 +52,6 @@ TEST_RUNNER.run({
           path.join(__dirname, "/comments_panel_default.png"),
           path.join(__dirname, "/golden/comments_panel_default.png"),
           path.join(__dirname, "/comments_panel_default_diff.png"),
-          {
-            fullPage: true,
-          },
         );
 
         // Execute
@@ -106,14 +103,11 @@ TEST_RUNNER.run({
           path.join(__dirname, "/comments_panel_a_few_comments.png"),
           path.join(__dirname, "/golden/comments_panel_a_few_comments.png"),
           path.join(__dirname, "/comments_panel_a_few_comments_diff.png"),
-          {
-            fullPage: true,
-          },
         );
 
         // Execute
         cut.addComments([
-          ...Array.from({ length: 18 }, (_, i) => ({
+          ...Array.from({ length: 28 }, (_, i) => ({
             comment: {
               content: `Comment number ${i + 1}`,
               pinTimestampMs: (i + 5) * 1000,
@@ -133,12 +127,26 @@ TEST_RUNNER.run({
             "/golden/comments_panel_comments_overflowed.png",
           ),
           path.join(__dirname, "/comments_panel_comments_overflowed_diff.png"),
-          {
-            fullPage: true,
-          },
+        );
+
+        // Execute
+        window.scrollTo(0, document.body.scrollHeight);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/comments_panel_comments_overflowed_scrolled.png"),
+          path.join(
+            __dirname,
+            "/golden/comments_panel_comments_overflowed_scrolled.png",
+          ),
+          path.join(
+            __dirname,
+            "/comments_panel_comments_overflowed_scrolled_diff.png",
+          ),
         );
       }
       public tearDown() {
+        window.scrollTo(0, 0);
         this.container.remove();
       }
     })(),

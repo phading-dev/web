@@ -24,7 +24,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 60rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
+          style: `width: 35rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
         });
         document.body.append(this.container);
         let serviceClientMock = new WebServiceClientMock();
@@ -105,6 +105,19 @@ TEST_RUNNER.run({
           },
         );
 
+        // Execute
+        this.container.style.width = "60rem";
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "./info_panel_1st_time_wide.png"),
+          path.join(__dirname, "./golden/info_panel_1st_time_wide.png"),
+          path.join(__dirname, "./info_panel_1st_time_wide_diff.png"),
+          {
+            fullPage: true,
+          },
+        );
+
         // Prepare
         let playSeasonId: string;
         let playEpisodeId: string;
@@ -131,7 +144,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 60rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
+          style: `width: 35rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
         });
         document.body.append(this.container);
         let serviceClientMock = new WebServiceClientMock();
@@ -175,7 +188,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 60rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
+          style: `width: 35rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
         });
         document.body.append(this.container);
         let serviceClientMock = new WebServiceClientMock();
