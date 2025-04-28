@@ -1,5 +1,6 @@
 import path from "path";
 import { normalizeBody } from "../../../../../common/normalize_body";
+import { setTabletView } from "../../../../../common/view_port";
 import { SideChatOverlay } from "./body";
 import { Comment } from "@phading/comment_service_interface/show/web/comment";
 import { ChatOverlaySettings } from "@phading/user_service_interface/web/self/video_player_settings";
@@ -8,7 +9,6 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { Ref } from "@selfage/ref";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import { setTabletView } from "../../../../../common/view_port";
 
 normalizeBody();
 
@@ -52,7 +52,7 @@ TEST_RUNNER.run({
   },
   cases: [
     new (class implements TestCase {
-      public name = "SideChatOverlayTest";
+      public name = "AddedComments_AddedMoreCommentsOverflowed_UpdatedSettings";
       private cut: SideChatOverlay;
       public async execute() {
         // Prepare
@@ -80,11 +80,34 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/side_chat_overlay_comments_overflowed.png"),
-          path.join(__dirname, "/golden/side_chat_overlay_comments_overflowed.png"),
-          path.join(__dirname, "/side_chat_overlay_comments_overflowed_diff.png"),
+          path.join(
+            __dirname,
+            "/golden/side_chat_overlay_comments_overflowed.png",
+          ),
+          path.join(
+            __dirname,
+            "/side_chat_overlay_comments_overflowed_diff.png",
+          ),
         );
         // Neesd to wait for the animation to finish.
         assertThat(this.cut.body.children.length, eq(4), "comments left");
+
+        // Execute
+        settings.fontSize = 25;
+        settings.opacity = 50;
+        this.cut.applySettings();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/side_chat_overlay_updated_settings.png"),
+          path.join(
+            __dirname,
+            "/golden/side_chat_overlay_updated_settings.png",
+          ),
+          path.join(__dirname, "/side_chat_overlay_updated_settings_diff.png"),
+        );
+        // Neesd to wait for the animation to finish.
+        assertThat(this.cut.body.children.length, eq(2), "comments left after update");
       }
       public async tearDown() {
         this.cut.remove();

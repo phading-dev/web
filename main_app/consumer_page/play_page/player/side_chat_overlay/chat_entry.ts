@@ -45,6 +45,10 @@ export class ChatEntry {
     this.content.val.style.fontFamily = this.settings.fontFamily;
   }
 
+  public applySettings(): void {
+    this.render();
+  }
+
   public moveIn(): this {
     // Force reflow.
     this.body.scrollHeight;

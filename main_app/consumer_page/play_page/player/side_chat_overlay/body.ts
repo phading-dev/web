@@ -42,6 +42,13 @@ export class SideChatOverlay {
     }
   }
 
+  public applySettings(): void {
+    this.chatEntries.forEach((entry) => {
+      entry.applySettings();
+    });
+    this.moveOutOverflowedChats();
+  }
+
   public remove(): void {
     this.body.remove();
   }
