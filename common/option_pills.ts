@@ -86,6 +86,9 @@ export class RadioOptionPillsGroup<ValueType> extends EventEmitter {
   }
 
   private selectedOption(pill: OptionPill<ValueType>): void {
+    if (this.currentPill === pill) {
+      return;
+    }
     this.setCurrentPill(pill);
     this.emit("selected", pill.value);
   }
@@ -101,7 +104,7 @@ export class RadioOptionPillsGroup<ValueType> extends EventEmitter {
   }
 
   private setCurrentPill(pill: OptionPill<ValueType>): void {
-    if (this.currentPill && this.currentPill !== pill) {
+    if (this.currentPill) {
       this.currentPill.lowlight();
     }
     this.currentPill = pill;

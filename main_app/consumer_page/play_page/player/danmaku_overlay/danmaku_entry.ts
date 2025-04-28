@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../../../common/color_scheme";
-import { FONT_SIZE_SCALE } from "../scales";
+import { FONT_SIZE_SCALE, OPACITY_SCALE } from "../scales";
 import { Comment } from "@phading/comment_service_interface/show/web/comment";
 import { ChatOverlaySettings } from "@phading/user_service_interface/web/self/video_player_settings";
 import { E } from "@selfage/element/factory";
@@ -65,11 +65,10 @@ export class DanmakuEntry extends EventEmitter {
   }
 
   private render(): void {
-    this.content.val.style.opacity = `${this.settings.opacity / 100}`;
+    this.content.val.style.opacity = `${this.settings.opacity * OPACITY_SCALE}`;
     this.content.val.style.fontSize = `${
       this.settings.fontSize * FONT_SIZE_SCALE
     }rem`;
-    this.content.val.style.fontFamily = this.settings.fontFamily;
   }
 
   private startTransition(): void {

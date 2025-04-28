@@ -15,7 +15,6 @@ normalizeBody();
 let SETTINGS: ChatOverlaySettings = {
   fontSize: 18,
   opacity: 80,
-  fontFamily: "cursive",
 };
 
 function createComment(index: number): Comment {

@@ -6,7 +6,7 @@ export function normalizeBody() {
   document.documentElement.style.backgroundColor = SCHEME.neutral3;
   document.body.style.margin = "0";
   document.body.style.fontSize = "0";
-  document.body.style.fontFamily = "Arial";
+  document.body.style.fontFamily = "sans-serif";
   document.body.style.width = "100%";
   document.body.style.height = "100%";
 

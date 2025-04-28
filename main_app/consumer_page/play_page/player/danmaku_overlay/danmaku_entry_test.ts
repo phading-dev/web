@@ -29,7 +29,6 @@ TEST_RUNNER.run({
         let settings: ChatOverlaySettings = {
           opacity: 80,
           fontSize: 20,
-          fontFamily: "cursive",
           danmakuSettings: {
             speed: 100,
           },
@@ -77,10 +76,10 @@ TEST_RUNNER.run({
         this.cut.setStartPosition(20, 600);
 
         // Verify
-        // The width of the content is 182px.
+        // The width of the content is 197px.
         assertThat(
           this.cut.body.style.transform,
-          eq("translate3d(182px, 20px, 0px)"),
+          eq("translate3d(197px, 20px, 0px)"),
           "starting transform",
         );
         assertThat(
@@ -99,17 +98,17 @@ TEST_RUNNER.run({
           eq("translate3d(-600px, 20px, 0px)"),
           "target transform",
         );
-        // (600px + 182px) / 100 (speed) = 7.82s
+        // (600px + 197px) / 100 (speed) = 7.97s
         assertThat(
           this.cut.body.style.transition,
-          eq("transform 7.82s linear"),
+          eq("transform 7.97s linear"),
           "transitioning",
         );
-        // 182px / 100 (speed) * 1000 = 1820 ms.
-        // (600px + 182px) / 100 (speed) * 1000 = 7820 ms.
+        // 197px / 100 (speed) * 1000 = 1970 ms.
+        // (600px + 197px) / 100 (speed) * 1000 = 7970 ms.
         assertThat(
           delaysMs,
-          isArray([eq(1820), eq(7820)]),
+          isArray([eq(1970), eq(7970)]),
           "delay until fully displayed and hidden",
         );
 
@@ -199,7 +198,6 @@ TEST_RUNNER.run({
         let settings: ChatOverlaySettings = {
           opacity: 80,
           fontSize: 20,
-          fontFamily: "cursive",
           danmakuSettings: {
             speed: 100,
           },

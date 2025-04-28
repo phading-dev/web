@@ -1,7 +1,7 @@
 export class NumberRange {
   public constructor(
-    public maxValue: number,
     public minValue: number,
+    public maxValue: number,
     public defaultValue: number,
   ) {}
 

@@ -55,8 +55,8 @@ TEST_RUNNER.run({
         // Verify
         assertThat(
           selectedValue,
-          eq(ValueType.WALK),
-          "selected the same value",
+          eq(undefined),
+          "not selecting the same value",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/option_pills_same_option.png"),

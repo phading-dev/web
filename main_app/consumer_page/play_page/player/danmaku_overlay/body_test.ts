@@ -18,7 +18,6 @@ normalizeBody();
 let SETTINGS: ChatOverlaySettings = {
   fontSize: 18,
   opacity: 80,
-  fontFamily: "cursive",
   danmakuSettings: {
     density: 100,
     speed: 100,

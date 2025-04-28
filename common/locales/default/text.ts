@@ -633,7 +633,7 @@ export default class Text {
     return [``, ` / hr`];
   }
   get pricingRate() {
-    return [``, ` / hour`,];
+    return [``, ` / hour`];
   }
   get currentRate() {
     return `Current rate: `;
@@ -737,40 +737,58 @@ export default class Text {
   get noNextEpisode() {
     return `No upcoming episode`;
   }
-  get danmakuSettingsLabel() {
-    return `Settings for scrolling comments`;
+  get videoPlayGeneralSettingsLabel() {
+    return `General settings`;
   }
-  get danmakuEnableOption() {
-    return `Enable scrolling`;
+  get subtitleOptionsLabel() {
+    return `Subtitle`;
   }
-  get danmakuOpacityOption() {
+  get subtitleOptionNone() {
+    return `None`;
+  }
+  get audioOptionsLabel() {
+    return `Audio`;
+  }
+  get chatOverlaySettingsLabel() {
+    return `Settings for chat overlay`;
+  }
+  get chatOverlayStyleLabel() {
+    return `Style`;
+  }
+  get chatOverlayStyleDisabledOptionLabel() {
+    return `Disabled`;
+  }
+  get chatOverlayStyleSideOptionLabel() {
+    return `On the side`;
+  }
+  get chatOverlayStyleDanmakuOptionLabel() {
+    return `Scrolling`;
+  }
+  get chatOverlayOpacityLabel() {
     return `Opacity`;
   }
-  get danmakuSpeedOption() {
-    return `Speed`;
-  }
-  get danmakuFontSizeOption() {
+  get chatOverlayFontSizeLabel() {
     return `Font size`;
   }
-  get danmakuFontFamilyOption() {
+  get chatOverlayFontFamilyLabel() {
     return `Font`;
   }
-  get danmakuDensityOption() {
+  get danmakuOverlaySettingsLabel() {
+    return `Settings for scrolling chats overlay`;
+  }
+  get danmakuOverlaySpeedLabel() {
+    return `Speed`;
+  }
+  get danmakuOverlayDensityLabel() {
     return `Density`;
   }
-  get danmakuTopMarginOption() {
-    return `Top margin`;
+  get danmakuOverlayStackingMethodLabel() {
+    return `Stacking`;
   }
-  get danmakuBottomMarginOption() {
-    return `Bottom margin`;
-  }
-  get danmakuStackingMethodOption() {
-    return `Stacking method`;
-  }
-  get danmakuStackingRandomOption() {
+  get danmakuOverlayStackingRandomOptionLabel() {
     return `Random`;
   }
-  get danmakuStackingTopDownOption() {
+  get danmakuOverlayStackingTopDownOptionLabel() {
     return `Top down`;
   }
   get resetButtonLabel() {
@@ -779,10 +797,10 @@ export default class Text {
   get closeButtonLabel() {
     return `Close`;
   }
-  get dockToBottomButotnLabel() {
+  get dockToBottomButtonLabel() {
     return `Dock to bottom`;
   }
-  get dockToRightButtonLebel() {
+  get dockToRightButtonLabel() {
     return `Dock to right`;
   }
 }
