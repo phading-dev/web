@@ -258,7 +258,7 @@ export class RecommendationPage extends EventEmitter {
   }
 
   private enterToSearch(event: KeyboardEvent): void {
-    if (event.code === "Enter") {
+    if (event.key === "Enter") {
       this.trySearch();
     }
   }

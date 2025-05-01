@@ -108,7 +108,7 @@ export class CommentsPanel extends EventEmitter {
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
-    if (event.code === "Enter") {
+    if (event.key === "Enter") {
       this.commentButton.val.click();
     }
   }

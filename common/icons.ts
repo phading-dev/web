@@ -139,7 +139,7 @@ export function createTrashCanIcon(color: string): SVGSVGElement {
   );
 }
 
-// Three dots as horizontal.
+// Double arrows pointing top-right and bottom-left.
 export function createExpandIcon(color: string): SVGSVGElement {
   return E.svg(
     {
@@ -153,6 +153,7 @@ export function createExpandIcon(color: string): SVGSVGElement {
   );
 }
 
+// Three dots as horizontal.
 export function createEllipsisIcon(color: string): SVGSVGElement {
   return E.svg(
     {
@@ -384,11 +385,11 @@ export function createLoadingIcon(color: string): SVGSVGElement {
   let svg = E.svg(
     {
       class: "load-icon",
-      style: `height: 100%; fill: ${color};`,
-      viewBox: "0 0 367.136 367.136",
+      style: `height: 100%; fill: none; stroke-width: 40; stroke: ${color}; stroke-linecap: round;`,
+      viewBox: "-20 -20 240 240",
     },
     E.path({
-      d: `M336.954,87.494C318.821,59.1,293.251,36.318,263.01,21.613l-13.119,26.979c52.77,25.661,85.551,78.029,85.551,136.669  c0,83.744-68.131,151.874-151.874,151.874S31.694,269.005,31.694,185.262c0-49.847,24.899-96.439,65.042-124.571L149.7,113.91V0  H36.335l38.953,39.14C57.727,52.164,42.557,68.287,30.582,86.871c-18.898,29.33-28.888,63.352-28.888,98.391  c0,100.286,81.588,181.874,181.874,181.874s181.874-81.588,181.874-181.874C365.442,150.485,355.59,116.678,336.954,87.494z`,
+      d: `M186.6 50 A100 100 0 1 1 100 0`,
     }),
   );
   svg.animate(
@@ -401,7 +402,7 @@ export function createLoadingIcon(color: string): SVGSVGElement {
       },
     ],
     {
-      duration: 2000,
+      duration: 1000,
       iterations: Infinity,
     },
   );
@@ -450,18 +451,36 @@ export function createFastForwardIcon(
   );
 }
 
-export function createSkipForwardIcon(
+// A circle with an arrow pointing to the right with a 10 in the middle.
+export function createSkipForwardBy10Icon(
   color: string,
   customStyle: string = "",
 ): SVGSVGElement {
   return E.svg(
     {
       class: "skip-forward-icon",
-      style: `height: 100%; fill: ${color}; ${customStyle}`,
-      viewBox: "1 6.4 11.2 11.2",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 20; stroke-linecap: round; stroke-linejoin: round; ${customStyle}`,
+      viewBox: "-20 -30 240 240",
     },
     E.path({
-      d: `M1 6.4 v11.2 h1.6 v-11.2z  M4.788 17.444A.5.5 0 0 1 4 17.035V6.965a.5.5 0 0 1 .788-.409l7.133 5.036a.5.5 0 0 1 0 .816l-7.133 5.036z`,
+      d: `M170.7 29.3 A100 100 0 1 1 117.36 1.52 l-20 -20 M70 140 l0 -80 l-20 20 M100 80 a20 20 0 1 1 40 0 l0 40 a20 20 0 1 1 -40 0z`,
+    }),
+  );
+}
+
+// Reversed arrow of the above icon.
+export function createSkipBackwardBy10Icon(
+  color: string,
+  customStyle: string = "",
+): SVGSVGElement {
+  return E.svg(
+    {
+      class: "skip-backward-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 20; stroke-linecap: round; stroke-linejoin: round; ${customStyle}`,
+      viewBox: "-20 -30 240 240",
+    },
+    E.path({
+      d: `M29.3 29.3 A100 100 0 1 0 82.64 1.52 l20 -20 M70 140 l0 -80 l-20 20 M100 80 a20 20 0 1 1 40 0 l0 40 a20 20 0 1 1 -40 0z`,
     }),
   );
 }
@@ -527,6 +546,99 @@ export function createVolumeLowIcon(color: string): SVGSVGElement {
     },
     E.path({
       d: `M0,206.254v99.491c0,20.663,16.752,37.418,37.414,37.418h69.667V168.844H37.414   C16.752,168.844,0,185.591,0,206.254z  M280.326,99.026c-3.768-2.31-8.464-2.5-12.403-0.494l-138.431,70.313v174.319l138.431,70.313   c3.94,1.996,8.635,1.806,12.403-0.503c3.764-2.31,6.059-6.416,6.059-10.826V109.86C286.386,105.441,284.09,101.335,280.326,99.026z   M338.764,207.032c-5.622,5.057-6.073,13.725-1.007,19.342c7.594,8.43,11.362,18.98,11.371,29.626   c-0.009,10.644-3.777,21.194-11.371,29.634c-5.066,5.618-4.614,14.276,1.007,19.341c5.622,5.066,14.28,4.609,19.341-1.007   c12.261-13.601,18.43-30.832,18.415-47.968c0.015-17.137-6.154-34.359-18.415-47.96   C353.044,202.414,344.382,201.967,338.764,207.032z`,
+    }),
+  );
+}
+
+export function createClosedCaptionIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "closed-caption-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 0 1920 1920",
+    },
+    E.path({
+      d: `M1800 1745V185c0-33-27-60-60-60H180c-33 0-60 27-60 60v1560c0 33 27 60 60 60h1560c33 0 60-27 60-60ZM1740 5c99.24 0 180 80.76 180 180v1560c0 99.24-80.76 180-180 180H180c-99.24 0-180-80.76-180-180V185C0 85.76 80.76 5 180 5h1560ZM859.522 853.669h-160v-53.333H486.189v320h213.333v-53.334h160v106.667c0 58.667-48 106.667-106.667 106.667h-320c-58.666 0-106.666-48-106.666-106.667V747.002c0-58.666 48-106.666 106.666-106.666h320c58.667 0 106.667 48 106.667 106.666V853.67Zm725 0h-160v-53.333h-213.333v320h213.333v-53.334h160v106.667c0 58.667-48 106.667-106.667 106.667h-320c-58.666 0-106.666-48-106.666-106.667V747.002c0-58.666 48-106.666 106.666-106.666h320c58.667 0 106.667 48 106.667 106.666V853.67Z`,
+    }),
+  );
+}
+
+export function createNoClosedCaptionIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "no-closed-caption-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "0 0 1920 1920",
+    },
+    E.path({
+      d: `M1800 1745V185c0-33-27-60-60-60H180c-33 0-60 27-60 60v1560c0 33 27 60 60 60h1560c33 0 60-27 60-60ZM1740 5c99.24 0 180 80.76 180 180v1560c0 99.24-80.76 180-180 180H180c-99.24 0-180-80.76-180-180V185C0 85.76 80.76 5 180 5h1560ZM859.522 853.669h-160v-53.333H486.189v320h213.333v-53.334h160v106.667c0 58.667-48 106.667-106.667 106.667h-320c-58.666 0-106.666-48-106.666-106.667V747.002c0-58.666 48-106.666 106.666-106.666h320c58.667 0 106.667 48 106.667 106.666V853.67Zm725 0h-160v-53.333h-213.333v320h213.333v-53.334h160v106.667c0 58.667-48 106.667-106.667 106.667h-320c-58.666 0-106.666-48-106.666-106.667V747.002c0-58.666 48-106.666 106.666-106.666h320c58.667 0 106.667 48 106.667 106.666V853.67Z M120 20 l1780 1780 l-100 100 l-1780 -1780z`,
+    }),
+  );
+}
+
+export function createChatBubbleWithPlayIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "chat-bubble-with-play-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: ".5 1 23 23",
+    },
+    E.path({
+      d: `M16.1266 22.1995C16.7081 22.5979 17.4463 23.0228 18.3121 23.3511C19.9903 23.9874 21.244 24.0245 21.8236 23.9917C23.1167 23.9184 23.2907 23.0987 22.5972 22.0816C21.8054 20.9202 21.0425 19.6077 21.1179 18.1551C22.306 16.3983 23 14.2788 23 12C23 5.92487 18.0751 1 12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C13.4578 23 14.8513 22.7159 16.1266 22.1995ZM12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C13.3697 21 14.6654 20.6947 15.825 20.1494C16.1635 19.9902 16.5626 20.0332 16.8594 20.261C17.3824 20.6624 18.1239 21.1407 19.0212 21.481C19.4111 21.6288 19.7674 21.7356 20.0856 21.8123C19.7532 21.2051 19.4167 20.4818 19.2616 19.8011C19.1018 19.0998 18.8622 17.8782 19.328 17.2262C20.3808 15.7531 21 13.9503 21 12C21 7.02944 16.9706 3 12 3Z  M17.5 12 l-9 5.2 l0 -10.4z`,
+      "fill-rule": `evenodd`,
+    }),
+  );
+}
+
+export function createChatBubbleWithStopIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "chat-bubble-with-play-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: ".5 1 23 23",
+    },
+    E.path({
+      d: `M16.1266 22.1995C16.7081 22.5979 17.4463 23.0228 18.3121 23.3511C19.9903 23.9874 21.244 24.0245 21.8236 23.9917C23.1167 23.9184 23.2907 23.0987 22.5972 22.0816C21.8054 20.9202 21.0425 19.6077 21.1179 18.1551C22.306 16.3983 23 14.2788 23 12C23 5.92487 18.0751 1 12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C13.4578 23 14.8513 22.7159 16.1266 22.1995ZM12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C13.3697 21 14.6654 20.6947 15.825 20.1494C16.1635 19.9902 16.5626 20.0332 16.8594 20.261C17.3824 20.6624 18.1239 21.1407 19.0212 21.481C19.4111 21.6288 19.7674 21.7356 20.0856 21.8123C19.7532 21.2051 19.4167 20.4818 19.2616 19.8011C19.1018 19.0998 18.8622 17.8782 19.328 17.2262C20.3808 15.7531 21 13.9503 21 12C21 7.02944 16.9706 3 12 3Z  M8 8 l8 0 l0 8 l-8 0z`,
+      "fill-rule": `evenodd`,
+    }),
+  );
+}
+
+export function createFullscreenIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "fullscreen-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: "2 2 20 20",
+    },
+    E.path({
+      d: `M9 4H4L4 9M20 9V4L15 4M15 20H20L20 15M4 15L4 20L9 20`,
+    }),
+  );
+}
+
+export function createExitFullscreenIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "exit-fullscreen-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: "2 2 28 28",
+    },
+    E.path({
+      d: `M4 12 L12 12 12 4 M20 4 L20 12 28 12 M4 20 L12 20 12 28 M28 20 L20 20 20 28`,
+    }),
+  );
+}
+
+export function createChromecastIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "chromecast-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: "2 2 20 20",
+    },
+    E.path({
+      d: `M3 8.2502V8.2002C3 7.08009 3 6.51962 3.21799 6.0918C3.40973 5.71547 3.71547 5.40973 4.0918 5.21799C4.51962 5 5.08009 5 6.2002 5H17.8002C18.9203 5 19.4796 5 19.9074 5.21799C20.2837 5.40973 20.5905 5.71547 20.7822 6.0918C21 6.5192 21 7.07899 21 8.19691V15.8031C21 16.921 21 17.48 20.7822 17.9074C20.5905 18.2837 20.2839 18.5905 19.9076 18.7822C19.4802 19 18.921 19 17.8031 19H14M5 19C5 17.8954 4.10457 17 3 17M8 19C8 16.2386 5.76142 14 3 14M11 19C11 14.5817 7.41828 11 3 11`,
     }),
   );
 }
@@ -635,12 +747,28 @@ export function createSplitColumnIcon(
 export function createExclamationMarkInACycle(color: string): SVGSVGElement {
   return E.svg(
     {
-      class: "info-icon",
+      class: "exclamation-mark-in-a-cycle-icon",
       style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;`,
       viewBox: "2 2 20 20",
     },
     E.path({
       d: `M12 11V16M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21ZM12.0498 8V8.1L11.9502 8.1002V8H12.0498Z`,
+    }),
+  );
+}
+
+export function createFilledExclamationMarkInACircle(
+  color: string,
+): SVGSVGElement {
+  return E.svg(
+    {
+      class: "exclamation-mark-in-a-cycle-icon",
+      style: `height: 100%; fill: ${color};`,
+      viewBox: "2 2 20 20",
+    },
+    E.path({
+      d: `M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM12 17.75C12.4142 17.75 12.75 17.4142 12.75 17V11C12.75 10.5858 12.4142 10.25 12 10.25C11.5858 10.25 11.25 10.5858 11.25 11V17C11.25 17.4142 11.5858 17.75 12 17.75ZM12 7C12.5523 7 13 7.44772 13 8C13 8.55228 12.5523 9 12 9C11.4477 9 11 8.55228 11 8C11 7.44772 11.4477 7 12 7Z`,
+      "fill-rule": "evenodd",
     }),
   );
 }
@@ -771,9 +899,9 @@ export function createCircularProgressIcon(
   percentage: number,
 ): SVGSVGElement {
   if (percentage >= 1) {
-    percentage = 0.99999; // Avoid 100% to prevent drawing issues
+    percentage = 0.99; // Avoid 100% to prevent drawing issues
   } else if (percentage <= 0) {
-    percentage = 0.00001; // Avoid 0% to prevent drawing issues
+    percentage = 0.01; // Avoid 0% to prevent drawing issues
   }
   let radius = 100;
   let centerX = 100;
@@ -796,6 +924,39 @@ export function createCircularProgressIcon(
       d: `M${endX},${endY} A${radius},${radius} 0 ${1 - largeArcFlag},1 ${centerX},${centerY - radius}`,
     }),
   );
+  return svg;
+}
+
+// numberOfSegments is at least 2.
+export function createDashedCircleIcon(
+  mainColor: string,
+  backgroundColor: string,
+  numberOfSegments: number,
+  numberOfHighlightedSegments: number,
+): SVGSVGElement {
+  let radius = 100;
+  let centerX = 100;
+  let centerY = 100;
+  let svg = E.svg({
+    class: "circular-progress-icon",
+    style: `height: 100%; fill: none; stroke-width: 60;`,
+    viewBox: "-30 -30 260 260",
+  });
+  for (let i = 0; i < numberOfSegments; i++) {
+    let startAngle = ((2 * Math.PI) / numberOfSegments) * i + 0.1;
+    let startX = centerX + Math.sin(startAngle) * radius;
+    let startY = centerY - Math.cos(startAngle) * radius;
+
+    let endAngle = ((2 * Math.PI) / numberOfSegments) * (i + 1) - 0.1;
+    let endX = centerX + Math.sin(endAngle) * radius;
+    let endY = centerY - Math.cos(endAngle) * radius;
+    svg.append(
+      E.path({
+        stroke: i < numberOfHighlightedSegments ? mainColor : backgroundColor,
+        d: `M${startX},${startY} A${radius},${radius} 0 0 1 ${endX},${endY}`,
+      }),
+    );
+  }
   return svg;
 }
 

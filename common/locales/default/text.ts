@@ -557,18 +557,6 @@ export default class Text {
   get usageReportEndDateSmallerThanStartDate() {
     return `End date cannot be smaller than start date.`;
   }
-  get likeButtonLabel() {
-    return `Like`;
-  }
-  get likedButtonLabel() {
-    return `Liked`;
-  }
-  get dislikeButtonLabel() {
-    return `Dislike`;
-  }
-  get dislikedButtonLabel() {
-    return `Disliked`;
-  }
   get commentButtonLabel() {
     return `Comment`;
   }
@@ -581,13 +569,7 @@ export default class Text {
   get pauseButtonLabel() {
     return `Pause`;
   }
-  get showCommentButtonLabel() {
-    return `Show comment`;
-  }
-  get prevShowButtonLabel() {
-    return `Previous`;
-  }
-  get nextShowButtonLabel() {
+  get nextEpisodeButtonLabel() {
     return `Next`;
   }
   get speedDownButtonLabel() {
@@ -597,34 +579,25 @@ export default class Text {
     return `Speed up`;
   }
   get skipBackwardButtonLabel() {
-    return `Jump backwards`;
+    return `Jump 10 seconds backwards`;
   }
   get skipForwardButtonLabel() {
-    return `Jump forwards`;
+    return `Jump 10 seconds forwards`;
   }
-  get volumeButtonLabel() {
-    return `Volume`;
+  get volumeDownButtonLabel() {
+    return `Volume down`;
   }
-  get volumeMutedButtonLabel() {
-    return `Muted`;
+  get volumeUpButtonLabel() {
+    return `Volume up`;
   }
-  get noLoopingButtonlabel() {
-    return `No looping`;
+  get chatOverlayTurnOnButtonLabel() {
+    return `Turn on chat overlay`;
   }
-  get loopingButtonLabel() {
-    return `Looping`;
+  get chatOverlayTurnOffButtonLabel() {
+    return `Turn off chat overlay`;
   }
-  get danmakuButtonLabel() {
-    return `Scrolling`;
-  }
-  get noDanmakuButtonLabel() {
-    return `No scrolling`;
-  }
-  get playerSettingsButtonLabel() {
-    return `Settings`;
-  }
-  get moreInfoButtonLabel() {
-    return `More info`;
+  get playerOpenSidePanelButtonLabel() {
+    return `More`;
   }
   get interruptReasonNoConnectivity() {
     return `Video stopped. No internet connection.`;

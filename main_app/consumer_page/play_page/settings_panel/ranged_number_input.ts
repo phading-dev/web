@@ -1,11 +1,11 @@
 import EventEmitter from "events";
-import { SCHEME } from "../../../../common/color_scheme";
+import { SimpleIconButton } from "../../../../common/icon_button";
 import { createMinusIcon, createPlusIcon } from "../../../../common/icons";
 import { BASIC_INPUT_STYLE } from "../../../../common/input_styles";
 import { NumberRange } from "../../../../common/number_range";
 import { ICON_BUTTON_M, ICON_M } from "../../../../common/sizes";
 import { E } from "@selfage/element/factory";
-import { Ref } from "@selfage/ref";
+import { Ref, assign } from "@selfage/ref";
 
 export interface RangedNumberInput {
   on(event: "changed", listener: (value: number) => void): this;
@@ -13,9 +13,9 @@ export interface RangedNumberInput {
 
 export class RangedNumberInput extends EventEmitter {
   public body: HTMLDivElement;
-  public minusButton = new Ref<HTMLDivElement>();
+  public minusButton = new Ref<SimpleIconButton>();
   public input = new Ref<HTMLInputElement>();
-  public plusButton = new Ref<HTMLDivElement>();
+  public plusButton = new Ref<SimpleIconButton>();
 
   public constructor(
     private numberRange: NumberRange,
@@ -28,30 +28,31 @@ export class RangedNumberInput extends EventEmitter {
         class: "ranged-number-input",
         style: `display: flex; flex-flow: row nowrap; align-items: center; gap: .5rem;`,
       },
-      E.divRef(
+      assign(
         this.minusButton,
-        {
-          class: "ranged-number-input-minus-button",
-          style: `cursor: pointer; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_M) / 2}rem;`,
-        },
-        createMinusIcon(SCHEME.neutral1),
-      ),
+        SimpleIconButton.create(
+          ICON_BUTTON_M,
+          ICON_M,
+          createMinusIcon("currentColor"),
+        ),
+      ).body,
       E.inputRef(this.input, {
         class: "ranged-number-input-input",
         style: `${BASIC_INPUT_STYLE} width: 4rem; text-align: center;`,
         value: `${value}`,
       }),
-      E.divRef(
+      assign(
         this.plusButton,
-        {
-          class: "ranged-number-input-plus-button",
-          style: `cursor: pointer; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_M) / 2}rem;`,
-        },
-        createPlusIcon(SCHEME.neutral1),
-      ),
+        SimpleIconButton.create(
+          ICON_BUTTON_M,
+          ICON_M,
+          createPlusIcon("currentColor"),
+        ),
+      ).body,
     );
-    this.minusButton.val.addEventListener("click", () => this.decrement());
-    this.plusButton.val.addEventListener("click", () => this.increment());
+    this.refreshButtons();
+    this.minusButton.val.on("action", () => this.decrement());
+    this.plusButton.val.on("action", () => this.increment());
     this.input.val.addEventListener("blur", () => this.inputValue());
     this.input.val.addEventListener("keydown", (event) =>
       this.enterValue(event),
@@ -61,24 +62,40 @@ export class RangedNumberInput extends EventEmitter {
   private decrement() {
     this.value = this.numberRange.getValidValue(this.value - this.step);
     this.input.val.value = `${this.value}`;
+    this.refreshButtons();
     this.emit("changed", this.value);
   }
 
   private increment() {
     this.value = this.numberRange.getValidValue(this.value + this.step);
     this.input.val.value = `${this.value}`;
+    this.refreshButtons();
     this.emit("changed", this.value);
   }
 
   private inputValue() {
     this.value = this.numberRange.getValidValue(parseInt(this.input.val.value));
     this.input.val.value = `${this.value}`;
+    this.refreshButtons();
     this.emit("changed", this.value);
   }
 
   private enterValue(event: KeyboardEvent): void {
-    if (event.code === "Enter") {
+    if (event.key === "Enter") {
       this.inputValue();
+    }
+  }
+
+  private refreshButtons() {
+    if (this.value <= this.numberRange.minValue) {
+      this.minusButton.val.disable();
+    } else {
+      this.minusButton.val.enable();
+    }
+    if (this.value >= this.numberRange.maxValue) {
+      this.plusButton.val.disable();
+    } else {
+      this.plusButton.val.enable();
     }
   }
 

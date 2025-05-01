@@ -29,7 +29,7 @@ export class TextInputWithErrorMsg extends EventEmitter implements InputField {
   }
 
   private container: HTMLDivElement;
-  private input: HTMLInputElement;
+  public input: HTMLInputElement;
   private errorMsg: HTMLDivElement;
   private valid: boolean;
 
@@ -85,10 +85,9 @@ export class TextInputWithErrorMsg extends EventEmitter implements InputField {
   }
 
   private keydown(event: KeyboardEvent): void {
-    if (event.code !== "Enter") {
-      return;
+    if (event.key === "Enter") {
+      this.emit("submit");
     }
-    this.emit("submit");
   }
 
   private async validate(): Promise<void> {
@@ -132,6 +131,6 @@ export class TextInputWithErrorMsg extends EventEmitter implements InputField {
     this.input.dispatchEvent(new Event("input"));
   }
   public dispatchEnter(): void {
-    this.input.dispatchEvent(new KeyboardEvent("keydown", { code: "Enter" }));
+    this.input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
   }
 }

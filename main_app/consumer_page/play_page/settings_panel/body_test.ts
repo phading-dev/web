@@ -9,7 +9,7 @@ import {
   VideoPlayerSettings,
 } from "@phading/user_service_interface/web/self/video_player_settings";
 import { E } from "@selfage/element/factory";
-import { keyboardDown } from "@selfage/puppeteer_test_executor_api";
+import { keyboardDown, keyboardUp } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -318,6 +318,7 @@ TEST_RUNNER.run({
         cut.chatOverlayOpacity.val.input.val.focus();
         cut.chatOverlayOpacity.val.input.val.value = "-1";
         await keyboardDown("Enter");
+        await keyboardUp("Enter");
 
         // Verify
         assertThat(opacityChanged, eq(true), "opacityChanged after enter");

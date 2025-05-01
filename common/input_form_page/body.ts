@@ -5,7 +5,7 @@ import {
   FilledBlockingButton,
   TextBlockingButton,
 } from "../blocking_button";
-import { IconButton, createBackButton } from "../icon_button";
+import { SimpleIconButton, createBackButton } from "../icon_button";
 import {
   PAGE_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CARD_STYLE,
@@ -45,7 +45,7 @@ export class InputFormPage<
   private buttonsLine = new Ref<HTMLDivElement>();
   private actionError = new Ref<HTMLDivElement>();
   public primaryButton = new Ref<BlockingButton<PrimaryResponse>>();
-  public backButton = new Ref<IconButton>();
+  public backButton = new Ref<SimpleIconButton>();
   public secondaryBlockingButton = new Ref<BlockingButton<SecondaryResponse>>();
   private primaryActionFn: () => Promise<PrimaryResponse>;
   private postPrimaryActionFn: (

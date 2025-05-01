@@ -21,14 +21,10 @@ export function score(normalizedTarget: Array<string>, option: string): number {
   return score;
 }
 
-export function fuzzyMatch(
-  target: string,
-  options: Array<string>,
-  defaultOption: string,
-): string {
+export function fuzzyMatch(target: string, options: Array<string>): number {
   let normalizedTarget = normalize(target);
   let highestScore = 0;
-  let highestIndex = 0;
+  let highestIndex = -1;
   options.forEach((option, index) => {
     let scored = score(normalizedTarget, option);
     if (scored > highestScore) {
@@ -36,5 +32,5 @@ export function fuzzyMatch(
       highestIndex = index;
     }
   });
-  return highestScore > 0 ? options[highestIndex] : defaultOption;
+  return highestIndex;
 }

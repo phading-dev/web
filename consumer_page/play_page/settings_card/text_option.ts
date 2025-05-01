@@ -51,7 +51,7 @@ export class TextOption extends EventEmitter {
   }
 
   private enter(event: KeyboardEvent): void {
-    if (event.code === "Enter") {
+    if (event.key === "Enter") {
       this.updateValue();
     }
   }

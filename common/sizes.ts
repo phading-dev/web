@@ -17,6 +17,7 @@ export let ICON_S = 1.2; // rem
 export let ICON_M = 1.4; // rem
 export let ICON_L = 1.6; // rem
 export let ICON_XL = 2.4; // rem
+export let ICON_XXL = 3.2; // rem
 
 export let ICON_BUTTON_M = 3; // rem
 export let ICON_BUTTON_L = 4; // rem

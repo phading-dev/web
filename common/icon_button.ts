@@ -4,7 +4,6 @@ import { BUTTON_BORDER_RADIUS, NULLIFIED_BUTTON_STYLE } from "./button_styles";
 import { SCHEME } from "./color_scheme";
 import { HoverObserver, Mode } from "./hover_observer";
 import { createArrowIcon } from "./icons";
-import { LOCALIZED_TEXT } from "./locales/localized_text";
 import { FONT_M, ICON_BUTTON_L, ICON_XL } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -373,13 +372,73 @@ export class BlockingIconButton<
   }
 }
 
-export function createBackButton(customStyle = ""): IconButton {
-  return IconButton.create(
+export interface SimpleIconButton {
+  on(event: "action", listener: () => void): this;
+}
+
+export class SimpleIconButton extends EventEmitter {
+  public static create(
+    buttonSize: number,
+    iconSize: number,
+    svg: SVGSVGElement,
+    customStyle: string = "",
+  ): SimpleIconButton {
+    return new SimpleIconButton(buttonSize, iconSize, svg, customStyle);
+  }
+
+  public body: HTMLDivElement;
+
+  public constructor(
+    buttonSize: number,
+    iconSize: number,
+    svg: SVGSVGElement,
+    customStyle = "",
+  ) {
+    super();
+    this.body = E.div(
+      {
+        class: "simple-icon-button",
+        style: `width: ${buttonSize}rem; height: ${buttonSize}rem; box-sizing: border-box; padding: ${(buttonSize - iconSize) / 2}rem; ${customStyle}`,
+      },
+      svg,
+    );
+    this.show();
+
+    this.body.addEventListener("click", () => this.emit("action"));
+  }
+
+  public enable(): this {
+    this.body.style.color = SCHEME.neutral1;
+    this.body.style.cursor = "pointer";
+    this.body.style.pointerEvents = "auto";
+    return this;
+  }
+
+  public disable(): this {
+    this.body.style.color = SCHEME.neutral2;
+    this.body.style.cursor = "not-allowed";
+    this.body.style.pointerEvents = "none";
+    return this;
+  }
+
+  public show(): void {
+    this.body.style.display = "block";
+  }
+
+  public hide(): void {
+    this.body.style.display = "none";
+  }
+
+  public click(): void {
+    this.body.click();
+  }
+}
+
+export function createBackButton(customStyle = ""): SimpleIconButton {
+  return SimpleIconButton.create(
     ICON_BUTTON_L,
-    (ICON_BUTTON_L - ICON_XL) / 2,
-    `position: absolute; top: 0; left: 0; ${customStyle}`,
+    ICON_XL,
     createArrowIcon(SCHEME.neutral1),
-    TooltipPosition.RIGHT,
-    LOCALIZED_TEXT.backLabel,
+    `position: absolute; top: 0; left: 0; ${customStyle}`,
   );
 }

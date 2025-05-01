@@ -4,7 +4,7 @@ import {
   OutlineBlockingButton,
 } from "../../../../common/blocking_button";
 import { SCHEME } from "../../../../common/color_scheme";
-import { IconButton, createBackButton } from "../../../../common/icon_button";
+import { SimpleIconButton, createBackButton } from "../../../../common/icon_button";
 import { ImageCropper } from "../../../../common/image_cropper/body";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import {
@@ -31,7 +31,7 @@ export class UpdateAvatarPage extends EventEmitter {
   }
 
   public body: HTMLDivElement;
-  public backButton = new Ref<IconButton>();
+  public backButton = new Ref<SimpleIconButton>();
   public chooseFileButton = new Ref<OutlineBlockingButton>();
   private loadErrorText = new Ref<HTMLDivElement>();
   public imageCropper = new Ref<ImageCropper>();

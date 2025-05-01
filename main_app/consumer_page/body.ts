@@ -299,7 +299,7 @@ export class ConsumerPage extends EventEmitter {
   }
 
   private enterSearch(event: KeyboardEvent) {
-    if (event.code === "Enter") {
+    if (event.key === "Enter") {
       this.validateOrSearch();
     }
   }

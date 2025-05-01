@@ -3,6 +3,7 @@ import { normalizeBody } from "../normalize_body";
 import { setTabletView } from "../view_port";
 import { TextInputWithErrorMsg } from "./text_input";
 import { E } from "@selfage/element/factory";
+import { keyboardDown, keyboardUp } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -114,11 +115,12 @@ TEST_RUNNER.run({
         this.followingLine.remove();
       }
     })(),
-    {
-      name: "SubmitEvent",
-      execute() {
+    new (class implements TestCase {
+      public name = "SubmitEvent";
+      private cut: TextInputWithErrorMsg;
+      public async execute() {
         // Prepare
-        let cut = TextInputWithErrorMsg.create(
+        this.cut = TextInputWithErrorMsg.create(
           "Label",
           "",
           { type: "text" },
@@ -126,15 +128,21 @@ TEST_RUNNER.run({
             return { valid: true };
           },
         );
+        document.body.append(this.cut.body);
         let submitted = false;
-        cut.on("submit", () => (submitted = true));
+        this.cut.on("submit", () => (submitted = true));
 
         // Execute
-        cut.dispatchEnter();
+        this.cut.input.focus();
+        await keyboardDown("Enter");
+        await keyboardUp("Enter");
 
         // Verify
         assertThat(submitted, eq(true), "submitted");
-      },
-    },
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
   ],
 });

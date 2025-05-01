@@ -39,12 +39,12 @@ export class DanmakuOverlay {
     this.pause();
 
     this.resizeObserver = new ResizeObserver((entries) =>
-      this.getNewSize(entries[0]),
+      this.updateCanvasSize(entries[0]),
     );
     this.resizeObserver.observe(this.body);
   }
 
-  private getNewSize(entry: ResizeObserverEntry): void {
+  private updateCanvasSize(entry: ResizeObserverEntry): void {
     let newWidth: number;
     if (entry.contentBoxSize) {
       newWidth = entry.contentBoxSize[0].inlineSize;

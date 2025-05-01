@@ -274,7 +274,7 @@ TEST_RUNNER.run({
 
         // Execute
         cut.commentInput.val.dispatchEvent(
-          new KeyboardEvent("keydown", { code: "Enter" }),
+          new KeyboardEvent("keydown", { key: "Enter" }),
         );
         await new Promise<void>((resolve) =>
           cut.once("postedComment", resolve),

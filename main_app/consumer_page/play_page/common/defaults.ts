@@ -4,11 +4,10 @@ import {
   StackingMethod,
 } from "@phading/user_service_interface/web/self/video_player_settings";
 
-export let VOLUME_RANGE = new NumberRange(1, 0, 1);
-export let VOLUME_MUTED_DEFAULT = false;
+export let VOLUME_RANGE = new NumberRange(0, 10, 10);
 export let PLAYBACK_SPEED_DEFAULT = 1;
 export let PLAYBACK_SPEED_VALUES = [
-  0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4,
+  0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 8,
 ];
 export let CHAT_OVERLAY_STYLE_DEFAULT = ChatOverlayStyle.SIDE;
 export let OPACITY_RANGE = new NumberRange(0, 100, 80);
