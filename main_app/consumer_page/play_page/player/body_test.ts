@@ -201,32 +201,27 @@ TEST_RUNNER.run({
         // Verify
         assertThat(timePlayed, lt(8500), "time played until the end");
 
+        // Execute
+        keyboardDown("Space");
+        await new Promise<void>((resolve) => cut.once("playing", resolve));
+        await keyboardUp("Space");
+
+        // Verify
+        assertThat(cut.getCurrentTime(), lt(1), "restarted time lt");
+
+        // Execute
+        keyboardDown("Space");
+        await new Promise<void>((resolve) => cut.once("notPlaying", resolve));
+        await keyboardUp("Space");
+
+        // Verify
+        assertThat(cut.getCurrentTime(), lt(1), "restarted time lt 2");
+
         // Prepare
         let playing = false;
         cut.on("playing", () => {
           playing = true;
         });
-        cut.on("notPlaying", () => {
-          playing = false;
-        });
-
-        // Execute
-        await keyboardDown("Space");
-        await keyboardUp("Space");
-        await new Promise<void>((resolve) => setTimeout(resolve, 100));
-
-        // Verify
-        assertThat(cut.getCurrentTime(), lt(1), "restarted time lt");
-        assertThat(playing, eq(true), "restarted playing");
-
-        // Execute
-        await keyboardDown("Space");
-        await keyboardUp("Space");
-        await new Promise<void>((resolve) => setTimeout(resolve, 100));
-
-        // Verify
-        assertThat(cut.getCurrentTime(), lt(1), "restarted time lt 2");
-        assertThat(playing, eq(false), "paused playing");
 
         // Execute
         input.focus();
