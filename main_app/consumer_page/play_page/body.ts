@@ -95,7 +95,7 @@ export class PlayPage extends EventEmitter {
   private static LAYOUT_BREAKPOINT = 90; // rem
   private static LIST_COMMENTS_BUFFER_RANGE_MS = 30000;
   private static LIST_COMMENTS_ENOUGH_BUFFER_RANGE_MS = 10000;
-  private static PLAYING_LOOP_INTERVAL = 250; // ms
+  private static PLAYING_LOOP_INTERVAL_MS = 250;
 
   public body: HTMLElement;
   private playerCanvas = new Ref<HTMLDivElement>();
@@ -611,7 +611,7 @@ export class PlayPage extends EventEmitter {
     this.lastVideoTimeMs = currentVideoTimeMs;
     this.playingLoopId = this.window.setTimeout(
       this.playing,
-      PlayPage.PLAYING_LOOP_INTERVAL,
+      PlayPage.PLAYING_LOOP_INTERVAL_MS,
     );
   };
 
