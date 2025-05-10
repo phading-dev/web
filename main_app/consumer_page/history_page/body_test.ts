@@ -159,19 +159,19 @@ TEST_RUNNER.run({
             {
               seasonId: "season1",
               episodeId: "episode1",
-              latestWatchedTimeMs: 1434000,
+              latestWatchedVideoTimeMs: 1434000,
               createdTimeMs: 1697018400000, // 2023-10-11T10:00:00Z
             },
             {
               seasonId: "season1",
               episodeId: "episode3", // Not found
-              latestWatchedTimeMs: 3434000,
+              latestWatchedVideoTimeMs: 3434000,
               createdTimeMs: 1697007600000, // 2023-10-11T07:00:00Z
             },
             {
               seasonId: "season1",
               episodeId: "episode2",
-              latestWatchedTimeMs: 3434000,
+              latestWatchedVideoTimeMs: 3434000,
               createdTimeMs: 1697007600000, // 2023-10-11T07:00:00Z
             },
           ],
@@ -209,19 +209,19 @@ TEST_RUNNER.run({
             {
               seasonId: "season3", // Not found
               episodeId: "episode1",
-              latestWatchedTimeMs: 1234000,
+              latestWatchedVideoTimeMs: 1234000,
               createdTimeMs: 1696845600000, // 2023-10-09T10:00:00Z
             },
             {
               seasonId: "season2",
               episodeId: "episode1",
-              latestWatchedTimeMs: 34000,
+              latestWatchedVideoTimeMs: 34000,
               createdTimeMs: 1696852800000, // 2023-10-09T12:00:00Z
             },
             {
               seasonId: "season2",
               episodeId: "episode2",
-              latestWatchedTimeMs: 234000,
+              latestWatchedVideoTimeMs: 234000,
               createdTimeMs: 1696845600000, // 2023-10-09T10:00:00Z
             },
           ],

@@ -7,7 +7,7 @@ import {
   FONT_WEIGHT_600,
   LINE_HEIGHT_M,
 } from "../../../../common/sizes";
-import { CommentWithAuthor } from "../comment_with_author";
+import { CommentWithAuthor } from "../common/comment_with_author";
 import { E } from "@selfage/element/factory";
 
 export class CommentEntry extends EventEmitter {

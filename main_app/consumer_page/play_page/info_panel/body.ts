@@ -23,15 +23,12 @@ import {
   ICON_L,
   ICON_M,
 } from "../../../../common/sizes";
-import { SERVICE_CLIENT } from "../../../../common/web_service_client";
-import { newGetLatestWatchedTimeOfEpisodeRequest } from "@phading/play_activity_service_interface/show/web/client";
 import {
   Episode,
   SeasonSummary,
 } from "@phading/product_service_interface/show/web/consumer/info";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
-import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
 
 export interface InfoPanel {
@@ -39,7 +36,6 @@ export interface InfoPanel {
     event: "play",
     listener: (seasonId: string, episodeId: string) => void,
   ): this;
-  on(event: "gotContinueTime", listener: () => void): this;
 }
 
 export class InfoPanel extends EventEmitter {
@@ -48,14 +44,15 @@ export class InfoPanel extends EventEmitter {
     episode: Episode,
     seasonSummary: SeasonSummary,
     nextEpisode?: Episode,
+    nextEpisodeWatchedTimeMs?: number,
   ): InfoPanel {
     return new InfoPanel(
-      SERVICE_CLIENT,
       () => new Date(),
       customeStyle,
       episode,
       seasonSummary,
       nextEpisode,
+      nextEpisodeWatchedTimeMs,
     );
   }
 
@@ -64,24 +61,22 @@ export class InfoPanel extends EventEmitter {
   public meteringQuestionMark = new Ref<HTMLDivElement>();
   private meteringExplained = new Ref<HTMLDivElement>();
   public nextEpisodeButton = new Ref<HTMLDivElement>();
-  private nextEpisodeProgressIcon = new Ref<HTMLDivElement>();
-  private nextEpisodeContinueAtText = new Ref<Text>();
   private nowDate: Date;
 
   public constructor(
-    private serviceClient: WebServiceClient,
     getNowDate: () => Date,
     customeStyle: string,
     episode: Episode,
     private seasonSummary: SeasonSummary,
     private nextEpisode?: Episode,
+    private nextEpisodeWatchedTimeMs?: number,
   ) {
     super();
     this.nowDate = getNowDate();
     this.body = E.div(
       {
         class: "info-panel",
-        display: `display: flex; flex-flow: columnn nowrap; ${customeStyle}`,
+        style: `flex-flow: column nowrap; ${customeStyle}`,
       },
       E.div(
         {
@@ -197,10 +192,12 @@ export class InfoPanel extends EventEmitter {
       }),
       ...this.createNextEpisodeElements(),
     );
-    this.updateMetering(0);
+    this.show();
+    this.updateMeterReading(0);
 
-    this.meteringQuestionMark.val.addEventListener("click", () =>
-      this.showMeteringExplained(),
+    this.meteringQuestionMark.val.addEventListener(
+      "click",
+      this.showMeteringExplained,
     );
     if (this.nextEpisodeButton.val) {
       this.nextEpisodeButton.val.addEventListener("click", () => {
@@ -227,7 +224,8 @@ export class InfoPanel extends EventEmitter {
     } else {
       let hasPremiered =
         this.nextEpisode.premiereTimeMs <= this.nowDate.getTime();
-      let elements = [
+      let continueTimeMs = this.nextEpisodeWatchedTimeMs ?? 0;
+      return [
         E.div(
           {
             class: "info-panel-next-episode",
@@ -271,8 +269,7 @@ export class InfoPanel extends EventEmitter {
                     class: "info-panel-next-episode-progress-line",
                     style: `display: flex; flex-flow: row nowrap; align-items: center;`,
                   },
-                  E.divRef(
-                    this.nextEpisodeProgressIcon,
+                  E.div(
                     {
                       class: "info-panel-next-episode-progress-icon",
                       style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
@@ -280,7 +277,7 @@ export class InfoPanel extends EventEmitter {
                     createCircularProgressIcon(
                       SCHEME.progress,
                       SCHEME.neutral2,
-                      0,
+                      continueTimeMs / 1000 / this.nextEpisode.videoDurationSec,
                     ),
                   ),
                   E.div({
@@ -291,12 +288,8 @@ export class InfoPanel extends EventEmitter {
                       class: "info-panel-next-episode-conintue-at",
                       style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
                     },
-                    E.textRef(
-                      this.nextEpisodeContinueAtText,
-                      `${formatSecondsAsHHMMSS(0)}`,
-                    ),
                     E.text(
-                      ` / ${formatSecondsAsHHMMSS(this.nextEpisode.videoDurationSec)} (${calculateShowMoneyAndFormat(this.seasonSummary.grade, this.nextEpisode.videoDurationSec, this.nowDate)})`,
+                      `${formatSecondsAsHHMMSS(continueTimeMs / 1000)} / ${formatSecondsAsHHMMSS(this.nextEpisode.videoDurationSec)} (${calculateShowMoneyAndFormat(this.seasonSummary.grade, this.nextEpisode.videoDurationSec, this.nowDate)})`,
                     ),
                   ),
                 )
@@ -312,37 +305,11 @@ export class InfoPanel extends EventEmitter {
           ),
         ),
       ];
-      if (hasPremiered) {
-        this.getContinueTimeMsForNextEpisode();
-      }
-      return elements;
     }
   }
 
-  private async getContinueTimeMsForNextEpisode(): Promise<void> {
-    let response = await this.serviceClient.send(
-      newGetLatestWatchedTimeOfEpisodeRequest({
-        seasonId: this.seasonSummary.seasonId,
-        episodeId: this.nextEpisode.episodeId,
-      }),
-    );
-    let continueTimeMs = response.watchedTimeMs ?? 0;
-    this.nextEpisodeProgressIcon.val.lastElementChild.remove();
-    this.nextEpisodeProgressIcon.val.append(
-      createCircularProgressIcon(
-        SCHEME.progress,
-        SCHEME.neutral2,
-        continueTimeMs / 1000 / this.nextEpisode.videoDurationSec,
-      ),
-    );
-    this.nextEpisodeContinueAtText.val.textContent = formatSecondsAsHHMMSS(
-      continueTimeMs / 1000,
-    );
-    this.emit("gotContinueTime");
-  }
-
   // Don't update too frequently.
-  public updateMetering(watchedTimeMs: number): void {
+  public updateMeterReading(watchedTimeMs: number): void {
     this.metering.val.textContent = calculateShowMoneyAndFormat(
       this.seasonSummary.grade,
       Math.round(watchedTimeMs / 1000),
@@ -350,12 +317,24 @@ export class InfoPanel extends EventEmitter {
     );
   }
 
-  private showMeteringExplained(): void {
+  private showMeteringExplained = (): void => {
     this.meteringExplained.val.style.display = "block";
     this.meteringExplained.val.style.height = "0";
     this.meteringExplained.val.style.height = `${this.meteringExplained.val.scrollHeight}px`;
     this.meteringExplained.val.addEventListener("transitionend", () => {
       this.meteringExplained.val.style.height = "auto";
     });
+    this.meteringQuestionMark.val.removeEventListener(
+      "click",
+      this.showMeteringExplained,
+    );
+  };
+
+  public show(): void {
+    this.body.style.display = "flex";
+  }
+
+  public hide(): void {
+    this.body.style.display = "none";
   }
 }

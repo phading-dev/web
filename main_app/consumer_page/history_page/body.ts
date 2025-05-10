@@ -180,7 +180,7 @@ export class HistoryPage extends EventEmitter {
       let item = eContinueEpisodeItem(
         summary.season,
         summary.episode,
-        session.latestWatchedTimeMs,
+        session.latestWatchedVideoTimeMs,
       );
       item.addEventListener("click", () => {
         this.emit("play", session.seasonId, session.episodeId);

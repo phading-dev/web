@@ -57,7 +57,7 @@ import {
   newAddToWatchLaterListRequest,
   newCheckInWatchLaterListRequest,
   newDeleteFromWatchLaterListRequest,
-  newGetLatestWatchedTimeOfEpisodeRequest,
+  newGetLatestWatchedVideoTimeOfEpisodeRequest,
 } from "@phading/play_activity_service_interface/show/web/client";
 import {
   newGetContinueEpisodeRequest,
@@ -622,12 +622,12 @@ export class SeasonDetailsPage extends EventEmitter {
       }),
     );
     let [
-      { watchedTimeMs },
+      { watchedVideoTimeMs },
       { episodes: nextEpisodes, indexCursor: nextIndexCursor },
       { episodes: prevEpisodes, indexCursor: prevIndexCursor },
     ] = await Promise.all([
       this.serviceClient.send(
-        newGetLatestWatchedTimeOfEpisodeRequest({
+        newGetLatestWatchedVideoTimeOfEpisodeRequest({
           seasonId: this.seasonId,
           episodeId: response.episode.episodeId,
         }),
@@ -651,7 +651,7 @@ export class SeasonDetailsPage extends EventEmitter {
     ]);
     return {
       continueEpisode: response.episode,
-      continueTimeMs: watchedTimeMs ?? 0,
+      continueTimeMs: watchedVideoTimeMs ?? 0,
       rewatching: response.rewatching,
       episodes: [...prevEpisodes, ...nextEpisodes],
       prevIndexCursor,
@@ -751,12 +751,12 @@ export class SeasonDetailsPage extends EventEmitter {
     continueAtText: Text,
   ): Promise<void> {
     let response = await this.serviceClient.send(
-      newGetLatestWatchedTimeOfEpisodeRequest({
+      newGetLatestWatchedVideoTimeOfEpisodeRequest({
         seasonId: this.seasonId,
         episodeId: episodeId,
       }),
     );
-    let continueTimeMs = response.watchedTimeMs ?? 0;
+    let continueTimeMs = response.watchedVideoTimeMs ?? 0;
     progressIcon.lastElementChild.remove();
     progressIcon.append(
       createCircularProgressIcon(

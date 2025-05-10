@@ -4,7 +4,7 @@ import { normalizeBody } from "../../../../common/normalize_body";
 import { setTabletView } from "../../../../common/view_port";
 import { SettingsPanel } from "./body";
 import {
-  ChatOverlayStyle,
+  CommentOverlayStyle,
   StackingMethod,
   VideoPlayerSettings,
 } from "@phading/user_service_interface/web/self/video_player_settings";
@@ -18,8 +18,8 @@ normalizeBody();
 
 let SETTINGS: VideoPlayerSettings = {
   videoSettings: {},
-  chatOverlaySettings: {
-    style: ChatOverlayStyle.SIDE,
+  commentOverlaySettings: {
+    style: CommentOverlayStyle.SIDE,
     opacity: 80,
     fontSize: 20,
     danmakuSettings: {
@@ -45,12 +45,6 @@ async function setUpSettingsPanel(): Promise<{
   let cut = new SettingsPanel("width: 100%;", settings);
 
   container.append(cut.body);
-  cut.setAvailableTracks(
-    ["None", "English", "Spanish"],
-    "English",
-    ["Japanese", "Chinese"],
-    "Japanese",
-  );
   return { container, cut, settings };
 }
 
@@ -58,17 +52,29 @@ TEST_RUNNER.run({
   name: "SettingsPanelTest",
   cases: [
     new (class implements TestCase {
-      public name = "Default_WideScreen";
+      public name = "Default_AddTracks_WideScreen";
       private container: HTMLDivElement;
       public async execute() {
         // Execute
-        ({ container: this.container } = await setUpSettingsPanel());
+        let cut: SettingsPanel;
+        ({ container: this.container, cut } = await setUpSettingsPanel());
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_panel_default.png"),
           path.join(__dirname, "/golden/settings_panel_default.png"),
           path.join(__dirname, "/settings_panel_default_diff.png"),
+        );
+
+        // Execute
+        cut.addAvailableSubtitleTracks(["English", "Spanish"], 1);
+        cut.addAvailableAudioTracks(["Japanese", "Chinese"], 0);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/settings_panel_with_tracks.png"),
+          path.join(__dirname, "/golden/settings_panel_with_tracks.png"),
+          path.join(__dirname, "/settings_panel_with_tracks_diff.png"),
         );
 
         // Execute
@@ -86,7 +92,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "SelectSubtitle";
+      public name = "SelectSubtitleOff";
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
@@ -97,20 +103,40 @@ TEST_RUNNER.run({
           cut,
           settings,
         } = await setUpSettingsPanel());
-        let subtitleSelected = false;
-        cut.on("subtitleSelected", () => {
-          subtitleSelected = true;
+        cut.addAvailableSubtitleTracks(["English", "Spanish"], 1);
+        let selectSubtitleIndex: number;
+        cut.on("selectSubtitle", (index) => {
+          selectSubtitleIndex = index;
         });
 
         // Execute
         cut.subtitleOptions[0].click();
 
         // Verify
-        assertThat(subtitleSelected, eq(true), "subtitleSelected");
+        assertThat(selectSubtitleIndex, eq(-1), "selectSubtitleIndex");
         assertThat(
           settings.videoSettings.preferredSubtitleName,
-          eq("None"),
+          eq(undefined),
           "settings.videoSettings.preferredSubtitleName",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/settings_panel_select_subtitle_off.png"),
+          path.join(
+            __dirname,
+            "/golden/settings_panel_select_subtitle_off.png",
+          ),
+          path.join(__dirname, "/settings_panel_select_subtitle_off_diff.png"),
+        );
+
+        // Execute
+        cut.subtitleOptions[1].click();
+
+        // Verify
+        assertThat(selectSubtitleIndex, eq(0), "selectSubtitleIndex 2");
+        assertThat(
+          settings.videoSettings.preferredSubtitleName,
+          eq("English"),
+          "settings.videoSettings.preferredSubtitleName 2",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_panel_select_subtitle.png"),
@@ -134,16 +160,17 @@ TEST_RUNNER.run({
           cut,
           settings,
         } = await setUpSettingsPanel());
-        let audioSelected = false;
-        cut.on("audioSelected", () => {
-          audioSelected = true;
+        cut.addAvailableAudioTracks(["Japanese", "Chinese"], 0);
+        let selectAudioIndex = -1;
+        cut.on("selectAudio", (index) => {
+          selectAudioIndex = index;
         });
 
         // Execute
         cut.audioOptions[1].click();
 
         // Verify
-        assertThat(audioSelected, eq(true), "audioSelected");
+        assertThat(selectAudioIndex, eq(1), "selectAudioIndex");
         assertThat(
           settings.videoSettings.preferredAudioName,
           eq("Chinese"),
@@ -160,7 +187,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "SelectDisabledChatOverlay_SelectDanmaku";
+      public name = "SelectDisabledCommentOverlay_SelectDanmaku";
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
@@ -171,56 +198,56 @@ TEST_RUNNER.run({
           cut,
           settings,
         } = await setUpSettingsPanel());
-        let chatOverlayStyleChanged = false;
-        cut.on("chatOverlayStyleChanged", () => {
-          chatOverlayStyleChanged = true;
+        let updateCommentOverlaySettings = false;
+        cut.on("updateCommentOverlaySettings", () => {
+          updateCommentOverlaySettings = true;
         });
 
         // Execute
-        cut.chatOverlayDisabledOption.val.click();
+        cut.commentOverlayDisabledOption.val.click();
 
         // Verify
         assertThat(
-          chatOverlayStyleChanged,
+          updateCommentOverlaySettings,
           eq(true),
-          "chatOverlayStyleChanged",
+          "updateCommentOverlaySettings",
         );
         assertThat(
-          settings.chatOverlaySettings.style,
-          eq(ChatOverlayStyle.NONE),
-          "settings.chatOverlaySettings.style",
+          settings.commentOverlaySettings.style,
+          eq(CommentOverlayStyle.NONE),
+          "settings.commentOverlaySettings.style",
         );
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/settings_panel_select_disabled_chat_overlay.png",
+            "/settings_panel_select_disabled_comment_overlay.png",
           ),
           path.join(
             __dirname,
-            "/golden/settings_panel_select_disabled_chat_overlay.png",
+            "/golden/settings_panel_select_disabled_comment_overlay.png",
           ),
           path.join(
             __dirname,
-            "/settings_panel_select_disabled_chat_overlay_diff.png",
+            "/settings_panel_select_disabled_comment_overlay_diff.png",
           ),
         );
 
         // Prepare
-        chatOverlayStyleChanged = false;
+        updateCommentOverlaySettings = false;
 
         // Execute
-        cut.chatOverlayDanmakuOption.val.click();
+        cut.commentOverlayDanmakuOption.val.click();
 
         // Verify
         assertThat(
-          chatOverlayStyleChanged,
+          updateCommentOverlaySettings,
           eq(true),
-          "chatOverlayStyleChanged 2",
+          "updateCommentOverlaySettings 2",
         );
         assertThat(
-          settings.chatOverlaySettings.style,
-          eq(ChatOverlayStyle.DANMAKU),
-          "settings.chatOverlaySettings.style 2",
+          settings.commentOverlaySettings.style,
+          eq(CommentOverlayStyle.DANMAKU),
+          "settings.commentOverlaySettings.style 2",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_panel_select_danmaku.png"),
@@ -244,20 +271,24 @@ TEST_RUNNER.run({
           cut,
           settings,
         } = await setUpSettingsPanel());
-        let opacityChanged = false;
-        cut.on("chatOverlayOpacityChanged", () => {
-          opacityChanged = true;
+        let updateCommentOverlaySettings = false;
+        cut.on("updateCommentOverlaySettings", () => {
+          updateCommentOverlaySettings = true;
         });
 
         // Execute
-        cut.chatOverlayOpacity.val.minusButton.val.click();
+        cut.commentOverlayOpacity.val.minusButton.val.click();
 
         // Verify
-        assertThat(opacityChanged, eq(true), "opacityChanged");
         assertThat(
-          settings.chatOverlaySettings.opacity,
+          updateCommentOverlaySettings,
+          eq(true),
+          "updateCommentOverlaySettings",
+        );
+        assertThat(
+          settings.commentOverlaySettings.opacity,
           eq(70),
-          "settings.chatOverlaySettings.opacity",
+          "settings.commentOverlaySettings.opacity",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_panel_opacity_decrement.png"),
@@ -266,23 +297,23 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        opacityChanged = false;
+        updateCommentOverlaySettings = false;
 
         // Execute
         for (let i = 0; i < 5; i++) {
-          cut.chatOverlayOpacity.val.plusButton.val.click();
+          cut.commentOverlayOpacity.val.plusButton.val.click();
         }
 
         // Verify
         assertThat(
-          opacityChanged,
+          updateCommentOverlaySettings,
           eq(true),
-          "opacityChanged after incrementing",
+          "updateCommentOverlaySettings after incrementing",
         );
         assertThat(
-          settings.chatOverlaySettings.opacity,
+          settings.commentOverlaySettings.opacity,
           eq(100),
-          "settings.chatOverlaySettings.opacity after incrementing",
+          "settings.commentOverlaySettings.opacity after incrementing",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_panel_opacity_max.png"),
@@ -291,19 +322,23 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        opacityChanged = false;
+        updateCommentOverlaySettings = false;
 
         // Execute
-        cut.chatOverlayOpacity.val.input.val.focus();
-        cut.chatOverlayOpacity.val.input.val.value = "";
-        cut.chatOverlayOpacity.val.input.val.blur();
+        cut.commentOverlayOpacity.val.input.val.focus();
+        cut.commentOverlayOpacity.val.input.val.value = "";
+        cut.commentOverlayOpacity.val.input.val.blur();
 
         // Verify
-        assertThat(opacityChanged, eq(true), "opacityChanged after blur");
         assertThat(
-          settings.chatOverlaySettings.opacity,
+          updateCommentOverlaySettings,
+          eq(true),
+          "updateCommentOverlaySettings after blur",
+        );
+        assertThat(
+          settings.commentOverlaySettings.opacity,
           eq(80),
-          "settings.chatOverlaySettings.opacity after blur",
+          "settings.commentOverlaySettings.opacity after blur",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_panel_opacity_blur.png"),
@@ -312,20 +347,24 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        opacityChanged = false;
+        updateCommentOverlaySettings = false;
 
         // Execute
-        cut.chatOverlayOpacity.val.input.val.focus();
-        cut.chatOverlayOpacity.val.input.val.value = "-1";
+        cut.commentOverlayOpacity.val.input.val.focus();
+        cut.commentOverlayOpacity.val.input.val.value = "-1";
         await keyboardDown("Enter");
         await keyboardUp("Enter");
 
         // Verify
-        assertThat(opacityChanged, eq(true), "opacityChanged after enter");
         assertThat(
-          settings.chatOverlaySettings.opacity,
+          updateCommentOverlaySettings,
+          eq(true),
+          "updateCommentOverlaySettings after enter",
+        );
+        assertThat(
+          settings.commentOverlaySettings.opacity,
           eq(0),
-          "settings.chatOverlaySettings.opacity after enter",
+          "settings.commentOverlaySettings.opacity after enter",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_panel_opacity_enter.png"),
@@ -349,24 +388,24 @@ TEST_RUNNER.run({
           cut,
           settings,
         } = await setUpSettingsPanel());
-        let fontSizeChanged = false;
-        cut.on("chatOverlayFontSizeChanged", () => {
-          fontSizeChanged = true;
+        let updateCommentOverlaySettings = false;
+        cut.on("updateCommentOverlaySettings", () => {
+          updateCommentOverlaySettings = true;
         });
 
         // Execute
-        cut.chatOverlayFontSize.val.plusButton.val.click();
+        cut.commentOverlayFontSize.val.plusButton.val.click();
 
         // Verify
         assertThat(
-          fontSizeChanged,
+          updateCommentOverlaySettings,
           eq(true),
-          "fontSizeChanged after incrementing",
+          "updateCommentOverlaySettings after incrementing",
         );
         assertThat(
-          settings.chatOverlaySettings.fontSize,
+          settings.commentOverlaySettings.fontSize,
           eq(21),
-          "settings.chatOverlaySettings.fontSize.size after incrementing",
+          "settings.commentOverlaySettings.fontSize.size after incrementing",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_panel_font_size_increment.png"),
@@ -393,10 +432,10 @@ TEST_RUNNER.run({
           cut,
           settings,
         } = await setUpSettingsPanel());
-        cut.chatOverlayDanmakuOption.val.click();
-        let danmakuOverlaySpeedChanged = false;
-        cut.on("danmakuOverlaySpeedChanged", () => {
-          danmakuOverlaySpeedChanged = true;
+        cut.commentOverlayDanmakuOption.val.click();
+        let updateCommentOverlaySettings = false;
+        cut.on("updateCommentOverlaySettings", () => {
+          updateCommentOverlaySettings = true;
         });
 
         // Execute
@@ -404,14 +443,14 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          danmakuOverlaySpeedChanged,
+          updateCommentOverlaySettings,
           eq(true),
-          "danmakuOverlaySpeedChanged after incrementing",
+          "updateCommentOverlaySettings after incrementing",
         );
         assertThat(
-          settings.chatOverlaySettings.danmakuSettings.speed,
+          settings.commentOverlaySettings.danmakuSettings.speed,
           eq(225),
-          "settings.chatOverlaySettings.danmakuSettings.speed after incrementing",
+          "settings.commentOverlaySettings.danmakuSettings.speed after incrementing",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_panel_danmaku_speed_increment.png"),
@@ -441,10 +480,10 @@ TEST_RUNNER.run({
           cut,
           settings,
         } = await setUpSettingsPanel());
-        cut.chatOverlayDanmakuOption.val.click();
-        let danmakuOverlayDensityChanged = false;
-        cut.on("danmakuOverlayDensityChanged", () => {
-          danmakuOverlayDensityChanged = true;
+        cut.commentOverlayDanmakuOption.val.click();
+        let updateCommentOverlaySettings = false;
+        cut.on("updateCommentOverlaySettings", () => {
+          updateCommentOverlaySettings = true;
         });
 
         // Execute
@@ -452,14 +491,14 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          danmakuOverlayDensityChanged,
+          updateCommentOverlaySettings,
           eq(true),
-          "danmakuOverlayDensityChanged after decrementing",
+          "updateCommentOverlaySettings after decrementing",
         );
         assertThat(
-          settings.chatOverlaySettings.danmakuSettings.density,
+          settings.commentOverlaySettings.danmakuSettings.density,
           eq(95),
-          "settings.chatOverlaySettings.danmakuSettings.density after decrementing",
+          "settings.commentOverlaySettings.danmakuSettings.density after decrementing",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_panel_danmaku_density_decrement.png"),
@@ -489,10 +528,10 @@ TEST_RUNNER.run({
           cut,
           settings,
         } = await setUpSettingsPanel());
-        cut.chatOverlayDanmakuOption.val.click();
-        let danmakuStackingMethodChanged = false;
-        cut.on("danmakuStackingMethodChanged", () => {
-          danmakuStackingMethodChanged = true;
+        cut.commentOverlayDanmakuOption.val.click();
+        let updateCommentOverlaySettings = false;
+        cut.on("updateCommentOverlaySettings", () => {
+          updateCommentOverlaySettings = true;
         });
 
         // Execute
@@ -500,14 +539,14 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          danmakuStackingMethodChanged,
+          updateCommentOverlaySettings,
           eq(true),
           "stackingMethodChanged after selection",
         );
         assertThat(
-          settings.chatOverlaySettings.danmakuSettings.stackingMethod,
+          settings.commentOverlaySettings.danmakuSettings.stackingMethod,
           eq(StackingMethod.TOP_DOWN),
-          "settings.chatOverlaySettings.danmakuSettings.stackingMethod after selection",
+          "settings.commentOverlaySettings.danmakuSettings.stackingMethod after selection",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/settings_panel_stacking_method_top_down.png"),

@@ -427,7 +427,7 @@ export function createPlayNextIcon(color: string): SVGSVGElement {
     {
       class: "play-next-icon",
       style: `height: 100%; fill: ${color};`,
-      viewBox: "4 6.4 11.2 11.2",
+      viewBox: "3 5.4 13.2 13.2",
     },
     E.path({
       d: `M4.788 17.444A.5.5 0 0 1 4 17.035V6.965a.5.5 0 0 1 .788-.409l7.133 5.036a.5.5 0 0 1 0 .816l-7.133 5.036z  M13.6 6.4 v11.2 h1.6 v-11.2z`,

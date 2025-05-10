@@ -5,12 +5,10 @@ import { SCHEME } from "../../../../common/color_scheme";
 import { normalizeBody } from "../../../../common/normalize_body";
 import { setTabletView } from "../../../../common/view_port";
 import { InfoPanel } from "./body";
-import { GetLatestWatchedTimeOfEpisodeResponse } from "@phading/play_activity_service_interface/show/web/interface";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
-import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 normalizeBody();
 
@@ -27,11 +25,7 @@ TEST_RUNNER.run({
           style: `width: 35rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
         });
         document.body.append(this.container);
-        let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response =
-          {} as GetLatestWatchedTimeOfEpisodeResponse;
         let cut = new InfoPanel(
-          serviceClientMock,
           () => new Date("2024-02-01T08:00:00Z"),
           "width: 100%;",
           {
@@ -68,7 +62,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.updateMetering(900000);
+        cut.updateMeterReading(900000);
 
         // Verify
         await asyncAssertScreenshot(
@@ -147,9 +141,7 @@ TEST_RUNNER.run({
           style: `width: 35rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
         });
         document.body.append(this.container);
-        let serviceClientMock = new WebServiceClientMock();
         let cut = new InfoPanel(
-          serviceClientMock,
           () => new Date("2024-02-01T08:00:00Z"),
           "width: 100%;",
           {
@@ -191,11 +183,7 @@ TEST_RUNNER.run({
           style: `width: 35rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
         });
         document.body.append(this.container);
-        let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response =
-          {} as GetLatestWatchedTimeOfEpisodeResponse;
         let cut = new InfoPanel(
-          serviceClientMock,
           () => new Date("2024-02-01T08:00:00Z"),
           "width: 100%;",
           {

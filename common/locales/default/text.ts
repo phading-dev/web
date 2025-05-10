@@ -716,34 +716,40 @@ export default class Text {
   get subtitleOptionsLabel() {
     return `Subtitle`;
   }
-  get subtitleOptionNone() {
-    return `None`;
+  get subtitleOptionOff() {
+    return `Off`;
+  }
+  get subtitleOptionsNotAvailable() {
+    return `Not available`;
   }
   get audioOptionsLabel() {
     return `Audio`;
   }
-  get chatOverlaySettingsLabel() {
+  get audioOptionsNotAvailable() {
+    return `Not available`;
+  }
+  get commentOverlaySettingsLabel() {
     return `Settings for chat overlay`;
   }
-  get chatOverlayStyleLabel() {
+  get commentOverlayStyleLabel() {
     return `Style`;
   }
-  get chatOverlayStyleDisabledOptionLabel() {
+  get commentOverlayStyleDisabledOptionLabel() {
     return `Disabled`;
   }
-  get chatOverlayStyleSideOptionLabel() {
+  get commentOverlayStyleSideOptionLabel() {
     return `On the side`;
   }
-  get chatOverlayStyleDanmakuOptionLabel() {
+  get commentOverlayStyleDanmakuOptionLabel() {
     return `Scrolling`;
   }
-  get chatOverlayOpacityLabel() {
+  get commentOverlayOpacityLabel() {
     return `Opacity`;
   }
-  get chatOverlayFontSizeLabel() {
+  get commentOverlayFontSizeLabel() {
     return `Font size`;
   }
-  get chatOverlayFontFamilyLabel() {
+  get commentOverlayFontFamilyLabel() {
     return `Font`;
   }
   get danmakuOverlaySettingsLabel() {

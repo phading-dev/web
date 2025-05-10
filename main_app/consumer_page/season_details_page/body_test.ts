@@ -17,9 +17,9 @@ import {
   CheckInWatchLaterListResponse,
   DELETE_FROM_WATCH_LATER_LIST,
   DELETE_FROM_WATCH_LATER_LIST_REQUEST_BODY,
-  GET_LATEST_WATCHED_TIME_OF_EPISODE,
-  GET_LATEST_WATCHED_TIME_OF_EPISODE_REQUEST_BODY,
-  GetLatestWatchedTimeOfEpisodeResponse,
+  GET_LATEST_WATCHED_VIDEO_TIME_OF_EPISODE,
+  GET_LATEST_WATCHED_VIDEO_TIME_OF_EPISODE_REQUEST_BODY,
+  GetLatestWatchedVideoTimeOfEpisodeResponse,
 } from "@phading/play_activity_service_interface/show/web/interface";
 import {
   GET_CONTINUE_EPISODE,
@@ -215,7 +215,7 @@ TEST_RUNNER.run({
                 }
                 return response;
               }
-              case GET_LATEST_WATCHED_TIME_OF_EPISODE: {
+              case GET_LATEST_WATCHED_VIDEO_TIME_OF_EPISODE: {
                 if (request.body.episodeId === "episode1") {
                   assertThat(
                     request.body,
@@ -224,9 +224,9 @@ TEST_RUNNER.run({
                         seasonId: "season1",
                         episodeId: "episode1",
                       },
-                      GET_LATEST_WATCHED_TIME_OF_EPISODE_REQUEST_BODY,
+                      GET_LATEST_WATCHED_VIDEO_TIME_OF_EPISODE_REQUEST_BODY,
                     ),
-                    "GetLatestWatchedTimeOfEpisodeRequest 1",
+                    "GetLatestWatchedVideoTimeOfEpisodeRequest 1",
                   );
                 } else if (request.body.episodeId === "episode2") {
                   assertThat(
@@ -236,16 +236,16 @@ TEST_RUNNER.run({
                         seasonId: "season1",
                         episodeId: "episode2",
                       },
-                      GET_LATEST_WATCHED_TIME_OF_EPISODE_REQUEST_BODY,
+                      GET_LATEST_WATCHED_VIDEO_TIME_OF_EPISODE_REQUEST_BODY,
                     ),
-                    "GetLatestWatchedTimeOfEpisodeRequest 2",
+                    "GetLatestWatchedVideoTimeOfEpisodeRequest 2",
                   );
                 } else {
                   throw new Error(
                     `Unexpected episodeId: ${request.body.episodeId}`,
                   );
                 }
-                let response: GetLatestWatchedTimeOfEpisodeResponse = {};
+                let response: GetLatestWatchedVideoTimeOfEpisodeResponse = {};
                 return response;
               }
               case CHECK_IN_WATCH_LATER_LIST: {
@@ -1110,15 +1110,15 @@ TEST_RUNNER.run({
                 }
                 return response;
               }
-              case GET_LATEST_WATCHED_TIME_OF_EPISODE: {
-                let response: GetLatestWatchedTimeOfEpisodeResponse;
+              case GET_LATEST_WATCHED_VIDEO_TIME_OF_EPISODE: {
+                let response: GetLatestWatchedVideoTimeOfEpisodeResponse;
                 if (request.body.episodeId === "episode2") {
                   response = {
-                    watchedTimeMs: 23 * 60 * 1000,
+                    watchedVideoTimeMs: 23 * 60 * 1000,
                   };
                 } else if (request.body.episodeId === "episode3") {
                   response = {
-                    watchedTimeMs: 2 * 60 * 60 * 1000,
+                    watchedVideoTimeMs: 2 * 60 * 60 * 1000,
                   };
                 } else if (
                   request.body.episodeId === "episode4" ||
@@ -1227,11 +1227,11 @@ TEST_RUNNER.run({
               };
               return response;
             }
-            case GET_LATEST_WATCHED_TIME_OF_EPISODE: {
-              let response: GetLatestWatchedTimeOfEpisodeResponse;
+            case GET_LATEST_WATCHED_VIDEO_TIME_OF_EPISODE: {
+              let response: GetLatestWatchedVideoTimeOfEpisodeResponse;
               if (request.body.episodeId === "episode1") {
                 response = {
-                  watchedTimeMs: 2 * 60 * 60 * 1000,
+                  watchedVideoTimeMs: 2 * 60 * 60 * 1000,
                 };
               } else {
                 throw new Error(
@@ -1411,11 +1411,11 @@ TEST_RUNNER.run({
                 }
                 return response;
               }
-              case GET_LATEST_WATCHED_TIME_OF_EPISODE: {
-                let response: GetLatestWatchedTimeOfEpisodeResponse;
+              case GET_LATEST_WATCHED_VIDEO_TIME_OF_EPISODE: {
+                let response: GetLatestWatchedVideoTimeOfEpisodeResponse;
                 if (request.body.episodeId === "episode1") {
                   response = {
-                    watchedTimeMs: 2 * 60 * 60 * 1000,
+                    watchedVideoTimeMs: 2 * 60 * 60 * 1000,
                   };
                 } else {
                   throw new Error(
@@ -1551,8 +1551,8 @@ TEST_RUNNER.run({
                 }
                 return response;
               }
-              case GET_LATEST_WATCHED_TIME_OF_EPISODE: {
-                let response: GetLatestWatchedTimeOfEpisodeResponse;
+              case GET_LATEST_WATCHED_VIDEO_TIME_OF_EPISODE: {
+                let response: GetLatestWatchedVideoTimeOfEpisodeResponse;
                 if (request.body.episodeId === "episode1") {
                   response = {};
                 } else {

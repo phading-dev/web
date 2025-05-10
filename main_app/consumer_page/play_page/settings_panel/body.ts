@@ -14,7 +14,7 @@ import {
 } from "../common/defaults";
 import { RangedNumberInput } from "./ranged_number_input";
 import {
-  ChatOverlayStyle,
+  CommentOverlayStyle,
   StackingMethod,
   VideoPlayerSettings,
 } from "@phading/user_service_interface/web/self/video_player_settings";
@@ -47,12 +47,12 @@ function eRadioOptionsLine(
 ): HTMLDivElement {
   return E.div(
     {
-      class: "settings-panel-chat-overlay-options-line",
+      class: "settings-panel-comment-overlay-options-line",
       style: `display: flex; flex-flow: row wrap; column-gap: 1.5rem; row-gap: 1rem; align-items: center; justify-content: flex-end;`,
     },
     E.div(
       {
-        class: "settings-panel-chat-overlay-options-label",
+        class: "settings-panel-comment-overlay-options-label",
         style: `flex: 1 0 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
       },
       E.text(label),
@@ -64,12 +64,12 @@ function eRadioOptionsLine(
 function eSingleInputLine(label: string, element: HTMLElement): HTMLDivElement {
   return E.div(
     {
-      class: "settings-panel-chat-overlay-single-input-line",
+      class: "settings-panel-comment-overlay-single-input-line",
       style: `display: flex; flex-flow: row wrap; align-items: center; justify-content: space-between;`,
     },
     E.div(
       {
-        class: "settings-panel-chat-overlay-single-input-label",
+        class: "settings-panel-comment-overlay-single-input-label",
         style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
       },
       E.text(label),
@@ -79,14 +79,9 @@ function eSingleInputLine(label: string, element: HTMLElement): HTMLDivElement {
 }
 
 export interface SettingsPanel {
-  on(event: "subtitleSelected", listener: () => void): this;
-  on(event: "audioSelected", listener: () => void): this;
-  on(event: "chatOverlayStyleChanged", listener: () => void): this;
-  on(event: "chatOverlayOpacityChanged", listener: () => void): this;
-  on(event: "chatOverlayFontSizeChanged", listener: () => void): this;
-  on(event: "danmakuOverlaySpeedChanged", listener: () => void): this;
-  on(event: "danmakuOverlayDensityChanged", listener: () => void): this;
-  on(event: "danmakuStackingMethodChanged", listener: () => void): this;
+  on(event: "selectSubtitle", listener: (index: number) => void): this;
+  on(event: "selectAudio", listener: (index: number) => void): this;
+  on(event: "updateCommentOverlaySettings", listener: () => void): this;
 }
 
 export class SettingsPanel extends EventEmitter {
@@ -99,14 +94,22 @@ export class SettingsPanel extends EventEmitter {
 
   public body: HTMLDivElement;
   private subtitleOptionsContainer = new Ref<HTMLDivElement>();
+  private subtitleOptionsNotAvailable = new Ref<HTMLDivElement>();
   private audioOptionsContainer = new Ref<HTMLDivElement>();
-  public subtitleOptions: Array<OptionPill<string>>;
-  public audioOptions: Array<OptionPill<string>>;
-  public chatOverlayDisabledOption = new Ref<OptionPill<ChatOverlayStyle>>();
-  public chatOverlaySideOption = new Ref<OptionPill<ChatOverlayStyle>>();
-  public chatOverlayDanmakuOption = new Ref<OptionPill<ChatOverlayStyle>>();
-  public chatOverlayOpacity = new Ref<RangedNumberInput>();
-  public chatOverlayFontSize = new Ref<RangedNumberInput>();
+  private audioOptionsNotAvailable = new Ref<HTMLDivElement>();
+  private subtitles: Array<string>;
+  public subtitleOptions: Array<OptionPill<number>>;
+  private audios: Array<string>;
+  public audioOptions: Array<OptionPill<number>>;
+  public commentOverlayDisabledOption = new Ref<
+    OptionPill<CommentOverlayStyle>
+  >();
+  public commentOverlaySideOption = new Ref<OptionPill<CommentOverlayStyle>>();
+  public commentOverlayDanmakuOption = new Ref<
+    OptionPill<CommentOverlayStyle>
+  >();
+  public commentOverlayOpacity = new Ref<RangedNumberInput>();
+  public commentOverlayFontSize = new Ref<RangedNumberInput>();
   public danmakuOverlaySpeed = new Ref<RangedNumberInput>();
   public danmakuOverlayDensity = new Ref<RangedNumberInput>();
   private danmakuOverlayOptionsContainer = new Ref<HTMLDivElement>();
@@ -121,63 +124,81 @@ export class SettingsPanel extends EventEmitter {
     this.body = E.div(
       {
         class: "settings-panel",
-        style: `display: flex; flex-flow: column nowrap; gap: 2rem; ${customeStyle}`,
+        style: `flex-flow: column nowrap; gap: 2rem; ${customeStyle}`,
       },
       eSection(
         LOCALIZED_TEXT.videoPlayGeneralSettingsLabel,
         assign(
           this.subtitleOptionsContainer,
-          eRadioOptionsLine(LOCALIZED_TEXT.subtitleOptionsLabel),
+          eRadioOptionsLine(
+            LOCALIZED_TEXT.subtitleOptionsLabel,
+            E.divRef(
+              this.subtitleOptionsNotAvailable,
+              {
+                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+              },
+              E.text(LOCALIZED_TEXT.subtitleOptionsNotAvailable),
+            ),
+          ),
         ),
         assign(
           this.audioOptionsContainer,
-          eRadioOptionsLine(LOCALIZED_TEXT.audioOptionsLabel),
+          eRadioOptionsLine(
+            LOCALIZED_TEXT.audioOptionsLabel,
+            E.divRef(
+              this.audioOptionsNotAvailable,
+              {
+                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+              },
+              E.text(LOCALIZED_TEXT.audioOptionsNotAvailable),
+            ),
+          ),
         ),
       ),
       eSection(
-        LOCALIZED_TEXT.chatOverlaySettingsLabel,
+        LOCALIZED_TEXT.commentOverlaySettingsLabel,
         eRadioOptionsLine(
-          LOCALIZED_TEXT.chatOverlayStyleLabel,
+          LOCALIZED_TEXT.commentOverlayStyleLabel,
           assign(
-            this.chatOverlayDisabledOption,
+            this.commentOverlayDisabledOption,
             OptionPill.create(
-              LOCALIZED_TEXT.chatOverlayStyleDisabledOptionLabel,
-              ChatOverlayStyle.NONE,
+              LOCALIZED_TEXT.commentOverlayStyleDisabledOptionLabel,
+              CommentOverlayStyle.NONE,
             ),
           ).body,
           assign(
-            this.chatOverlaySideOption,
+            this.commentOverlaySideOption,
             OptionPill.create(
-              LOCALIZED_TEXT.chatOverlayStyleSideOptionLabel,
-              ChatOverlayStyle.SIDE,
+              LOCALIZED_TEXT.commentOverlayStyleSideOptionLabel,
+              CommentOverlayStyle.SIDE,
             ),
           ).body,
           assign(
-            this.chatOverlayDanmakuOption,
+            this.commentOverlayDanmakuOption,
             OptionPill.create(
-              LOCALIZED_TEXT.chatOverlayStyleDanmakuOptionLabel,
-              ChatOverlayStyle.DANMAKU,
+              LOCALIZED_TEXT.commentOverlayStyleDanmakuOptionLabel,
+              CommentOverlayStyle.DANMAKU,
             ),
           ).body,
         ),
         eSingleInputLine(
-          LOCALIZED_TEXT.chatOverlayOpacityLabel,
+          LOCALIZED_TEXT.commentOverlayOpacityLabel,
           assign(
-            this.chatOverlayOpacity,
+            this.commentOverlayOpacity,
             new RangedNumberInput(
               OPACITY_RANGE,
-              this.settings.chatOverlaySettings.opacity,
+              this.settings.commentOverlaySettings.opacity,
               10,
             ),
           ).body,
         ),
         eSingleInputLine(
-          LOCALIZED_TEXT.chatOverlayFontSizeLabel,
+          LOCALIZED_TEXT.commentOverlayFontSizeLabel,
           assign(
-            this.chatOverlayFontSize,
+            this.commentOverlayFontSize,
             new RangedNumberInput(
               FONT_SIZE_RANGE,
-              this.settings.chatOverlaySettings.fontSize,
+              this.settings.commentOverlaySettings.fontSize,
               1,
             ),
           ).body,
@@ -193,7 +214,7 @@ export class SettingsPanel extends EventEmitter {
               this.danmakuOverlaySpeed,
               new RangedNumberInput(
                 SPEED_RANGE,
-                this.settings.chatOverlaySettings.danmakuSettings.speed,
+                this.settings.commentOverlaySettings.danmakuSettings.speed,
                 25,
               ),
             ).body,
@@ -204,7 +225,7 @@ export class SettingsPanel extends EventEmitter {
               this.danmakuOverlayDensity,
               new RangedNumberInput(
                 DENSITY_RANGE,
-                this.settings.chatOverlaySettings.danmakuSettings.density,
+                this.settings.commentOverlaySettings.danmakuSettings.density,
                 5,
               ),
             ).body,
@@ -229,82 +250,110 @@ export class SettingsPanel extends EventEmitter {
         ),
       ),
     );
-    this.showOrHideDanmkauSettings(settings.chatOverlaySettings.style);
+    this.show();
+
+    this.showOrHideDanmkauSettings(settings.commentOverlaySettings.style);
     RadioOptionPillsGroup.create([
-      this.chatOverlayDisabledOption.val,
-      this.chatOverlaySideOption.val,
-      this.chatOverlayDanmakuOption.val,
+      this.commentOverlayDisabledOption.val,
+      this.commentOverlaySideOption.val,
+      this.commentOverlayDanmakuOption.val,
     ])
-      .setValue(settings.chatOverlaySettings.style)
+      .setValue(settings.commentOverlaySettings.style)
       .on("selected", (value) => {
         this.showOrHideDanmkauSettings(value);
-        this.settings.chatOverlaySettings.style = value;
-        this.emit("chatOverlayStyleChanged");
+        this.settings.commentOverlaySettings.style = value;
+        this.emit("updateCommentOverlaySettings");
       });
-    this.chatOverlayOpacity.val.on("changed", (value) => {
-      this.settings.chatOverlaySettings.opacity = value;
-      this.emit("chatOverlayOpacityChanged");
+
+    this.commentOverlayOpacity.val.on("changed", (value) => {
+      this.settings.commentOverlaySettings.opacity = value;
+      this.emit("updateCommentOverlaySettings");
     });
-    this.chatOverlayFontSize.val.on("changed", (value) => {
-      this.settings.chatOverlaySettings.fontSize = value;
-      this.emit("chatOverlayFontSizeChanged");
+    this.commentOverlayFontSize.val.on("changed", (value) => {
+      this.settings.commentOverlaySettings.fontSize = value;
+      this.emit("updateCommentOverlaySettings");
     });
     this.danmakuOverlaySpeed.val.on("changed", (value) => {
-      this.settings.chatOverlaySettings.danmakuSettings.speed = value;
-      this.emit("danmakuOverlaySpeedChanged");
+      this.settings.commentOverlaySettings.danmakuSettings.speed = value;
+      this.emit("updateCommentOverlaySettings");
     });
     this.danmakuOverlayDensity.val.on("changed", (value) => {
-      this.settings.chatOverlaySettings.danmakuSettings.density = value;
-      this.emit("danmakuOverlayDensityChanged");
+      this.settings.commentOverlaySettings.danmakuSettings.density = value;
+      this.emit("updateCommentOverlaySettings");
     });
     RadioOptionPillsGroup.create([
       this.danmakuStackingRandomOption.val,
       this.danmakuStackingTopDownOption.val,
     ])
-      .setValue(settings.chatOverlaySettings.danmakuSettings.stackingMethod)
+      .setValue(settings.commentOverlaySettings.danmakuSettings.stackingMethod)
       .on("selected", (value) => {
-        this.settings.chatOverlaySettings.danmakuSettings.stackingMethod =
+        this.settings.commentOverlaySettings.danmakuSettings.stackingMethod =
           value;
-        this.emit("danmakuStackingMethodChanged");
+        this.emit("updateCommentOverlaySettings");
       });
   }
 
-  public setAvailableTracks(
+  public addAvailableSubtitleTracks(
     subtitles: Array<string>,
-    initSubtitle: string,
-    audios: Array<string>,
-    initAudio: string,
+    initIndex: number,
   ): void {
-    this.subtitleOptions = subtitles.map((subtitle) =>
-      OptionPill.create(subtitle, subtitle),
-    );
+    this.subtitles = subtitles;
+    this.subtitleOptions = [
+      OptionPill.create(LOCALIZED_TEXT.subtitleOptionOff, -1),
+      ...this.subtitles.map((subtitle, index) =>
+        OptionPill.create(subtitle, index),
+      ),
+    ];
+    this.subtitleOptionsNotAvailable.val.remove();
     this.subtitleOptionsContainer.val.append(
       ...this.subtitleOptions.map((option) => option.body),
     );
     RadioOptionPillsGroup.create(this.subtitleOptions)
-      .setValue(initSubtitle)
+      .setValue(initIndex)
       .on("selected", (value) => {
-        this.settings.videoSettings.preferredSubtitleName = value;
-        this.emit("subtitleSelected", value);
+        if (value === -1) {
+          this.settings.videoSettings.preferredSubtitleName = undefined;
+        } else {
+          this.settings.videoSettings.preferredSubtitleName =
+            this.subtitles[value];
+        }
+        this.emit("selectSubtitle", value);
       });
+  }
 
-    this.audioOptions = audios.map((audio) => OptionPill.create(audio, audio));
+  public addAvailableAudioTracks(
+    audios: Array<string>,
+    initIndex: number,
+  ): void {
+    this.audios = audios;
+    this.audioOptions = this.audios.map((audio, index) =>
+      OptionPill.create(audio, index),
+    );
+    this.audioOptionsNotAvailable.val.remove();
     this.audioOptionsContainer.val.append(
       ...this.audioOptions.map((option) => option.body),
     );
     RadioOptionPillsGroup.create(this.audioOptions)
-      .setValue(initAudio)
+      .setValue(initIndex)
       .on("selected", (value) => {
-        this.settings.videoSettings.preferredAudioName = value;
-        this.emit("audioSelected", value);
+        this.settings.videoSettings.preferredAudioName = this.audios[value];
+        this.emit("selectAudio", value);
       });
   }
 
-  private showOrHideDanmkauSettings(value: ChatOverlayStyle): void {
-    if (value === ChatOverlayStyle.DANMAKU) {
+  private showOrHideDanmkauSettings(value: CommentOverlayStyle): void {
+    if (value === CommentOverlayStyle.DANMAKU) {
       this.danmakuOverlayOptionsContainer.val.style.display = "flex";
     } else {
       this.danmakuOverlayOptionsContainer.val.style.display = "none";
     }
+  }
+
+  public show(): void {
+    this.body.style.display = "flex";
+  }
+
+  public hide(): void {
+    this.body.style.display = "none";
   }
 }

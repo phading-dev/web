@@ -9,7 +9,7 @@ import { BASIC_INPUT_STYLE } from "../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { FONT_M, LINE_HEIGHT_XXL } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
-import { CommentWithAuthor } from "../comment_with_author";
+import { CommentWithAuthor } from "../common/comment_with_author";
 import { CommentEntry } from "./comment_entry";
 import { newPostCommentRequest } from "@phading/comment_service_interface/show/web/author/client";
 import { PostCommentResponse } from "@phading/comment_service_interface/show/web/author/interface";
@@ -21,7 +21,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface CommentsPanel {
   on(event: "commented", listener: (comment: Comment) => void): this;
-  on(event: "postedComment", listener: () => void): this;
+  on(event: "postCommentDone", listener: () => void): this;
 }
 
 export class CommentsPanel extends EventEmitter {
@@ -41,10 +41,10 @@ export class CommentsPanel extends EventEmitter {
   public commentInput = new Ref<HTMLInputElement>();
   public commentButton = new Ref<BlockingButton<PostCommentResponse>>();
   public commentEntries = new Set<CommentEntry>();
-  private getPinTimestampMs: () => number;
+  private getVideoTimeMs: () => number;
 
   public constructor(
-    private webServiceClient: WebServiceClient,
+    protected serviceClient: WebServiceClient,
     customStyle: string,
     private seasonId: string,
     private episodeId: string,
@@ -53,7 +53,7 @@ export class CommentsPanel extends EventEmitter {
     this.body = E.div(
       {
         class: "comments-panel",
-        style: `display: flex; flex-flow: column nowrap;  ${customStyle}`,
+        style: `flex-flow: column nowrap;  ${customStyle}`,
       },
       E.divRef(
         this.commentInputLine,
@@ -82,8 +82,9 @@ export class CommentsPanel extends EventEmitter {
         ).body,
       ),
     );
-    this.validateCommentInput();
+    this.show();
 
+    this.validateCommentInput();
     this.commentInput.val.addEventListener("input", () =>
       this.validateCommentInput(),
     );
@@ -114,12 +115,12 @@ export class CommentsPanel extends EventEmitter {
   }
 
   private postComment(): Promise<PostCommentResponse> {
-    return this.webServiceClient.send(
+    return this.serviceClient.send(
       newPostCommentRequest({
         seasonId: this.seasonId,
         episodeId: this.episodeId,
         content: this.commentInput.val.value,
-        pinTimestampMs: this.getPinTimestampMs(),
+        pinnedVideoTimeMs: this.getVideoTimeMs(),
       }),
     );
   }
@@ -127,27 +128,27 @@ export class CommentsPanel extends EventEmitter {
   private postPostComment(response?: PostCommentResponse, error?: Error): void {
     if (error) {
       console.error(error);
-      this.emit("postedComment");
+      this.emit("postCommentDone");
       return;
     }
     this.commentInput.val.value = "";
     this.validateCommentInput();
     this.emit("commented", response.comment);
-    this.emit("postedComment");
+    this.emit("postCommentDone");
   }
 
-  public setPinTimestampMs(pinTimestampMs: number): void {
+  public setPinnedVideoTimeMs(pinnedVideoTimeMs: number): void {
     this.pinTimestamp.val.textContent = formatSecondsAsHHMMSS(
-      pinTimestampMs / 1000,
+      pinnedVideoTimeMs / 1000,
     );
   }
 
-  public setCallbackToGetPinTimestampMs(getPinTimestampMs: () => number): this {
-    this.getPinTimestampMs = getPinTimestampMs;
+  public setCallbackToGetVideoTimeMs(getVideoTimeMs: () => number): this {
+    this.getVideoTimeMs = getVideoTimeMs;
     return this;
   }
 
-  public addComments(comments: Array<CommentWithAuthor>): void {
+  public add(comments: Array<CommentWithAuthor>): void {
     for (let comment of comments) {
       let commentEntry = CommentEntry.create(comment);
       this.commentInputLine.val.after(commentEntry.body);
@@ -161,5 +162,20 @@ export class CommentsPanel extends EventEmitter {
       this.commentEntries.delete(commentEntry);
       commentEntry.remove();
     }
+  }
+
+  public clear(): void {
+    for (let commentEntry of this.commentEntries) {
+      commentEntry.remove();
+    }
+    this.commentEntries.clear();
+  }
+
+  public show(): void {
+    this.body.style.display = "flex";
+  }
+
+  public hide(): void {
+    this.body.style.display = "none";
   }
 }

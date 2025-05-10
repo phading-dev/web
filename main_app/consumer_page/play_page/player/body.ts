@@ -37,27 +37,30 @@ import {
   PLAYBACK_SPEED_DEFAULT,
   PLAYBACK_SPEED_VALUES,
   VOLUME_RANGE,
+  VOLUME_SCALE,
 } from "../common/defaults";
 import { fuzzyMatch } from "../common/fuzzy_match";
-import { VOLUME_SCALE } from "./scales";
-import { VideoPlayerSettings } from "@phading/user_service_interface/web/self/video_player_settings";
+import { VideoSettings } from "@phading/user_service_interface/web/self/video_player_settings";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
 export interface Player {
   on(event: "back", listener: () => void): this;
   on(
-    event: "subtitleTracksInited",
+    event: "addAvailableSubtitleTracks",
     listener: (tracks: Array<string>, initIndex: number) => void,
   ): this;
   on(
-    event: "audioTracksInited",
+    event: "addAvailableAudioTracks",
     listener: (tracks: Array<string>, initIndex: number) => void,
   ): this;
   on(event: "playing", listener: () => void): this;
   on(event: "notPlaying", listener: () => void): this;
-  on(event: "clearChats", listener: () => void): this;
-  on(event: "playNext", listener: () => void): this;
+  on(event: "clearComments", listener: () => void): this;
+  on(
+    event: "play",
+    listener: (seasonId: string, episodeId: string) => void,
+  ): this;
   on(event: "showInfo", listener: () => void): this;
   on(event: "showComments", listener: () => void): this;
   on(event: "showSettings", listener: () => void): this;
@@ -68,6 +71,23 @@ export interface Player {
 }
 
 export class Player extends EventEmitter {
+  public static create(
+    settings: VideoSettings,
+    videoUrl: string,
+    continueTimestampMs: number,
+    seasonId: string,
+    nextEpisodeId?: string,
+  ): Player {
+    return new Player(
+      window,
+      settings,
+      videoUrl,
+      continueTimestampMs,
+      seasonId,
+      nextEpisodeId,
+    );
+  }
+
   private static VOLUME_STEP = 1;
   private static SKIP_STEP_SEC = 10;
   private static DELAY_TO_HIDE_CONTROLS_MS = 2000;
@@ -109,14 +129,15 @@ export class Player extends EventEmitter {
   private playbackSpeedIndex = 0;
   private resizeObserver: ResizeObserver;
   private hideTimeoutId: number;
-  public autoPlay = true; // for testing purpose
 
   public constructor(
     private window: Window,
-    private settings: VideoPlayerSettings,
+    private settings: VideoSettings,
     videoUrl: string,
     private continueTimestampMs: number,
-    hasNext: boolean,
+    private seasonId: string,
+    private nextEpisodeId?: string,
+    private autoPlay = true, // for testing purpose
   ) {
     super();
     this.elements = [
@@ -134,7 +155,7 @@ export class Player extends EventEmitter {
           class: "player-controls",
           style: `position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding-bottom: .2rem; background-color: ${SCHEME.neutral4Translucent}; display: flex; flex-flow: column nowrap; transition: opacity .2s;`,
         },
-        assign(this.backButton, createBackButton("")).body,
+        assign(this.backButton, createBackButton("").enable()).body,
         E.divRef(
           this.centerControlsContainer,
           {
@@ -350,6 +371,9 @@ export class Player extends EventEmitter {
     this.hls = new Hls();
     this.hls.loadSource(videoUrl);
     this.hls.attachMedia(this.video.val);
+    // There could be multiple audio/subtitle tracks updated events. Assuming
+    // all audio/subtitle tracks are available in the master.m3u8 file, so we
+    // only need the first event.
     this.hls.once(Hls.Events.AUDIO_TRACKS_UPDATED, () =>
       this.selectInitAudioTrack(),
     );
@@ -366,8 +390,10 @@ export class Player extends EventEmitter {
     this.video.val.addEventListener("progress", () =>
       this.updateBufferProgress(),
     );
-    this.video.val.addEventListener("ended", () => this.emit("clearChats"));
-    this.video.val.addEventListener("seeking", () => this.emit("clearChats"));
+    this.video.val.addEventListener("ended", () => this.emit("clearComments"));
+    this.video.val.addEventListener("seeking", () =>
+      this.emit("clearComments"),
+    );
 
     if (this.video.val.paused) {
       this.playButton.val.show();
@@ -399,12 +425,6 @@ export class Player extends EventEmitter {
       this.leaveProgressBar(),
     );
 
-    if (hasNext) {
-      this.playNextButton.val.on("action", () => this.emit("playNext"));
-    } else {
-      this.playNextButton.val.hide();
-    }
-
     this.applyPlaybackSpeed();
     this.playbackSpeedDownButton.val.on("action", () => this.speedDownOnce());
     this.playbackSpeedUpButton.val.on("action", () => this.speedUpOnce());
@@ -413,14 +433,22 @@ export class Player extends EventEmitter {
     this.volumeDownButton.val.on("action", () => this.volumeDownOnce());
     this.volumeUpButton.val.on("action", () => this.volumeUpOnce());
 
-    this.playNextButton.val.on("action", () => this.emit("playNext"));
+    if (this.nextEpisodeId) {
+      this.playNextButton.val.on("action", () =>
+        this.emit("play", this.seasonId, this.nextEpisodeId),
+      );
+    } else {
+      this.playNextButton.val.hide();
+    }
     this.showInfoButton.val.on("action", () => this.emit("showInfo"));
     this.showCommentsButton.val.on("action", () => this.emit("showComments"));
     this.showSettingsButton.val.on("action", () => this.emit("showSettings"));
 
     this.exitFullscreenButton.val.hide();
-    this.fullscreenButton.val.on("action", () => this.goFullscreen());
-    this.exitFullscreenButton.val.on("action", () => this.exitFullscreen());
+    this.fullscreenButton.val.on("action", () => this.emit("goFullscreen"));
+    this.exitFullscreenButton.val.on("action", () =>
+      this.emit("exitFullscreen"),
+    );
 
     this.resizeObserver = new ResizeObserver((entries) =>
       this.updateControlsLayout(entries[0]),
@@ -434,24 +462,25 @@ export class Player extends EventEmitter {
     this.controlsContainer.val.addEventListener("pointermove", () =>
       this.showControls(),
     );
-    this.centerControlsContainer.val.addEventListener("pointerdown", (event) =>
+    this.controlsContainer.val.addEventListener("pointerdown", (event) =>
       this.toggleControls(event),
     );
 
-    this.window.addEventListener("keydown", (event) => this.detectKeyOperation(event));
+    this.window.addEventListener("keydown", this.keyOperate);
+    this.window.addEventListener(
+      "fullscreenchange",
+      this.detectFullscreenChange,
+    );
   }
 
   private selectInitAudioTrack(): void {
     let trackNames = this.hls.audioTracks.map((t) => t.name);
-    let index = fuzzyMatch(
-      this.settings.videoSettings.preferredAudioName ?? "",
-      trackNames,
-    );
+    let index = fuzzyMatch(this.settings.preferredAudioName ?? "", trackNames);
     if (index === -1) {
       index = this.hls.audioTracks.find((t) => t.default).id;
     }
     this.selectAudioTrack(index);
-    this.emit("audioTracksInited", trackNames, index);
+    this.emit("addAvailableAudioTracks", trackNames, index);
   }
 
   public selectAudioTrack(index: number): void {
@@ -461,11 +490,11 @@ export class Player extends EventEmitter {
   private selectInitSubtitleTrack(): void {
     let trackNames = this.hls.subtitleTracks.map((t) => t.name);
     let index = fuzzyMatch(
-      this.settings.videoSettings.preferredSubtitleName ?? "",
+      this.settings.preferredSubtitleName ?? "",
       trackNames,
     );
     this.hls.subtitleTrack = index;
-    this.emit("subtitleTracksInited", trackNames, index);
+    this.emit("addAvailableSubtitleTracks", trackNames, index);
   }
 
   public selectSubtitleTrack(index: number): void {
@@ -643,7 +672,7 @@ export class Player extends EventEmitter {
 
   private applyPlaybackSpeed(): void {
     this.playbackSpeedIndex = PLAYBACK_SPEED_VALUES.indexOf(
-      this.settings.videoSettings.playbackSpeed,
+      this.settings.playbackSpeed,
     );
     if (this.playbackSpeedIndex === -1) {
       this.playbackSpeedIndex = PLAYBACK_SPEED_VALUES.indexOf(
@@ -671,7 +700,7 @@ export class Player extends EventEmitter {
     if (this.playbackSpeedIndex <= 0) {
       return;
     }
-    this.settings.videoSettings.playbackSpeed =
+    this.settings.playbackSpeed =
       PLAYBACK_SPEED_VALUES[this.playbackSpeedIndex - 1];
     this.applyPlaybackSpeed();
     this.emit("saveSettings");
@@ -681,29 +710,29 @@ export class Player extends EventEmitter {
     if (this.playbackSpeedIndex >= PLAYBACK_SPEED_VALUES.length - 1) {
       return;
     }
-    this.settings.videoSettings.playbackSpeed =
+    this.settings.playbackSpeed =
       PLAYBACK_SPEED_VALUES[this.playbackSpeedIndex + 1];
     this.applyPlaybackSpeed();
     this.emit("saveSettings");
   }
 
   private applyVolume(): void {
-    this.video.val.volume = this.settings.videoSettings.volume * VOLUME_SCALE;
+    this.video.val.volume = this.settings.volume * VOLUME_SCALE;
     this.currentVolumeIcon.val.lastElementChild?.remove();
     this.currentVolumeIcon.val.append(
       createDashedCircleIcon(
         SCHEME.neutral1,
         SCHEME.neutral2,
         VOLUME_RANGE.maxValue / Player.VOLUME_STEP,
-        this.settings.videoSettings.volume / Player.VOLUME_STEP,
+        this.settings.volume / Player.VOLUME_STEP,
       ),
     );
-    if (this.settings.videoSettings.volume <= VOLUME_RANGE.minValue) {
+    if (this.settings.volume <= VOLUME_RANGE.minValue) {
       this.volumeDownButton.val.disable();
     } else {
       this.volumeDownButton.val.enable();
     }
-    if (this.settings.videoSettings.volume >= VOLUME_RANGE.maxValue) {
+    if (this.settings.volume >= VOLUME_RANGE.maxValue) {
       this.volumeUpButton.val.disable();
     } else {
       this.volumeUpButton.val.enable();
@@ -711,31 +740,19 @@ export class Player extends EventEmitter {
   }
 
   private volumeDownOnce(): void {
-    this.settings.videoSettings.volume = VOLUME_RANGE.getValidValue(
-      this.settings.videoSettings.volume - Player.VOLUME_STEP,
+    this.settings.volume = VOLUME_RANGE.getValidValue(
+      this.settings.volume - Player.VOLUME_STEP,
     );
     this.applyVolume();
     this.emit("saveSettings");
   }
 
   private volumeUpOnce(): void {
-    this.settings.videoSettings.volume = VOLUME_RANGE.getValidValue(
-      this.settings.videoSettings.volume + Player.VOLUME_STEP,
+    this.settings.volume = VOLUME_RANGE.getValidValue(
+      this.settings.volume + Player.VOLUME_STEP,
     );
     this.applyVolume();
     this.emit("saveSettings");
-  }
-
-  private goFullscreen(): void {
-    this.fullscreenButton.val.hide();
-    this.exitFullscreenButton.val.show();
-    this.emit("goFullscreen");
-  }
-
-  private exitFullscreen(): void {
-    this.fullscreenButton.val.show();
-    this.exitFullscreenButton.val.hide();
-    this.emit("exitFullscreen");
   }
 
   private showControls(): void {
@@ -752,15 +769,18 @@ export class Player extends EventEmitter {
   }
 
   private toggleControls(event: PointerEvent): void {
-    if (this.controlsContainer.val.style.opacity === `0`) {
-      this.showControls();
-    } else if (event.target === this.centerControlsContainer.val) {
+    if (
+      event.target === this.centerControlsContainer.val &&
+      this.controlsContainer.val.style.opacity === `1`
+    ) {
       this.window.clearTimeout(this.hideTimeoutId);
       this.hideControls();
+    } else {
+      this.showControls();
     }
   }
 
-  private detectKeyOperation(event: KeyboardEvent): void {
+  private keyOperate = (event: KeyboardEvent): void => {
     if (event.target instanceof HTMLInputElement) {
       return;
     }
@@ -776,13 +796,23 @@ export class Player extends EventEmitter {
       this.skipForward();
     } else if (event.key === "ArrowUp") {
       this.volumeUpOnce();
-    } else if (event.key === "ArrowDown") {  
+    } else if (event.key === "ArrowDown") {
       this.volumeDownOnce();
     }
-  }
+  };
 
-  public getCurrentTime(): number {
-    return this.video.val.currentTime;
+  private detectFullscreenChange = (): void => {
+    if (document.fullscreenElement) {
+      this.fullscreenButton.val.hide();
+      this.exitFullscreenButton.val.show();
+    } else {
+      this.fullscreenButton.val.show();
+      this.exitFullscreenButton.val.hide();
+    }
+  };
+
+  public getCurrentVideoTimeMs(): number {
+    return Math.round(this.video.val.currentTime * 1000);
   }
 
   public interrupt(reason: string): void {
@@ -796,6 +826,16 @@ export class Player extends EventEmitter {
         { opacity: "0" },
       ],
       5000,
+    );
+  }
+
+  public destroy(): void {
+    this.hls.destroy();
+    this.resizeObserver.disconnect();
+    this.window.removeEventListener("keydown", this.keyOperate);
+    this.window.removeEventListener(
+      "fullscreenchange",
+      this.detectFullscreenChange,
     );
   }
 }

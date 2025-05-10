@@ -27,7 +27,7 @@ TEST_RUNNER.run({
   name: "CommentsPanelTest",
   cases: [
     new (class implements TestCase {
-      public name = "ListComments";
+      public name = "Default_AddedComments_Cleared_AddedCommentsOverflowed";
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
@@ -55,11 +55,11 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.addComments([
+        cut.add([
           {
             comment: {
               content: "Some some content",
-              pinTimestampMs: 1000,
+              pinnedVideoTimeMs: 1000,
             },
             author: {
               naturalName: "First Second",
@@ -69,7 +69,7 @@ TEST_RUNNER.run({
           {
             comment: {
               content: "Another comment",
-              pinTimestampMs: 2000,
+              pinnedVideoTimeMs: 2000,
             },
             author: {
               naturalName: "Third Fourth",
@@ -79,7 +79,7 @@ TEST_RUNNER.run({
           {
             comment: {
               content: "Yet another comment",
-              pinTimestampMs: 3000,
+              pinnedVideoTimeMs: 3000,
             },
             author: {
               naturalName: "Fifth Sixth",
@@ -89,7 +89,7 @@ TEST_RUNNER.run({
           {
             comment: {
               content: "Final comment",
-              pinTimestampMs: 4000,
+              pinnedVideoTimeMs: 4000,
             },
             author: {
               naturalName: "Seventh Eighth",
@@ -106,11 +106,21 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.addComments([
-          ...Array.from({ length: 28 }, (_, i) => ({
+        cut.clear();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/comments_panel_cleared.png"),
+          path.join(__dirname, "/golden/comments_panel_default.png"),
+          path.join(__dirname, "/comments_panel_cleared_diff.png"),
+        );
+
+        // Execute
+        cut.add([
+          ...Array.from({ length: 31 }, (_, i) => ({
             comment: {
               content: `Comment number ${i + 1}`,
-              pinTimestampMs: (i + 5) * 1000,
+              pinnedVideoTimeMs: (i + 5) * 1000,
             },
             author: {
               naturalName: `Author ${i + 1}`,
@@ -134,7 +144,10 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/comments_panel_comments_overflowed_scrolled.png"),
+          path.join(
+            __dirname,
+            "/comments_panel_comments_overflowed_scrolled.png",
+          ),
           path.join(
             __dirname,
             "/golden/comments_panel_comments_overflowed_scrolled.png",
@@ -151,7 +164,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "UpdatePinTimestamp_PostComment";
+      public name = "UpdatePinnedVideoTimeMs_PostComment";
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
@@ -170,13 +183,13 @@ TEST_RUNNER.run({
         this.container.append(cut.body);
 
         // Execute
-        cut.setPinTimestampMs(23100);
+        cut.setPinnedVideoTimeMs(23100);
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/comments_panel_pin_timestamp.png"),
-          path.join(__dirname, "/golden/comments_panel_pin_timestamp.png"),
-          path.join(__dirname, "/comments_panel_pin_timestamp_diff.png"),
+          path.join(__dirname, "/comments_panel_pinned_video_time.png"),
+          path.join(__dirname, "/golden/comments_panel_pinned_video_time.png"),
+          path.join(__dirname, "/comments_panel_pinned_video_time_diff.png"),
           {
             fullPage: true,
           },
@@ -221,7 +234,7 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        cut.setCallbackToGetPinTimestampMs(() => 123400);
+        cut.setCallbackToGetVideoTimeMs(() => 123400);
         serviceClientMock.error = new Error("Fake error");
 
         // Execute
@@ -229,7 +242,7 @@ TEST_RUNNER.run({
         cut.commentInput.val.dispatchEvent(new Event("input"));
         cut.commentButton.val.click();
         await new Promise<void>((resolve) =>
-          cut.once("postedComment", resolve),
+          cut.once("postCommentDone", resolve),
         );
 
         // Verify
@@ -245,7 +258,7 @@ TEST_RUNNER.run({
               seasonId: "season1",
               episodeId: "episode1",
               content: "Test comment 2",
-              pinTimestampMs: 123400,
+              pinnedVideoTimeMs: 123400,
             },
             POST_COMMENT_REQUEST_BODY,
           ),
@@ -277,7 +290,7 @@ TEST_RUNNER.run({
           new KeyboardEvent("keydown", { key: "Enter" }),
         );
         await new Promise<void>((resolve) =>
-          cut.once("postedComment", resolve),
+          cut.once("postCommentDone", resolve),
         );
 
         // Verify
