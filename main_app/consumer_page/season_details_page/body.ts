@@ -19,7 +19,7 @@ import {
 } from "../../../common/formatter/price";
 import {
   formatRating,
-  formatRatingsCount,
+  formatRatingsCountShort,
 } from "../../../common/formatter/rating";
 import { formatSecondsAsHHMMSS } from "../../../common/formatter/timestamp";
 import {
@@ -204,7 +204,7 @@ export class SeasonDetailsPage extends EventEmitter {
         E.div(
           {
             class: "season-details-cover-image",
-            style: `flex: 1 0 0; min-width: 26rem; aspect-ratio: 2/3;`,
+            style: `flex: 1 0 0; min-width: 26rem;`,
           },
           E.image({
             class: "season-details-cover-image",
@@ -337,7 +337,7 @@ export class SeasonDetailsPage extends EventEmitter {
                   style: `flex: 0 0 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(
-                  `${formatRating(seasonDetails.averageRating)} (${formatRatingsCount(seasonDetails.ratingsCount)})`,
+                  `${formatRating(seasonDetails.averageRating)} (${formatRatingsCountShort(seasonDetails.ratingsCount)})`,
                 ),
               ),
               E.div({

@@ -21,3 +21,12 @@ export function formatUpcomingPremiereTime(timestampMs: number): string {
   });
   return formatter.format(new Date(timestampMs));
 }
+
+export function formatLastChangeTime(timestampMs: number): string {
+  let formatter = new Intl.DateTimeFormat([navigator.language], {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  return formatter.format(new Date(timestampMs));
+}

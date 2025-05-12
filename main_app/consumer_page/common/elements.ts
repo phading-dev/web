@@ -3,7 +3,7 @@ import { SCHEME } from "../../../common/color_scheme";
 import { formatShowPriceShortened } from "../../../common/formatter/price";
 import {
   formatRating,
-  formatRatingsCount,
+  formatRatingsCountShort,
 } from "../../../common/formatter/rating";
 import { formatSecondsAsHHMMSS } from "../../../common/formatter/timestamp";
 import {
@@ -68,12 +68,12 @@ export function eSeasonItemContainer(
 export function eSeasonItem(
   season: SeasonSummary,
   date: Date,
-  customStyle?: string,
+  customStyle = "",
 ): HTMLDivElement {
   return E.div(
     {
       class: "season-item-info",
-      style: `cursor: pointer; ${customStyle ?? ""}`,
+      style: `cursor: pointer; ${customStyle}`,
     },
     E.image({
       class: "season-item-cover-image",
@@ -115,7 +115,7 @@ export function eSeasonItem(
           style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(
-          `${formatRating(season.averageRating)} (${formatRatingsCount(season.ratingsCount)})`,
+          `${formatRating(season.averageRating)} (${formatRatingsCountShort(season.ratingsCount)})`,
         ),
       ),
       E.div({
@@ -161,19 +161,25 @@ export function eContinueEpisodeItem(
   season: SeasonSummary,
   episode: Episode,
   continueTimeMs: number,
-  customStyle?: string,
+  customStyle = "",
 ): HTMLDivElement {
   return E.div(
     {
       class: "continue-episode-item",
-      style: `cursor: pointer; display: flex; flex-flow: row nowrap; align-items: flex-start; ${customStyle ?? ""}`,
+      style: `cursor: pointer; display: flex; flex-flow: row nowrap; align-items: flex-start; ${customStyle}`,
     },
-    E.image({
-      class: "continue-episode-season-cover-image",
-      style: `width: 30%; flex: 0 0 auto; aspect-ratio: 2/3; object-fit: contain;`,
-      src: season.coverImageUrl,
-      alt: season.name,
-    }),
+    E.div(
+      {
+        class: "continue-episode-season-cover-image",
+        style: `width: 30%; flex: 0 0 auto;`,
+      },
+      E.image({
+        class: "continue-episode-season-cover-image",
+        style: `width: 100%; aspect-ratio: 2/3; object-fit: contain;`,
+        src: season.coverImageUrl,
+        alt: season.name,
+      }),
+    ),
     E.div({
       style: `width: 1rem;`,
     }),
@@ -253,12 +259,12 @@ export function ePublisherItemContainer(
 
 export function ePublisherItem(
   publisher: AccountDetails,
-  customStyle?: string,
+  customStyle = "",
 ): HTMLDivElement {
   return E.div(
     {
       class: "publisher-item",
-      style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem; ${customStyle ?? ""}`,
+      style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem; ${customStyle}`,
     },
     E.image({
       class: "publisher-item-avatar",
@@ -298,12 +304,12 @@ export function ePublisherItem(
 
 export function ePublisherContextItem(
   publisher: AccountDetails,
-  customStyle?: string,
+  customStyle = "",
 ): HTMLDivElement {
   return E.div(
     {
       class: "publisher-context-item-container",
-      style: `width: 100%; display: flex; flex-flow: row nowrap; justify-content: center; ${customStyle ?? ""}`,
+      style: `width: 100%; display: flex; flex-flow: row nowrap; justify-content: center; ${customStyle}`,
     },
     E.div(
       {

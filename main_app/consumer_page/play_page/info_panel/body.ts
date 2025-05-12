@@ -141,7 +141,7 @@ export class InfoPanel extends EventEmitter {
         E.div(
           {
             class: "info-panel-cover-image-container",
-            style: `flex: 1 0 0; max-width: 10rem; aspect-ratio: 2/3;`,
+            style: `flex: 1 0 0; max-width: 10rem;`,
           },
           E.image({
             class: "info-panel-cover-image",

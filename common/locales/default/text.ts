@@ -154,15 +154,6 @@ export default class Text {
   get chooseAppLabel() {
     return `Switch app`;
   }
-  get writeTaleLabel() {
-    return `Compose`;
-  }
-  get replyTaleLabel() {
-    return `Reply`;
-  }
-  get shuffleTalesLabel() {
-    return `Shuffle`;
-  }
   get menuLabel() {
     return `Menu`;
   }
@@ -389,173 +380,11 @@ export default class Text {
   get noStatements() {
     return `No statements`;
   }
-  get chooseLayoutLabel() {
-    return `Choose a layout from below`;
-  }
-  get quickLayoutOption() {
-    return `Simplest layout for a quick tale.`;
-  }
-  get imageSeriesOption() {
-    return `A series of vertically placed images with a cover image, such as comics or manga.`;
-  }
-  get longVideoOption() {
-    return `A long video with a preview video, such as movie or drama.`;
-  }
-  get audioOption() {
-    return `An audio with metadata and cover image, such as music, song or podcast.`;
-  }
-  get textImageInterleavedOption() {
-    return `An article that can insert iamges into texts.`;
-  }
-  get replyToLabel() {
-    return `Reply to`;
-  }
-  get quickLayoutTextLabel() {
-    return `Write something to share`;
-  }
-  get characterCountLabel() {
-    return `Character count is `;
-  }
-  get quickLayoutUploadImagesLabel() {
-    return `Or upload up to 9 images`;
-  }
-  get quickLayoutUploadImageFailure1() {
-    return `Failed to upload the following files `;
-  }
-  get quickLayoutUploadImageFailure2() {
-    return `. Please only upload image files, and only up to 9 of them.`;
-  }
-  get quickLayoutUploadImageButtonLabel() {
-    return `Choose one or more files`;
-  }
-  get tagsLabel() {
-    return `Then add some tags to help people discover it`;
-  }
-  get warningTagsLabel() {
-    return `The following are special tags that warn people before they can see the content`;
-  }
-  get warningTagNudity() {
-    return `Nudity`;
-  }
-  get warningTagSpoiler() {
-    return `Spoiler`;
-  }
-  get warningTagGross() {
-    return `Gross`;
-  }
-  get previewTaleButtonLabel() {
-    return `Preview`;
-  }
-  get submitTaleButtonLabel() {
-    return `Submit`;
-  }
-  get submitTaleFailed() {
-    return `Failed to submit your tale. Please try again later.`;
-  }
-  get submitTaleSuccess() {
-    return `Successfully submitted your tale!`;
-  }
-  get showRepliesLabel() {
-    return `Show replies`;
-  }
-  get pinnedLabel() {
-    return `Pinned`;
-  }
-  get actionsExpandLabel() {
-    return `Show actions`;
-  }
-  get actionsCollapseLabel() {
-    return `Collapse actions`;
-  }
-  get loveTaleLabel() {
-    return `Love`;
-  }
-  get undoLoveTaleLabel() {
-    return `Undo love`;
-  }
-  get likeTaleLabel() {
-    return `Like`;
-  }
-  get undoLikeTaleLabel() {
-    return `Undo like`;
-  }
-  get dislikeTaleLabel() {
-    return `Dislike`;
-  }
-  get undoDislikeTaleLabel() {
-    return `Undo dislike`;
-  }
-  get hateTaleLabel() {
-    return `Hate`;
-  }
-  get undoHateTaleLabel() {
-    return `Undo hate`;
-  }
-  get dismissTaleLabel() {
-    return `Dismiss`;
-  }
-  get zoomInLabel() {
-    return `Zoom in`;
-  }
-  get zoomOutLabel() {
-    return `Zoom out`;
-  }
-  get zoomFitLabel() {
-    return `Fit to screen`;
-  }
-  get nextImageLabel() {
-    return `Next`;
-  }
-  get prevImageLabel() {
-    return `Previous`;
-  }
   get noMoreContent() {
     return `You have reached the end.`;
   }
   get tryReloadLabel() {
     return `Try reload`;
-  }
-  get likeUserLabel() {
-    return `Recommend more`;
-  }
-  get likedUserLabel() {
-    return `Recommending more`;
-  }
-  get dislikeUserLabel() {
-    return `Recommend less`;
-  }
-  get dislikedUserLabel() {
-    return `Recommending less`;
-  }
-  get noAccountDescription() {
-    return `They didn't say anything about themself.`;
-  }
-  get usageReportRangeGranularityAsDay() {
-    return `Day`;
-  }
-  get usageReportRangeGranularityAsMonth() {
-    return `Month`;
-  }
-  get usageReportShowTitleColumn() {
-    return `Title`;
-  }
-  get usageReportShowDateColumn() {
-    return `Date`;
-  }
-  get usageReportShowMonthColumn() {
-    return `Month`;
-  }
-  get usageReportShowWatchTimeColumn() {
-    return `Watch time`;
-  }
-  get usageReportShowChargesColumn() {
-    return `Charges`;
-  }
-  get usageReportTotal() {
-    return `Total`;
-  }
-  get usageReportEndDateSmallerThanStartDate() {
-    return `End date cannot be smaller than start date.`;
   }
   get commentButtonLabel() {
     return `Comment`;
@@ -749,9 +578,6 @@ export default class Text {
   get commentOverlayFontSizeLabel() {
     return `Font size`;
   }
-  get commentOverlayFontFamilyLabel() {
-    return `Font`;
-  }
   get danmakuOverlaySettingsLabel() {
     return `Settings for scrolling chats overlay`;
   }
@@ -770,16 +596,31 @@ export default class Text {
   get danmakuOverlayStackingTopDownOptionLabel() {
     return `Top down`;
   }
-  get resetButtonLabel() {
-    return `Reset`;
+  get totalPublishedEpisodes() {
+    return [``, ` published episodes`];
   }
-  get closeButtonLabel() {
-    return `Close`;
+  get seasonLastChangeTime() {
+    return `Last updated: `;
   }
-  get dockToBottomButtonLabel() {
-    return `Dock to bottom`;
+  get noCoverImage() {
+    return `No cover image`;
   }
-  get dockToRightButtonLabel() {
-    return `Dock to right`;
+  get publishedSeasonsTitle() {
+    return `Published`;
+  }
+  get draftSeasonsTitle() {
+    return `Drafts`;
+  }
+  get archivedSeasonsTitle() {
+    return `Archived`;
+  }
+  get searchPublishedSeasonsTitle() {
+    return [`Searching for published "`, `"`];
+  }
+  get searchDraftSeasonsTitle() {
+    return [`Searching for drafts "`, `"`];
+  }
+  get searchArchivedSeasonsTitle() {
+    return [`Searching for archived "`, `"`];
   }
 }
