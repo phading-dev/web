@@ -6,8 +6,8 @@ import { DATE_INPUT_STYLE } from "../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { OptionPill, RadioOptionPillsGroup } from "../../../common/option_pills";
 import {
-  PAGE_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CARD_STYLE,
+  PAGE_CENTER_CARD_BACKGROUND_STYLE,
+  PAGE_MEDIUM_CENTER_CARD_STYLE,
 } from "../../../common/page_style";
 import { FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
@@ -72,12 +72,12 @@ export class UsagePage extends EventEmitter {
     this.body = E.div(
       {
         class: "usage-page",
-        style: `${PAGE_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       },
       E.div(
         {
           class: "usage-page-card",
-          style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
+          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
         },
         E.div(
           {

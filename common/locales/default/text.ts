@@ -623,4 +623,22 @@ export default class Text {
   get searchArchivedSeasonsTitle() {
     return [`Searching for archived "`, `"`];
   }
+  get createSeasonTitle() {
+    return `Create new draft`;
+  }
+  get seasonNameLabel() {
+    return `Name`;
+  }
+  get seasonNameTooLongError() {
+    return `The name is too long.`;
+  }
+  get createSeasonButtonLabel() {
+    return `Create`;
+  }
+  get createSeasonError() {
+    return `Failed to create a new draft. Please try again later.`;
+  }
+  get seasonDescriptionLabel() {
+    return `Description`;
+  }
 }

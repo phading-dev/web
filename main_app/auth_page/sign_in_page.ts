@@ -86,7 +86,7 @@ export class SignInPage extends EventEmitter {
       () => this.signIn(),
       (response, error) => this.postSignIn(response, error),
     );
-    this.inputFormPage.on("submitted", () => this.emit("signedIn"));
+    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("signedIn"));
   }
 
   private validateOrTakeUsernameInput(value: string): ValidationResult {

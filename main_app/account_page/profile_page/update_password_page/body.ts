@@ -16,7 +16,6 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface UpdatePasswordPage {
   on(event: "back", listener: () => void): this;
-  on(event: "updated", listener: () => void): this;
 }
 
 export class UpdatePasswordPage extends EventEmitter {
@@ -93,7 +92,7 @@ export class UpdatePasswordPage extends EventEmitter {
       () => this.updatePassword(),
       (response, error) => this.postUpdatePassword(error),
     );
-    this.inputFormPage.on("submitted", () => this.emit("updated"));
+    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
     this.inputFormPage.on("back", () => this.emit("back"));
   }
 

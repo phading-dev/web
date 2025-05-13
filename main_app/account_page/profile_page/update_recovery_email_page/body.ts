@@ -16,7 +16,6 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface UpdateRecoveryEmailPage {
   on(event: "back", listener: () => void): this;
-  on(event: "updated", listener: () => void): this;
 }
 
 export class UpdateRecoveryEmailPage extends EventEmitter {
@@ -76,7 +75,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
       () => this.updateRecoveryEmail(),
       (response, error) => this.postUpdateRecoveryEmail(error),
     );
-    this.inputFormPage.on("submitted", () => this.emit("updated"));
+    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
     this.inputFormPage.on("back", () => this.emit("back"));
   }
 

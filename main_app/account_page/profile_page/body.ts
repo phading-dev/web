@@ -99,25 +99,19 @@ export class ProfilePage extends EventEmitter {
       case Page.UPDATE_ACCOUNT:
         this.updateAccountInfoPage = this.createUpdateAccountInfoPage(
           args?.updateAccount,
-        )
-          .on("back", () => this.pageNavigator.goTo(Page.INFO))
-          .on("updated", () => this.pageNavigator.goTo(Page.INFO));
+        ).on("back", () => this.pageNavigator.goTo(Page.INFO));
         this.appendBodies(this.updateAccountInfoPage.body);
         break;
       case Page.UPDATE_PASSWORD:
         this.updatePasswordPage = this.createUpdatePasswordPage(
           args?.updatePasswordUsername,
-        )
-          .on("back", () => this.pageNavigator.goTo(Page.INFO))
-          .on("updated", () => this.pageNavigator.goTo(Page.INFO));
+        ).on("back", () => this.pageNavigator.goTo(Page.INFO));
         this.appendBodies(this.updatePasswordPage.body);
         break;
       case Page.UPDATE_RECOVERY_EMAIL:
         this.updateRecoveryEmailPage = this.createUpdateRecoveryEmailPage(
           args?.updateRecoveryEmailUsername,
-        )
-          .on("back", () => this.pageNavigator.goTo(Page.INFO))
-          .on("updated", () => this.pageNavigator.goTo(Page.INFO));
+        ).on("back", () => this.pageNavigator.goTo(Page.INFO));
         this.appendBodies(this.updateRecoveryEmailPage.body);
         break;
     }

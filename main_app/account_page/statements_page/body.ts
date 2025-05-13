@@ -6,8 +6,8 @@ import { formatQuantity } from "../../../common/formatter/quantity";
 import { createArrowIcon, createCornerIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
-  PAGE_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CARD_STYLE,
+  PAGE_CENTER_CARD_BACKGROUND_STYLE,
+  PAGE_MEDIUM_CENTER_CARD_STYLE,
 } from "../../../common/page_style";
 import {
   FONT_M,
@@ -63,12 +63,12 @@ export class StatementsPage extends EventEmitter {
     this.body = E.div(
       {
         class: "statements-page",
-        style: PAGE_CARD_BACKGROUND_STYLE,
+        style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
       },
       E.div(
         {
           class: "statements-page-card",
-          style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
+          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
         },
         E.div(
           {

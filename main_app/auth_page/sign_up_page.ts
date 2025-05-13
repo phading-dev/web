@@ -162,7 +162,7 @@ export class SignUpPage extends EventEmitter {
       () => this.signUp(),
       (response, error) => this.postSignUp(response, error),
     );
-    this.inputFormPage.on("submitted", () => this.emit("signedUp"));
+    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("signedUp"));
   }
 
   private validateOrTakeNaturalNameInput(value: string): ValidationResult {

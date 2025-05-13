@@ -63,7 +63,7 @@ TEST_RUNNER.run({
         chosen = false;
 
         // Execute
-        this.cut.createAccountPage.emit("created");
+        this.cut.createAccountPage.emit("chosen");
 
         // Verify
         assertThat(chosen, eq(true), "chosen");

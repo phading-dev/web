@@ -8,8 +8,8 @@ import {
 import { createFilledStarIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
-  PAGE_CARD_BACKGROUND_STYLE,
-  PAGE_COMMON_CARD_STYLE,
+  PAGE_COMMON_TOP_DOWN_CARD_STYLE,
+  PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
 } from "../../../common/page_style";
 import {
   FONT_L,
@@ -32,13 +32,13 @@ export function eSeasonItemsPage(
   return E.div(
     {
       class: "season-items-page",
-      style: `${PAGE_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+      style: PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
     },
     E.divRef(
       card,
       {
         class: "season-item-card",
-        style: `${PAGE_COMMON_CARD_STYLE} padding: 1rem; border-radius: .5rem; max-width: 80rem;`,
+        style: `${PAGE_COMMON_TOP_DOWN_CARD_STYLE} max-width: 80rem; padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem;`,
       },
       E.div(
         {

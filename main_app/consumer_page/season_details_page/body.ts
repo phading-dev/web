@@ -37,6 +37,7 @@ import {
   createStarIcon,
 } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import { PAGE_COMMON_TOP_DOWN_CARD_STYLE, PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE } from "../../../common/page_style";
 import { getRootFontSize } from "../../../common/root_font_size";
 import {
   AVATAR_S,
@@ -135,7 +136,7 @@ export class SeasonDetailsPage extends EventEmitter {
     super();
     this.body = E.div({
       class: "season-details-page",
-      style: `width: 100%; max-width: 120rem; min-height: 100%; box-sizing: border-box; padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: column nowrap;`,
+      style: PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
     });
     this.load();
   }
@@ -198,99 +199,151 @@ export class SeasonDetailsPage extends EventEmitter {
     this.body.append(
       E.div(
         {
-          class: "season-details-info",
-          style: `display: flex; flex-flow: row wrap; gap: 2rem;`,
+          class: "season-details-card",
+          style: `${PAGE_COMMON_TOP_DOWN_CARD_STYLE} max-width: 120rem; padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem; display: flex; flex-flow: column nowrap;`,
         },
         E.div(
           {
-            class: "season-details-cover-image",
-            style: `flex: 1 0 0; min-width: 26rem;`,
-          },
-          E.image({
-            class: "season-details-cover-image",
-            style: `width: 100%; aspect-ratio: 2/3; object-fit: contain;`,
-            src: seasonDetails.coverImageUrl,
-          }),
-        ),
-        E.div(
-          {
-            class: "season-details-info-section",
-            style: `flex: 2 0 0; min-width: 35rem; display: flex; flex-flow: column nowrap;`,
+            class: "season-details-info",
+            style: `display: flex; flex-flow: row wrap; gap: 2rem;`,
           },
           E.div(
             {
-              class: "season-details-title",
-              style: `font-size: ${FONT_L}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+              class: "season-details-cover-image",
+              style: `flex: 1 0 0; min-width: 26rem;`,
             },
-            E.text(seasonDetails.name),
+            E.image({
+              class: "season-details-cover-image",
+              style: `width: 100%; aspect-ratio: 2/3; object-fit: contain;`,
+              src: seasonDetails.coverImageUrl,
+            }),
           ),
-          E.div({
-            style: `flex: 0 0 auto; height: 1.5rem;`,
-          }),
           E.div(
             {
-              class: "season-item-price",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              `${LOCALIZED_TEXT.currentRate}${formatShowPrice(seasonDetails.grade, nowDate)}${newPricingStartingText ? newPricingStartingText : LOCALIZED_TEXT.billedMonthly}`,
-            ),
-          ),
-          E.div({
-            style: `flex: 0 0 auto; height: 2rem;`,
-          }),
-          E.divRef(
-            this.continueEpisodeButton,
-            {
-              class: "season-details-continue-episode",
-              style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 2rem; padding: 2rem; border-radius: 1rem; border: .2rem solid ${continueEpisodePremiered ? SCHEME.primary1 : SCHEME.neutral2}; cursor: ${continueEpisodePremiered ? "pointer" : "default"};`,
+              class: "season-details-info-section",
+              style: `flex: 2 0 0; min-width: 35rem; display: flex; flex-flow: column nowrap;`,
             },
             E.div(
               {
-                class: "season-details-continue-episode-icon",
-                style: `flex: 0 0 auto; width: ${ICON_XL}rem; height: ${ICON_XL}rem;`,
+                class: "season-details-title",
+                style: `font-size: ${FONT_L}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
               },
-              continueEpisodePremiered
-                ? rewatching
-                  ? createReplayIcon(SCHEME.neutral1)
-                  : createPlayIcon(SCHEME.neutral1)
-                : createClockIcon(SCHEME.neutral1),
+              E.text(seasonDetails.name),
             ),
+            E.div({
+              style: `flex: 0 0 auto; height: 1.5rem;`,
+            }),
             E.div(
               {
-                class: "season-details-continue-episode-info",
-                style: `flex: 1; display: flex; flex-flow: column nowrap; gap: 1rem;`,
+                class: "season-item-price",
+                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              },
+              E.text(
+                `${LOCALIZED_TEXT.currentRate}${formatShowPrice(seasonDetails.grade, nowDate)}${newPricingStartingText ? newPricingStartingText : LOCALIZED_TEXT.billedMonthly}`,
+              ),
+            ),
+            E.div({
+              style: `flex: 0 0 auto; height: 2rem;`,
+            }),
+            E.divRef(
+              this.continueEpisodeButton,
+              {
+                class: "season-details-continue-episode",
+                style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 2rem; padding: 2rem; border-radius: 1rem; border: .2rem solid ${continueEpisodePremiered ? SCHEME.primary1 : SCHEME.neutral2}; cursor: ${continueEpisodePremiered ? "pointer" : "default"};`,
               },
               E.div(
                 {
-                  class: "season-details-continue-episode-title",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+                  class: "season-details-continue-episode-icon",
+                  style: `flex: 0 0 auto; width: ${ICON_XL}rem; height: ${ICON_XL}rem;`,
                 },
-                E.text(continueEpisode.name),
+                continueEpisodePremiered
+                  ? rewatching
+                    ? createReplayIcon(SCHEME.neutral1)
+                    : createPlayIcon(SCHEME.neutral1)
+                  : createClockIcon(SCHEME.neutral1),
               ),
               E.div(
                 {
-                  class: "season-details-continue-episode-premiere-time",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
-                },
-                E.text(
-                  `${continueEpisodePremiered ? LOCALIZED_TEXT.episodePremieredOn + formatPremieredTime(continueEpisode.premiereTimeMs) : LOCALIZED_TEXT.episodePremieresAt + formatUpcomingPremiereTime(continueEpisode.premiereTimeMs)}`,
-                ),
-              ),
-              E.div(
-                {
-                  class: "season-details-continue-episode-progress-line",
-                  style: `width: 100%; display: flex; flex-flow: row wrap; align-items: center;`,
+                  class: "season-details-continue-episode-info",
+                  style: `flex: 1; display: flex; flex-flow: column nowrap; gap: 1rem;`,
                 },
                 E.div(
                   {
-                    class: "season-details-continue-episode-progress-icon",
-                    style: `width: ${ICON_L}rem; height: ${ICON_L}rem;`,
+                    class: "season-details-continue-episode-title",
+                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
                   },
-                  createCircularProgressIcon(
-                    SCHEME.progress,
-                    SCHEME.neutral2,
-                    continueTimeMs / 1000 / continueEpisode.videoDurationSec,
+                  E.text(continueEpisode.name),
+                ),
+                E.div(
+                  {
+                    class: "season-details-continue-episode-premiere-time",
+                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+                  },
+                  E.text(
+                    `${continueEpisodePremiered ? LOCALIZED_TEXT.episodePremieredOn + formatPremieredTime(continueEpisode.premiereTimeMs) : LOCALIZED_TEXT.episodePremieresAt + formatUpcomingPremiereTime(continueEpisode.premiereTimeMs)}`,
+                  ),
+                ),
+                E.div(
+                  {
+                    class: "season-details-continue-episode-progress-line",
+                    style: `width: 100%; display: flex; flex-flow: row wrap; align-items: center;`,
+                  },
+                  E.div(
+                    {
+                      class: "season-details-continue-episode-progress-icon",
+                      style: `width: ${ICON_L}rem; height: ${ICON_L}rem;`,
+                    },
+                    createCircularProgressIcon(
+                      SCHEME.progress,
+                      SCHEME.neutral2,
+                      continueTimeMs / 1000 / continueEpisode.videoDurationSec,
+                    ),
+                  ),
+                  E.div({
+                    style: `flex: 0 0 auto; width: 1rem;`,
+                  }),
+                  E.div(
+                    {
+                      class: "season-details-continue-episode-conintue-at",
+                      style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                    },
+                    E.text(
+                      `${formatSecondsAsHHMMSS(Math.round(continueTimeMs / 1000))} (${calculateShowMoneyAndFormat(seasonDetails.grade, continueTimeMs / 1000, nowDate)}) / ${formatSecondsAsHHMMSS(continueEpisode.videoDurationSec)} (${calculateShowMoneyAndFormat(seasonDetails.grade, continueEpisode.videoDurationSec, nowDate)})`,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            E.div({
+              style: `flex: 0 0 auto; height: 2rem;`,
+            }),
+            E.div(
+              {
+                class: "season-details-actions",
+                style: `display: flex; flex-flow: row wrap; align-items: center; gap: 2rem;`,
+              },
+              E.div(
+                {
+                  class: "season-details-rating",
+                  style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; align-items: center;`,
+                },
+                E.div(
+                  {
+                    class: "season-item-rating-icon",
+                    style: `flex: 0 0 auto; width: ${ICON_L}rem; height: ${ICON_L}rem;`,
+                  },
+                  createFilledStarIcon(SCHEME.star),
+                ),
+                E.div({
+                  style: `flex: 0 0 auto; width: .5rem;`,
+                }),
+                E.div(
+                  {
+                    class: "season-item-rating",
+                    style: `flex: 0 0 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(
+                    `${formatRating(seasonDetails.averageRating)} (${formatRatingsCountShort(seasonDetails.ratingsCount)})`,
                   ),
                 ),
                 E.div({
@@ -298,233 +351,187 @@ export class SeasonDetailsPage extends EventEmitter {
                 }),
                 E.div(
                   {
-                    class: "season-details-continue-episode-conintue-at",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                    style: `display: flex; flex-flow: row nowrap; align-items: center; border-radius: .5rem; border: .1rem solid ${SCHEME.neutral1}; `,
                   },
-                  E.text(
-                    `${formatSecondsAsHHMMSS(Math.round(continueTimeMs / 1000))} (${calculateShowMoneyAndFormat(seasonDetails.grade, continueTimeMs / 1000, nowDate)}) / ${formatSecondsAsHHMMSS(continueEpisode.videoDurationSec)} (${calculateShowMoneyAndFormat(seasonDetails.grade, continueEpisode.videoDurationSec, nowDate)})`,
-                  ),
+                  E.divRef(this.ratingOneStarButton, {
+                    class: "season-item-rating-one-star-icon",
+                    style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_L) / 2}rem; cursor: pointer;`,
+                  }),
+                  E.divRef(this.ratingTwoStarButton, {
+                    class: "season-item-rating-two-star-icon",
+                    style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_L) / 2}rem; cursor: pointer;`,
+                  }),
+                  E.divRef(this.ratingThreeStarButton, {
+                    class: "season-item-rating-three-star-icon",
+                    style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_L) / 2}rem; cursor: pointer;`,
+                  }),
+                  E.divRef(this.ratingFourStarButton, {
+                    class: "season-item-rating-four-star-icon",
+                    style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_L) / 2}rem; cursor: pointer;`,
+                  }),
+                  E.divRef(this.ratingFiveStarButton, {
+                    class: "season-item-rating-five-star-icon",
+                    style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_L) / 2}rem; cursor: pointer;`,
+                  }),
                 ),
               ),
+              assign(
+                this.watchLaterButton,
+                OutlineBlockingButton.create(
+                  `display: flex; flex-flow: row nowrap; align-items: center; gap: .7rem;`,
+                )
+                  .append(
+                    E.div(
+                      {
+                        class: "season-details-watch-later-icon",
+                        style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
+                      },
+                      createBookmarkIcon(SCHEME.neutral1),
+                    ),
+                    E.text(LOCALIZED_TEXT.watchLaterLabel),
+                  )
+                  .enable(),
+              ).body,
+              assign(
+                this.removeWatchLaterButton,
+                OutlineBlockingButton.create(
+                  `display: flex; flex-flow: row nowrap; align-items: center; gap: .7rem;`,
+                )
+                  .append(
+                    E.div(
+                      {
+                        class: "season-details-watch-later-icon",
+                        style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
+                      },
+                      createFilledBookmarkIcon(SCHEME.neutral1),
+                    ),
+                    E.text(LOCALIZED_TEXT.watchLaterRemoveLabel),
+                  )
+                  .enable(),
+              ).body,
+              E.divRef(
+                this.shareButton,
+                {
+                  class: "season-details-share",
+                  style: `${OUTLINE_BUTTON_STYLE} display: flex; flex-flow: row nowrap; align-items: center; gap: .7rem;`,
+                },
+                E.div(
+                  {
+                    class: "season-details-share-icon",
+                    style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
+                  },
+                  createShareIcon(SCHEME.neutral1),
+                ),
+                E.text(LOCALIZED_TEXT.shareLabel),
+              ),
+            ),
+            E.div({
+              style: `flex: 0 0 auto; height: 2rem;`,
+            }),
+            E.divRef(
+              this.publisherButton,
+              {
+                class: "publisher-item",
+                style: `cursor: pointer; max-width: 50rem; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral1}; border-radius: .5rem; padding: 1.5rem 2rem; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+              },
+              E.image({
+                class: "publisher-item-avatar",
+                style: `flex: 0 0 auto; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: 100%;`,
+                src: publisher.avatarSmallUrl,
+                alt: publisher.naturalName,
+              }),
+              E.div(
+                {
+                  class: "publisher-item-info",
+                  style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
+                },
+                E.div(
+                  {
+                    class: "publisher-item-name",
+                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
+                  },
+                  E.text(publisher.naturalName),
+                ),
+                E.div(
+                  {
+                    class: "publisher-item-id",
+                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+                  },
+                  E.text(`${AT_USER}${publisher.accountId}`),
+                ),
+              ),
+              E.div(
+                {
+                  class: "text-values-group-edit-icon",
+                  style: `flex: 0 0 auto; height: ${ICON_M}rem; transform: rotate(180deg);`,
+                },
+                createArrowIcon(SCHEME.neutral1),
+              ),
+            ),
+            E.div({
+              style: `flex: 0 0 auto; height: 1.5rem;`,
+            }),
+            E.divRef(
+              this.descriptionText,
+              {
+                class: "season-details-description-text",
+                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; overflow: hidden;`,
+              },
+              E.text(seasonDetails.description),
+            ),
+            E.div({
+              style: `flex: 0 0 auto; height: .5rem;`,
+            }),
+            E.divRef(
+              this.showMoreDescriptionButton,
+              {
+                class: "season-details-show-more-description-button",
+                style: `${CLICKABLE_TEXT_STYLE} font-size: ${FONT_M}rem;`,
+              },
+              E.text(LOCALIZED_TEXT.showMoreButtonLabel),
+            ),
+            E.divRef(
+              this.showLessDescriptionButton,
+              {
+                class: "season-details-show-more-description-button",
+                style: `${CLICKABLE_TEXT_STYLE} font-size: ${FONT_M}rem;`,
+              },
+              E.text(LOCALIZED_TEXT.showLessButtonLabel),
             ),
           ),
-          E.div({
-            style: `flex: 0 0 auto; height: 2rem;`,
-          }),
+        ),
+        E.div({
+          style: `flex: 0 0 auto; height: 2rem;`,
+        }),
+        E.divRef(
+          this.episodesList,
+          {
+            class: "season-details-episodes-list",
+            style: `align-self: center; width: max(70%, min(50rem, 100%)); display: flex; flex-flow: column nowrap;`,
+          },
           E.div(
             {
-              class: "season-details-actions",
-              style: `display: flex; flex-flow: row wrap; align-items: center; gap: 2rem;`,
+              class: "season-details-total-episodes",
+              style: `width: 100%; text-align: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1};`,
             },
-            E.div(
-              {
-                class: "season-details-rating",
-                style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; align-items: center;`,
-              },
-              E.div(
-                {
-                  class: "season-item-rating-icon",
-                  style: `flex: 0 0 auto; width: ${ICON_L}rem; height: ${ICON_L}rem;`,
-                },
-                createFilledStarIcon(SCHEME.star),
-              ),
-              E.div({
-                style: `flex: 0 0 auto; width: .5rem;`,
-              }),
-              E.div(
-                {
-                  class: "season-item-rating",
-                  style: `flex: 0 0 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(
-                  `${formatRating(seasonDetails.averageRating)} (${formatRatingsCountShort(seasonDetails.ratingsCount)})`,
-                ),
-              ),
-              E.div({
-                style: `flex: 0 0 auto; width: 1rem;`,
-              }),
-              E.div(
-                {
-                  style: `display: flex; flex-flow: row nowrap; align-items: center; border-radius: .5rem; border: .1rem solid ${SCHEME.neutral1}; `,
-                },
-                E.divRef(this.ratingOneStarButton, {
-                  class: "season-item-rating-one-star-icon",
-                  style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_L) / 2}rem; cursor: pointer;`,
-                }),
-                E.divRef(this.ratingTwoStarButton, {
-                  class: "season-item-rating-two-star-icon",
-                  style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_L) / 2}rem; cursor: pointer;`,
-                }),
-                E.divRef(this.ratingThreeStarButton, {
-                  class: "season-item-rating-three-star-icon",
-                  style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_L) / 2}rem; cursor: pointer;`,
-                }),
-                E.divRef(this.ratingFourStarButton, {
-                  class: "season-item-rating-four-star-icon",
-                  style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_L) / 2}rem; cursor: pointer;`,
-                }),
-                E.divRef(this.ratingFiveStarButton, {
-                  class: "season-item-rating-five-star-icon",
-                  style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_L) / 2}rem; cursor: pointer;`,
-                }),
-              ),
-            ),
-            assign(
-              this.watchLaterButton,
-              OutlineBlockingButton.create(
-                `display: flex; flex-flow: row nowrap; align-items: center; gap: .7rem;`,
-              )
-                .append(
-                  E.div(
-                    {
-                      class: "season-details-watch-later-icon",
-                      style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
-                    },
-                    createBookmarkIcon(SCHEME.neutral1),
-                  ),
-                  E.text(LOCALIZED_TEXT.watchLaterLabel),
-                )
-                .enable(),
-            ).body,
-            assign(
-              this.removeWatchLaterButton,
-              OutlineBlockingButton.create(
-                `display: flex; flex-flow: row nowrap; align-items: center; gap: .7rem;`,
-              )
-                .append(
-                  E.div(
-                    {
-                      class: "season-details-watch-later-icon",
-                      style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
-                    },
-                    createFilledBookmarkIcon(SCHEME.neutral1),
-                  ),
-                  E.text(LOCALIZED_TEXT.watchLaterRemoveLabel),
-                )
-                .enable(),
-            ).body,
-            E.divRef(
-              this.shareButton,
-              {
-                class: "season-details-share",
-                style: `${OUTLINE_BUTTON_STYLE} display: flex; flex-flow: row nowrap; align-items: center; gap: .7rem;`,
-              },
-              E.div(
-                {
-                  class: "season-details-share-icon",
-                  style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
-                },
-                createShareIcon(SCHEME.neutral1),
-              ),
-              E.text(LOCALIZED_TEXT.shareLabel),
+            E.text(
+              `${LOCALIZED_TEXT.totalEpisodes[0]}${seasonDetails.totalEpisodes}${LOCALIZED_TEXT.totalEpisodes[1]}`,
             ),
           ),
-          E.div({
-            style: `flex: 0 0 auto; height: 2rem;`,
-          }),
-          E.divRef(
-            this.publisherButton,
-            {
-              class: "publisher-item",
-              style: `cursor: pointer; max-width: 50rem; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral1}; border-radius: .5rem; padding: 1.5rem 2rem; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
-            },
-            E.image({
-              class: "publisher-item-avatar",
-              style: `flex: 0 0 auto; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: 100%;`,
-              src: publisher.avatarSmallUrl,
-              alt: publisher.naturalName,
-            }),
-            E.div(
-              {
-                class: "publisher-item-info",
-                style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
-              },
-              E.div(
-                {
-                  class: "publisher-item-name",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
-                },
-                E.text(publisher.naturalName),
-              ),
-              E.div(
-                {
-                  class: "publisher-item-id",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
-                },
-                E.text(`${AT_USER}${publisher.accountId}`),
-              ),
-            ),
-            E.div(
-              {
-                class: "text-values-group-edit-icon",
-                style: `flex: 0 0 auto; height: ${ICON_M}rem; transform: rotate(180deg);`,
-              },
-              createArrowIcon(SCHEME.neutral1),
-            ),
-          ),
-          E.div({
-            style: `flex: 0 0 auto; height: 1.5rem;`,
-          }),
-          E.divRef(
-            this.descriptionText,
-            {
-              class: "season-details-description-text",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; overflow: hidden;`,
-            },
-            E.text(seasonDetails.description),
-          ),
-          E.div({
-            style: `flex: 0 0 auto; height: .5rem;`,
-          }),
-          E.divRef(
-            this.showMoreDescriptionButton,
-            {
-              class: "season-details-show-more-description-button",
-              style: `${CLICKABLE_TEXT_STYLE} font-size: ${FONT_M}rem;`,
-            },
-            E.text(LOCALIZED_TEXT.showMoreButtonLabel),
-          ),
-          E.divRef(
-            this.showLessDescriptionButton,
-            {
-              class: "season-details-show-more-description-button",
-              style: `${CLICKABLE_TEXT_STYLE} font-size: ${FONT_M}rem;`,
-            },
-            E.text(LOCALIZED_TEXT.showLessButtonLabel),
-          ),
+          assign(
+            this.loadMorePrevEpisodesButton,
+            LoadMoreEpisodesButton.create(
+              LOCALIZED_TEXT.loadMorePrevEpisodesButtonLabel,
+            ).enable(),
+          ).body,
+          ...episodes.map((episode) => this.createEpisodeItem(episode)),
+          assign(
+            this.loadMoreNextEpisodesButton,
+            LoadMoreEpisodesButton.create(
+              LOCALIZED_TEXT.loadMoreNextEpisodesButtonLabel,
+            ).enable(),
+          ).body,
         ),
-      ),
-      E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
-      }),
-      E.divRef(
-        this.episodesList,
-        {
-          class: "season-details-episodes-list",
-          style: `align-self: center; width: max(70%, min(50rem, 100%)); display: flex; flex-flow: column nowrap;`,
-        },
-        E.div(
-          {
-            class: "season-details-total-episodes",
-            style: `width: 100%; text-align: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1};`,
-          },
-          E.text(
-            `${LOCALIZED_TEXT.totalEpisodes[0]}${seasonDetails.totalEpisodes}${LOCALIZED_TEXT.totalEpisodes[1]}`,
-          ),
-        ),
-        assign(
-          this.loadMorePrevEpisodesButton,
-          LoadMoreEpisodesButton.create(
-            LOCALIZED_TEXT.loadMorePrevEpisodesButtonLabel,
-          ).enable(),
-        ).body,
-        ...episodes.map((episode) => this.createEpisodeItem(episode)),
-        assign(
-          this.loadMoreNextEpisodesButton,
-          LoadMoreEpisodesButton.create(
-            LOCALIZED_TEXT.loadMoreNextEpisodesButtonLabel,
-          ).enable(),
-        ).body,
       ),
     );
     this.setIndividualRating(individualRatingResponse.rating);

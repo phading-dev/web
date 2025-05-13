@@ -108,12 +108,17 @@ TEST_RUNNER.run({
         // Prepare
         webServiceClientMock.error = undefined;
         webServiceClientMock.response = {} as UpdateAccountResponse;
+        let isBack = false;
+        this.cut.on("back", () => (isBack = true));
 
         // Execute
         this.cut.inputFormPage.submit();
-        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
+        await new Promise<void>((resolve) =>
+          this.cut.inputFormPage.once("primaryDone", resolve),
+        );
 
         // Verify
+        assertThat(isBack, eq(true), "Back");
         await asyncAssertScreenshot(
           path.join(__dirname, "/update_account_info_page_updated_success.png"),
           path.join(
@@ -160,11 +165,18 @@ TEST_RUNNER.run({
           ),
         );
 
+        // Prepare
+        let isBack = false;
+        this.cut.on("back", () => (isBack = true));
+
         // Execute
         this.cut.inputFormPage.submit();
-        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
+        await new Promise<void>((resolve) =>
+          this.cut.inputFormPage.once("primaryDone", resolve),
+        );
 
         // Verify
+        assertThat(isBack, eq(true), "Back");
         assertThat(
           webServiceClientMock.request.body,
           eqMessage(
@@ -211,11 +223,18 @@ TEST_RUNNER.run({
           ),
         );
 
+        // Prepare
+        let isBack = false;
+        this.cut.on("back", () => (isBack = true));
+
         // Execute
         this.cut.inputFormPage.submit();
-        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
+        await new Promise<void>((resolve) =>
+          this.cut.inputFormPage.once("primaryDone", resolve),
+        );
 
         // Verify
+        assertThat(isBack, eq(true), "Back");
         assertThat(
           webServiceClientMock.request.body,
           eqMessage(

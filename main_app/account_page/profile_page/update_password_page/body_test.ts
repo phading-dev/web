@@ -130,12 +130,17 @@ TEST_RUNNER.run({
         // Prepare
         clientMock.error = undefined;
         clientMock.response = {};
+        let isBack = false;
+        this.cut.on("back", () => (isBack = true));
 
         // Execute
         this.cut.inputFormPage.submit();
-        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
+        await new Promise<void>((resolve) =>
+          this.cut.inputFormPage.once("primaryDone", resolve),
+        );
 
         // Verify
+        assertThat(isBack, eq(true), "Back");
         await asyncAssertScreenshot(
           path.join(__dirname, "/update_password_page_update_successs.png"),
           path.join(

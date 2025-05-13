@@ -8,8 +8,8 @@ import { SimpleIconButton, createBackButton } from "../../../../common/icon_butt
 import { ImageCropper } from "../../../../common/image_cropper/body";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import {
-  PAGE_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CARD_STYLE,
+  PAGE_CENTER_CARD_BACKGROUND_STYLE,
+  PAGE_MEDIUM_CENTER_CARD_STYLE,
 } from "../../../../common/page_style";
 import { AVATAR_M, AVATAR_S, FONT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
@@ -45,12 +45,12 @@ export class UpdateAvatarPage extends EventEmitter {
     this.body = E.div(
       {
         class: "update-avatar",
-        style: PAGE_CARD_BACKGROUND_STYLE,
+        style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
       },
       E.div(
         {
           class: "update-avatar-card",
-          style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 1.5rem; align-items: center;`,
+          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 1.5rem; align-items: center;`,
         },
         assign(this.backButton, createBackButton().enable()).body,
         assign(

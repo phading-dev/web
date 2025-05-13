@@ -7,8 +7,8 @@ import {
 } from "../blocking_button";
 import { SimpleIconButton, createBackButton } from "../icon_button";
 import {
-  PAGE_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CARD_STYLE,
+  PAGE_CENTER_CARD_BACKGROUND_STYLE,
+  PAGE_MEDIUM_CENTER_CARD_STYLE,
 } from "../page_style";
 import { FONT_L, FONT_M } from "../sizes";
 import { InputField } from "./input_field";
@@ -16,8 +16,15 @@ import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
 export interface InputFormPage<PrimaryResponse, SecondaryResponse> {
-  on(event: "submitted", listener: () => void): this;
+  on(
+    event: "handlePrimarySuccess",
+    listener: (response: PrimaryResponse) => void,
+  ): this;
   on(event: "primaryDone", listener: () => void): this;
+  on(
+    event: "handleSecondarySuccess",
+    listener: (response: SecondaryResponse) => void,
+  ): this;
   on(event: "secondaryDone", listener: () => void): this;
   on(event: "back", listener: () => void): this;
 }
@@ -68,13 +75,13 @@ export class InputFormPage<
     this.body = E.div(
       {
         class: "input-form",
-        style: PAGE_CARD_BACKGROUND_STYLE,
+        style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
       },
       E.formRef(
         this.card,
         {
           class: "input-form-card",
-          style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
+          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
         },
         E.div(
           {
@@ -142,7 +149,7 @@ export class InputFormPage<
       this.actionError.val.style.visibility = "visible";
       this.actionError.val.textContent = errorMsg;
     } else {
-      this.emit("submitted");
+      this.emit("handlePrimarySuccess", response);
     }
     this.emit("primaryDone");
   }
@@ -210,6 +217,8 @@ export class InputFormPage<
     if (errorMsg) {
       this.actionError.val.style.visibility = "visible";
       this.actionError.val.textContent = errorMsg;
+    } else {
+      this.emit("handleSecondarySuccess", response);
     }
     this.emit("secondaryDone");
   }

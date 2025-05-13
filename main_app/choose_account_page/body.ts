@@ -68,7 +68,7 @@ export class ChooseAccountPage extends EventEmitter {
         break;
       case Page.CREATE_ACCOUNT:
         this.createAccountPage = this.createCreateAccountPage()
-          .on("created", () => this.emit("chosen"))
+          .on("chosen", () => this.emit("chosen"))
           .on("back", () => this.pageNavigator.goTo(Page.LIST));
         this.appendBodiesFn(this.createAccountPage.body);
         break;

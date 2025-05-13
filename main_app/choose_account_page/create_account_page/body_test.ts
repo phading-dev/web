@@ -133,12 +133,17 @@ TEST_RUNNER.run({
         serviceClientMock.response = {
           signedSession: "session 1",
         } as CreateAccountResponse;
+        let chosen = false;
+        this.cut.on("chosen", () => (chosen = true));
 
         // Execute
         this.cut.inputFormPage.submit();
-        await new Promise<void>((resolve) => this.cut.once("created", resolve));
+        await new Promise<void>((resolve) =>
+          this.cut.inputFormPage.once("primaryDone", resolve),
+        );
 
         // Verify
+        assertThat(chosen, eq(true), "chosen");
         assertThat(
           LOCAL_SESSION_STORAGE.read(),
           eq("session 1"),
@@ -192,7 +197,9 @@ TEST_RUNNER.run({
         // Wait for validation.
         await new Promise<void>((resolve) => setTimeout(resolve));
         this.cut.inputFormPage.submit();
-        await new Promise<void>((resolve) => this.cut.once("created", resolve));
+        await new Promise<void>((resolve) =>
+          this.cut.inputFormPage.once("primaryDone", resolve),
+        );
 
         // Verify
         assertThat(

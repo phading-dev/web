@@ -109,7 +109,6 @@ export class PlayPage extends EventEmitter {
   public commentsPanel = new Ref<CommentsPanel>();
   public settingsPanel = new Ref<SettingsPanel>();
   private settings: VideoPlayerSettings;
-  private panelOpened = false;
   private tabNavigator: PageNavigator<Tab>;
   public watchSessionTracker: WatchSessionTracker;
   public watchTimeMeter: WatchTimeMeter;
@@ -446,8 +445,7 @@ export class PlayPage extends EventEmitter {
   }
 
   private openPanel(tab: Tab): void {
-    if (!this.panelOpened) {
-      this.panelOpened = true;
+    if (this.panelContainer.val.style.display === "none") {
       if (
         this.body.offsetWidth <
         getRootFontSize() * PlayPage.LAYOUT_BREAKPOINT
@@ -461,7 +459,6 @@ export class PlayPage extends EventEmitter {
   }
 
   private closePanel(): void {
-    this.panelOpened = false;
     this.panelContainer.val.style.display = "none";
   }
 

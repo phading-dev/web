@@ -89,8 +89,8 @@ TEST_RUNNER.run({
 
         // Prepare
         callError = new Error("Fake error");
-        let submitted = false;
-        this.cut.on("submitted", () => (submitted = true));
+        let primarySuccess = false;
+        this.cut.on("handlePrimarySuccess", () => (primarySuccess = true));
 
         // Execute
         this.cut.submit();
@@ -100,7 +100,7 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(actioned, eq(true), "actioned");
-        assertThat(submitted, eq(false), "not submitted");
+        assertThat(primarySuccess, eq(false), "not primarySuccess");
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_submit_error.png"),
           path.join(__dirname, "/golden/input_form_page_submit_error.png"),
@@ -120,7 +120,7 @@ TEST_RUNNER.run({
         );
 
         // Verify
-        assertThat(submitted, eq(false), "not submitted");
+        assertThat(primarySuccess, eq(false), "not primarySuccess");
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_error_in_response.png"),
           path.join(__dirname, "/golden/input_form_page_error_in_response.png"),
@@ -137,7 +137,7 @@ TEST_RUNNER.run({
         );
 
         // Verify
-        assertThat(submitted, eq(true), "submitted");
+        assertThat(primarySuccess, eq(true), "primarySuccess");
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_submitted.png"),
           path.join(__dirname, "/golden/input_form_page_valid.png"),

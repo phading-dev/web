@@ -13,8 +13,8 @@ import {
 } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
-  PAGE_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CARD_STYLE,
+  PAGE_CENTER_CARD_BACKGROUND_STYLE,
+  PAGE_MEDIUM_CENTER_CARD_STYLE,
 } from "../../../common/page_style";
 import { FONT_M, FONT_WEIGHT_600, ICON_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
@@ -68,7 +68,7 @@ export class PaymentPage extends EventEmitter {
     super();
     this.body = E.div({
       class: "payment-page",
-      style: PAGE_CARD_BACKGROUND_STYLE,
+      style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
     });
     this.load();
   }
@@ -87,7 +87,7 @@ export class PaymentPage extends EventEmitter {
       E.div(
         {
           class: "payment-page-card",
-          style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
+          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
         },
         E.div(
           {

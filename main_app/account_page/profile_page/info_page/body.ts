@@ -3,8 +3,8 @@ import { OUTLINE_BUTTON_STYLE } from "../../../../common/button_styles";
 import { SCHEME } from "../../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import {
-  PAGE_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CARD_STYLE,
+  PAGE_CENTER_CARD_BACKGROUND_STYLE,
+  PAGE_MEDIUM_CENTER_CARD_STYLE,
 } from "../../../../common/page_style";
 import { AVATAR_M, FONT_M } from "../../../../common/sizes";
 import { TextValuesGroup } from "../../../../common/text_values_group";
@@ -53,7 +53,7 @@ export class InfoPage extends EventEmitter {
     super();
     this.body = E.div({
       class: "account-info",
-      style: PAGE_CARD_BACKGROUND_STYLE,
+      style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
     });
     this.load();
   }
@@ -67,7 +67,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "account-info-card",
-          style: `${PAGE_MEDIUM_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
+          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
         },
         E.divRef(
           this.avatarContainer,

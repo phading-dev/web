@@ -52,5 +52,6 @@ import "../main_app/consumer_page/season_details_page/body_test";
 import "../main_app/consumer_page/usage_page/body_test";
 import "../main_app/consumer_page/watch_later_page/body_test";
 import "../main_app/publisher_page/common/elements_test";
+import "../main_app/publisher_page/create_season_page/body_test";
 import "../main_app/publisher_page/list_page/body_test";
 import "../main_app/publisher_page/search_page/body_test";

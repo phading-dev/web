@@ -22,8 +22,7 @@ import { LocalSessionStorage } from "@selfage/web_service_client/local_session_s
 
 export interface CreateAccountPage {
   on(event: "back", listener: () => void): this;
-  on(event: "created", listener: () => void): this;
-  on(event: "createError", listener: () => void): this;
+  on(event: "chosen", listener: () => void): this;
 }
 
 export class CreateAccountPage extends EventEmitter {
@@ -95,7 +94,7 @@ export class CreateAccountPage extends EventEmitter {
       () => this.createAccount(),
       (response, error) => this.postCreateAccount(response, error),
     );
-    this.inputFormPage.on("submitted", () => this.emit("created"));
+    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("chosen"));
     this.inputFormPage.on("back", () => this.emit("back"));
   }
 

@@ -23,7 +23,6 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface UpdateAccountInfoPage {
   on(event: "back", listener: () => void): this;
-  on(event: "updated", listener: () => void): this;
 }
 
 export class UpdateAccountInfoPage extends EventEmitter {
@@ -94,7 +93,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
       () => this.updateAccountInfo(),
       (response, error) => this.postUpdateAccountInfo(error),
     );
-    this.inputFormPage.on("submitted", () => this.emit("updated"));
+    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
     this.inputFormPage.on("back", () => this.emit("back"));
   }
 

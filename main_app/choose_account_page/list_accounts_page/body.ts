@@ -4,8 +4,8 @@ import { SCHEME } from "../../../common/color_scheme";
 import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
-  PAGE_CARD_BACKGROUND_STYLE,
-  PAGE_EX_LARGE_CARD_STYLE,
+  PAGE_CENTER_CARD_BACKGROUND_STYLE,
+  PAGE_EX_LARGE_CENTER_CARD_STYLE,
 } from "../../../common/page_style";
 import { FONT_L, FONT_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
@@ -57,7 +57,7 @@ export class ListAccountsPage extends EventEmitter {
     super();
     this.body = E.div({
       class: "list-accounts-page",
-      style: PAGE_CARD_BACKGROUND_STYLE,
+      style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
     });
 
     this.load();
@@ -81,7 +81,7 @@ export class ListAccountsPage extends EventEmitter {
       E.div(
         {
           class: "list-accounts-tab",
-          style: `${PAGE_EX_LARGE_CARD_STYLE} display: flex; flex-flow: column nowrap; align-items: center;`,
+          style: `${PAGE_EX_LARGE_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap; align-items: center;`,
         },
         E.div(
           {
