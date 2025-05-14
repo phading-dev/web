@@ -83,9 +83,6 @@ TEST_RUNNER.run({
         serviceClientMock.listDraftEpisodesResponse = {
           episodes: [],
         };
-        serviceClientMock.listPublishedEpisodesResponse = {
-          episodes: [],
-        };
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2024-12-23T08:00:00Z"),
@@ -94,9 +91,7 @@ TEST_RUNNER.run({
 
         // Execute
         document.body.append(this.cut.body);
-        await new Promise<void>((resolve) =>
-          this.cut.once("loadedPublishedEpisodes", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
         assertThat(
@@ -119,20 +114,6 @@ TEST_RUNNER.run({
           ),
           "ListDraftEpisodesRequestBody",
         );
-        assertThat(
-          serviceClientMock.listPublishedEpisodesRequests,
-          isArray([
-            eqMessage(
-              {
-                seasonId: "season1",
-                limit: 10,
-                next: true,
-              },
-              LIST_PUBLISHED_EPISODES_REQUEST_BODY,
-            ),
-          ]),
-          "ListPublishedEpisodesRequestBody",
-        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/info_page_tablet_empty_draft.png"),
           path.join(__dirname, "/golden/info_page_tablet_empty_draft.png"),
@@ -146,11 +127,6 @@ TEST_RUNNER.run({
         window.scrollTo(0, document.body.scrollHeight);
 
         // Verify
-        assertThat(
-          serviceClientMock.listPublishedEpisodesRequests,
-          isArray([]),
-          "ListPublishedEpisodesRequestBody 2",
-        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/info_page_tablet_empty_draft_scrolled.png"),
           path.join(

@@ -51,6 +51,7 @@ export interface InfoPage {
   on(event: "loadedPublishedEpisodes", listener: () => void): this;
 }
 
+// Assumption: Archived seasons don't have cover images and don't have any draft/published episodes. All information is not editable.
 export class InfoPage extends EventEmitter {
   public static create(seasonId: string): InfoPage {
     return new InfoPage(SERVICE_CLIENT, () => new Date(), seasonId);
@@ -301,38 +302,47 @@ export class InfoPage extends EventEmitter {
                 ),
               ),
               ...draftEpisodes.map((episode) => this.eDraftEpisode(episode)),
-              E.div({
-                style: `flex: 0 0 auto; height: 2rem;`,
-              }),
-              E.div(
-                {
-                  class: "season-details-published-episodes-title",
-                  style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding: 1rem; text-align: center; border-bottom: .1rem solid ${SCHEME.neutral1};`,
-                },
-                E.text(
-                  `${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[0]}${seasonDetails.totalPublishedEpisodes}${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[1]}`,
-                ),
-              ),
-              E.divRef(
-                this.listPublishedEpisodesStartFrom,
-                {
-                  class: "season-details-published-episodes-start-from",
-                  style: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: .5rem; padding: 1rem; border-bottom: .1rem solid ${SCHEME.neutral1};`,
-                },
-                E.div(
-                  {
-                    class: "season-details-published-episodes-start-from-label",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonPublishedEpisodesStartFromLabel),
-                ),
-                E.inputRef(this.listPublishedEpisodeIndexCursorInput, {
-                  class: "season-details-published-episodes-start-from-input",
-                  style: `${BASIC_INPUT_STYLE} width: 5rem; text-align: center;`,
-                }),
-              ),
-              assign(this.scrollLoadingSection, new ScrollLoadingSection())
-                .body,
+              ...(seasonDetails.totalPublishedEpisodes === 0
+                ? []
+                : [
+                    E.div(
+                      {
+                        class: "season-details-published-episodes-title",
+                        style: `margin-top: 2rem; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding: 1rem; text-align: center; border-bottom: .1rem solid ${SCHEME.neutral1};`,
+                      },
+                      E.text(
+                        `${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[0]}${seasonDetails.totalPublishedEpisodes}${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[1]}`,
+                      ),
+                    ),
+                    E.divRef(
+                      this.listPublishedEpisodesStartFrom,
+                      {
+                        class: "season-details-published-episodes-start-from",
+                        style: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: .5rem; padding: 1rem; border-bottom: .1rem solid ${SCHEME.neutral1};`,
+                      },
+                      E.div(
+                        {
+                          class:
+                            "season-details-published-episodes-start-from-label",
+                          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                        },
+                        E.text(
+                          LOCALIZED_TEXT.seasonPublishedEpisodesStartFromLabel,
+                        ),
+                      ),
+                      E.inputRef(this.listPublishedEpisodeIndexCursorInput, {
+                        class:
+                          "season-details-published-episodes-start-from-input",
+                        style: `${BASIC_INPUT_STYLE} width: 5rem; text-align: center;`,
+                      }),
+                    ),
+                    assign(
+                      this.scrollLoadingSection,
+                      new ScrollLoadingSection(
+                        LOCALIZED_TEXT.seasonAllPublishedEpisodesLoaded,
+                      ),
+                    ).body,
+                  ]),
             ]),
       ),
     );
@@ -350,17 +360,19 @@ export class InfoPage extends EventEmitter {
       this.createDraftEpisodeButton.val.addEventListener("click", () =>
         this.emit("createDraftEpisode"),
       );
-      this.scrollLoadingSection.val.addLoadAction(() =>
-        this.loadPublishedEpisodes(),
-      );
-      this.scrollLoadingSection.val.on("loaded", () =>
-        this.emit("loadedPublishedEpisodes"),
-      );
-      this.listPublishedEpisodeIndexCursorInput.val.addEventListener(
-        "change",
-        () => this.setCursorAndReloadPublishedEpisodes(),
-      );
-      this.setCursorAndReloadPublishedEpisodes();
+      if (seasonDetails.totalPublishedEpisodes > 0) {
+        this.scrollLoadingSection.val.addLoadAction(() =>
+          this.loadPublishedEpisodes(),
+        );
+        this.scrollLoadingSection.val.on("loaded", () =>
+          this.emit("loadedPublishedEpisodes"),
+        );
+        this.listPublishedEpisodeIndexCursorInput.val.addEventListener(
+          "change",
+          () => this.setCursorAndReloadPublishedEpisodes(),
+        );
+        this.setCursorAndReloadPublishedEpisodes();
+      }
     }
     this.emit("loaded");
   }

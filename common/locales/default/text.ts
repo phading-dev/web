@@ -713,4 +713,7 @@ export default class Text {
   get seasonPublishedEpisodesStartFromLabel() {
     return `Latest from #`;
   }
+  get seasonAllPublishedEpisodesLoaded() {
+    return `All published episodes are listed.`;
+  }
 }
