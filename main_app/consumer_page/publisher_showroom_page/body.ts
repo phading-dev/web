@@ -59,8 +59,9 @@ export class PublisherShowroomPage extends EventEmitter {
       ),
       assign(this.loadingSection, new ScrollLoadingSection()).body,
     );
-    this.loadingSection.val.startLoading(() => this.load());
+    this.loadingSection.val.addLoadAction(() => this.load());
     this.loadingSection.val.on("loaded", () => this.emit("loaded"));
+    this.loadingSection.val.load();
   }
 
   private async load(): Promise<boolean> {

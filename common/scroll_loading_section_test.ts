@@ -44,13 +44,14 @@ TEST_RUNNER.run({
         let itemLength = 2;
 
         // Execute
-        cut.val.startLoading(async () => {
+        cut.val.addLoadAction(async () => {
           await new Promise((resolve) => setTimeout(resolve));
           Array.from({ length: itemLength }).forEach(() => {
             cut.val.body.before(item());
           });
           return hasMore;
         });
+        cut.val.load();
 
         // Verify
         await asyncAssertScreenshot(
@@ -88,22 +89,6 @@ TEST_RUNNER.run({
             __dirname,
             "/scroll_loading_section_scrolled_no_more_diff.png",
           ),
-        );
-
-        // Prepare
-        itemLength = 2;
-        hasMore = false;
-
-        // Execute
-        cut.val.tryReloadButton.val.click();
-        await new Promise<void>((resolve) => cut.val.once("loaded", resolve));
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/scroll_loading_section_reloaded.png"),
-          path.join(__dirname, "/golden/scroll_loading_section_reloaded.png"),
-          path.join(__dirname, "/scroll_loading_section_reloaded_diff.png"),
         );
       }
       public tearDown() {

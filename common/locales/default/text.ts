@@ -641,4 +641,76 @@ export default class Text {
   get seasonDescriptionLabel() {
     return `Description`;
   }
+  get seasonAddCoverImageLabel() {
+    return `Add cover image`;
+  }
+  get seasonInfoLabel() {
+    return `Basic info`;
+  }
+  get seasonPricingLabel() {
+    return `Pricing`;
+  }
+  get seasonCurrentRateLabel() {
+    return `Current rate: `;
+  }
+  get seasonDraftPricingFooter() {
+    return `Before publishing, you can change the rate anytime.`;
+  }
+  get seasonPublishedPricingFooter() {
+    return [
+      `In order to maintain stable pricing, at least `,
+      `-day notice is required to change the rate.`,
+    ];
+  }
+  get seasonArchivedPricingFooter() {
+    return `Rate cannot be changed anymore.`;
+  }
+  get seasonNewRateLabel() {
+    return `Upcoming rate: `;
+  }
+  get seasonNewRateEffectiveDateLabel() {
+    return `Effective date: `;
+  }
+  get seasonStateLabel() {
+    return `State`;
+  }
+  get seasonStateDraftLabel() {
+    return `Draft`;
+  }
+  get seasonStateDraftFooter() {
+    return `No information is visible to the public. It will be published when the first episode is published.`;
+  }
+  get seasonStatePublishedLabel() {
+    return `Published`;
+  }
+  get seasonStatePublishedFooter() {
+    return `All information is visible to the public. Published episodes are visible but not watchable until their premiere time.`;
+  }
+  get seasonStateArchivedLabel() {
+    return `Archived`;
+  }
+  get seasonStateArchivedFooter() {
+    return `Name and pricing remain visible to the public.`;
+  }
+  get seasonCreatedTime() {
+    return `Created: `;
+  }
+  get seasonTotalDraftEpisodes() {
+    return [``, ` draft episodes`];
+  }
+  get seasonCreateDraftEpisodeLabel() {
+    return `Add a draft episode`;
+  }
+  get seasonEpisodeVersion() {
+    return `Version: `;
+  }
+  get seasonTotalPublishedEpisodes() {
+    return [``, ` published episodes`];
+  }
+  get seasonPublishedEpisodeIndex() {
+    return `#`;
+  }
+  get seasonPublishedEpisodesStartFromLabel() {
+    return `Latest from #`;
+  }
 }

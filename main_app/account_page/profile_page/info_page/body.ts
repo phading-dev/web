@@ -3,11 +3,11 @@ import { OUTLINE_BUTTON_STYLE } from "../../../../common/button_styles";
 import { SCHEME } from "../../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import {
-  PAGE_CENTER_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CENTER_CARD_STYLE,
+  PAGE_MEDIUM_TOP_DOWN_CARD_STYLE,
+  PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
 } from "../../../../common/page_style";
 import { AVATAR_M, FONT_M } from "../../../../common/sizes";
-import { TextValuesGroup } from "../../../../common/text_values_group";
+import { eTextValue, eValuesGroup } from "../../../../common/text_values_group";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
 import { newGetAccountAndUserRequest } from "@phading/user_service_interface/web/self/client";
@@ -43,9 +43,9 @@ export class InfoPage extends EventEmitter {
   public body: HTMLDivElement;
   public avatarContainer = new Ref<HTMLDivElement>();
   private avatarUpdateHint = new Ref<HTMLDivElement>();
-  public accountInfo = new Ref<TextValuesGroup>();
-  public password = new Ref<TextValuesGroup>();
-  public recoveryEmail = new Ref<TextValuesGroup>();
+  public accountInfo = new Ref<HTMLDivElement>();
+  public password = new Ref<HTMLDivElement>();
+  public recoveryEmail = new Ref<HTMLDivElement>();
   public switchAccountButton = new Ref<HTMLDivElement>();
   public signOutButton = new Ref<HTMLDivElement>();
 
@@ -53,7 +53,7 @@ export class InfoPage extends EventEmitter {
     super();
     this.body = E.div({
       class: "account-info",
-      style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
+      style: PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
     });
     this.load();
   }
@@ -67,7 +67,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "account-info-card",
-          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
+          style: `${PAGE_MEDIUM_TOP_DOWN_CARD_STYLE} padding: 2rem; display: flex; flex-flow: column nowrap; gap: 2rem;`,
         },
         E.divRef(
           this.avatarContainer,
@@ -97,48 +97,38 @@ export class InfoPage extends EventEmitter {
         ),
         assign(
           this.accountInfo,
-          TextValuesGroup.create([
-            {
-              label: LOCALIZED_TEXT.naturalNameLabel,
-              value: response.account.naturalName,
-            },
-            {
-              label: LOCALIZED_TEXT.contactEmailLabel,
-              value: response.account.contactEmail,
-            },
-            {
-              label: LOCALIZED_TEXT.accountDescriptionLabel,
-              value: response.account.description,
-            },
+          eValuesGroup([
+            eTextValue(
+              LOCALIZED_TEXT.naturalNameLabel,
+              response.account.naturalName,
+            ),
+            eTextValue(
+              LOCALIZED_TEXT.contactEmailLabel,
+              response.account.contactEmail,
+            ),
+            eTextValue(
+              LOCALIZED_TEXT.accountDescriptionLabel,
+              response.account.description,
+            ),
           ]),
-        ).body,
-        TextValuesGroup.create(
-          [
-            {
-              label: LOCALIZED_TEXT.usernameLabel,
-              value: response.account.username,
-            },
-          ],
+        ),
+        eValuesGroup(
+          [eTextValue(LOCALIZED_TEXT.usernameLabel, response.account.username)],
           false,
-        ).body,
+        ),
         assign(
           this.password,
-          TextValuesGroup.create([
-            {
-              label: LOCALIZED_TEXT.passwordLabel,
-              value: "********",
-            },
-          ]),
-        ).body,
+          eValuesGroup([eTextValue(LOCALIZED_TEXT.passwordLabel, "********")]),
+        ),
         assign(
           this.recoveryEmail,
-          TextValuesGroup.create([
-            {
-              label: LOCALIZED_TEXT.recoveryEmailLabel,
-              value: response.account.recoveryEmail,
-            },
+          eValuesGroup([
+            eTextValue(
+              LOCALIZED_TEXT.recoveryEmailLabel,
+              response.account.recoveryEmail,
+            ),
           ]),
-        ).body,
+        ),
         E.div(
           {
             class: "account-info-buttons",
@@ -177,13 +167,13 @@ export class InfoPage extends EventEmitter {
     this.avatarUpdateHint.val.addEventListener("transitionend", () =>
       this.emit("avatarUpdateHintTransitionEnded"),
     );
-    this.accountInfo.val.on("action", () =>
+    this.accountInfo.val.addEventListener("click", () =>
       this.emit("updateAccountInfo", response.account),
     );
-    this.password.val.on("action", () =>
+    this.password.val.addEventListener("click", () =>
       this.emit("updatePassword", response.account),
     );
-    this.recoveryEmail.val.on("action", () =>
+    this.recoveryEmail.val.addEventListener("click", () =>
       this.emit("updateRecoveryEmail", response.account),
     );
     this.switchAccountButton.val.addEventListener("click", () =>

@@ -37,7 +37,7 @@ import {
   createStarIcon,
 } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { PAGE_COMMON_TOP_DOWN_CARD_STYLE, PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE } from "../../../common/page_style";
+import { PAGE_LARGE_TOP_DOWN_CARD_STYLE, PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE } from "../../../common/page_style";
 import { getRootFontSize } from "../../../common/root_font_size";
 import {
   AVATAR_S,
@@ -200,7 +200,7 @@ export class SeasonDetailsPage extends EventEmitter {
       E.div(
         {
           class: "season-details-card",
-          style: `${PAGE_COMMON_TOP_DOWN_CARD_STYLE} max-width: 120rem; padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem; display: flex; flex-flow: column nowrap;`,
+          style: `${PAGE_LARGE_TOP_DOWN_CARD_STYLE} padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem; display: flex; flex-flow: column nowrap;`,
         },
         E.div(
           {

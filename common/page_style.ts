@@ -11,3 +11,5 @@ export let PAGE_EX_LARGE_CENTER_CARD_STYLE = `${PAGE_COMMON_CENTER_CARD_STYLE} p
 export let PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE = `width: 100%; height: 100%; box-sizing: border-box; display: flex; flex-flow: column nowrap; align-items: center;`
 // max-width, padding, flex...
 export let PAGE_COMMON_TOP_DOWN_CARD_STYLE = `flex: 0 0 auto; box-sizing: border-box; width: 100%; min-height: 100%; background-color: ${SCHEME.neutral4}; position: relative;`;
+export let PAGE_MEDIUM_TOP_DOWN_CARD_STYLE = `${PAGE_COMMON_TOP_DOWN_CARD_STYLE} max-width: 80rem;`;
+export let PAGE_LARGE_TOP_DOWN_CARD_STYLE = `${PAGE_COMMON_TOP_DOWN_CARD_STYLE} max-width: 120rem;`;

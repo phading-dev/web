@@ -41,8 +41,9 @@ export class ListPage extends EventEmitter {
       this.card,
       assign(this.loadingSection, new ScrollLoadingSection()).body,
     );
-    this.loadingSection.val.startLoading(() => this.load());
+    this.loadingSection.val.addLoadAction(() => this.load());
     this.loadingSection.val.on("loaded", () => this.emit("loaded"));
+    this.loadingSection.val.load();
   }
 
   private getTitle(): string {

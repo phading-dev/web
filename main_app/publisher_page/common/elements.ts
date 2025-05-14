@@ -1,5 +1,5 @@
 import { SCHEME } from "../../../common/color_scheme";
-import { formatLastChangeTime } from "../../../common/formatter/date";
+import { formatLastChangeTimeShort } from "../../../common/formatter/date";
 import { formatShowPrice } from "../../../common/formatter/price";
 import {
   formatRating,
@@ -8,7 +8,7 @@ import {
 import { createFilledStarIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
-  PAGE_COMMON_TOP_DOWN_CARD_STYLE,
+  PAGE_MEDIUM_TOP_DOWN_CARD_STYLE,
   PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
 } from "../../../common/page_style";
 import {
@@ -38,7 +38,7 @@ export function eSeasonItemsPage(
       card,
       {
         class: "season-item-card",
-        style: `${PAGE_COMMON_TOP_DOWN_CARD_STYLE} max-width: 80rem; padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem;`,
+        style: `${PAGE_MEDIUM_TOP_DOWN_CARD_STYLE} padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem;`,
       },
       E.div(
         {
@@ -134,7 +134,7 @@ export function ePublishedSeasonItem(
           style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(
-          `${LOCALIZED_TEXT.seasonLastChangeTime}${formatLastChangeTime(season.lastChangeTimeMs)}`,
+          `${LOCALIZED_TEXT.seasonLastChangeTime}${formatLastChangeTimeShort(season.lastChangeTimeMs)}`,
         ),
       ),
     ),
@@ -197,7 +197,7 @@ export function eDraftSeasonItem(
           style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(
-          `${LOCALIZED_TEXT.seasonLastChangeTime}${formatLastChangeTime(season.lastChangeTimeMs)}`,
+          `${LOCALIZED_TEXT.seasonLastChangeTime}${formatLastChangeTimeShort(season.lastChangeTimeMs)}`,
         ),
       ),
     ),
@@ -236,7 +236,7 @@ export function eArchivedSeasonItem(
         style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
       },
       E.text(
-        `${LOCALIZED_TEXT.seasonLastChangeTime}${formatLastChangeTime(season.lastChangeTimeMs)}`,
+        `${LOCALIZED_TEXT.seasonLastChangeTime}${formatLastChangeTimeShort(season.lastChangeTimeMs)}`,
       ),
     ),
   );
