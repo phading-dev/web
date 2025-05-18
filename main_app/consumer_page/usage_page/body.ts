@@ -1,6 +1,6 @@
 import { SCHEME } from "../../../common/color_scheme";
 import { DateRangeInput, DateType } from "../../../common/date_range_input";
-import { formatMoney } from "../../../common/formatter/price";
+import { calculateEstimatedMoney, formatMoney } from "../../../common/formatter/price";
 import { formatWatchTimeSeconds } from "../../../common/formatter/quantity";
 import { DATE_INPUT_STYLE } from "../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
@@ -20,7 +20,6 @@ import {
   newListMeterReadingsPerMonthRequest,
 } from "@phading/meter_service_interface/show/web/consumer/client";
 import { ProductID } from "@phading/price";
-import { calculateMoney } from "@phading/price_config/calculator";
 import { newGetSeasonNameRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -294,7 +293,7 @@ export class UsagePage extends EventEmitter {
         labels[i],
         reading.watchTimeSec,
         reading.watchTimeSecGraded,
-        date.toLocalDateISOString(),
+        date.toLocalMonthISOString(),
       );
     });
   }
@@ -367,13 +366,12 @@ export class UsagePage extends EventEmitter {
     name: string,
     watchTimeSec: number,
     watchTimeSecGraded: number,
-    date: string,
+    monthStr: string,
   ): void {
-    let { amount, price } = calculateMoney(
+    let { amount, price } = calculateEstimatedMoney(
       ProductID.SHOW,
-      ENV_VARS.defaultCurrency,
-      date,
       watchTimeSecGraded,
+      monthStr,
     );
     this.resultList.val.append(
       E.div(
@@ -426,11 +424,10 @@ export class UsagePage extends EventEmitter {
         maxWatchTimeGraded === 0
           ? 0
           : (watchTimeSecGraded / maxWatchTimeGraded) * 100;
-      let { amount, price } = calculateMoney(
+      let { amount, price } = calculateEstimatedMoney(
         ProductID.SHOW,
-        ENV_VARS.defaultCurrency,
-        label,
         watchTimeSecGraded,
+        label,
       );
       this.resultList.val.append(
         E.div(

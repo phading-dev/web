@@ -1,8 +1,12 @@
 import { SCHEME } from "../../../common/color_scheme";
-import { formatMoney } from "../../../common/formatter/price";
+import {
+  calculateEstimatedMoney,
+  formatMoney,
+} from "../../../common/formatter/price";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { FONT_L, FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
+import { eBox } from "../../../common/value_box";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
 import {
@@ -13,7 +17,6 @@ import {
 import { newListMeterReadingsPerMonthRequest } from "@phading/meter_service_interface/show/web/consumer/client";
 import { newListWatchSessionsRequest } from "@phading/play_activity_service_interface/show/web/client";
 import { ProductID } from "@phading/price";
-import { calculateMoney } from "@phading/price_config/calculator";
 import { newGetEpisodeWithSeasonSummaryRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { SeasonSummaryAndEpisode } from "@phading/product_service_interface/show/web/consumer/info";
 import { E } from "@selfage/element/factory";
@@ -65,11 +68,10 @@ export class HistoryPage extends EventEmitter {
       }),
     );
 
-    let { amount, price } = calculateMoney(
+    let { amount, price } = calculateEstimatedMoney(
       ProductID.SHOW,
-      ENV_VARS.defaultCurrency,
-      thisMonthStr,
       response.readings[0]?.watchTimeSecGraded ?? 0,
+      thisMonthStr,
     );
     this.body.append(
       E.div(
@@ -77,41 +79,44 @@ export class HistoryPage extends EventEmitter {
           class: "history-page-estimates-container",
           style: `width: 100%; display: flex; flex-flow: row nowrap; justify-content: center;`,
         },
-        E.divRef(
+        assign(
           this.estimatesCard,
-          {
-            class: "history-page-estimates-card",
-            style: `flex: 1; max-width: 60rem; border-radius: 1rem; border: .1rem solid ${SCHEME.neutral1}; cursor: pointer; display: flex; flex-flow: column nowrap; gap: 1rem; padding: 1rem;`,
-          },
-          E.div(
+          eBox(
+            [
+              E.div(
+                {
+                  class: "history-page-estimates-title",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+                },
+                E.text(LOCALIZED_TEXT.estimatedChargeTitle),
+              ),
+              E.div(
+                {
+                  class: "history-page-estimates-amount",
+                  style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(formatMoney(amount, price.currency)),
+              ),
+              E.div(
+                {
+                  class: "history-page-estimates-month",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(
+                  `${LOCALIZED_TEXT.billingMonth[0]}${thisMonthStr}${LOCALIZED_TEXT.billingMonth[1]}`,
+                ),
+              ),
+              E.div(
+                {
+                  class: "history-page-estimates-view-details",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; align-self: flex-end;`,
+                },
+                E.text(`${LOCALIZED_TEXT.viewDetailedUsageLabel}`),
+              ),
+            ],
             {
-              class: "history-page-estimates-title",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+              customeStyle: `flex: 1; max-width: 60rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; gap: 1rem;`,
             },
-            E.text(LOCALIZED_TEXT.estimatedChargeTitle),
-          ),
-          E.div(
-            {
-              class: "history-page-estimates-amount",
-              style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(formatMoney(amount, price.currency)),
-          ),
-          E.div(
-            {
-              class: "history-page-estimates-month",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              `${LOCALIZED_TEXT.billingMonth[0]}${thisMonthStr}${LOCALIZED_TEXT.billingMonth[1]}`,
-            ),
-          ),
-          E.div(
-            {
-              class: "history-page-estimates-view-details",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; align-self: flex-end;`,
-            },
-            E.text(`${LOCALIZED_TEXT.viewDetailedUsageLabel}`),
           ),
         ),
       ),

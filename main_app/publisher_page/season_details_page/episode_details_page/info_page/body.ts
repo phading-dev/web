@@ -2,6 +2,8 @@ import EventEmitter = require("events");
 import Hls from "hls.js";
 import { SCHEME } from "../../../../../common/color_scheme";
 import { formatPremiereTimeLong } from "../../../../../common/formatter/date";
+import { formatStorageMonthlyPrice } from "../../../../../common/formatter/price";
+import { formatStorageBytes } from "../../../../../common/formatter/quantity";
 import { formatSecondsAsHHMMSS } from "../../../../../common/formatter/timestamp";
 import {
   SimpleIconButton,
@@ -27,6 +29,7 @@ import {
   eColumnBoxWithArrow,
   eLabelAndText,
 } from "../../../../../common/value_box";
+import { SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/elements";
 import { EpisodeState } from "@phading/product_service_interface/show/episode_state";
 import { newGetEpisodeRequest } from "@phading/product_service_interface/show/web/publisher/client";
@@ -70,6 +73,10 @@ export interface InfoPage {
 // Assumptions:
 // - EpisodeDetails.videoContainerCached is required to publish an episode.
 export class InfoPage extends EventEmitter {
+  public static create(seasonId: string, episodeId: string): InfoPage {
+    return new InfoPage(SERVICE_CLIENT, () => new Date(), seasonId, episodeId);
+  }
+
   private static LASTING_TIME_TO_SHOW_PROCESSING_FAILURE_MS =
     12 * 60 * 60 * 1000;
 
@@ -87,9 +94,9 @@ export class InfoPage extends EventEmitter {
 
   public constructor(
     private serviceClient: WebServiceClient,
+    private getNowDate: () => Date,
     private seasonId: string,
     private episodeId: string,
-    private now: () => number,
   ) {
     super();
     this.body = E.div({
@@ -303,6 +310,7 @@ export class InfoPage extends EventEmitter {
         ...episode.videoContainer.subtitles.map((subtitleTrack) =>
           this.eSubtitleTrack(subtitleTrack),
         ),
+        ...this.eStorageFee(episode.videoContainer),
       ),
     );
     this.backButton.val.on("action", () => this.emit("back"));
@@ -369,7 +377,7 @@ export class InfoPage extends EventEmitter {
         }
         return ele;
       case EpisodeState.PUBLISHED:
-        let premiered = episode.premiereTimeMs <= this.now();
+        let premiered = episode.premiereTimeMs <= this.getNowDate().getTime();
         return assign(
           this.episodePublishedStateButton,
           eColumnBoxWithArrow(
@@ -510,7 +518,8 @@ export class InfoPage extends EventEmitter {
     if (
       episode.videoContainer.lastProcessingFailure &&
       episode.videoContainer.lastProcessingFailure.timeMs >
-        this.now() - InfoPage.LASTING_TIME_TO_SHOW_PROCESSING_FAILURE_MS
+        this.getNowDate().getTime() -
+          InfoPage.LASTING_TIME_TO_SHOW_PROCESSING_FAILURE_MS
     ) {
       return E.div(
         {
@@ -857,6 +866,66 @@ export class InfoPage extends EventEmitter {
       this.emit("editSubtitleTrack", subtitleTrack),
     );
     return ele;
+  }
+
+  private eStorageFee(videoContainer: VideoContainer): Array<HTMLDivElement> {
+    if (
+      videoContainer.videos.length === 0 &&
+      videoContainer.audios.length === 0 &&
+      videoContainer.subtitles.length === 0
+    ) {
+      return [];
+    }
+    let videoBytes = videoContainer.videos.reduce(
+      (acc, videoTrack) => acc + videoTrack.totalBytes,
+      0,
+    );
+    let audioBytes = videoContainer.audios.reduce(
+      (acc, audioTrack) => acc + audioTrack.totalBytes,
+      0,
+    );
+    let subtitleBytes = videoContainer.subtitles.reduce(
+      (acc, subtitleTrack) => acc + subtitleTrack.totalBytes,
+      0,
+    );
+    let totalBytes = videoBytes + audioBytes + subtitleBytes;
+    let totalSizeInMiB = totalBytes / (1024 * 1024);
+    return [
+      E.div(
+        {
+          class: "episode-details-subtitle-tracks",
+          style: `margin-top: 3rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+        },
+        E.text(LOCALIZED_TEXT.seasonEpisodeStorageFeeTitle),
+      ),
+      E.div(
+        {
+          class: "episode-details-subtitle-tracks",
+          style: `width: 100%; box-sizing: border-box; padding: 1rem; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+        },
+        E.div(
+          {
+            class: "episode-details-subtitle-track-state",
+            style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          },
+          E.text(
+            `${LOCALIZED_TEXT.seasonEpisodeStorageSize}${formatStorageBytes(totalBytes)}`,
+          ),
+        ),
+        E.div(
+          {
+            class: "episode-details-subtitle-track-duration-sec",
+            style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          },
+          E.text(
+            `${LOCALIZED_TEXT.seasonEpisodeStorageEstimatedFee}${formatStorageMonthlyPrice(
+              totalSizeInMiB,
+              this.getNowDate(),
+            )}`,
+          ),
+        ),
+      ),
+    ];
   }
 
   public remove(): void {

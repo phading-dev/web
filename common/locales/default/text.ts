@@ -833,6 +833,15 @@ export default class Text {
   get seasonEpisodeTrackIsDefaultNoValue() {
     return `No`;
   }
+  get seasonEpisodeStorageFeeTitle() {
+    return `Storage summary`;
+  }
+  get seasonEpisodeStorageSize() {
+    return `Size: `;
+  }
+  get seasonEpisodeStorageEstimatedFee() {
+    return `Estimated: `;
+  }
   get pricingGiBMonthRate() {
     return [``, ` / GiB / month`];
   }

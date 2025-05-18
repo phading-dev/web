@@ -14,7 +14,7 @@ import {
   formatUpcomingPremiereTime,
 } from "../../../common/formatter/date";
 import {
-  calculateShowMoneyAndFormat,
+  calculateEstimatedShowMoneyAndFormat,
   formatShowPrice,
 } from "../../../common/formatter/price";
 import {
@@ -311,7 +311,7 @@ export class SeasonDetailsPage extends EventEmitter {
                       style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
                     },
                     E.text(
-                      `${formatSecondsAsHHMMSS(Math.round(continueTimeMs / 1000))} (${calculateShowMoneyAndFormat(seasonDetails.grade, continueTimeMs / 1000, nowDate)}) / ${formatSecondsAsHHMMSS(continueEpisode.videoDurationSec)} (${calculateShowMoneyAndFormat(seasonDetails.grade, continueEpisode.videoDurationSec, nowDate)})`,
+                      `${formatSecondsAsHHMMSS(Math.round(continueTimeMs / 1000))} (${calculateEstimatedShowMoneyAndFormat(seasonDetails.grade, continueTimeMs / 1000, nowDate)}) / ${formatSecondsAsHHMMSS(continueEpisode.videoDurationSec)} (${calculateEstimatedShowMoneyAndFormat(seasonDetails.grade, continueEpisode.videoDurationSec, nowDate)})`,
                     ),
                   ),
                 ),
@@ -721,7 +721,7 @@ export class SeasonDetailsPage extends EventEmitter {
                 },
                 E.textRef(continueAtText, `${formatSecondsAsHHMMSS(0)}`),
                 E.text(
-                  ` / ${formatSecondsAsHHMMSS(episode.videoDurationSec)} (${calculateShowMoneyAndFormat(this.seasonDetails.grade, episode.videoDurationSec, nowDate)})`,
+                  ` / ${formatSecondsAsHHMMSS(episode.videoDurationSec)} (${calculateEstimatedShowMoneyAndFormat(this.seasonDetails.grade, episode.videoDurationSec, nowDate)})`,
                 ),
               ),
             )

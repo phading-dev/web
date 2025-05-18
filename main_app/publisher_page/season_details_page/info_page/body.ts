@@ -5,7 +5,7 @@ import {
   formatNegativeTimezoneOffset,
 } from "../../../../common/formatter/date";
 import {
-  calculateShowMoneyAndFormat,
+  calculateEstimatedShowMoneyAndFormat,
   formatShowPrice,
 } from "../../../../common/formatter/price";
 import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
@@ -517,7 +517,7 @@ export class InfoPage extends EventEmitter {
               style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
-              `${LOCALIZED_TEXT.seasonEpisodeDuration}${formatSecondsAsHHMMSS(episode.videoContainer.durationSec)} (${calculateShowMoneyAndFormat(
+              `${LOCALIZED_TEXT.seasonEpisodeDuration}${formatSecondsAsHHMMSS(episode.videoContainer.durationSec)} (${calculateEstimatedShowMoneyAndFormat(
                 this.showGrade,
                 episode.videoContainer.durationSec,
                 this.getNowDate(),

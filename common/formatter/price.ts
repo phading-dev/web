@@ -1,9 +1,8 @@
 import { ENV_VARS } from "../../env_vars";
 import { LOCALIZED_TEXT } from "../locales/localized_text";
-import { ProductID } from "@phading/price";
+import { Price, ProductID } from "@phading/price";
 import { resolvePrice } from "@phading/price_config";
 import { getDollarAmount } from "@phading/price_config/amount_conversion";
-import { calculateMoney } from "@phading/price_config/calculator";
 import { TzDate } from "@selfage/tz_date";
 
 // Here "dollar" means the normal currency unit, while "cent" is the sub-unit. Some currencies don't have sub-units, so we use "cent" as a generic term for the sub-unit.
@@ -12,7 +11,7 @@ export function formatMoney(amount: number, currency: string): string {
   let formatter = new Intl.NumberFormat([navigator.language], {
     style: "currency",
     currency,
-    maximumFractionDigits: 3,
+    maximumFractionDigits: 4,
   });
   return formatter.format(getDollarAmount(amount, currency));
 }
@@ -29,7 +28,7 @@ export function formatAsCent(amount: number, currency: string): string {
     let formatter = new Intl.NumberFormat([navigator.language], {
       style: "currency",
       currency,
-      maximumFractionDigits: 3,
+      maximumFractionDigits: 4,
     });
     return formatter.format(dollarAmount);
   } else {
@@ -40,6 +39,22 @@ export function formatAsCent(amount: number, currency: string): string {
   }
 }
 
+// No rounding, comparing to calculateMoney in "@phading/price_config/calculator". Rounding will be done in the formatter.
+export function calculateEstimatedMoney(
+  productId: ProductID,
+  quantity: number,
+  monthStr: string,
+): {
+  amount: number;
+  price: Price;
+} {
+  let price = resolvePrice(productId, ENV_VARS.defaultCurrency, monthStr);
+  return {
+    amount: (price.amount * quantity) / price.divideBy,
+    price,
+  };
+}
+
 export function formatShowPriceShortened(
   showGrade: number,
   date: Date,
@@ -48,10 +63,12 @@ export function formatShowPriceShortened(
     date,
     ENV_VARS.timezoneNegativeOffset,
   ).toLocalMonthISOString();
-  let price = resolvePrice(ProductID.SHOW, ENV_VARS.defaultCurrency, month);
   let quantityHourInSeconds = 3600;
-  let amount =
-    (showGrade * price.amount * quantityHourInSeconds) / price.divideBy;
+  let { amount, price } = calculateEstimatedMoney(
+    ProductID.SHOW,
+    showGrade * quantityHourInSeconds,
+    month,
+  );
   return `${LOCALIZED_TEXT.pricingHourRateShortened[0]}${formatAsCent(amount, price.currency)}${LOCALIZED_TEXT.pricingHourRateShortened[1]}`;
 }
 
@@ -60,14 +77,16 @@ export function formatShowPrice(showGrade: number, date: Date): string {
     date,
     ENV_VARS.timezoneNegativeOffset,
   ).toLocalMonthISOString();
-  let price = resolvePrice(ProductID.SHOW, ENV_VARS.defaultCurrency, month);
   let quantityHourInSeconds = 3600;
-  let amount =
-    (showGrade * price.amount * quantityHourInSeconds) / price.divideBy;
+  let { amount, price } = calculateEstimatedMoney(
+    ProductID.SHOW,
+    showGrade * quantityHourInSeconds,
+    month,
+  );
   return `${LOCALIZED_TEXT.pricingHourRate[0]}${formatAsCent(amount, price.currency)}${LOCALIZED_TEXT.pricingHourRate[1]}`;
 }
 
-export function calculateShowMoneyAndFormat(
+export function calculateEstimatedShowMoneyAndFormat(
   showGrade: number,
   seconds: number,
   date: Date,
@@ -76,33 +95,40 @@ export function calculateShowMoneyAndFormat(
     date,
     ENV_VARS.timezoneNegativeOffset,
   ).toLocalMonthISOString();
-  let { amount, price } = calculateMoney(
+  let { amount, price } = calculateEstimatedMoney(
     ProductID.SHOW,
-    ENV_VARS.defaultCurrency,
-    month,
     showGrade * seconds,
+    month,
   );
   return formatMoney(amount, price.currency);
 }
 
-export function formatStoragePrice(date: Date): string {
+export function formatStorageUnitPrice(date: Date): string {
   let month = TzDate.fromDate(
     date,
     ENV_VARS.timezoneNegativeOffset,
   ).toLocalMonthISOString();
-  let price = resolvePrice(ProductID.STORAGE, ENV_VARS.defaultCurrency, month);
   let quantityGiBMonthInMiBHour = 1024 * 30 * 24;
-  return `${LOCALIZED_TEXT.pricingGiBMonthRate[0]}${formatMoney((price.amount * quantityGiBMonthInMiBHour) / price.divideBy, price.currency)}${LOCALIZED_TEXT.pricingGiBMonthRate[1]}`;
+  let { amount, price } = calculateEstimatedMoney(
+    ProductID.STORAGE,
+    quantityGiBMonthInMiBHour,
+    month,
+  );
+  return `${LOCALIZED_TEXT.pricingGiBMonthRate[0]}${formatMoney(amount, price.currency)}${LOCALIZED_TEXT.pricingGiBMonthRate[1]}`;
 }
 
-export function formatStorageEstimatedPrice(mibs: number, date: Date): string {
+export function formatStorageMonthlyPrice(mibs: number, date: Date): string {
   let month = TzDate.fromDate(
     date,
     ENV_VARS.timezoneNegativeOffset,
   ).toLocalMonthISOString();
-  let price = resolvePrice(ProductID.STORAGE, ENV_VARS.defaultCurrency, month);
   let quantityMonthInMiBHour = mibs * 30 * 24;
-  return `${LOCALIZED_TEXT.pricingMonthRate[0]}${formatMoney((price.amount * quantityMonthInMiBHour) / price.divideBy, price.currency)}${LOCALIZED_TEXT.pricingMonthRate[1]}`;
+  let { amount, price } = calculateEstimatedMoney(
+    ProductID.STORAGE,
+    quantityMonthInMiBHour,
+    month,
+  );
+  return `${LOCALIZED_TEXT.pricingMonthRate[0]}${formatMoney(amount, price.currency)}${LOCALIZED_TEXT.pricingMonthRate[1]}`;
 }
 
 export function formatUploadPrice(date: Date): string {
@@ -110,7 +136,11 @@ export function formatUploadPrice(date: Date): string {
     date,
     ENV_VARS.timezoneNegativeOffset,
   ).toLocalMonthISOString();
-  let price = resolvePrice(ProductID.UPLOAD, ENV_VARS.defaultCurrency, month);
   let quantityGiBInMiB = 1024;
-  return `${LOCALIZED_TEXT.pricingGiBRate[0]}${formatMoney((price.amount * quantityGiBInMiB) / price.divideBy, price.currency)}${LOCALIZED_TEXT.pricingGiBRate[1]}`;
+  let { amount, price } = calculateEstimatedMoney(
+    ProductID.UPLOAD,
+    quantityGiBInMiB,
+    month,
+  );
+  return `${LOCALIZED_TEXT.pricingGiBRate[0]}${formatMoney(amount, price.currency)}${LOCALIZED_TEXT.pricingGiBRate[1]}`;
 }

@@ -1,3 +1,4 @@
+import "../../../../../dev/env";
 import video = require("../common/test_data/two_audios_two_subs.m3u8");
 import path = require("path");
 import { normalizeBody } from "../../../../../common/normalize_body";
@@ -52,8 +53,11 @@ TEST_RUNNER.run({
             },
           },
         } as GetEpisodeResponse;
-        this.cut = new InfoPage(serviceClientMock, "season1", "episode1", () =>
-          new Date("2023-10-01T00:00:00Z").getTime(),
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
         );
 
         // Execute
@@ -161,8 +165,11 @@ TEST_RUNNER.run({
             },
           },
         } as GetEpisodeResponse;
-        this.cut = new InfoPage(serviceClientMock, "season1", "episode1", () =>
-          new Date("2023-10-01T00:00:00Z").getTime(),
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
         );
 
         // Execute
@@ -226,8 +233,11 @@ TEST_RUNNER.run({
             },
           },
         } as GetEpisodeResponse;
-        this.cut = new InfoPage(serviceClientMock, "season1", "episode1", () =>
-          new Date("2023-10-01T00:00:00Z").getTime(),
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
         );
 
         // Execute
@@ -297,8 +307,11 @@ TEST_RUNNER.run({
             },
           },
         } as GetEpisodeResponse;
-        this.cut = new InfoPage(serviceClientMock, "season1", "episode1", () =>
-          new Date("2023-10-01T00:00:00Z").getTime(),
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
         );
 
         // Execute
@@ -348,8 +361,11 @@ TEST_RUNNER.run({
             },
           },
         } as GetEpisodeResponse;
-        this.cut = new InfoPage(serviceClientMock, "season1", "episode1", () =>
-          new Date("2023-10-01T00:00:00Z").getTime(),
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
         );
 
         // Execute
@@ -408,8 +424,11 @@ TEST_RUNNER.run({
             },
           },
         } as GetEpisodeResponse;
-        this.cut = new InfoPage(serviceClientMock, "season1", "episode1", () =>
-          new Date("2023-10-01T00:00:00Z").getTime(),
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
         );
 
         // Execute
@@ -466,7 +485,7 @@ TEST_RUNNER.run({
                 {
                   durationSec: 3600,
                   resolution: "1920x1080",
-                  totalBytes: 12345,
+                  totalBytes: 123,
                   staging: {
                     toAdd: true,
                   },
@@ -474,7 +493,7 @@ TEST_RUNNER.run({
               ],
               audios: [
                 {
-                  totalBytes: 22345,
+                  totalBytes: 223,
                   staging: {
                     toAdd: {
                       name: "English",
@@ -485,7 +504,7 @@ TEST_RUNNER.run({
               ],
               subtitles: [
                 {
-                  totalBytes: 32345,
+                  totalBytes: 334,
                   staging: {
                     toAdd: {
                       name: "English",
@@ -496,8 +515,11 @@ TEST_RUNNER.run({
             },
           },
         } as GetEpisodeResponse;
-        this.cut = new InfoPage(serviceClientMock, "season1", "episode1", () =>
-          new Date("2023-10-01T00:00:00Z").getTime(),
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
         );
 
         // Execute
@@ -582,7 +604,7 @@ TEST_RUNNER.run({
         // Verify
         assertThat(
           editAudioTrack.totalBytes,
-          eq(22345),
+          eq(223),
           "editAudioTrack.totalBytes",
         );
 
@@ -599,7 +621,7 @@ TEST_RUNNER.run({
         // Verify
         assertThat(
           editSubtitleTrack.totalBytes,
-          eq(32345),
+          eq(334),
           "editSubtitleTrack.totalBytes",
         );
       }
@@ -656,8 +678,11 @@ TEST_RUNNER.run({
             },
           },
         } as GetEpisodeResponse;
-        this.cut = new InfoPage(serviceClientMock, "season1", "episode1", () =>
-          new Date("2023-10-01T00:00:00Z").getTime(),
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
         );
 
         // Execute
@@ -734,8 +759,11 @@ TEST_RUNNER.run({
             },
           },
         } as GetEpisodeResponse;
-        this.cut = new InfoPage(serviceClientMock, "season1", "episode1", () =>
-          new Date("2023-10-01T00:00:00Z").getTime(),
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
         );
 
         // Execute
@@ -811,13 +839,13 @@ TEST_RUNNER.run({
                 {
                   durationSec: 3600,
                   resolution: "1920x1080",
-                  totalBytes: 12345,
+                  totalBytes: 1234500,
                   committed: true,
                 },
               ],
               audios: [
                 {
-                  totalBytes: 22345,
+                  totalBytes: 2234500,
                   committed: {
                     name: "English",
                     isDefault: true,
@@ -826,7 +854,7 @@ TEST_RUNNER.run({
               ],
               subtitles: [
                 {
-                  totalBytes: 32345,
+                  totalBytes: 3234500,
                   committed: {
                     name: "English",
                   },
@@ -835,8 +863,11 @@ TEST_RUNNER.run({
             },
           },
         } as GetEpisodeResponse;
-        this.cut = new InfoPage(serviceClientMock, "season1", "episode1", () =>
-          new Date("2023-10-01T00:00:00Z").getTime(),
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
         );
 
         // Execute
@@ -984,8 +1015,11 @@ TEST_RUNNER.run({
             },
           },
         } as GetEpisodeResponse;
-        this.cut = new InfoPage(serviceClientMock, "season1", "episode1", () =>
-          new Date("2023-10-01T00:00:00Z").getTime(),
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
         );
 
         // Execute
@@ -1068,7 +1102,7 @@ TEST_RUNNER.run({
                 {
                   durationSec: 3600,
                   resolution: "1920x1080",
-                  totalBytes: 12345,
+                  totalBytes: 123450000,
                   committed: true,
                   staging: {
                     toDelete: true,
@@ -1077,7 +1111,7 @@ TEST_RUNNER.run({
                 {
                   durationSec: 7000,
                   resolution: "1280x720",
-                  totalBytes: 12345,
+                  totalBytes: 223450000,
                   staging: {
                     toAdd: true,
                   },
@@ -1085,7 +1119,7 @@ TEST_RUNNER.run({
               ],
               audios: [
                 {
-                  totalBytes: 22345,
+                  totalBytes: 323450000,
                   committed: {
                     name: "English",
                     isDefault: true,
@@ -1098,7 +1132,7 @@ TEST_RUNNER.run({
                   },
                 },
                 {
-                  totalBytes: 23456,
+                  totalBytes: 434560000,
                   staging: {
                     toAdd: {
                       name: "Chinese",
@@ -1109,7 +1143,7 @@ TEST_RUNNER.run({
               ],
               subtitles: [
                 {
-                  totalBytes: 32345,
+                  totalBytes: 523450000,
                   committed: {
                     name: "English",
                   },
@@ -1120,7 +1154,7 @@ TEST_RUNNER.run({
                   },
                 },
                 {
-                  totalBytes: 34567,
+                  totalBytes: 645670000,
                   staging: {
                     toAdd: {
                       name: "Chinese",
@@ -1131,8 +1165,11 @@ TEST_RUNNER.run({
             },
           },
         } as GetEpisodeResponse;
-        this.cut = new InfoPage(serviceClientMock, "season1", "episode1", () =>
-          new Date("2023-10-01T00:00:00Z").getTime(),
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
         );
 
         // Execute

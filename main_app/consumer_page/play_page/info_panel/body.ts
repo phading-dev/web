@@ -4,7 +4,7 @@ import {
   formatUpcomingPremiereTime,
 } from "../../../../common/formatter/date";
 import {
-  calculateShowMoneyAndFormat,
+  calculateEstimatedShowMoneyAndFormat,
   formatShowPrice,
 } from "../../../../common/formatter/price";
 import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
@@ -289,7 +289,7 @@ export class InfoPanel extends EventEmitter {
                       style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
                     },
                     E.text(
-                      `${formatSecondsAsHHMMSS(continueTimeMs / 1000)} / ${formatSecondsAsHHMMSS(this.nextEpisode.videoDurationSec)} (${calculateShowMoneyAndFormat(this.seasonSummary.grade, this.nextEpisode.videoDurationSec, this.nowDate)})`,
+                      `${formatSecondsAsHHMMSS(continueTimeMs / 1000)} / ${formatSecondsAsHHMMSS(this.nextEpisode.videoDurationSec)} (${calculateEstimatedShowMoneyAndFormat(this.seasonSummary.grade, this.nextEpisode.videoDurationSec, this.nowDate)})`,
                     ),
                   ),
                 )
@@ -310,7 +310,7 @@ export class InfoPanel extends EventEmitter {
 
   // Don't update too frequently.
   public updateMeterReading(watchedTimeMs: number): void {
-    this.metering.val.textContent = calculateShowMoneyAndFormat(
+    this.metering.val.textContent = calculateEstimatedShowMoneyAndFormat(
       this.seasonSummary.grade,
       Math.round(watchedTimeMs / 1000),
       this.nowDate,
