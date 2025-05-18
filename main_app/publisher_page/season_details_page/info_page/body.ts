@@ -424,24 +424,9 @@ export class InfoPage extends EventEmitter {
     let body = E.div(
       {
         class: "season-details-draft-episode",
-        style: `cursor: pointer; display: flex; flex-flow: column nowrap; gap: .5rem; padding: 1rem; border-bottom: .1rem solid ${SCHEME.neutral1};`,
+        style: `cursor: pointer; display: flex; flex-flow: column nowrap; padding: 1.5rem 1rem; border-bottom: .1rem solid ${SCHEME.neutral1}; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
       },
-      E.div(
-        {
-          class: "season-details-draft-episode-name",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-        },
-        E.text(episode.name),
-      ),
-      E.div(
-        {
-          class: "season-details-draft-episode-version",
-          style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
-        },
-        E.text(
-          `${LOCALIZED_TEXT.seasonEpisodeVersion}${episode.videoContainer.version}`,
-        ),
-      ),
+      E.text(episode.name),
     );
     this.draftEpisodeElements.push(body);
     body.addEventListener("click", () =>

@@ -717,7 +717,7 @@ export default class Text {
     return `Episode name`;
   }
   get seasonEpisodeIndex() {
-    return `Index: `;
+    return [`Index: `, ` of `, ``];
   }
   get seasonEpisodeIndexFooter() {
     return `To solely determine the order of the episodes.`;

@@ -1,3 +1,4 @@
+import video = require("../common/test_data/two_audios_two_subs.m3u8");
 import path = require("path");
 import { normalizeBody } from "../../../../../common/normalize_body";
 import {
@@ -944,9 +945,11 @@ TEST_RUNNER.run({
             state: EpisodeState.PUBLISHED,
             premiereTimeMs: new Date("2023-10-02T00:00:00Z").getTime(),
             episodeIndex: 1,
+            totalPublishedEpisodes: 12,
             videoContainerCached: {
               version: 1,
             },
+            videoUrl: video,
             videoContainer: {
               masterPlaylist: {
                 synced: {
@@ -1050,9 +1053,11 @@ TEST_RUNNER.run({
             state: EpisodeState.PUBLISHED,
             premiereTimeMs: new Date("2023-10-01T00:00:00Z").getTime(),
             episodeIndex: 1,
+            totalPublishedEpisodes: 12,
             videoContainerCached: {
               version: 1,
             },
+            videoUrl: video,
             videoContainer: {
               masterPlaylist: {
                 synced: {
@@ -1169,6 +1174,16 @@ TEST_RUNNER.run({
             __dirname,
             "/info_page_tablet_premiered_pending_tracks_scrolled_diff.png",
           ),
+          {
+            excludedAreas: [
+              {
+                x: 350,
+                y: 70,
+                width: 15,
+                height: 15,
+              },
+            ],
+          },
         );
       }
       public tearDown() {

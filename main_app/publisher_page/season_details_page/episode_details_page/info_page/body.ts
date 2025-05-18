@@ -1,4 +1,5 @@
 import EventEmitter = require("events");
+import Hls from "hls.js";
 import { SCHEME } from "../../../../../common/color_scheme";
 import { formatPremiereTimeLong } from "../../../../../common/formatter/date";
 import { formatSecondsAsHHMMSS } from "../../../../../common/formatter/timestamp";
@@ -143,7 +144,7 @@ export class InfoPage extends EventEmitter {
                         style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
                       },
                       E.text(
-                        `${LOCALIZED_TEXT.seasonEpisodeIndex}${episode.episodeIndex}`,
+                        `${LOCALIZED_TEXT.seasonEpisodeIndex[0]}${episode.episodeIndex}${LOCALIZED_TEXT.seasonEpisodeIndex[1]}${episode.totalPublishedEpisodes}${LOCALIZED_TEXT.seasonEpisodeIndex[2]}`,
                       ),
                     ),
                     E.div(
@@ -185,6 +186,7 @@ export class InfoPage extends EventEmitter {
         }),
         this.eUploadFooter(episode),
         ...this.eCommitBox(episode),
+        ...this.eVideoPlayer(episode),
         ...(episode.videoContainer.videos.length === 0
           ? []
           : [
@@ -627,6 +629,21 @@ export class InfoPage extends EventEmitter {
         `Not handled: ${JSON.stringify(episode.videoContainer.masterPlaylist)}`,
       );
     }
+  }
+
+  private eVideoPlayer(episode: EpisodeDetails): Array<HTMLElement> {
+    if (!episode.videoUrl) {
+      return [];
+    }
+    let video = E.video({
+      class: "episode-details-video-player",
+      style: `margin-top: 2rem; width: 100%; object-fit: contain;`,
+      controls: "true",
+    });
+    let hls = new Hls();
+    hls.loadSource(episode.videoUrl);
+    hls.attachMedia(video);
+    return [video];
   }
 
   private eVideoTrack(videoTrack: VideoTrack): HTMLDivElement {
