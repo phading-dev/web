@@ -18,9 +18,12 @@ import {
   FONT_M,
   FONT_S,
   FONT_WEIGHT_600,
-  ICON_M,
+  ICON_L,
 } from "../../../../common/sizes";
-import { eTextValue, eValuesGroup } from "../../../../common/text_values_group";
+import {
+  eColumnBoxWithArrow,
+  eLabelAndText,
+} from "../../../../common/value_box";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { ENV_VARS } from "../../../../env_vars";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../common/elements";
@@ -51,7 +54,8 @@ export interface InfoPage {
   on(event: "loadedPublishedEpisodes", listener: () => void): this;
 }
 
-// Assumption: Archived seasons don't have cover images and don't have any draft/published episodes. All information is not editable.
+// Assumption:
+//  - Archived seasons don't have cover images and don't have any draft/published episodes. All information is not editable.
 export class InfoPage extends EventEmitter {
   public static create(seasonId: string): InfoPage {
     return new InfoPage(SERVICE_CLIENT, () => new Date(), seasonId);
@@ -78,7 +82,7 @@ export class InfoPage extends EventEmitter {
   ) {
     super();
     this.body = E.div({
-      class: "season-details-page",
+      class: "season-details-info-page",
       style: PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
     });
     this.load();
@@ -100,7 +104,7 @@ export class InfoPage extends EventEmitter {
     this.body.append(
       E.div(
         {
-          class: "season-details-card",
+          class: "season-details-info-card",
           style: `${PAGE_MEDIUM_TOP_DOWN_CARD_STYLE} padding: 2rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
         },
         ...(seasonDetails.state === SeasonState.ARCHIVED
@@ -108,7 +112,7 @@ export class InfoPage extends EventEmitter {
           : [
               assign(
                 this.coverImageButton,
-                eValuesGroup(
+                eColumnBoxWithArrow(
                   [
                     seasonDetails.coverImageUrl
                       ? E.image({
@@ -124,29 +128,27 @@ export class InfoPage extends EventEmitter {
                           E.text(LOCALIZED_TEXT.seasonAddCoverImageLabel),
                         ),
                   ],
-                  true,
-                  "margin-bottom: 2rem; align-self: center; width: 100%; max-width: 44rem; box-sizing: border-box;",
+                  {
+                    customeStyle:
+                      "margin-bottom: 2rem; align-self: center; width: 100%; max-width: 44rem; box-sizing: border-box;",
+                  },
                 ),
               ),
             ]),
         assign(
           this.seasonInfoButton,
-          eValuesGroup(
+          eColumnBoxWithArrow(
             [
-              E.div(
-                {
-                  class: "season-info-title",
-                  style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonInfoLabel),
-              ),
-              eTextValue(LOCALIZED_TEXT.seasonNameLabel, seasonDetails.name),
-              eTextValue(
+              eLabelAndText(LOCALIZED_TEXT.seasonNameLabel, seasonDetails.name),
+              eLabelAndText(
                 LOCALIZED_TEXT.seasonDescriptionLabel,
                 seasonDetails.description,
               ),
             ],
-            seasonDetails.state === SeasonState.ARCHIVED ? false : true,
+            {
+              clickable:
+                seasonDetails.state === SeasonState.ARCHIVED ? false : true,
+            },
           ),
         ),
         E.div({
@@ -154,12 +156,12 @@ export class InfoPage extends EventEmitter {
         }),
         assign(
           this.seasonPricingButton,
-          eValuesGroup(
+          eColumnBoxWithArrow(
             [
               E.div(
                 {
                   class: "season-pricing-title",
-                  style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonPricingLabel),
               ),
@@ -209,18 +211,22 @@ export class InfoPage extends EventEmitter {
                     ),
                   ]),
             ],
-            seasonDetails.state === SeasonState.ARCHIVED ? false : true,
+            {
+              clickable:
+                seasonDetails.state === SeasonState.ARCHIVED ? false : true,
+              linesGap: 1,
+            },
           ),
         ),
         E.div({
           style: `flex: 0 0 auto; height: 2rem;`,
         }),
-        eValuesGroup(
+        eColumnBoxWithArrow(
           [
             E.div(
               {
                 class: "season-details-state-title",
-                style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
+                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
               },
               E.text(LOCALIZED_TEXT.seasonStateLabel),
             ),
@@ -239,7 +245,11 @@ export class InfoPage extends EventEmitter {
               E.text(this.getStateFooterText(seasonDetails.state)),
             ),
           ],
-          seasonDetails.state === SeasonState.ARCHIVED ? false : true,
+          {
+            clickable:
+              seasonDetails.state === SeasonState.ARCHIVED ? false : true,
+            linesGap: 1,
+          },
         ),
         E.div({
           style: `flex: 0 0 auto; height: 2rem;`,
@@ -273,8 +283,8 @@ export class InfoPage extends EventEmitter {
               }),
               E.div(
                 {
-                  class: "season-details-draft-episodes-title",
-                  style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding: 1rem; text-align: center; border-bottom: .1rem solid ${SCHEME.neutral1};`,
+                  class: "season-details-draft-episodes-total",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding: 1rem; text-align: center; border-bottom: .1rem solid ${SCHEME.neutral1};`,
                 },
                 E.text(
                   `${LOCALIZED_TEXT.seasonTotalDraftEpisodes[0]}${draftEpisodes.length}${LOCALIZED_TEXT.seasonTotalDraftEpisodes[1]}`,
@@ -289,14 +299,14 @@ export class InfoPage extends EventEmitter {
                 E.div(
                   {
                     class: "season-details-create-draft-episode-icon",
-                    style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
+                    style: `width: ${ICON_L}rem; height: ${ICON_L}rem;`,
                   },
                   createPlusIcon(SCHEME.neutral1),
                 ),
                 E.div(
                   {
                     class: "season-details-create-draft-episode-label",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                    style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
                   },
                   E.text(LOCALIZED_TEXT.seasonCreateDraftEpisodeLabel),
                 ),
@@ -307,8 +317,8 @@ export class InfoPage extends EventEmitter {
                 : [
                     E.div(
                       {
-                        class: "season-details-published-episodes-title",
-                        style: `margin-top: 2rem; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding: 1rem; text-align: center; border-bottom: .1rem solid ${SCHEME.neutral1};`,
+                        class: "season-details-published-episodes-total",
+                        style: `margin-top: 2rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding: 1rem; text-align: center; border-bottom: .1rem solid ${SCHEME.neutral1};`,
                       },
                       E.text(
                         `${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[0]}${seasonDetails.totalPublishedEpisodes}${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[1]}`,

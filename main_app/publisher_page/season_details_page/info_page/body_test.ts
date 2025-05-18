@@ -59,7 +59,7 @@ class InfoPageServiceClientMock extends WebServiceClientMock {
 }
 
 TEST_RUNNER.run({
-  name: "InfoPageTest",
+  name: "SeasonDetailsInfoPageTest",
   cases: [
     new (class implements TestCase {
       public name =

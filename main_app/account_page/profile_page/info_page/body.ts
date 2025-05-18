@@ -7,7 +7,10 @@ import {
   PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
 } from "../../../../common/page_style";
 import { AVATAR_M, FONT_M } from "../../../../common/sizes";
-import { eTextValue, eValuesGroup } from "../../../../common/text_values_group";
+import {
+  eColumnBoxWithArrow,
+  eLabelAndText,
+} from "../../../../common/value_box";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
 import { newGetAccountAndUserRequest } from "@phading/user_service_interface/web/self/client";
@@ -97,33 +100,42 @@ export class InfoPage extends EventEmitter {
         ),
         assign(
           this.accountInfo,
-          eValuesGroup([
-            eTextValue(
+          eColumnBoxWithArrow([
+            eLabelAndText(
               LOCALIZED_TEXT.naturalNameLabel,
               response.account.naturalName,
             ),
-            eTextValue(
+            eLabelAndText(
               LOCALIZED_TEXT.contactEmailLabel,
               response.account.contactEmail,
             ),
-            eTextValue(
+            eLabelAndText(
               LOCALIZED_TEXT.accountDescriptionLabel,
               response.account.description,
             ),
           ]),
         ),
-        eValuesGroup(
-          [eTextValue(LOCALIZED_TEXT.usernameLabel, response.account.username)],
-          false,
+        eColumnBoxWithArrow(
+          [
+            eLabelAndText(
+              LOCALIZED_TEXT.usernameLabel,
+              response.account.username,
+            ),
+          ],
+          {
+            clickable: false,
+          },
         ),
         assign(
           this.password,
-          eValuesGroup([eTextValue(LOCALIZED_TEXT.passwordLabel, "********")]),
+          eColumnBoxWithArrow([
+            eLabelAndText(LOCALIZED_TEXT.passwordLabel, "********"),
+          ]),
         ),
         assign(
           this.recoveryEmail,
-          eValuesGroup([
-            eTextValue(
+          eColumnBoxWithArrow([
+            eLabelAndText(
               LOCALIZED_TEXT.recoveryEmailLabel,
               response.account.recoveryEmail,
             ),

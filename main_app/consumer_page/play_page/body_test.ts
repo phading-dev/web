@@ -350,7 +350,6 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) =>
           this.cut.player.val.once("metadataLoaded", resolve),
         );
-        // await new Promise((resolve) => setTimeout(resolve, 1000000));
 
         // Verify
         assertThat(

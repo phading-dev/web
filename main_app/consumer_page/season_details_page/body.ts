@@ -23,7 +23,6 @@ import {
 } from "../../../common/formatter/rating";
 import { formatSecondsAsHHMMSS } from "../../../common/formatter/timestamp";
 import {
-  createArrowIcon,
   createBookmarkIcon,
   createCheckmarkIcon,
   createCircularProgressIcon,
@@ -37,7 +36,10 @@ import {
   createStarIcon,
 } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { PAGE_LARGE_TOP_DOWN_CARD_STYLE, PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE } from "../../../common/page_style";
+import {
+  PAGE_LARGE_TOP_DOWN_CARD_STYLE,
+  PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
+} from "../../../common/page_style";
 import { getRootFontSize } from "../../../common/root_font_size";
 import {
   AVATAR_S,
@@ -51,6 +53,7 @@ import {
   ICON_XL,
   LINE_HEIGHT_M,
 } from "../../../common/sizes";
+import { BOX_BORDER_RADIUS, eRowBoxWithArrow } from "../../../common/value_box";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../common/elements";
@@ -351,7 +354,7 @@ export class SeasonDetailsPage extends EventEmitter {
                 }),
                 E.div(
                   {
-                    style: `display: flex; flex-flow: row nowrap; align-items: center; border-radius: .5rem; border: .1rem solid ${SCHEME.neutral1}; `,
+                    style: `display: flex; flex-flow: row nowrap; align-items: center; border-radius: ${BOX_BORDER_RADIUS}rem; border: .1rem solid ${SCHEME.neutral1}; `,
                   },
                   E.divRef(this.ratingOneStarButton, {
                     class: "season-item-rating-one-star-icon",
@@ -428,44 +431,41 @@ export class SeasonDetailsPage extends EventEmitter {
             E.div({
               style: `flex: 0 0 auto; height: 2rem;`,
             }),
-            E.divRef(
+            assign(
               this.publisherButton,
-              {
-                class: "publisher-item",
-                style: `cursor: pointer; max-width: 50rem; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral1}; border-radius: .5rem; padding: 1.5rem 2rem; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
-              },
-              E.image({
-                class: "publisher-item-avatar",
-                style: `flex: 0 0 auto; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: 100%;`,
-                src: publisher.avatarSmallUrl,
-                alt: publisher.naturalName,
-              }),
-              E.div(
+              eRowBoxWithArrow(
+                [
+                  E.image({
+                    class: "publisher-item-avatar",
+                    style: `flex: 0 0 auto; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: 100%;`,
+                    src: publisher.avatarSmallUrl,
+                    alt: publisher.naturalName,
+                  }),
+                  E.div(
+                    {
+                      class: "publisher-item-info",
+                      style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
+                    },
+                    E.div(
+                      {
+                        class: "publisher-item-name",
+                        style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
+                      },
+                      E.text(publisher.naturalName),
+                    ),
+                    E.div(
+                      {
+                        class: "publisher-item-id",
+                        style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+                      },
+                      E.text(`${AT_USER}${publisher.accountId}`),
+                    ),
+                  ),
+                ],
                 {
-                  class: "publisher-item-info",
-                  style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
+                  columnGap: 1,
+                  customeStyle: `max-width: 50rem; box-sizing: border-box;`,
                 },
-                E.div(
-                  {
-                    class: "publisher-item-name",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
-                  },
-                  E.text(publisher.naturalName),
-                ),
-                E.div(
-                  {
-                    class: "publisher-item-id",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
-                  },
-                  E.text(`${AT_USER}${publisher.accountId}`),
-                ),
-              ),
-              E.div(
-                {
-                  class: "text-values-group-edit-icon",
-                  style: `flex: 0 0 auto; height: ${ICON_M}rem; transform: rotate(180deg);`,
-                },
-                createArrowIcon(SCHEME.neutral1),
               ),
             ),
             E.div({

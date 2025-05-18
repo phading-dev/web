@@ -644,9 +644,6 @@ export default class Text {
   get seasonAddCoverImageLabel() {
     return `Add cover image`;
   }
-  get seasonInfoLabel() {
-    return `Basic info`;
-  }
   get seasonPricingLabel() {
     return `Pricing`;
   }
@@ -708,12 +705,129 @@ export default class Text {
     return [``, ` published episodes`];
   }
   get seasonPublishedEpisodeIndex() {
-    return `#`;
+    return `# `;
   }
   get seasonPublishedEpisodesStartFromLabel() {
     return `Latest from #`;
   }
   get seasonAllPublishedEpisodesLoaded() {
     return `All published episodes are listed.`;
+  }
+  get seasonEpisodeNameLabel() {
+    return `Episode name`;
+  }
+  get seasonEpisodeIndex() {
+    return `Index: `;
+  }
+  get seasonEpisodeIndexFooter() {
+    return `To solely determine the order of the episodes.`;
+  }
+  get seasonEpisodeStateLabel() {
+    return `State`;
+  }
+  get seasonEpisodeStateDraft() {
+    return `Draft`;
+  }
+  get seasonEpisodeStateNoVideoFooter() {
+    return `You need to upload and compile a video before publishing.`;
+  }
+  get seasonEpisodeStateDraftFooter() {
+    return `The compiled video is not visible to the public.`;
+  }
+  get seasonEpisodeStatePublished() {
+    return `Published`;
+  }
+  get seasonHasPremieredAt() {
+    return `Has premiered at: `;
+  }
+  get seasonPremieresAt() {
+    return `Scheduled to premiere at: `;
+  }
+  get seasonEpisodeVideoTitle() {
+    return `Video`;
+  }
+  get seasonEpisodeVideoExplanation() {
+    return `A video is compiled with video tracks, audio tracks and subtitle tracks. Once a file is uploaded and processed, you can edit the tracks below and compile the video.`;
+  }
+  get seasonEpisodeFailedProcessingLabel() {
+    return `Failed to process file.`;
+  }
+  get seasonEpisodeVideoCodecRequiresH264() {
+    return `Video codec must be H.264.`;
+  }
+  get seasonEpisodeAudioCodecRequiresAac() {
+    return `Audio codec must be AAC.`;
+  }
+  get seasonEpisodeSubtitleZipFormatInvalid() {
+    return `ZIP file is invalid.`;
+  }
+  get seasonEpisodeVideoUploadLabel() {
+    return `Upload`;
+  }
+  get seasonEpisodeVideoResumeUploadLabel() {
+    return `Resume uploading`;
+  }
+  get seasonEpisodeVideoProcessingLabel() {
+    return `Processing...Please check back later.`;
+  }
+  get seasonEpisodeNoVersion() {
+    return `Compile the first version.`;
+  }
+  get seasonEpisodeCommittedVersionLabel() {
+    return [`Version `, ` compiled.`];
+  }
+  get seasonEpisodeCommittedVersionNoChangesFooter() {
+    return `Everything is up to date.`;
+  }
+  get seasonEpisodeCommittedVersionPendingChangesFooter() {
+    return `There are pending changes to compile.`;
+  }
+  get seasonEpisodeCommittingVersionLabel() {
+    return [`Version `, ` compiling...`];
+  }
+  get seasonEpisodeCommittingFirstVersionLabel() {
+    return `You can publish the episode once compiled.`;
+  }
+  get seasonEpisodeCommittingVersionNoMoreChangesFooter() {
+    return `The old video is still available while the new one is being compiled.`;
+  }
+  get seasonEpisodeCommittingVersionNewPendingChangesFooter() {
+    return `There are new pending changes to compile.`;
+  }
+  get seasonEpisodeVideoTracksTitle() {
+    return `Video tracks`;
+  }
+  get seasonEpisodeTrackStateLabel() {
+    return `State`;
+  }
+  get seasonEpisodeAudioTracksTitle() {
+    return `Audio tracks`;
+  }
+  get seasonEpisodeSubtitleTracksTitle() {
+    return `Subtitle tracks`;
+  }
+  get seasonEpisodeTrackStateCommittedLabel() {
+    return `Added`;
+  }
+  get seasonEpisodeTrackStatePendingLabel() {
+    return `Pending`;
+  }
+  get seasonEpisodeTrackVideoDurationLabel() {
+    return `Duration`;
+  }
+  get seasonEpisodeTrackVideoResolutionLabel() {
+    return `Resolution`;
+  }
+  get seasonEpisodeTrackNameLabel() {
+    return `Name`;
+  }
+  get seasonEpisodeTrackIsDefaultLabel() {
+    return `Default`;
+  }
+  get seasonEpisodeTrackIsDefaultYesValue() {
+    return `Yes`;
+  }
+  get seasonEpisodeTrackIsDefaultNoValue() {
+    return `No`;
   }
 }
