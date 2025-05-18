@@ -1,6 +1,7 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../common/color_scheme";
 import { DateRangeInput, DateType } from "../../../common/date_range_input";
+import { formatMoney } from "../../../common/formatter/price";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
   PAGE_CENTER_CARD_BACKGROUND_STYLE,
@@ -8,6 +9,7 @@ import {
 } from "../../../common/page_style";
 import { FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
+import { ENV_VARS } from "../../../env_vars";
 import {
   newGetPayoutProfileInfoRequest,
   newListPayoutsRequest,
@@ -17,10 +19,8 @@ import { PayoutState } from "@phading/commerce_service_interface/web/payout/payo
 import { MAX_MONTH_RANGE } from "@phading/constants/commerce";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
-import { WebServiceClient } from "@selfage/web_service_client";
 import { TzDate } from "@selfage/tz_date";
-import { ENV_VARS } from "../../../env_vars";
-import { formatMoney } from "../../../common/formatter/price";
+import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface PayoutPage {
   on(event: "listed", listener: () => void): this;
@@ -31,7 +31,7 @@ export class PayoutPage extends EventEmitter {
     return new PayoutPage(SERVICE_CLIENT, () => new Date());
   }
 
-  private static INIT_MONTHS = 5
+  private static INIT_MONTHS = 5;
 
   public body: HTMLDivElement;
   public monthRangeInput = new Ref<DateRangeInput>();
@@ -54,7 +54,10 @@ export class PayoutPage extends EventEmitter {
     let response = await this.serviceClient.send(
       newGetPayoutProfileInfoRequest({}),
     );
-    let nowDate = TzDate.fromDate(this.getNowDate(), ENV_VARS.timezoneNegativeOffset);
+    let nowDate = TzDate.fromDate(
+      this.getNowDate(),
+      ENV_VARS.timezoneNegativeOffset,
+    );
     let endMonth = nowDate.clone().moveToFirstDayOfMonth().addMonths(-1);
     let startMonth = endMonth.clone().addMonths(-PayoutPage.INIT_MONTHS);
     this.body.appendChild(

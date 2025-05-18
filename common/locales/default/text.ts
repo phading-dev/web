@@ -431,10 +431,10 @@ export default class Text {
   get interruptReasonNoConnectivity() {
     return `Video stopped. No internet connection.`;
   }
-  get pricingRateShortened() {
+  get pricingHourRateShortened() {
     return [``, ` / hr`];
   }
-  get pricingRate() {
+  get pricingHourRate() {
     return [``, ` / hour`];
   }
   get currentRate() {
@@ -832,5 +832,14 @@ export default class Text {
   }
   get seasonEpisodeTrackIsDefaultNoValue() {
     return `No`;
+  }
+  get pricingGiBMonthRate() {
+    return [``, ` / GiB / month`];
+  }
+  get pricingMonthRate() {
+    return [``, ` / month`];
+  }
+  get pricingGiBRate() {
+    return [``, ` / GiB`];
   }
 }

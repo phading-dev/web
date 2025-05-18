@@ -56,15 +56,15 @@ TEST_RUNNER.run({
           readings: [
             {
               date: "2023-12-20",
-              watchTimeSecGraded: 3400000,
+              watchTimeSecGraded: 34000000,
             },
             {
               date: "2023-12-10",
-              watchTimeSecGraded: 360000,
+              watchTimeSecGraded: 3600000,
             },
             {
               date: "2023-12-02",
-              watchTimeSecGraded: 32320000,
+              watchTimeSecGraded: 323200000,
             },
           ],
         } as ListMeterReadingsPerDayResponse;
@@ -195,17 +195,17 @@ TEST_RUNNER.run({
             {
               seasonId: "season1",
               watchTimeSec: 3600,
-              watchTimeSecGraded: 36000,
+              watchTimeSecGraded: 360000,
             },
             {
               seasonId: "season2",
               watchTimeSec: 7200000,
-              watchTimeSecGraded: 172000000,
+              watchTimeSecGraded: 1720000000,
             },
             {
               seasonId: "550e8400-e29b-41d4-a716-446655440000",
               watchTimeSec: 500000,
-              watchTimeSecGraded: 122000000,
+              watchTimeSecGraded: 1220000000,
             },
           ],
         } as ListMeterReadingPerSeasonResponse;
@@ -301,11 +301,11 @@ TEST_RUNNER.run({
           readings: [
             {
               date: "2023-11-25",
-              watchTimeSecGraded: 3400000,
+              watchTimeSecGraded: 34000000,
             },
             {
               date: "2023-11-30",
-              watchTimeSecGraded: 13130000,
+              watchTimeSecGraded: 131300000,
             },
           ],
         } as ListMeterReadingsPerDayResponse;
@@ -427,15 +427,15 @@ TEST_RUNNER.run({
           readings: [
             {
               month: "2023-11",
-              watchTimeSecGraded: 431300000,
+              watchTimeSecGraded: 4313000000,
             },
             {
               month: "2023-12",
-              watchTimeSecGraded: 9800000,
+              watchTimeSecGraded: 98000000,
             },
             {
               month: "2023-10",
-              watchTimeSecGraded: 34200000,
+              watchTimeSecGraded: 342000000,
             },
           ],
         } as ListMeterReadingsPerMonthResponse;

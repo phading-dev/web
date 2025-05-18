@@ -101,7 +101,7 @@ let EPISODE_WITH_SEASON_SUMMARY_RESPONSE: GetEpisodeWithSeasonSummaryResponse =
         seasonId: "season1",
         name: "Re-Zero -Starting Life in Another World Season 1",
         coverImageUrl: coverImage,
-        grade: 8,
+        grade: 899,
         totalEpisodes: 25,
       },
       episode: {
@@ -750,7 +750,7 @@ TEST_RUNNER.run({
           EPISODE_WITH_SEASON_SUMMARY_RESPONSE,
           GET_EPISODE_WITH_SEASON_SUMMARY_RESPONSE,
         );
-        response.summary.season.grade = 1000;
+        response.summary.season.grade = 9000;
         serviceClientMock.getEpisodeWithSeasonSummaryResponse = response;
         let nowDate = new Date("2024-02-01T08:00:00Z");
         this.cut = createPlayPage(serviceClientMock, () => nowDate);

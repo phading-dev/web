@@ -105,7 +105,7 @@ TEST_RUNNER.run({
                     coverImageUrl: coverImage,
                     averageRating: 4.5,
                     ratingsCount: 1234,
-                    grade: 90,
+                    grade: 900,
                     totalEpisodes: 2,
                   },
                 };
@@ -996,7 +996,7 @@ TEST_RUNNER.run({
                     grade: 1,
                     nextGrade: {
                       effectiveDate: "2024-02-02",
-                      grade: 10,
+                      grade: 1000,
                     },
                     totalEpisodes: 6,
                   },
@@ -1353,7 +1353,7 @@ TEST_RUNNER.run({
                     coverImageUrl: coverImage,
                     averageRating: 4.88,
                     ratingsCount: 8,
-                    grade: 600,
+                    grade: 69,
                     nextGrade: {
                       effectiveDate: "2024-02-11",
                       grade: 770,
