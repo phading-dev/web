@@ -4,7 +4,11 @@ import {
   formatLastChangeTimeLong,
   formatNegativeTimezoneOffset,
 } from "../../../../common/formatter/date";
-import { formatShowPrice } from "../../../../common/formatter/price";
+import {
+  calculateShowMoneyAndFormat,
+  formatShowPrice,
+} from "../../../../common/formatter/price";
+import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
 import { createPlusIcon } from "../../../../common/icons";
 import { BASIC_INPUT_STYLE } from "../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
@@ -73,6 +77,7 @@ export class InfoPage extends EventEmitter {
   public publishedEpisodeElements = new Array<HTMLDivElement>();
   public listPublishedEpisodeIndexCursorInput = new Ref<HTMLInputElement>();
   private scrollLoadingSection = new Ref<ScrollLoadingSection>();
+  private showGrade: number;
   private listPublishedEpisodeIndexCursor: number;
 
   public constructor(
@@ -101,6 +106,7 @@ export class InfoPage extends EventEmitter {
         }),
       ),
     ]);
+    this.showGrade = seasonDetails.grade;
     this.body.append(
       E.div(
         {
@@ -493,11 +499,30 @@ export class InfoPage extends EventEmitter {
         ),
         E.div(
           {
-            class: "season-details-published-episode-version",
-            style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+            class: "season-details-published-episode-secondary-info",
+            style: `display: flex; flex-flow: row nowrap; gap: 1rem;`,
           },
-          E.text(
-            `${LOCALIZED_TEXT.seasonEpisodeVersion}${episode.videoContainer.version}`,
+          E.div(
+            {
+              class: "season-details-published-episode-version",
+              style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(
+              `${LOCALIZED_TEXT.seasonEpisodeVersion}${episode.videoContainer.version}`,
+            ),
+          ),
+          E.div(
+            {
+              class: "season-details-published-episode-duration",
+              style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(
+              `${LOCALIZED_TEXT.seasonEpisodeDuration}${formatSecondsAsHHMMSS(episode.videoContainer.durationSec)} (${calculateShowMoneyAndFormat(
+                this.showGrade,
+                episode.videoContainer.durationSec,
+                this.getNowDate(),
+              )})`,
+            ),
           ),
         ),
       ),

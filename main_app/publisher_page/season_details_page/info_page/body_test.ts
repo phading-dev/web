@@ -285,6 +285,7 @@ TEST_RUNNER.run({
               index: 10,
               videoContainer: {
                 version: 1,
+                durationSec: 3600,
               },
             },
             {
@@ -293,6 +294,7 @@ TEST_RUNNER.run({
               index: 9,
               videoContainer: {
                 version: 12,
+                durationSec: 3700,
               },
             },
             {
@@ -301,6 +303,7 @@ TEST_RUNNER.run({
               index: 8,
               videoContainer: {
                 version: 20,
+                durationSec: 3800,
               },
             },
           ],
@@ -362,6 +365,7 @@ TEST_RUNNER.run({
               index: 7,
               videoContainer: {
                 version: 5,
+                durationSec: 3900,
               },
             },
             {
@@ -370,6 +374,7 @@ TEST_RUNNER.run({
               index: 6,
               videoContainer: {
                 version: 3,
+                durationSec: 3600,
               },
             },
           ],
@@ -453,6 +458,7 @@ TEST_RUNNER.run({
               index: 5,
               videoContainer: {
                 version: 1,
+                durationSec: 4000,
               },
             },
           ],

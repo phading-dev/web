@@ -701,6 +701,9 @@ export default class Text {
   get seasonEpisodeVersion() {
     return `Version: `;
   }
+  get seasonEpisodeDuration() {
+    return `Duration: `;
+  }
   get seasonTotalPublishedEpisodes() {
     return [``, ` published episodes`];
   }
