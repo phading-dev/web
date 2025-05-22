@@ -81,7 +81,7 @@ TEST_RUNNER.run({
         clientMock.error = new Error("fake error");
 
         // Execute
-        this.cut.inputFormPage.submit();
+        this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.inputFormPage.once("primaryDone", resolve),
         );
@@ -122,7 +122,7 @@ TEST_RUNNER.run({
         this.cut.on("back", () => (isBack = true));
 
         // Execute
-        this.cut.inputFormPage.submit();
+        this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.inputFormPage.once("primaryDone", resolve),
         );

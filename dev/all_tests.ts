@@ -56,6 +56,7 @@ import "../main_app/publisher_page/create_season_page/body_test";
 import "../main_app/publisher_page/list_page/body_test";
 import "../main_app/publisher_page/search_page/body_test";
 import "../main_app/publisher_page/season_details_page/episode_details_page/info_page/body_test";
+import "../main_app/publisher_page/season_details_page/episode_details_page/update_info_page/body_test";
 import "../main_app/publisher_page/season_details_page/episode_details_page/upload_page/cancel_upload_page/body_test";
 import "../main_app/publisher_page/season_details_page/episode_details_page/upload_page/common/file_drop_zone_test";
 import "../main_app/publisher_page/season_details_page/episode_details_page/upload_page/new_upload_page/body_test";

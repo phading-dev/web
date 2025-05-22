@@ -15,14 +15,6 @@ import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 normalizeBody();
 
-function createLongString(length: number) {
-  let stringArray = new Array<string>();
-  for (let i = 0; i < length; i++) {
-    stringArray.push("1");
-  }
-  return stringArray.join("");
-}
-
 TEST_RUNNER.run({
   name: "UpateContactEmailPageTest",
   cases: [
@@ -70,7 +62,7 @@ TEST_RUNNER.run({
         webServiceClientMock.error = new Error("fake error");
 
         // Execute
-        this.cut.inputFormPage.submit();
+        this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.inputFormPage.once("primaryDone", resolve),
         );
@@ -112,7 +104,7 @@ TEST_RUNNER.run({
         this.cut.on("back", () => (isBack = true));
 
         // Execute
-        this.cut.inputFormPage.submit();
+        this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.inputFormPage.once("primaryDone", resolve),
         );
@@ -170,7 +162,7 @@ TEST_RUNNER.run({
         this.cut.on("back", () => (isBack = true));
 
         // Execute
-        this.cut.inputFormPage.submit();
+        this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.inputFormPage.once("primaryDone", resolve),
         );
@@ -228,7 +220,7 @@ TEST_RUNNER.run({
         this.cut.on("back", () => (isBack = true));
 
         // Execute
-        this.cut.inputFormPage.submit();
+        this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.inputFormPage.once("primaryDone", resolve),
         );
@@ -264,7 +256,7 @@ TEST_RUNNER.run({
         document.body.appendChild(this.cut.body);
 
         // Execute
-        this.cut.naturalNameInput.val.value = createLongString(101);
+        this.cut.naturalNameInput.val.value = Array(101).fill("1").join("");
         this.cut.naturalNameInput.val.dispatchInput();
 
         // Verify
@@ -319,7 +311,7 @@ TEST_RUNNER.run({
         document.body.appendChild(this.cut.body);
 
         // Execute
-        this.cut.emailInput.val.value = createLongString(101);
+        this.cut.emailInput.val.value = Array(101).fill("1").join("");
         this.cut.emailInput.val.dispatchInput();
 
         // Verify
@@ -354,7 +346,7 @@ TEST_RUNNER.run({
         document.body.appendChild(this.cut.body);
 
         // Execute
-        this.cut.descriptionInput.val.value = createLongString(2001);
+        this.cut.descriptionInput.val.value = Array(2001).fill("1").join("");
         this.cut.descriptionInput.val.dispatchInput();
 
         // Verify

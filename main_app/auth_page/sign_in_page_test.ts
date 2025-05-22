@@ -64,7 +64,7 @@ TEST_RUNNER.run({
         serviceClientMock.error = new Error("fake error");
 
         // Execute
-        this.cut.inputFormPage.submit();
+        this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.inputFormPage.once("primaryDone", resolve),
         );
@@ -83,7 +83,7 @@ TEST_RUNNER.run({
         } as SignInResponse;
 
         // Execute
-        this.cut.inputFormPage.submit();
+        this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.once("signedIn", resolve),
         );

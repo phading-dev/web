@@ -223,7 +223,7 @@ export class InputFormPage<
     this.emit("secondaryDone");
   }
 
-  public submit(): void {
+  public clickPrimaryButton(): void {
     this.primaryButton.val.click();
   }
 

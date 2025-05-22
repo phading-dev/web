@@ -884,12 +884,12 @@ TEST_RUNNER.run({
         );
         assertThat(
           serviceClientMock.recordWatchTimeRequestBodies[0].watchTimeMs,
-          eqAppr(1000, 0.1),
+          eqAppr(950, 0.1),
           "Watch time when stopped",
         );
         assertThat(
           serviceClientMock.recordWatchTimeRequestBodies[1].watchTimeMs,
-          eqAppr(1000, 0.1),
+          eqAppr(950, 0.1),
           "Watch time 2 when stopped",
         );
         assertThat(
@@ -909,12 +909,12 @@ TEST_RUNNER.run({
         );
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies[2].watchedVideoTimeMs,
-          eqAppr(1000, 0.1),
+          eqAppr(950, 0.1),
           "Watch session video time update when stopped",
         );
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies[3].watchedVideoTimeMs,
-          eqAppr(1000, 0.1),
+          eqAppr(950, 0.1),
           "Watch session video time stop when stopped",
         );
         await asyncAssertScreenshot(

@@ -4,6 +4,7 @@ import path from "path";
 import { SCHEME } from "../../../../common/color_scheme";
 import { normalizeBody } from "../../../../common/normalize_body";
 import { setTabletView } from "../../../../common/view_port";
+import { CommentWithAuthor } from "../common/comment_with_author";
 import { CommentsPanel } from "./body";
 import {
   POST_COMMENT,
@@ -117,16 +118,19 @@ TEST_RUNNER.run({
 
         // Execute
         cut.add([
-          ...Array.from({ length: 31 }, (_, i) => ({
-            comment: {
-              content: `Comment number ${i + 1}`,
-              pinnedVideoTimeMs: (i + 5) * 1000,
-            },
-            author: {
-              naturalName: `Author ${i + 1}`,
-              avatarSmallUrl: i % 2 === 0 ? userImage : userImage2,
-            },
-          })),
+          ...Array.from(
+            { length: 31 },
+            (_, i): CommentWithAuthor => ({
+              comment: {
+                content: `Comment number ${i + 1}`,
+                pinnedVideoTimeMs: (i + 5) * 1000,
+              },
+              author: {
+                naturalName: `Author ${i + 1}`,
+                avatarSmallUrl: i % 2 === 0 ? userImage : userImage2,
+              },
+            }),
+          ),
         ]);
 
         // Verify

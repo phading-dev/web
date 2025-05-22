@@ -938,4 +938,13 @@ export default class Text {
   get resumeUploadInstructions() {
     return `Make sure you're resuming with the same file. Or click "cancel" to start a new upload.`;
   }
+  get updateEpisodeInfoTitle() {
+    return `Update episode info`;
+  }
+  get updateEpisodeNameLabel() {
+    return `Name`;
+  }
+  get updateEpisodeNameTooLongError() {
+    return `The name is too long.`;
+  }
 }

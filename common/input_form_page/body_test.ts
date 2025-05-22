@@ -93,7 +93,7 @@ TEST_RUNNER.run({
         this.cut.on("handlePrimarySuccess", () => (primarySuccess = true));
 
         // Execute
-        this.cut.submit();
+        this.cut.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.once("primaryDone", resolve),
         );
@@ -131,7 +131,7 @@ TEST_RUNNER.run({
         response = {};
 
         // Execute
-        this.cut.submit();
+        this.cut.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.once("primaryDone", resolve),
         );

@@ -72,7 +72,7 @@ TEST_RUNNER.run({
         webServiceClientMock.error = new Error("Fake error");
 
         // Execute
-        this.cut.inputFormPage.submit();
+        this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.inputFormPage.once("primaryDone", () => resolve()),
         );
@@ -113,7 +113,7 @@ TEST_RUNNER.run({
         } as SignUpResponse;
 
         // Execute
-        this.cut.inputFormPage.submit();
+        this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.inputFormPage.once("primaryDone", () => resolve()),
         );
@@ -135,7 +135,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.usernameInput.val.value = "my_new_username";
         this.cut.usernameInput.val.dispatchInput();
-        this.cut.inputFormPage.submit();
+        this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.once("signedUp", resolve),
         );
