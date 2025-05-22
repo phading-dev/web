@@ -851,4 +851,91 @@ export default class Text {
   get pricingGiBRate() {
     return [``, ` / GiB`];
   }
+  get dragAndDropFile() {
+    return `Drag and drop a file here`;
+  }
+  get dragAndDropFileOr() {
+    return `or`;
+  }
+  get clickToSelectFile() {
+    return `Click to select a file`;
+  }
+  get startNewUploadTitle() {
+    return `Start a new upload`;
+  }
+  get fileTypeNotAccepted() {
+    return [`File type not accepted. Only accepting `, `.`];
+  }
+  get fileSizeTooLarge() {
+    return [`File is too large. The maximum file size is `, `.`];
+  }
+  get fileTypeJoinComma() {
+    return `, `;
+  }
+  get fileTypesJoinOr() {
+    return ` or `;
+  }
+  get newUploadInstructions() {
+    return [`Either a video file`, `, an audio file`, ` or zipped subtitles`, `.`];
+  }
+  get videoFileTipOne() {
+    return [
+      `• You can add more video/audio tracks by uploading a `,
+      ` file with zero or one video track and zero or more audio tracks.`,
+    ];
+  }
+  get videoFileTipTwo() {
+    return `• Each video track must use H.264 codec.`;
+  }
+  get videoFileTipThree() {
+    return `• Each audio track must use AAC codec.`;
+  }
+  get videoFileTipFour() {
+    return `• No re-encoding. The quality of the video/audio tracks will be preserved and only processed to be better streamed online.`;
+  }
+  get audioFileTipOne() {
+    return [
+      `• You can add more audio tracks by uploading a `,
+      ` file with one or more audio tracks.`,
+    ];
+  }
+  get audioFileTipTwo() {
+    return `• Each audio track must use AAC codec.`;
+  }
+  get audioFileTipThree() {
+    return `• No re-encoding. The quality of the audio tracks will be preserved and only processed to be better streamed online.`;
+  }
+  get subtitlesFileTipOne() {
+    return [
+      `• You can add more subtitle tracks by uploading a `,
+      ` file containg one or more subtitle files.`,
+    ];
+  }
+  get subtitlesFileTipTwo() {
+    return `• Each subtitle file must be in VTT format.`;
+  }
+  get uploadPricing() {
+    return [`Fees: `, ` uploaded and processed. `, ` stored.`];
+  }
+  get uploadingTitle() {
+    return `Uploading`;
+  }
+  get progressResumingTip() {
+    return `Progress will be saved and can be resumed later.`;
+  }
+  get uploadingPreparingTip() {
+    return `Preparing...`;
+  }
+  get uploadingEstimatedFees() {
+    return [`Estimated fees: `, ` upon completion. `, ` for storage.`];
+  }
+  get uploadingNotSameFileError() {
+    return `Selected file is not the same one being uploaded.`;
+  }
+  get resumeUploadTitle() {
+    return `Resume uploading`;
+  }
+  get resumeUploadInstructions() {
+    return `Make sure you're resuming with the same file. Or click "cancel" to start a new upload.`;
+  }
 }

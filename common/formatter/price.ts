@@ -103,7 +103,7 @@ export function calculateEstimatedShowMoneyAndFormat(
   return formatMoney(amount, price.currency);
 }
 
-export function formatStorageUnitPrice(date: Date): string {
+export function formatStoragePrice(date: Date): string {
   let month = TzDate.fromDate(
     date,
     ENV_VARS.timezoneNegativeOffset,
@@ -117,12 +117,15 @@ export function formatStorageUnitPrice(date: Date): string {
   return `${LOCALIZED_TEXT.pricingGiBMonthRate[0]}${formatMoney(amount, price.currency)}${LOCALIZED_TEXT.pricingGiBMonthRate[1]}`;
 }
 
-export function formatStorageMonthlyPrice(mibs: number, date: Date): string {
+export function formatStorageEstimatedMonthlyPrice(
+  bytes: number,
+  date: Date,
+): string {
   let month = TzDate.fromDate(
     date,
     ENV_VARS.timezoneNegativeOffset,
   ).toLocalMonthISOString();
-  let quantityMonthInMiBHour = mibs * 30 * 24;
+  let quantityMonthInMiBHour = (bytes / 1024 / 1024) * 30 * 24;
   let { amount, price } = calculateEstimatedMoney(
     ProductID.STORAGE,
     quantityMonthInMiBHour,
@@ -143,4 +146,20 @@ export function formatUploadPrice(date: Date): string {
     month,
   );
   return `${LOCALIZED_TEXT.pricingGiBRate[0]}${formatMoney(amount, price.currency)}${LOCALIZED_TEXT.pricingGiBRate[1]}`;
+}
+
+export function calculateEstimatedUploadMoneyAndFormat(
+  bytes: number,
+  date: Date,
+): string {
+  let month = TzDate.fromDate(
+    date,
+    ENV_VARS.timezoneNegativeOffset,
+  ).toLocalMonthISOString();
+  let { amount, price } = calculateEstimatedMoney(
+    ProductID.UPLOAD,
+    bytes / 1024 / 1024,
+    month,
+  );
+  return formatMoney(amount, price.currency);
 }

@@ -2,8 +2,8 @@ import EventEmitter = require("events");
 import Hls from "hls.js";
 import { SCHEME } from "../../../../../common/color_scheme";
 import { formatPremiereTimeLong } from "../../../../../common/formatter/date";
-import { formatStorageMonthlyPrice } from "../../../../../common/formatter/price";
-import { formatStorageBytes } from "../../../../../common/formatter/quantity";
+import { formatStorageEstimatedMonthlyPrice } from "../../../../../common/formatter/price";
+import { formatBytesShort } from "../../../../../common/formatter/quantity";
 import { formatSecondsAsHHMMSS } from "../../../../../common/formatter/timestamp";
 import {
   SimpleIconButton,
@@ -460,10 +460,7 @@ export class InfoPage extends EventEmitter {
           },
         ),
       );
-    } else if (
-      videoContainer.processing.media?.uploading ||
-      videoContainer.processing.subtitle?.uploading
-    ) {
+    } else if (videoContainer.processing.uploading) {
       return assign(
         this.episodeUploadButton,
         eBox(
@@ -489,8 +486,8 @@ export class InfoPage extends EventEmitter {
         ),
       );
     } else if (
-      videoContainer.processing.media?.formatting ||
-      videoContainer.processing.subtitle?.formatting
+      videoContainer.processing.mediaFormatting ||
+      videoContainer.processing.subtitleFormatting
     ) {
       return eBox(
         [
@@ -889,7 +886,6 @@ export class InfoPage extends EventEmitter {
       0,
     );
     let totalBytes = videoBytes + audioBytes + subtitleBytes;
-    let totalSizeInMiB = totalBytes / (1024 * 1024);
     return [
       E.div(
         {
@@ -909,7 +905,7 @@ export class InfoPage extends EventEmitter {
             style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(
-            `${LOCALIZED_TEXT.seasonEpisodeStorageSize}${formatStorageBytes(totalBytes)}`,
+            `${LOCALIZED_TEXT.seasonEpisodeStorageSize}${formatBytesShort(totalBytes)}`,
           ),
         ),
         E.div(
@@ -918,8 +914,8 @@ export class InfoPage extends EventEmitter {
             style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(
-            `${LOCALIZED_TEXT.seasonEpisodeStorageEstimatedFee}${formatStorageMonthlyPrice(
-              totalSizeInMiB,
+            `${LOCALIZED_TEXT.seasonEpisodeStorageEstimatedFee}${formatStorageEstimatedMonthlyPrice(
+              totalBytes,
               this.getNowDate(),
             )}`,
           ),

@@ -26,3 +26,36 @@ export class PageNavigator<Page, Args = any> {
     this.goTo = () => {};
   }
 }
+
+export class TabNavigator<Tab, Args = any> {
+  private currentTab: Tab;
+  private tabsToCreate: Map<Tab, (args?: Args) => void> = new Map();
+  private tabsToRemove: Map<Tab, () => void> = new Map();
+  private tabsToUpdate: Map<Tab, (args?: Args) => void> = new Map();
+
+  public set(
+    tab: Tab,
+    onCreate: (args?: Args) => void,
+    onRemove: () => void,
+    onUpdate?: (args?: Args) => void,
+  ): void {
+    this.tabsToCreate.set(tab, onCreate);
+    this.tabsToRemove.set(tab, onRemove);
+    this.tabsToUpdate.set(tab, onUpdate);
+  }
+
+  public goTo(tab: Tab, args?: Args): void {
+    if (this.currentTab !== tab) {
+      this.tabsToRemove.get(this.currentTab)?.();
+      this.currentTab = tab;
+      this.tabsToCreate.get(this.currentTab)?.(args);
+    } else {
+      this.tabsToUpdate.get(this.currentTab)?.(args);
+    }
+  }
+
+  public remove(): void {
+    this.tabsToRemove.get(this.currentTab)?.();
+    this.goTo = () => {};
+  }
+}

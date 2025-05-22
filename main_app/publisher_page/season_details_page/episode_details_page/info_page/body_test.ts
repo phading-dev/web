@@ -155,9 +155,7 @@ TEST_RUNNER.run({
                 },
               },
               processing: {
-                media: {
-                  uploading: {},
-                },
+                uploading: {},
               },
               videos: [],
               audios: [],
@@ -204,80 +202,6 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "TabletView_SubtitleUploading";
-      private cut: InfoPage;
-      public async execute() {
-        // Prepare
-        await setTabletView();
-        let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response = {
-          episode: {
-            seasonName: "Re-Zero: Starting Life in Another World",
-            episodeName:
-              "The End of the Beginning and the Beginning of the End",
-            state: EpisodeState.DRAFT,
-            videoContainer: {
-              masterPlaylist: {
-                synced: {
-                  version: 0,
-                },
-              },
-              processing: {
-                subtitle: {
-                  uploading: {},
-                },
-              },
-              videos: [],
-              audios: [],
-              subtitles: [],
-            },
-          },
-        } as GetEpisodeResponse;
-        this.cut = new InfoPage(
-          serviceClientMock,
-          () => new Date("2023-10-01T00:00:00Z"),
-          "season1",
-          "episode1",
-        );
-
-        // Execute
-        document.body.append(this.cut.body);
-        await new Promise<void>((resolve) =>
-          this.cut.once("loaded", () => resolve()),
-        );
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/info_page_tablet_draft_uploading_subtitle.png",
-          ),
-          path.join(__dirname, "/golden/info_page_tablet_draft_uploading.png"),
-          path.join(
-            __dirname,
-            "/info_page_tablet_draft_uploading_subtitle_diff.png",
-          ),
-        );
-
-        // Prepare
-        let upload: EpisodeDetails;
-        this.cut.on("upload", (episode) => (upload = episode));
-
-        // Execute
-        this.cut.episodeUploadButton.val.click();
-
-        // Verify
-        assertThat(
-          upload.episodeName,
-          eq("The End of the Beginning and the Beginning of the End"),
-          "upload.episodeName",
-        );
-      }
-      public tearDown() {
-        this.cut.remove();
-      }
-    })(),
-    new (class implements TestCase {
       public name = "TabletView_MediaFormatting";
       private cut: InfoPage;
       public async execute() {
@@ -297,9 +221,7 @@ TEST_RUNNER.run({
                 },
               },
               processing: {
-                media: {
-                  formatting: {},
-                },
+                mediaFormatting: {},
               },
               videos: [],
               audios: [],
@@ -351,9 +273,7 @@ TEST_RUNNER.run({
                 },
               },
               processing: {
-                subtitle: {
-                  formatting: {},
-                },
+                subtitleFormatting: {},
               },
               videos: [],
               audios: [],

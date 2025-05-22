@@ -381,7 +381,10 @@ export function createSecurityIcon(color: string): SVGSVGElement {
   );
 }
 
-export function createLoadingIcon(color: string): SVGSVGElement {
+export function createLoadingIcon(
+  color: string,
+  withAnimation: boolean = true,
+): SVGSVGElement {
   let svg = E.svg(
     {
       class: "load-icon",
@@ -392,20 +395,23 @@ export function createLoadingIcon(color: string): SVGSVGElement {
       d: `M186.6 50 A100 100 0 1 1 100 0`,
     }),
   );
-  svg.animate(
-    [
+  if (withAnimation) {
+    // For screenshot testing.
+    svg.animate(
+      [
+        {
+          transform: "rotate(0deg)",
+        },
+        {
+          transform: "rotate(360deg)",
+        },
+      ],
       {
-        transform: "rotate(0deg)",
+        duration: 1000,
+        iterations: Infinity,
       },
-      {
-        transform: "rotate(360deg)",
-      },
-    ],
-    {
-      duration: 1000,
-      iterations: Infinity,
-    },
-  );
+    );
+  }
   return svg;
 }
 

@@ -16,7 +16,7 @@ export function formatWatchTimeSeconds(seconds: number): string {
   return WATCH_TIME_SECONDS_FORMATTER.format(seconds);
 }
 
-export function formatStorageBytes(bytes: number): string {
+export function formatBytesShort(bytes: number): string {
   let value = bytes;
   if (value >= 1024) {
     value /= 1024; // KiB
