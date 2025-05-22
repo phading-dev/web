@@ -876,7 +876,12 @@ export default class Text {
     return ` or `;
   }
   get newUploadInstructions() {
-    return [`Either a video file`, `, an audio file`, ` or zipped subtitles`, `.`];
+    return [
+      `Either a video file`,
+      `, an audio file`,
+      ` or zipped subtitles`,
+      `.`,
+    ];
   }
   get videoFileTipOne() {
     return [
@@ -946,5 +951,17 @@ export default class Text {
   }
   get updateEpisodeNameTooLongError() {
     return `The name is too long.`;
+  }
+  get updateEpisodeIndexTitle() {
+    return `Update episode index`;
+  }
+  get updateEpisodeIndexLabel() {
+    return [`Index (from `, ` to `, `)`];
+  }
+  get updateEpisodeIndexError() {
+    return `Invalid index.`;
+  }
+  get updateEpisodeIndexOutOfRangeError() {
+    return `Index is out of range.`;
   }
 }

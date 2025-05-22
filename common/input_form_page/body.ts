@@ -223,11 +223,18 @@ export class InputFormPage<
     this.emit("secondaryDone");
   }
 
+  public remove(): void {
+    this.body.remove();
+  }
+
+  // For testing purposes
   public clickPrimaryButton(): void {
     this.primaryButton.val.click();
   }
-
-  public remove(): void {
-    this.body.remove();
+  public clickSecondaryButton(): void {
+    this.secondaryBlockingButton.val.click();
+  }
+  public clickBackButton(): void {
+    this.backButton.val.click();
   }
 }

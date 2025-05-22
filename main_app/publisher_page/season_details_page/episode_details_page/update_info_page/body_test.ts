@@ -18,7 +18,8 @@ TEST_RUNNER.run({
   name: "EpisodeDetailsUpdateInfoPage",
   cases: [
     new (class implements TestCase {
-      public name = "Default_Empty_TooLong_Valid_SubmitError_SubmitSuccess";
+      public name =
+        "Default_Empty_TooLong_Valid_SubmitError_SubmitSuccess_Back";
       private cut: UpdateInfoPage;
       public async execute() {
         // Prepare
@@ -111,6 +112,8 @@ TEST_RUNNER.run({
 
         // Prepare
         serviceClientMock.error = undefined;
+        let back = false;
+        this.cut.on("back", () => (back = true));
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
@@ -119,11 +122,21 @@ TEST_RUNNER.run({
         );
 
         // Verify
+        assertThat(back, eq(true), "back when success");
         await asyncAssertScreenshot(
           path.join(__dirname, "/update_info_page_success.png"),
-          path.join(__dirname, "/golden/update_info_page_success.png"),
+          path.join(__dirname, "/golden/update_info_page_valid.png"),
           path.join(__dirname, "/update_info_page_success_diff.png"),
         );
+
+        // Prepare
+        back = false;
+
+        // Execute
+        this.cut.inputFormPage.clickBackButton();
+
+        // Verify
+        assertThat(back, eq(true), "back when clicked");
       }
       public tearDown() {
         this.cut.remove();

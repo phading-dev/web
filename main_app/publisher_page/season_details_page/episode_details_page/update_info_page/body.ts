@@ -26,13 +26,13 @@ export class UpdateInfoPage extends EventEmitter {
 
   public constructor(
     private serviceClient: WebServiceClient,
-    private seasonId: string,
-    private episodeId: string,
+    seasonId: string,
+    episodeId: string,
     episode: EpisodeDetails,
   ) {
     super();
-    this.request.seasonId = this.seasonId;
-    this.request.episodeId = this.episodeId;
+    this.request.seasonId = seasonId;
+    this.request.episodeId = episodeId;
 
     this.inputFormPage = new InputFormPage<UpdateEpisodeNameResponse>(
       LOCALIZED_TEXT.updateEpisodeInfoTitle,
