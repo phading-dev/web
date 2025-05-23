@@ -47,7 +47,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.episodeIndexInput.val.value = "6";
-        this.cut.episodeIndexInput.val.dispatchInput();
+        this.cut.episodeIndexInput.val.dispatchChange();
 
         // Verify
         await asyncAssertScreenshot(
@@ -58,7 +58,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.episodeIndexInput.val.value = "0";
-        this.cut.episodeIndexInput.val.dispatchInput();
+        this.cut.episodeIndexInput.val.dispatchChange();
 
         // Verify
         await asyncAssertScreenshot(
@@ -69,7 +69,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.episodeIndexInput.val.value = "";
-        this.cut.episodeIndexInput.val.dispatchInput();
+        this.cut.episodeIndexInput.val.dispatchChange();
 
         // Verify
         await asyncAssertScreenshot(
@@ -80,7 +80,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.episodeIndexInput.val.value = "1";
-        this.cut.episodeIndexInput.val.dispatchInput();
+        this.cut.episodeIndexInput.val.dispatchChange();
 
         // Verify
         await asyncAssertScreenshot(

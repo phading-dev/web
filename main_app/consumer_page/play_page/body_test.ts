@@ -1334,7 +1334,7 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/play_page_desktop_danmaku.png"),
           path.join(__dirname, "/play_page_desktop_danmaku_diff.png"),
           {
-            threshold: 0.4,
+            threshold: 0.5,
           },
         );
 

@@ -24,7 +24,7 @@ TEST_RUNNER.run({
         // Prepare
         await setDesktopView();
         let inputValue: string;
-        let input = TextInputWithErrorMsg.create(
+        let input = new TextInputWithErrorMsg(
           "Input",
           "",
           { type: "text" },
@@ -77,7 +77,7 @@ TEST_RUNNER.run({
 
         // Execute
         input.value = "Joe";
-        input.dispatchInput();
+        input.dispatchChange();
 
         // Verify
         assertThat(inputValue, eq("Joe"), "input value");
@@ -155,7 +155,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setTabletView();
-        let input = TextInputWithErrorMsg.create(
+        let input = new TextInputWithErrorMsg(
           "Input",
           "",
           { type: "text" },
@@ -263,7 +263,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setDesktopView();
-        let input = TextInputWithErrorMsg.create(
+        let input = new TextInputWithErrorMsg(
           "Input",
           "",
           { type: "text" },
@@ -311,7 +311,7 @@ TEST_RUNNER.run({
         let inputs: TextInputWithErrorMsg[] = [];
         for (let i = 0; i < 77; i++) {
           inputs.push(
-            TextInputWithErrorMsg.create(
+            new TextInputWithErrorMsg(
               `Input ${i + 1}`,
               "",
               { type: "text" },

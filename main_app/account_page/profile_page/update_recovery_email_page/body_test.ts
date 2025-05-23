@@ -46,7 +46,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.newRecoveryEmailInput.val.value = createLongString(201);
-        this.cut.newRecoveryEmailInput.val.dispatchInput();
+        this.cut.newRecoveryEmailInput.val.dispatchChange();
         await new Promise<void>((resolve) =>
           this.cut.newRecoveryEmailInput.val.once("validated", resolve),
         );
@@ -69,12 +69,12 @@ TEST_RUNNER.run({
 
         // Prepare
         this.cut.currentPasswordInput.val.value = "current password";
-        this.cut.currentPasswordInput.val.dispatchInput();
+        this.cut.currentPasswordInput.val.dispatchChange();
         await new Promise<void>((resolve) =>
           this.cut.currentPasswordInput.val.once("validated", resolve),
         );
         this.cut.newRecoveryEmailInput.val.value = "new@gmail.com";
-        this.cut.newRecoveryEmailInput.val.dispatchInput();
+        this.cut.newRecoveryEmailInput.val.dispatchChange();
         await new Promise<void>((resolve) =>
           this.cut.newRecoveryEmailInput.val.once("validated", resolve),
         );

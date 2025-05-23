@@ -52,7 +52,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.val.value = createLongString(120);
-        this.cut.naturalNameInput.val.dispatchInput();
+        this.cut.naturalNameInput.val.dispatchChange();
 
         // Verify
         await asyncAssertScreenshot(
@@ -72,7 +72,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.val.value = "First Second";
-        this.cut.naturalNameInput.val.dispatchInput();
+        this.cut.naturalNameInput.val.dispatchChange();
 
         // Verify
         await asyncAssertScreenshot(
@@ -193,7 +193,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.val.value = "First Second";
-        this.cut.naturalNameInput.val.dispatchInput();
+        this.cut.naturalNameInput.val.dispatchChange();
         // Wait for validation.
         await new Promise<void>((resolve) => setTimeout(resolve));
         this.cut.inputFormPage.clickPrimaryButton();

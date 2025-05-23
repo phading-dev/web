@@ -11,7 +11,7 @@ import {
   PAGE_MEDIUM_CENTER_CARD_STYLE,
 } from "../page_style";
 import { FONT_L, FONT_M } from "../sizes";
-import { InputField } from "./input_field";
+import { InputWithErrorMsg } from "./input_with_error_msg";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
@@ -33,20 +33,6 @@ export class InputFormPage<
   PrimaryResponse,
   SecondaryResponse = void,
 > extends EventEmitter {
-  public static create<PrimaryResponse, SecondaryResponse = void>(
-    title: string,
-    lines: Array<HTMLElement>,
-    inputs: Array<InputField>,
-    primaryButtonLabel: string,
-  ) {
-    return new InputFormPage<PrimaryResponse, SecondaryResponse>(
-      title,
-      lines,
-      inputs,
-      primaryButtonLabel,
-    );
-  }
-
   public body: HTMLDivElement;
   private card = new Ref<HTMLFormElement>();
   private buttonsLine = new Ref<HTMLDivElement>();
@@ -68,7 +54,7 @@ export class InputFormPage<
   public constructor(
     title: string,
     lines: Array<HTMLElement>,
-    private inputs: Array<InputField>,
+    private inputs: Array<InputWithErrorMsg>,
     primaryButtonLabel: string,
   ) {
     super();
@@ -118,7 +104,7 @@ export class InputFormPage<
 
     for (let input of this.inputs) {
       input.on("validated", () => this.refreshPrimaryButton());
-      input.on("submit", () => this.primaryButton.val.click());
+      input.on("action", () => this.primaryButton.val.click());
     }
     this.primaryButton.val.addAction(
       () => this.primaryAction(),

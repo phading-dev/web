@@ -1,10 +1,8 @@
 import EventEmitter = require("events");
 import { InputFormPage } from "../../../common/input_form_page/body";
+import { ValidationResult } from "../../../common/input_form_page/input_with_error_msg";
 import { RadioOptionInput } from "../../../common/input_form_page/option_input";
-import {
-  TextInputWithErrorMsg,
-  ValidationResult,
-} from "../../../common/input_form_page/text_input";
+import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { OptionPill } from "../../../common/option_pills";
@@ -42,12 +40,12 @@ export class CreateAccountPage extends EventEmitter {
     private serviceClient: WebServiceClient,
   ) {
     super();
-    this.inputFormPage = InputFormPage.create(
+    this.inputFormPage = new InputFormPage(
       LOCALIZED_TEXT.createAccountTitle,
       [
         assign(
           this.naturalNameInput,
-          TextInputWithErrorMsg.create(
+          new TextInputWithErrorMsg(
             LOCALIZED_TEXT.naturalNameLabel,
             "",
             {
@@ -59,7 +57,7 @@ export class CreateAccountPage extends EventEmitter {
         ).body,
         assign(
           this.accountTypeInput,
-          RadioOptionInput.create(
+          new RadioOptionInput(
             LOCALIZED_TEXT.chooseUserTypeLabel,
             "",
             [

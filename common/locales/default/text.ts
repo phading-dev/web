@@ -741,10 +741,10 @@ export default class Text {
     return `Published`;
   }
   get seasonHasPremieredAt() {
-    return `Has premiered at: `;
+    return `Has premiered at `;
   }
   get seasonPremieresAt() {
-    return `Scheduled to premiere at: `;
+    return `Scheduled to premiere at `;
   }
   get seasonEpisodeVideoTitle() {
     return `Video`;
@@ -969,5 +969,20 @@ export default class Text {
   }
   get updateEpisodeIndexOutOfRangeError() {
     return `Index is out of range.`;
+  }
+  get publishEpisodeTitle() {
+    return `Publish episode`;
+  }
+  get publishEpisodePremieresAtLabel() {
+    return [`Schedule premiere at (`, `, optional)`];
+  }
+  get publishEpisodePremiereTimeInThePastError() {
+    return `Premiere time cannot be in the past.`;
+  }
+  get publishButtonLabel() {
+    return `Publish`;
+  }
+  get publishEpisodeGenericError() {
+    return `Failed to publish the episode. Please try again later.`;
   }
 }

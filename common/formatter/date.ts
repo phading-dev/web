@@ -17,7 +17,6 @@ export function formatUpcomingPremiereTime(timestampMs: number): string {
     hour12: false,
     hour: "2-digit",
     minute: "2-digit",
-    second: "2-digit",
   });
   return formatter.format(new Date(timestampMs));
 }
@@ -30,7 +29,6 @@ export function formatPremiereTimeLong(timestampMs: number): string {
     hour12: false,
     hour: "2-digit",
     minute: "2-digit",
-    second: "2-digit",
   });
   return formatter.format(new Date(timestampMs));
 }

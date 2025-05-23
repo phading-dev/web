@@ -20,7 +20,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Execute
         await setTabletView();
-        this.cut = TextInputWithErrorMsg.create(
+        this.cut = new TextInputWithErrorMsg(
           "Input",
           "width: 50rem;",
           {
@@ -64,7 +64,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.value = "12345678901";
-        this.cut.dispatchInput();
+        this.cut.dispatchChange();
         await new Promise<void>((resolve) => this.cut.on("validated", resolve));
 
         // Verify
@@ -78,7 +78,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.value = "123456";
-        this.cut.dispatchInput();
+        this.cut.dispatchChange();
         await new Promise<void>((resolve) => this.cut.on("validated", resolve));
 
         // Verify
@@ -92,7 +92,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.value = "";
-        this.cut.dispatchInput();
+        this.cut.dispatchChange();
         await new Promise<void>((resolve) => this.cut.on("validated", resolve));
 
         // Verify
@@ -120,7 +120,7 @@ TEST_RUNNER.run({
       private cut: TextInputWithErrorMsg;
       public async execute() {
         // Prepare
-        this.cut = TextInputWithErrorMsg.create(
+        this.cut = new TextInputWithErrorMsg(
           "Label",
           "",
           { type: "text" },
@@ -130,10 +130,10 @@ TEST_RUNNER.run({
         );
         document.body.append(this.cut.body);
         let submitted = false;
-        this.cut.on("submit", () => (submitted = true));
+        this.cut.on("action", () => (submitted = true));
 
         // Execute
-        this.cut.input.focus();
+        this.cut.focus();
         await keyboardDown("Enter");
         await keyboardUp("Enter");
 

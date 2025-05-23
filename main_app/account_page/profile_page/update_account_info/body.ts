@@ -1,10 +1,8 @@
 import EventEmitter = require("events");
 import { InputFormPage } from "../../../../common/input_form_page/body";
+import { ValidationResult } from "../../../../common/input_form_page/input_with_error_msg";
 import { TextAreaInputWithErrorMsg } from "../../../../common/input_form_page/text_area_input";
-import {
-  TextInputWithErrorMsg,
-  ValidationResult,
-} from "../../../../common/input_form_page/text_input";
+import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import {
@@ -41,12 +39,12 @@ export class UpdateAccountInfoPage extends EventEmitter {
     account: AccountAndUser,
   ) {
     super();
-    this.inputFormPage = InputFormPage.create(
+    this.inputFormPage = new InputFormPage(
       LOCALIZED_TEXT.updateAccountInfo,
       [
         assign(
           this.naturalNameInput,
-          TextInputWithErrorMsg.create(
+          new TextInputWithErrorMsg(
             LOCALIZED_TEXT.naturalNameLabel,
             "",
             {
@@ -59,7 +57,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
         ).body,
         assign(
           this.emailInput,
-          TextInputWithErrorMsg.create(
+          new TextInputWithErrorMsg(
             LOCALIZED_TEXT.contactEmailLabel,
             "",
             {
@@ -72,7 +70,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
         ).body,
         assign(
           this.descriptionInput,
-          TextAreaInputWithErrorMsg.create(
+          new TextAreaInputWithErrorMsg(
             LOCALIZED_TEXT.accountDescriptionLabel,
             "",
             {},

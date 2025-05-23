@@ -46,7 +46,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.newPasswordInput.val.value = createLongString(101);
-        this.cut.newPasswordInput.val.dispatchInput();
+        this.cut.newPasswordInput.val.dispatchChange();
         await new Promise<void>((resolve) =>
           this.cut.newPasswordInput.val.once("validated", resolve),
         );
@@ -63,12 +63,12 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.newPasswordInput.val.value = "a new password";
-        this.cut.newPasswordInput.val.dispatchInput();
+        this.cut.newPasswordInput.val.dispatchChange();
         await new Promise<void>((resolve) =>
           this.cut.newPasswordInput.val.once("validated", resolve),
         );
         this.cut.newPasswordRepeatInput.val.value = "some password";
-        this.cut.newPasswordRepeatInput.val.dispatchInput();
+        this.cut.newPasswordRepeatInput.val.dispatchChange();
         await new Promise<void>((resolve) =>
           this.cut.newPasswordRepeatInput.val.once("validated", resolve),
         );
@@ -88,12 +88,12 @@ TEST_RUNNER.run({
 
         // Prepare
         this.cut.currentPasswordInput.val.value = "current password";
-        this.cut.currentPasswordInput.val.dispatchInput();
+        this.cut.currentPasswordInput.val.dispatchChange();
         await new Promise<void>((resolve) =>
           this.cut.currentPasswordInput.val.once("validated", resolve),
         );
         this.cut.newPasswordRepeatInput.val.value = "a new password";
-        this.cut.newPasswordRepeatInput.val.dispatchInput();
+        this.cut.newPasswordRepeatInput.val.dispatchChange();
         await new Promise<void>((resolve) =>
           this.cut.newPasswordRepeatInput.val.once("validated", resolve),
         );

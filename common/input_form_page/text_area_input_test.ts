@@ -20,7 +20,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Execute
         await setTabletView();
-        this.cut = TextAreaInputWithErrorMsg.create(
+        this.cut = new TextAreaInputWithErrorMsg(
           "Input",
           "width: 50rem;",
           {},
@@ -62,7 +62,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.value = "12345678901";
-        this.cut.dispatchInput();
+        this.cut.dispatchChange();
         await new Promise<void>((resolve) => this.cut.on("validated", resolve));
 
         // Verify
@@ -76,7 +76,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.value = "123456";
-        this.cut.dispatchInput();
+        this.cut.dispatchChange();
         await new Promise<void>((resolve) => this.cut.on("validated", resolve));
 
         // Verify
@@ -90,7 +90,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.value = "";
-        this.cut.dispatchInput();
+        this.cut.dispatchChange();
         await new Promise<void>((resolve) => this.cut.on("validated", resolve));
 
         // Verify
@@ -116,7 +116,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Execute
         await setTabletView();
-        this.cut = TextAreaInputWithErrorMsg.create(
+        this.cut = new TextAreaInputWithErrorMsg(
           "Label",
           "",
           { type: "text" },

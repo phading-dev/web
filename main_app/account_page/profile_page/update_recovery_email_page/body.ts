@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { InputFormPage } from "../../../../common/input_form_page/body";
-import { ValidationResult } from "../../../../common/input_form_page/text_area_input";
+import { ValidationResult } from "../../../../common/input_form_page/input_with_error_msg";
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
@@ -33,7 +33,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
     username: string,
   ) {
     super();
-    this.inputFormPage = InputFormPage.create(
+    this.inputFormPage = new InputFormPage(
       LOCALIZED_TEXT.updateRecoveryEmailTitle,
       [
         E.input({
@@ -44,7 +44,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
         }),
         assign(
           this.newRecoveryEmailInput,
-          TextInputWithErrorMsg.create(
+          new TextInputWithErrorMsg(
             LOCALIZED_TEXT.newRecoveryEmailLabel,
             "",
             {
@@ -56,7 +56,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
         ).body,
         assign(
           this.currentPasswordInput,
-          TextInputWithErrorMsg.create(
+          new TextInputWithErrorMsg(
             LOCALIZED_TEXT.currentPasswordLabel,
             "",
             {

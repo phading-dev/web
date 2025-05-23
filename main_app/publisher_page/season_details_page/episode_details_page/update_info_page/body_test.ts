@@ -46,7 +46,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.episodeNameInput.val.value = "";
-        this.cut.episodeNameInput.val.dispatchInput();
+        this.cut.episodeNameInput.val.dispatchChange();
 
         // Verify
         await asyncAssertScreenshot(
@@ -57,7 +57,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.episodeNameInput.val.value = Array(200).fill("a").join("");
-        this.cut.episodeNameInput.val.dispatchInput();
+        this.cut.episodeNameInput.val.dispatchChange();
 
         // Verify
         await asyncAssertScreenshot(
@@ -71,7 +71,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.episodeNameInput.val.value = "A name 2!";
-        this.cut.episodeNameInput.val.dispatchInput();
+        this.cut.episodeNameInput.val.dispatchChange();
 
         // Verify
         await asyncAssertScreenshot(

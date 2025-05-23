@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "./color_scheme";
-import { BASIC_INPUT_STYLE } from "./input_styles";
+import { DATE_INPUT_STYLE } from "./input_styles";
 import { LOCALIZED_TEXT } from "./locales/localized_text";
 import { FONT_M } from "./sizes";
 import { E } from "@selfage/element/factory";
@@ -61,7 +61,7 @@ export class DateRangeInput extends EventEmitter {
         ),
         E.inputRef(this.startRangeInput, {
           class: "statements-page-start-range-input",
-          style: `${BASIC_INPUT_STYLE} width: 15rem; border-color: ${SCHEME.neutral1};`,
+          style: `${DATE_INPUT_STYLE}`,
           type: typeString,
         }),
       ),
@@ -79,7 +79,7 @@ export class DateRangeInput extends EventEmitter {
         ),
         E.inputRef(this.endRangeInput, {
           class: "statements-page-end-range-input",
-          style: `${BASIC_INPUT_STYLE} width: 15rem; border-color: ${SCHEME.neutral1};`,
+          style: `${DATE_INPUT_STYLE}`,
           type: typeString,
         }),
       ),

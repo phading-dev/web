@@ -34,7 +34,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.seasonNameInput.val.value = Array(101).fill("a").join("");
-        this.cut.seasonNameInput.val.dispatchInput();
+        this.cut.seasonNameInput.val.dispatchChange();
 
         // Verify
         await asyncAssertScreenshot(
@@ -45,7 +45,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.seasonNameInput.val.value = "some name";
-        this.cut.seasonNameInput.val.dispatchInput();
+        this.cut.seasonNameInput.val.dispatchChange();
 
         // Verify
         await asyncAssertScreenshot(

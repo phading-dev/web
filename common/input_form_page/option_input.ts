@@ -4,22 +4,6 @@ import { FONT_M } from "../sizes";
 import { E } from "@selfage/element/factory";
 
 export class RadioOptionInput<ValueType> {
-  public static create<ValueType>(
-    label: string,
-    customStyle: string,
-    options: Array<OptionPill<ValueType>>,
-    defaultValue: ValueType,
-    selectValueFn: (value: ValueType) => void,
-  ): RadioOptionInput<ValueType> {
-    return new RadioOptionInput(
-      label,
-      customStyle,
-      options,
-      defaultValue,
-      selectValueFn,
-    );
-  }
-
   public body: HTMLDivElement;
   private radioOptionPillsGroup: RadioOptionPillsGroup<ValueType>;
 

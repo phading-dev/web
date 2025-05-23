@@ -1,9 +1,7 @@
 import EventEmitter = require("events");
 import { InputFormPage } from "../../../common/input_form_page/body";
-import {
-  TextInputWithErrorMsg,
-  ValidationResult,
-} from "../../../common/input_form_page/text_input";
+import { ValidationResult } from "../../../common/input_form_page/input_with_error_msg";
+import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { MAX_SEASON_NAME_LENGTH } from "@phading/constants/show";
@@ -31,12 +29,12 @@ export class CreateSeasonPage extends EventEmitter {
 
   public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.inputFormPage = InputFormPage.create(
+    this.inputFormPage = new InputFormPage(
       LOCALIZED_TEXT.createSeasonTitle,
       [
         assign(
           this.seasonNameInput,
-          TextInputWithErrorMsg.create(
+          new TextInputWithErrorMsg(
             LOCALIZED_TEXT.seasonNameLabel,
             "",
             {
