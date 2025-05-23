@@ -1,6 +1,4 @@
 import "../../../../../../dev/env";
-import audio = require("../common/test_data/audio.m4a");
-import zip = require("../common/test_data/example.zip");
 import video = require("../common/test_data/two_videos_two_audios.mp4");
 import path = require("path");
 import { normalizeBody } from "../../../../../../common/normalize_body";
@@ -20,17 +18,12 @@ TEST_RUNNER.run({
   name: "NewUploadPageTest",
   cases: [
     new (class implements TestCase {
-      public name =
-        "Default_VideoTooltip_SubtitlesTooltip_SelectVideo_SelectZip_Back";
+      public name = "Default_VideoTooltip_SubtitlesTooltip_SelectVideo_Back";
       public cut: NewUploadPage;
       public async execute() {
         // Prepare
         await setTabletView();
-        this.cut = new NewUploadPage(
-          100 * 1024 * 1024,
-          100 * 1024 * 1024,
-          () => new Date("2023-10-01T00:00:00Z"),
-        );
+        this.cut = new NewUploadPage(() => new Date("2023-10-01T00:00:00Z"));
 
         // Execute
         document.body.append(this.cut.body);
@@ -151,22 +144,6 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await supplyFiles(() => this.cut.fileDropZone.val.click(), audio);
-
-        // Verify
-        assertThat(upload.name, eq("audio.m4a"), "Upload media file name");
-
-        // Execute
-        await supplyFiles(() => this.cut.fileDropZone.val.click(), zip);
-
-        // Verify
-        assertThat(
-          upload.name,
-          eq("example.zip"),
-          "Upload subtitles file name",
-        );
-
-        // Execute
         let back = false;
         this.cut.on("back", () => {
           back = true;
@@ -184,99 +161,24 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "SelectInvalidFileTypes_SelectVideoTooLarge_SelectAudioTooLarge_SelectZipTooLarge";
+        "InitError_SelectInvalidFileTypes_SelectVideoTooLarge_SelectAudioTooLarge_SelectZipTooLarge";
       public cut: NewUploadPage;
       public async execute() {
         // Prepare
         await setTabletView();
         this.cut = new NewUploadPage(
-          2 * 1024 * 1024,
-          1024 * 1024,
           () => new Date("2023-10-01T00:00:00Z"),
+          "Failed to upload",
         );
+
+        // Execute
         document.body.append(this.cut.body);
 
-        // Execute
-        await supplyFiles(
-          () => this.cut.fileDropZone.val.click(),
-          "invalid.txt",
-        );
-
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/new_upload_page_tablet_invalid_type.png"),
-          path.join(
-            __dirname,
-            "/golden/new_upload_page_tablet_invalid_type.png",
-          ),
-          path.join(__dirname, "/new_upload_page_tablet_invalid_type_diff.png"),
-        );
-
-        // Execute
-        await supplyFiles(() => this.cut.fileDropZone.val.click(), "random");
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/new_upload_page_tablet_invalid_type_2.png"),
-          path.join(
-            __dirname,
-            "/golden/new_upload_page_tablet_invalid_type.png",
-          ),
-          path.join(
-            __dirname,
-            "/new_upload_page_tablet_invalid_type_2_diff.png",
-          ),
-        );
-
-        // Execute
-        await supplyFiles(() => this.cut.fileDropZone.val.click(), video);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/new_upload_page_tablet_media_too_large.png"),
-          path.join(
-            __dirname,
-            "/golden/new_upload_page_tablet_media_too_large.png",
-          ),
-          path.join(
-            __dirname,
-            "/new_upload_page_tablet_media_too_large_diff.png",
-          ),
-        );
-
-        // Execute
-        await supplyFiles(() => this.cut.fileDropZone.val.click(), audio);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/new_upload_page_tablet_audio_too_large.png"),
-          path.join(
-            __dirname,
-            "/golden/new_upload_page_tablet_media_too_large.png",
-          ),
-          path.join(
-            __dirname,
-            "/new_upload_page_tablet_audio_too_large_diff.png",
-          ),
-        );
-
-        // Execute
-        await supplyFiles(() => this.cut.fileDropZone.val.click(), zip);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/new_upload_page_tablet_subtitles_too_large.png",
-          ),
-          path.join(
-            __dirname,
-            "/golden/new_upload_page_tablet_subtitles_too_large.png",
-          ),
-          path.join(
-            __dirname,
-            "/new_upload_page_tablet_subtitles_too_large_diff.png",
-          ),
+          path.join(__dirname, "/new_upload_page_tablet_init_error.png"),
+          path.join(__dirname, "/golden/new_upload_page_tablet_init_error.png"),
+          path.join(__dirname, "/new_upload_page_tablet_init_error_diff.png"),
         );
       }
       public tearDown() {

@@ -18,7 +18,7 @@ export enum Page {
 }
 
 export interface PageArgs {
-  selectFileError?: string;
+  error?: string;
   uploadFile?: File;
 }
 
@@ -52,7 +52,7 @@ export class UploadPage extends EventEmitter {
   public cancelUploadPage: CancelUploadPage;
 
   public constructor(
-    private createNewUploadPage: () => NewUploadPage,
+    private createNewUploadPage: (error?: string) => NewUploadPage,
     private createResumeUploadPage: (error?: string) => ResumeUploadPage,
     private createUploadingPage: CreateUploadingPageFn,
     private createCancelUploadPage: CreateCancelUploadPageFn,
@@ -64,7 +64,7 @@ export class UploadPage extends EventEmitter {
     super();
     this.pageNavigator.set(
       Page.NEW_UPLOAD,
-      () => this.addNewUploadPage(),
+      (args) => this.addNewUploadPage(args),
       () => this.newUploadPage.remove(),
     );
     this.pageNavigator.set(
@@ -85,16 +85,16 @@ export class UploadPage extends EventEmitter {
     this.checkUploadingState();
   }
 
-  private checkUploadingState(): void {
+  private checkUploadingState(error?: string): void {
     if (this.uploadingState) {
-      this.pageNavigator.goTo(Page.RESUME_UPLOAD);
+      this.pageNavigator.goTo(Page.RESUME_UPLOAD, { error });
     } else {
-      this.pageNavigator.goTo(Page.NEW_UPLOAD);
+      this.pageNavigator.goTo(Page.NEW_UPLOAD, { error });
     }
   }
 
-  private addNewUploadPage(): void {
-    this.newUploadPage = this.createNewUploadPage();
+  private addNewUploadPage(args?: PageArgs): void {
+    this.newUploadPage = this.createNewUploadPage(args?.error);
     this.appendBody(this.newUploadPage.body);
     this.newUploadPage.on("back", () => this.emit("back"));
     this.newUploadPage.on("upload", (uploadFile) =>
@@ -103,7 +103,7 @@ export class UploadPage extends EventEmitter {
   }
 
   private addResumeUploadPage(args?: PageArgs): void {
-    this.resumeUploadPage = this.createResumeUploadPage(args?.selectFileError);
+    this.resumeUploadPage = this.createResumeUploadPage(args?.error);
     this.appendBody(this.resumeUploadPage.body);
     this.resumeUploadPage.on("back", () => this.emit("back"));
     this.resumeUploadPage.on("upload", (uploadFile) =>
@@ -123,9 +123,9 @@ export class UploadPage extends EventEmitter {
     );
     this.appendBody(this.uploadingPage.body);
     this.uploadingPage.on("back", () => this.emit("back"));
-    this.uploadingPage.on("reSelect", (error) => {
-      this.pageNavigator.goTo(Page.RESUME_UPLOAD, { selectFileError: error });
-    });
+    this.uploadingPage.on("reSelect", (error) =>
+      this.checkUploadingState(error),
+    );
     this.uploadingPage.on("cancel", () =>
       this.pageNavigator.goTo(Page.CANCEL_UPLOAD),
     );

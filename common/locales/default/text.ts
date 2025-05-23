@@ -937,6 +937,12 @@ export default class Text {
   get uploadingNotSameFileError() {
     return `Selected file is not the same one being uploaded.`;
   }
+  get uploadingStartError() {
+    return `Failed to start uploading. Please try again later.`;
+  }
+  get uploadingGenericError() {
+    return `Failed to upload. Please try again later.`;
+  }
   get resumeUploadTitle() {
     return `Resume uploading`;
   }

@@ -4,19 +4,17 @@ import {
   formatStoragePrice,
   formatUploadPrice,
 } from "../../../../../../common/formatter/price";
-import { formatBytesShort } from "../../../../../../common/formatter/quantity";
 import { SimpleIconButton } from "../../../../../../common/icon_button";
 import { createQuestionMarkIcon } from "../../../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../../../common/locales/localized_text";
 import { FONT_M, ICON_BUTTON_M, ICON_L } from "../../../../../../common/sizes";
 import { ePage } from "../common/elements";
 import { FileDropZone } from "../common/file_drop_zone";
+import { fileTypesToString } from "../common/file_types_to_string";
 import {
   ACCEPTED_AUDIO_TYPES,
   ACCEPTED_SUBTITLE_ZIP_TYPES,
   ACCEPTED_VIDEO_TYPES,
-  MAX_MEDIA_CONTENT_LENGTH,
-  MAX_SUBTITLE_ZIP_CONTENT_LENGTH,
 } from "@phading/constants/video";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -27,29 +25,24 @@ export interface NewUploadPage {
 }
 
 export class NewUploadPage extends EventEmitter {
-  public static create(): NewUploadPage {
-    return new NewUploadPage(
-      MAX_MEDIA_CONTENT_LENGTH,
-      MAX_SUBTITLE_ZIP_CONTENT_LENGTH,
-      () => new Date(),
-    );
+  public static create(error?: string): NewUploadPage {
+    return new NewUploadPage(() => new Date(), error);
   }
 
   public body: HTMLDivElement;
   public backButton = new Ref<SimpleIconButton>();
   public fileDropZone = new Ref<FileDropZone>();
+  private errorMessage = new Ref<HTMLDivElement>();
   public videoQuestionMark = new Ref<HTMLDivElement>();
   public audioQuestionMark = new Ref<HTMLDivElement>();
   public subtitlesQuestionMark = new Ref<HTMLDivElement>();
-  private errorMessage = new Ref<HTMLDivElement>();
   private videoTip = new Ref<HTMLDivElement>();
   private audioTip = new Ref<HTMLDivElement>();
   private subtitlesTip = new Ref<HTMLDivElement>();
 
   public constructor(
-    private maxMediaContentLength: number,
-    private maxSubtitleZipContentLength: number,
     private getNowDate: () => Date,
+    error?: string,
   ) {
     super();
     this.body = ePage(
@@ -112,7 +105,7 @@ export class NewUploadPage extends EventEmitter {
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(
-            `${LOCALIZED_TEXT.videoFileTipOne[0]}${this.fileTypesToString(
+            `${LOCALIZED_TEXT.videoFileTipOne[0]}${fileTypesToString(
               Array.from(ACCEPTED_VIDEO_TYPES),
             )}${LOCALIZED_TEXT.videoFileTipOne[1]}`,
           ),
@@ -151,7 +144,7 @@ export class NewUploadPage extends EventEmitter {
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(
-            `${LOCALIZED_TEXT.audioFileTipOne[0]}${this.fileTypesToString(
+            `${LOCALIZED_TEXT.audioFileTipOne[0]}${fileTypesToString(
               Array.from(ACCEPTED_AUDIO_TYPES),
             )}${LOCALIZED_TEXT.audioFileTipOne[1]}`,
           ),
@@ -183,7 +176,7 @@ export class NewUploadPage extends EventEmitter {
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(
-            `${LOCALIZED_TEXT.subtitlesFileTipOne[0]}${this.fileTypesToString(Array.from(ACCEPTED_SUBTITLE_ZIP_TYPES))}${LOCALIZED_TEXT.subtitlesFileTipOne[1]}`,
+            `${LOCALIZED_TEXT.subtitlesFileTipOne[0]}${fileTypesToString(Array.from(ACCEPTED_SUBTITLE_ZIP_TYPES))}${LOCALIZED_TEXT.subtitlesFileTipOne[1]}`,
           ),
         ),
         E.div(
@@ -206,6 +199,13 @@ export class NewUploadPage extends EventEmitter {
         ),
       ),
     );
+    this.backButton.val.on("action", () => this.emit("back"));
+    this.fileDropZone.val.on("selected", (file) => this.emit("upload", file));
+    if (error) {
+      this.errorMessage.val.textContent = error;
+      this.errorMessage.val.style.display = "block";
+    }
+
     this.hideTips();
     this.videoQuestionMark.val.addEventListener("click", () =>
       this.showVideoTip(),
@@ -216,10 +216,6 @@ export class NewUploadPage extends EventEmitter {
     this.subtitlesQuestionMark.val.addEventListener("click", () =>
       this.showSubtitlesTip(),
     );
-    this.fileDropZone.val.on("selected", (file) =>
-      this.validateFileAndSelect(file),
-    );
-    this.backButton.val.on("action", () => this.emit("back"));
   }
 
   private hideTips() {
@@ -241,58 +237,6 @@ export class NewUploadPage extends EventEmitter {
   private showSubtitlesTip() {
     this.hideTips();
     this.subtitlesTip.val.style.display = "flex";
-  }
-
-  public async validateFileAndSelect(file: File) {
-    let fileType = file.name.split(".").pop();
-    if (
-      !ACCEPTED_VIDEO_TYPES.has(fileType) &&
-      !ACCEPTED_AUDIO_TYPES.has(fileType) &&
-      !ACCEPTED_SUBTITLE_ZIP_TYPES.has(fileType)
-    ) {
-      this.errorMessage.val.style.display = "block";
-      this.errorMessage.val.textContent = `${LOCALIZED_TEXT.fileTypeNotAccepted[0]}${this.fileTypesToString(
-        Array.from(ACCEPTED_VIDEO_TYPES)
-          .concat(Array.from(ACCEPTED_AUDIO_TYPES))
-          .concat(Array.from(ACCEPTED_SUBTITLE_ZIP_TYPES)),
-      )}${LOCALIZED_TEXT.fileTypeNotAccepted[1]}`;
-      return;
-    }
-    if (
-      (ACCEPTED_VIDEO_TYPES.has(fileType) ||
-        ACCEPTED_AUDIO_TYPES.has(fileType)) &&
-      file.size > this.maxMediaContentLength
-    ) {
-      this.errorMessage.val.style.display = "block";
-      this.errorMessage.val.textContent = `${LOCALIZED_TEXT.fileSizeTooLarge[0]}${formatBytesShort(
-        this.maxMediaContentLength,
-      )}${LOCALIZED_TEXT.fileSizeTooLarge[1]}`;
-      return;
-    }
-    if (
-      ACCEPTED_SUBTITLE_ZIP_TYPES.has(fileType) &&
-      file.size > this.maxSubtitleZipContentLength
-    ) {
-      this.errorMessage.val.style.display = "block";
-      this.errorMessage.val.textContent = `${LOCALIZED_TEXT.fileSizeTooLarge[0]}${formatBytesShort(
-        this.maxSubtitleZipContentLength,
-      )}${LOCALIZED_TEXT.fileSizeTooLarge[1]}`;
-      return;
-    }
-    this.emit("upload", file);
-  }
-
-  private fileTypesToString(types: Array<string>): string {
-    if (types.length > 1) {
-      let lastType = types.pop();
-      return (
-        types.map((type) => `.${type}`).join(LOCALIZED_TEXT.fileTypeJoinComma) +
-        LOCALIZED_TEXT.fileTypesJoinOr +
-        `.${lastType}`
-      );
-    } else {
-      return `.${types[0]}`;
-    }
   }
 
   public remove() {

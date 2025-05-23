@@ -20,12 +20,7 @@ function createUploadPage(
   uploadingState?: ResumableUploadingState,
 ): UploadPage {
   return new UploadPage(
-    () =>
-      new NewUploadPage(
-        200 * 1024 * 1024,
-        10 * 1024 * 1024,
-        () => new Date("2023-01-01"),
-      ),
+    (error) => new NewUploadPage(() => new Date("2023-01-01"), error),
     (error) => new ResumeUploadPage(error),
     (seasonId, episodeId, file, uploadingState) =>
       new UploadingPageMock(seasonId, episodeId, file, uploadingState),
@@ -126,6 +121,30 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
+      public name =
+        "TabletView_NewUpload_ReSelectDueToError";
+      private cut: UploadPage;
+      public async execute() {
+        // Prepare
+        await setTabletView();
+        this.cut = createUploadPage();
+        await supplyFiles(
+          () => this.cut.newUploadPage.fileDropZone.val.click(),
+          "some_file.txt",
+        );
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/upload_page_tablet_new_upload_error.png"),
+          path.join(__dirname, "/golden/upload_page_tablet_new_upload_error.png"),
+          path.join(__dirname, "/upload_page_tablet_new_upload_error_diff.png"),
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
       public name = "TabletView_ResumeUpload_Back_Uploading_Cancelled";
       private cut: UploadPage;
       public async execute() {
@@ -192,7 +211,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "TabletView_ResumeUpload_ReSelect_Cancelled";
+      public name = "TabletView_ResumeUpload_ReSelectDueToError_Cancelled";
       private cut: UploadPage;
       public async execute() {
         // Prepare
@@ -210,17 +229,14 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
+          path.join(__dirname, "/upload_page_tablet_resume_upload_error.png"),
           path.join(
             __dirname,
-            "/upload_page_tablet_resume_upload_re_select.png",
+            "/golden/upload_page_tablet_resume_upload_error.png",
           ),
           path.join(
             __dirname,
-            "/golden/upload_page_tablet_resume_upload_re_select.png",
-          ),
-          path.join(
-            __dirname,
-            "/upload_page_tablet_resume_upload_re_select_diff.png",
+            "/upload_page_tablet_resume_upload_error_diff.png",
           ),
         );
 

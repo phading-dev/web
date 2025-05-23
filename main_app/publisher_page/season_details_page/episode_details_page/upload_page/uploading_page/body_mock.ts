@@ -1,5 +1,9 @@
 import { ChunkedUploadMock } from "../common/chunked_upload_mock";
 import { UploadingPage } from "./body";
+import {
+  MAX_MEDIA_CONTENT_LENGTH,
+  MAX_SUBTITLE_ZIP_CONTENT_LENGTH,
+} from "@phading/constants/video";
 import { StartUploadingResponse } from "@phading/product_service_interface/show/web/publisher/interface";
 import { ResumableUploadingState } from "@phading/video_service_interface/node/video_container";
 import { ClientRequestInterface } from "@selfage/service_descriptor/client_request_interface";
@@ -13,6 +17,8 @@ export class UploadingPageMock extends UploadingPage {
     uploadingState?: ResumableUploadingState,
   ) {
     super(
+      MAX_MEDIA_CONTENT_LENGTH,
+      MAX_SUBTITLE_ZIP_CONTENT_LENGTH,
       (blob, resumeUrl, byteOffset) =>
         new ChunkedUploadMock(blob, resumeUrl, byteOffset),
       new (class extends WebServiceClientMock {
@@ -34,5 +40,9 @@ export class UploadingPageMock extends UploadingPage {
 
   public complete(): void {
     (this.chunkedUpload as ChunkedUploadMock).complete();
+  }
+
+  public reject(): void {
+    (this.chunkedUpload as ChunkedUploadMock).reject();
   }
 }

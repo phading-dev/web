@@ -14,6 +14,13 @@ import { SERVICE_CLIENT } from "../../../../../../common/web_service_client";
 import { ChunkedUpload } from "../common/chunked_upload";
 import { ePage } from "../common/elements";
 import {
+  ACCEPTED_AUDIO_TYPES,
+  ACCEPTED_SUBTITLE_ZIP_TYPES,
+  ACCEPTED_VIDEO_TYPES,
+  MAX_MEDIA_CONTENT_LENGTH,
+  MAX_SUBTITLE_ZIP_CONTENT_LENGTH,
+} from "@phading/constants/video";
+import {
   newCompleteUploadingRequest,
   newStartUploadingRequest,
 } from "@phading/product_service_interface/show/web/publisher/client";
@@ -34,6 +41,7 @@ export interface UploadingPage {
   on(event: "reSelect", listener: (error: string) => void): this;
   on(event: "cancel", listener: () => void): this;
   on(event: "started", listener: () => void): this;
+  on(event: "failed", listener: () => void): this;
 }
 
 export class UploadingPage extends EventEmitter {
@@ -44,6 +52,8 @@ export class UploadingPage extends EventEmitter {
     uploadingState?: ResumableUploadingState,
   ): UploadingPage {
     return new UploadingPage(
+      MAX_MEDIA_CONTENT_LENGTH,
+      MAX_SUBTITLE_ZIP_CONTENT_LENGTH,
       ChunkedUpload.create,
       SERVICE_CLIENT,
       () => new Date(),
@@ -60,10 +70,12 @@ export class UploadingPage extends EventEmitter {
   private progressBarFill = new Ref<HTMLDivElement>();
   private uploadingText = new Ref<Text>();
   public cancelButton = new Ref<HTMLDivElement>();
-  protected chunkedUpload: ChunkedUpload;
+  public chunkedUpload: ChunkedUpload;
   private removed = false;
 
   public constructor(
+    private maxMediaContentLength: number,
+    private maxSubtitleZipContentLength: number,
     private createChunkedUpload: (
       blob: Blob,
       resumeUrl: string,
@@ -149,29 +161,34 @@ export class UploadingPage extends EventEmitter {
 
   private async upload() {
     this.progressTip.val.textContent = LOCALIZED_TEXT.uploadingPreparingTip;
-    let fileExt = this.file.name.split(".").pop();
-    let newMd5 = await this.calculateMd5();
-    if (
-      this.uploadingState &&
-      (this.uploadingState.md5 !== newMd5 ||
-        this.uploadingState.fileExt !== fileExt)
-    ) {
-      this.emit("reSelect", LOCALIZED_TEXT.uploadingNotSameFileError);
+    let { error, fileExt, md5 } = await this.validateFile();
+    if (error) {
+      this.emit("reSelect", error);
       return;
     }
     if (this.removed) {
       return;
     }
 
-    let { uploadSessionUrl, byteOffset } = await this.serviceClient.send(
-      newStartUploadingRequest({
-        seasonId: this.seasonId,
-        episodeId: this.episodeId,
-        contentLength: this.file.size,
-        fileExt,
-        md5: newMd5,
-      }),
-    );
+    let uploadSessionUrl: string;
+    let byteOffset: number;
+    try {
+      ({ uploadSessionUrl, byteOffset } = await this.serviceClient.send(
+        newStartUploadingRequest({
+          seasonId: this.seasonId,
+          episodeId: this.episodeId,
+          contentLength: this.file.size,
+          fileExt,
+          md5,
+        }),
+      ));
+    } catch (e) {
+      console.error(e);
+      this.progressTip.val.textContent = LOCALIZED_TEXT.uploadingStartError;
+      this.progressTip.val.style.color = SCHEME.error0;
+      this.emit("failed");
+      return;
+    }
     if (this.removed) {
       return;
     }
@@ -185,15 +202,89 @@ export class UploadingPage extends EventEmitter {
     ).on("progress", (progress) => this.setProgress(progress));
     this.emit("started");
 
-    await this.chunkedUpload.upload();
-    await this.serviceClient.send(
-      newCompleteUploadingRequest({
-        seasonId: this.seasonId,
-        episodeId: this.episodeId,
-        uploadSessionUrl: uploadSessionUrl,
-      }),
-    );
+    try {
+      await this.chunkedUpload.upload();
+      await this.serviceClient.send(
+        newCompleteUploadingRequest({
+          seasonId: this.seasonId,
+          episodeId: this.episodeId,
+          uploadSessionUrl: uploadSessionUrl,
+        }),
+      );
+    } catch (e) {
+      console.error(e);
+      this.progressTip.val.textContent = LOCALIZED_TEXT.uploadingGenericError;
+      this.progressTip.val.style.color = SCHEME.error0;
+      this.emit("failed");
+      return;
+    }
     this.emit("back");
+  }
+
+  public async validateFile(): Promise<{
+    error?: string;
+    fileExt?: string;
+    md5?: string;
+  }> {
+    let fileExt = this.file.name.split(".").pop();
+    if (
+      !ACCEPTED_VIDEO_TYPES.has(fileExt) &&
+      !ACCEPTED_AUDIO_TYPES.has(fileExt) &&
+      !ACCEPTED_SUBTITLE_ZIP_TYPES.has(fileExt)
+    ) {
+      return {
+        error: `${LOCALIZED_TEXT.fileTypeNotAccepted[0]}${this.fileTypesToString(
+          Array.from(ACCEPTED_VIDEO_TYPES)
+            .concat(Array.from(ACCEPTED_AUDIO_TYPES))
+            .concat(Array.from(ACCEPTED_SUBTITLE_ZIP_TYPES)),
+        )}${LOCALIZED_TEXT.fileTypeNotAccepted[1]}`,
+      };
+    }
+    if (
+      (ACCEPTED_VIDEO_TYPES.has(fileExt) ||
+        ACCEPTED_AUDIO_TYPES.has(fileExt)) &&
+      this.file.size > this.maxMediaContentLength
+    ) {
+      return {
+        error: `${LOCALIZED_TEXT.fileSizeTooLarge[0]}${formatBytesShort(
+          this.maxMediaContentLength,
+        )}${LOCALIZED_TEXT.fileSizeTooLarge[1]}`,
+      };
+    }
+    if (
+      ACCEPTED_SUBTITLE_ZIP_TYPES.has(fileExt) &&
+      this.file.size > this.maxSubtitleZipContentLength
+    ) {
+      return {
+        error: `${LOCALIZED_TEXT.fileSizeTooLarge[0]}${formatBytesShort(
+          this.maxSubtitleZipContentLength,
+        )}${LOCALIZED_TEXT.fileSizeTooLarge[1]}`,
+      };
+    }
+
+    let newMd5 = await this.calculateMd5();
+    if (
+      this.uploadingState &&
+      (this.uploadingState.md5 !== newMd5 ||
+        this.uploadingState.fileExt !== fileExt)
+    ) {
+      return { error: LOCALIZED_TEXT.uploadingNotSameFileError };
+    }
+
+    return { fileExt, md5: newMd5 };
+  }
+
+  private fileTypesToString(types: Array<string>): string {
+    if (types.length > 1) {
+      let lastType = types.pop();
+      return (
+        types.map((type) => `.${type}`).join(LOCALIZED_TEXT.fileTypeJoinComma) +
+        LOCALIZED_TEXT.fileTypesJoinOr +
+        `.${lastType}`
+      );
+    } else {
+      return `.${types[0]}`;
+    }
   }
 
   private async calculateMd5(): Promise<string> {
