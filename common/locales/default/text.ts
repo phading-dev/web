@@ -976,7 +976,7 @@ export default class Text {
   get publishEpisodePremieresAtLabel() {
     return [`Schedule premiere at (`, `, optional)`];
   }
-  get publishEpisodePremiereTimeInThePastError() {
+  get premiereTimeInThePastError() {
     return `Premiere time cannot be in the past.`;
   }
   get publishButtonLabel() {
@@ -984,5 +984,17 @@ export default class Text {
   }
   get publishEpisodeGenericError() {
     return `Failed to publish the episode. Please try again later.`;
+  }
+  get publishedEpisodeTitle() {
+    return `Update or unpublish episode`;
+  }
+  get publishedEpisodeUpdatePremiereTimeLabel() {
+    return [`Premiere time (`, `)`];
+  }
+  get unpublishButtonLabel() {
+    return `Unpublish`;
+  }
+  get unpublishEpisodeGenericError() {
+    return `Failed to unpublish the episode. Please try again later.`;
   }
 }

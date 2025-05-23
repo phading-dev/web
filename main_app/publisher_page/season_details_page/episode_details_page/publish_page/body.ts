@@ -65,10 +65,10 @@ export class PublishPage extends EventEmitter {
     } else if (new Date(value).getTime() < this.getNow()) {
       return {
         valid: false,
-        errorMsg: LOCALIZED_TEXT.publishEpisodePremiereTimeInThePastError,
+        errorMsg: LOCALIZED_TEXT.premiereTimeInThePastError,
       };
     } else {
-      this.request.premiereTimeMs = new Date(value).getTime();
+      this.request.premiereTimeMs = new Date(value).getTime(); // Under local timezone
       return {
         valid: true,
       };
