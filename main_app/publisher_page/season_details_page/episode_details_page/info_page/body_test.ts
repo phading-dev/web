@@ -551,7 +551,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "TabletView_CompilingFirstVersion";
+      public name = "TabletView_CommittingFirstVersion";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -623,7 +623,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "TabletView_CompilingFirstVersionWithPendingTracks";
+      public name = "TabletView_CommittingFirstVersionWithPendingTracks";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -734,7 +734,7 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "TabletView_CompiledFirstVersion_DesktopView_PhoneView_EditDraftState";
+        "TabletView_CommittedFirstVersion_DesktopView_PhoneView_EditDraftState";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -798,9 +798,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_tablet_compiled.png"),
-          path.join(__dirname, "/golden/info_page_tablet_compiled.png"),
-          path.join(__dirname, "/info_page_tablet_compiled_diff.png"),
+          path.join(__dirname, "/info_page_tablet_finalized.png"),
+          path.join(__dirname, "/golden/info_page_tablet_finalized.png"),
+          path.join(__dirname, "/info_page_tablet_finalized_diff.png"),
         );
 
         // Execute
@@ -808,12 +808,12 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_tablet_compiled_scrolled.png"),
+          path.join(__dirname, "/info_page_tablet_finalized_scrolled.png"),
           path.join(
             __dirname,
-            "/golden/info_page_tablet_compiled_scrolled.png",
+            "/golden/info_page_tablet_finalized_scrolled.png",
           ),
-          path.join(__dirname, "/info_page_tablet_compiled_scrolled_diff.png"),
+          path.join(__dirname, "/info_page_tablet_finalized_scrolled_diff.png"),
         );
 
         // Execute
@@ -822,9 +822,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_desktop_compiled.png"),
-          path.join(__dirname, "/golden/info_page_desktop_compiled.png"),
-          path.join(__dirname, "/info_page_desktop_compiled_diff.png"),
+          path.join(__dirname, "/info_page_desktop_finalized.png"),
+          path.join(__dirname, "/golden/info_page_desktop_finalized.png"),
+          path.join(__dirname, "/info_page_desktop_finalized_diff.png"),
         );
 
         // Execute
@@ -832,12 +832,12 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_desktop_compiled_scrolled.png"),
+          path.join(__dirname, "/info_page_desktop_finalized_scrolled.png"),
           path.join(
             __dirname,
-            "/golden/info_page_desktop_compiled_scrolled.png",
+            "/golden/info_page_desktop_finalized_scrolled.png",
           ),
-          path.join(__dirname, "/info_page_desktop_compiled_scrolled_diff.png"),
+          path.join(__dirname, "/info_page_desktop_finalized_scrolled_diff.png"),
         );
 
         // Execute
@@ -846,9 +846,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_phone_compiled.png"),
-          path.join(__dirname, "/golden/info_page_phone_compiled.png"),
-          path.join(__dirname, "/info_page_phone_compiled_diff.png"),
+          path.join(__dirname, "/info_page_phone_finalized.png"),
+          path.join(__dirname, "/golden/info_page_phone_finalized.png"),
+          path.join(__dirname, "/info_page_phone_finalized_diff.png"),
         );
 
         // Execute
@@ -856,9 +856,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_phone_compiled_scrolled.png"),
-          path.join(__dirname, "/golden/info_page_phone_compiled_scrolled.png"),
-          path.join(__dirname, "/info_page_phone_compiled_scrolled_diff.png"),
+          path.join(__dirname, "/info_page_phone_finalized_scrolled.png"),
+          path.join(__dirname, "/golden/info_page_phone_finalized_scrolled.png"),
+          path.join(__dirname, "/info_page_phone_finalized_scrolled_diff.png"),
         );
 
         // Prepare
