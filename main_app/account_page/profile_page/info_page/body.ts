@@ -3,7 +3,7 @@ import { OUTLINE_BUTTON_STYLE } from "../../../../common/button_styles";
 import { SCHEME } from "../../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import {
-  PAGE_MEDIUM_TOP_DOWN_CARD_STYLE,
+  PAGE_LARGE_TOP_DOWN_CARD_STYLE,
   PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
 } from "../../../../common/page_style";
 import { AVATAR_M, FONT_M } from "../../../../common/sizes";
@@ -70,7 +70,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "account-info-card",
-          style: `${PAGE_MEDIUM_TOP_DOWN_CARD_STYLE} padding: 2rem; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+          style: `${PAGE_LARGE_TOP_DOWN_CARD_STYLE} padding: 2rem; display: flex; flex-flow: column nowrap; gap: 2rem;`,
         },
         E.divRef(
           this.avatarContainer,

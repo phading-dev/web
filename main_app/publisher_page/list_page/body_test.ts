@@ -20,7 +20,7 @@ import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
-import { mouseClick } from "@selfage/puppeteer_test_executor_api";
+import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";
 
 normalizeBody();
 
@@ -208,7 +208,8 @@ TEST_RUNNER.run({
         // Verify
         assertThat(seasonId, eq("season4"), "seasonId");
       }
-      public tearDown() {
+      public async tearDown() {
+        await mouseMove(-1, -1, 1);
         window.scrollTo(0, 0);
         this.cut.remove();
       }
@@ -371,7 +372,8 @@ TEST_RUNNER.run({
         // Verify
         assertThat(seasonId, eq("season4"), "seasonId");
       }
-      public tearDown() {
+      public async tearDown() {
+        await mouseMove(-1, -1, 1);
         window.scrollTo(0, 0);
         this.cut.remove();
       }

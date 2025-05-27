@@ -9,10 +9,10 @@ import {
   SimpleIconButton,
   createBackButton,
 } from "../../../../../common/icon_button";
-import { createArrowIcon, createUploadIcon } from "../../../../../common/icons";
+import { createUploadIcon } from "../../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import {
-  PAGE_MEDIUM_TOP_DOWN_CARD_STYLE,
+  PAGE_LARGE_TOP_DOWN_CARD_STYLE,
   PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
 } from "../../../../../common/page_style";
 import {
@@ -22,7 +22,6 @@ import {
   FONT_WEIGHT_600,
   ICON_BUTTON_L,
   ICON_L,
-  ICON_M,
 } from "../../../../../common/sizes";
 import {
   eBox,
@@ -61,13 +60,7 @@ export interface InfoPage {
     listener: (episode: EpisodeDetails) => void,
   ): this;
   on(event: "upload", listener: (episode: EpisodeDetails) => void): this;
-  on(event: "commitVideo", listener: (episode: EpisodeDetails) => void): this;
-  on(event: "editVideoTrack", listener: (videoTrack: VideoTrack) => void): this;
-  on(event: "editAudioTrack", listener: (audioTrack: AudioTrack) => void): this;
-  on(
-    event: "editSubtitleTrack",
-    listener: (subtitleTrack: SubtitleTrack) => void,
-  ): this;
+  on(event: "editTracks", listener: (episode: EpisodeDetails) => void): this;
 }
 
 // Assumptions:
@@ -87,10 +80,7 @@ export class InfoPage extends EventEmitter {
   public episodeDraftStateButton = new Ref<HTMLDivElement>();
   public episodePublishedStateButton = new Ref<HTMLDivElement>();
   public episodeUploadButton = new Ref<HTMLDivElement>();
-  public episodeVideoCommitButton = new Ref<HTMLDivElement>();
-  public videoTrackButtons = new Array<HTMLDivElement>();
-  public audioTrackButtons = new Array<HTMLDivElement>();
-  public subtitleTrackButtons = new Array<HTMLDivElement>();
+  public editTracksButton = new Ref<HTMLDivElement>();
 
   public constructor(
     private serviceClient: WebServiceClient,
@@ -117,7 +107,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "episode-details-info-card",
-          style: `${PAGE_MEDIUM_TOP_DOWN_CARD_STYLE} padding: ${ICON_BUTTON_L + 1}rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap; position: relative;`,
+          style: `${PAGE_LARGE_TOP_DOWN_CARD_STYLE} padding: ${ICON_BUTTON_L + 1}rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap; position: relative;`,
         },
         assign(this.backButton, createBackButton()).body,
         E.div(
@@ -192,124 +182,9 @@ export class InfoPage extends EventEmitter {
           style: `flex: 0 0 auto; height: 1rem;`,
         }),
         this.eUploadFooter(episode),
-        ...this.eCommitBox(episode),
+        ...this.eVideoContainerState(episode),
         ...this.eVideoPlayer(episode),
-        ...(episode.videoContainer.videos.length === 0
-          ? []
-          : [
-              E.div(
-                {
-                  class: "episode-details-video-tracks",
-                  style: `margin-top: 3rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeVideoTracksTitle),
-              ),
-              E.div(
-                {
-                  class: "episode-details-video-tracks",
-                  style: `width: 100%; box-sizing: border-box; padding: 1rem ${3 + ICON_M}rem 1rem 1rem; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; justify-content: space-between; align-items: center; gap: 1rem;`,
-                },
-                E.div(
-                  {
-                    class: "episode-details-video-track-state",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
-                ),
-                E.div(
-                  {
-                    class: "episode-details-video-track-duration-sec",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackVideoDurationLabel),
-                ),
-                E.div(
-                  {
-                    class: "episode-details-video-track-resolution",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackVideoResolutionLabel),
-                ),
-              ),
-            ]),
-        ...episode.videoContainer.videos.map((videoTrack) =>
-          this.eVideoTrack(videoTrack),
-        ),
-        ...(episode.videoContainer.audios.length === 0
-          ? []
-          : [
-              E.div(
-                {
-                  class: "episode-details-audio-tracks",
-                  style: `margin-top: 3rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeAudioTracksTitle),
-              ),
-              E.div(
-                {
-                  class: "episode-details-audio-tracks",
-                  style: `width: 100%; box-sizing: border-box; padding: 1rem ${3 + ICON_M}rem 1rem 1rem; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; justify-content: space-between; align-items: center; gap: 1rem;`,
-                },
-                E.div(
-                  {
-                    class: "episode-details-audio-track-state",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
-                ),
-                E.div(
-                  {
-                    class: "episode-details-audio-track-duration-sec",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
-                ),
-                E.div(
-                  {
-                    class: "episode-details-audio-track-resolution",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultLabel),
-                ),
-              ),
-            ]),
-        ...episode.videoContainer.audios.map((audioTrack) =>
-          this.eAudioTrack(audioTrack),
-        ),
-        ...(episode.videoContainer.subtitles.length === 0
-          ? []
-          : [
-              E.div(
-                {
-                  class: "episode-details-subtitle-tracks",
-                  style: `margin-top: 3rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeSubtitleTracksTitle),
-              ),
-              E.div(
-                {
-                  class: "episode-details-subtitle-tracks",
-                  style: `width: 100%; box-sizing: border-box; padding: 1rem ${3 + ICON_M}rem 1rem 1rem; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
-                },
-                E.div(
-                  {
-                    class: "episode-details-subtitle-track-state",
-                    style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
-                ),
-                E.div(
-                  {
-                    class: "episode-details-subtitle-track-duration-sec",
-                    style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
-                ),
-              ),
-            ]),
-        ...episode.videoContainer.subtitles.map((subtitleTrack) =>
-          this.eSubtitleTrack(subtitleTrack),
-        ),
+        ...this.eEditTracksButton(episode),
         ...this.eStorageFee(episode.videoContainer),
       ),
     );
@@ -329,8 +204,8 @@ export class InfoPage extends EventEmitter {
     this.episodeUploadButton.val?.addEventListener("click", () =>
       this.emit("upload", episode),
     );
-    this.episodeVideoCommitButton.val?.addEventListener("click", () =>
-      this.emit("commitVideo", episode),
+    this.editTracksButton.val?.addEventListener("click", () =>
+      this.emit("editTracks", episode),
     );
     this.emit("loaded");
   }
@@ -538,102 +413,22 @@ export class InfoPage extends EventEmitter {
     }
   }
 
-  private eCommitBox(episode: EpisodeDetails): Array<HTMLDivElement> {
-    let pendingChanges =
-      episode.videoContainer.videos.some((videoTrack) =>
-        Boolean(videoTrack.staging),
-      ) ||
-      episode.videoContainer.audios.some((audioTrack) =>
-        Boolean(audioTrack.staging),
-      ) ||
-      episode.videoContainer.subtitles.some((subtitleTrack) =>
-        Boolean(subtitleTrack.staging),
-      );
-    if (episode.videoContainer.masterPlaylist.synced) {
-      if (!pendingChanges && !episode.videoContainerCached) {
-        return [];
-      }
-      let ele = eColumnBoxWithArrow(
-        [
-          E.div(
-            {
-              class: "episode-details-video-container-version",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              !episode.videoContainerCached
-                ? LOCALIZED_TEXT.seasonEpisodeNoVersion
-                : `${LOCALIZED_TEXT.seasonEpisodeCommittedVersionLabel[0]}${episode.videoContainer.masterPlaylist.synced.version}${LOCALIZED_TEXT.seasonEpisodeCommittedVersionLabel[1]}`,
-            ),
-          ),
-          E.div(
-            {
-              class: "episode-details-video-container-version-footer",
-              style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              !pendingChanges
-                ? LOCALIZED_TEXT.seasonEpisodeCommittedVersionNoChangesFooter
-                : LOCALIZED_TEXT.seasonEpisodeCommittedVersionPendingChangesFooter,
-            ),
-          ),
-        ],
-        {
-          clickable: pendingChanges,
-          linesGap: 1,
-          customeStyle: `margin-top: 2rem;`,
-        },
-      );
-      if (pendingChanges) {
-        this.episodeVideoCommitButton.val = ele;
-      }
-      return [ele];
-    } else if (
-      episode.videoContainer.masterPlaylist.writingToFile ||
-      episode.videoContainer.masterPlaylist.syncing
+  private eVideoContainerState(episode: EpisodeDetails): Array<HTMLDivElement> {
+    if (
+      episode.videoContainer.masterPlaylist.syncing ||
+      episode.videoContainer.masterPlaylist.writingToFile
     ) {
-      let version =
-        episode.videoContainer.masterPlaylist.syncing?.version ||
-        episode.videoContainer.masterPlaylist.writingToFile?.version;
-      let ele = eColumnBoxWithArrow(
-        [
-          E.div(
-            {
-              class: "episode-details-video-container-version",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              `${LOCALIZED_TEXT.seasonEpisodeCommittingVersionLabel[0]}${version}${LOCALIZED_TEXT.seasonEpisodeCommittingVersionLabel[1]}`,
-            ),
-          ),
-          E.div(
-            {
-              class: "episode-details-video-container-version-footer",
-              style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              !pendingChanges
-                ? !episode.videoContainerCached
-                  ? LOCALIZED_TEXT.seasonEpisodeCommittingFirstVersionLabel
-                  : LOCALIZED_TEXT.seasonEpisodeCommittingVersionNoMoreChangesFooter
-                : LOCALIZED_TEXT.seasonEpisodeCommittingVersionNewPendingChangesFooter,
-            ),
-          ),
-        ],
-        {
-          clickable: pendingChanges,
-          linesGap: 1,
-          customeStyle: `margin-top: 2rem;`,
-        },
-      );
-      if (pendingChanges) {
-        this.episodeVideoCommitButton.val = ele;
-      }
-      return [ele];
+      return [
+        E.div(
+          {
+            class: "episode-details-video-container-state",
+            style: `margin-top: 2rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          },
+          E.text(LOCALIZED_TEXT.seasonEpisodeVideoComittingVideo),
+        ),
+      ];
     } else {
-      throw new Error(
-        `Not handled: ${JSON.stringify(episode.videoContainer.masterPlaylist)}`,
-      );
+      return [];
     }
   }
 
@@ -652,217 +447,306 @@ export class InfoPage extends EventEmitter {
     return [video];
   }
 
+  private eEditTracksButton(episode: EpisodeDetails): Array<HTMLDivElement> {
+    if (
+      episode.videoContainer.videos.length === 0 &&
+      episode.videoContainer.audios.length === 0 &&
+      episode.videoContainer.subtitles.length === 0
+    ) {
+      return [];
+    }
+    return [
+      assign(
+        this.editTracksButton,
+        eColumnBoxWithArrow(
+          [
+            ...(episode.videoContainer.videos.length === 0
+              ? []
+              : [
+                  E.div(
+                    {
+                      class: "episode-details-video-tracks",
+                      style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
+                    },
+                    E.text(LOCALIZED_TEXT.seasonEpisodeVideoTracksTitle),
+                  ),
+                  E.div(
+                    {
+                      class: "episode-details-video-tracks",
+                      style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+                    },
+                    E.div(
+                      {
+                        class: "episode-details-video-track-state",
+                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      },
+                      E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
+                    ),
+                    E.div(
+                      {
+                        class: "episode-details-video-track-duration-sec",
+                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      },
+                      E.text(
+                        LOCALIZED_TEXT.seasonEpisodeTrackVideoDurationLabel,
+                      ),
+                    ),
+                    E.div(
+                      {
+                        class: "episode-details-video-track-resolution",
+                        style: `flex: 0 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      },
+                      E.text(
+                        LOCALIZED_TEXT.seasonEpisodeTrackVideoResolutionLabel,
+                      ),
+                    ),
+                  ),
+                ]),
+            ...episode.videoContainer.videos.map((videoTrack) =>
+              this.eVideoTrack(videoTrack),
+            ),
+            ...(episode.videoContainer.audios.length === 0
+              ? []
+              : [
+                  E.div(
+                    {
+                      class: "episode-details-audio-tracks",
+                      style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
+                    },
+                    E.text(LOCALIZED_TEXT.seasonEpisodeAudioTracksTitle),
+                  ),
+                  E.div(
+                    {
+                      class: "episode-details-audio-tracks",
+                      style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+                    },
+                    E.div(
+                      {
+                        class: "episode-details-audio-track-state",
+                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      },
+                      E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
+                    ),
+                    E.div(
+                      {
+                        class: "episode-details-audio-track-duration-sec",
+                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      },
+                      E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
+                    ),
+                    E.div(
+                      {
+                        class: "episode-details-audio-track-default",
+                        style: `flex: 0 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      },
+                      E.text(LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultLabel),
+                    ),
+                  ),
+                ]),
+            ...episode.videoContainer.audios.map((audioTrack) =>
+              this.eAudioTrack(audioTrack),
+            ),
+            ...(episode.videoContainer.subtitles.length === 0
+              ? []
+              : [
+                  E.div(
+                    {
+                      class: "episode-details-subtitle-tracks",
+                      style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
+                    },
+                    E.text(LOCALIZED_TEXT.seasonEpisodeSubtitleTracksTitle),
+                  ),
+                  E.div(
+                    {
+                      class: "episode-details-subtitle-tracks",
+                      style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+                    },
+                    E.div(
+                      {
+                        class: "episode-details-subtitle-track-state",
+                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      },
+                      E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
+                    ),
+                    E.div(
+                      {
+                        class: "episode-details-subtitle-track-duration-sec",
+                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      },
+                      E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
+                    ),
+                  ),
+                ]),
+            ...episode.videoContainer.subtitles.map((subtitleTrack) =>
+              this.eSubtitleTrack(subtitleTrack),
+            ),
+          ],
+          {
+            linesGap: 0,
+            customeStyle: `margin-top: 2rem;`,
+          },
+        ),
+      ),
+    ];
+  }
+
   private eVideoTrack(videoTrack: VideoTrack): HTMLDivElement {
-    let ele = E.div(
+    return E.div(
       {
         class: "episode-details-video-track",
-        style: `cursor: pointer; width: 100%; box-sizing: border-box; padding: 1rem; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: 2rem;`,
+        style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: 1rem;`,
       },
       E.div(
         {
-          class: "episode-details-video-data-line",
-          style: `flex: 1 0 0; display: flex; flex-flow: row nowrap; gap: 2rem; justify-content: space-between;`,
+          class: "episode-details-video-track-state",
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
-        E.div(
-          {
-            class: "episode-details-video-track-state",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(
-            videoTrack.staging
-              ? LOCALIZED_TEXT.seasonEpisodeTrackStatePendingLabel
-              : LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel,
-          ),
-        ),
-        E.div(
-          {
-            class: "episode-details-video-track-duration-sec",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};${videoTrack.staging?.toDelete ? " text-decoration: line-through;" : ""}`,
-          },
-          E.text(`${formatSecondsAsHHMMSS(videoTrack.durationSec)}`),
-        ),
-        E.div(
-          {
-            class: "episode-details-video-track-resolution",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};${videoTrack.staging?.toDelete ? " text-decoration: line-through;" : ""}`,
-          },
-          E.text(`${videoTrack.resolution}`),
+        E.text(
+          videoTrack.staging
+            ? LOCALIZED_TEXT.seasonEpisodeTrackStatePendingLabel
+            : LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel,
         ),
       ),
       E.div(
         {
-          class: "episode-details-video-track-expand-icon",
-          style: `flex: 0 0 auto; width: ${ICON_M}rem; height: ${ICON_M}rem; transform: rotate(180deg);`,
+          class: "episode-details-video-track-duration-sec",
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};${videoTrack.staging?.toDelete ? " text-decoration: line-through;" : ""}`,
         },
-        createArrowIcon(SCHEME.neutral1),
+        E.text(`${formatSecondsAsHHMMSS(videoTrack.durationSec)}`),
+      ),
+      E.div(
+        {
+          class: "episode-details-video-track-resolution",
+          style: `flex: 0 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};${videoTrack.staging?.toDelete ? " text-decoration: line-through;" : ""}`,
+        },
+        E.text(`${videoTrack.resolution}`),
       ),
     );
-    this.videoTrackButtons.push(ele);
-    ele.addEventListener("click", () =>
-      this.emit("editVideoTrack", videoTrack),
-    );
-    return ele;
   }
 
   private eAudioTrack(audioTrack: AudioTrack): HTMLDivElement {
-    let ele = E.div(
+    return E.div(
       {
         class: "episode-details-audio-track",
-        style: `cursor: pointer; width: 100%; box-sizing: border-box; padding: 1rem; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: 2rem;`,
+        style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: 1rem;`,
       },
       E.div(
         {
-          class: "episode-details-audio-data-line",
-          style: `flex: 1 0 0; display: flex; flex-flow: row nowrap; justify-content: space-between; align-items: center; gap: 2rem;`,
+          class: "episode-details-audio-track-state",
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
-        E.div(
-          {
-            class: "episode-details-audio-track-state",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(
-            audioTrack.staging
-              ? LOCALIZED_TEXT.seasonEpisodeTrackStatePendingLabel
-              : LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel,
-          ),
+        E.text(
+          audioTrack.staging
+            ? LOCALIZED_TEXT.seasonEpisodeTrackStatePendingLabel
+            : LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel,
         ),
-        E.div(
-          {
-            class: "episode-details-audio-track-name",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: .5rem;`,
-          },
-          ...(Boolean(audioTrack.committed) &&
-          Boolean(audioTrack.staging) &&
-          audioTrack.committed.name !== audioTrack.staging.toAdd?.name
-            ? [
-                E.div(
-                  {
-                    style: `display: inline; text-decoration: line-through;`,
-                  },
+      ),
+      E.div(
+        {
+          class: "episode-details-audio-track-name",
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: .5rem;`,
+        },
+        ...(Boolean(audioTrack.committed) &&
+        Boolean(audioTrack.staging) &&
+        audioTrack.committed.name !== audioTrack.staging.toAdd?.name
+          ? [
+              E.div(
+                {
+                  style: `display: inline; text-decoration: line-through;`,
+                },
 
-                  E.text(audioTrack.committed?.name),
-                ),
-              ]
-            : []),
-          ...(audioTrack.staging?.toDelete
-            ? []
-            : [
+                E.text(audioTrack.committed?.name),
+              ),
+            ]
+          : []),
+        ...(audioTrack.staging?.toDelete
+          ? []
+          : [
+              E.text(
+                audioTrack.staging?.toAdd?.name ?? audioTrack.committed?.name,
+              ),
+            ]),
+      ),
+      E.div(
+        {
+          class: "episode-details-audio-default",
+          style: `flex: 0 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: .5rem;`,
+        },
+        ...(Boolean(audioTrack.committed) &&
+        Boolean(audioTrack.staging) &&
+        audioTrack.committed.isDefault !== audioTrack.staging.toAdd?.isDefault
+          ? [
+              E.div(
+                {
+                  style: `display: inline; text-decoration: line-through;`,
+                },
                 E.text(
-                  audioTrack.staging?.toAdd?.name ?? audioTrack.committed?.name,
-                ),
-              ]),
-        ),
-        E.div(
-          {
-            class: "episode-details-audio-default",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: .5rem;`,
-          },
-          ...(Boolean(audioTrack.committed) &&
-          Boolean(audioTrack.staging) &&
-          audioTrack.committed.isDefault !== audioTrack.staging.toAdd?.isDefault
-            ? [
-                E.div(
-                  {
-                    style: `display: inline; text-decoration: line-through;`,
-                  },
-                  E.text(
-                    audioTrack.committed.isDefault
-                      ? LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultYesValue
-                      : LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultNoValue,
-                  ),
-                ),
-              ]
-            : []),
-          ...(audioTrack.staging?.toDelete
-            ? []
-            : [
-                E.text(
-                  (audioTrack.staging?.toAdd?.isDefault ??
-                    audioTrack.committed?.isDefault)
+                  audioTrack.committed.isDefault
                     ? LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultYesValue
                     : LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultNoValue,
                 ),
-              ]),
-        ),
-      ),
-      E.div(
-        {
-          class: "episode-details-audio-track-expand-icon",
-          style: `flex: 0 0 auto; width: ${ICON_M}rem; height: ${ICON_M}rem; transform: rotate(180deg);`,
-        },
-        createArrowIcon(SCHEME.neutral1),
+              ),
+            ]
+          : []),
+        ...(audioTrack.staging?.toDelete
+          ? []
+          : [
+              E.text(
+                (audioTrack.staging?.toAdd?.isDefault ??
+                  audioTrack.committed?.isDefault)
+                  ? LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultYesValue
+                  : LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultNoValue,
+              ),
+            ]),
       ),
     );
-    this.audioTrackButtons.push(ele);
-    ele.addEventListener("click", () =>
-      this.emit("editAudioTrack", audioTrack),
-    );
-    return ele;
   }
 
   private eSubtitleTrack(subtitleTrack: SubtitleTrack): HTMLDivElement {
-    let ele = E.div(
+    return E.div(
       {
         class: "episode-details-subtitle-track",
-        style: `cursor: pointer; width: 100%; box-sizing: border-box; padding: 1rem; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: 2rem;`,
+        style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: 1rem;`,
       },
       E.div(
         {
-          class: "episode-details-subtitle-data-line",
-          style: `flex: 1 0 0; display: flex; flex-flow: row nowrap; align-items: center; gap: 2rem;`,
+          class: "episode-details-subtitle-track-state",
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
-        E.div(
-          {
-            class: "episode-details-subtitle-track-state",
-            style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(
-            subtitleTrack.staging
-              ? LOCALIZED_TEXT.seasonEpisodeTrackStatePendingLabel
-              : LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel,
-          ),
-        ),
-        E.div(
-          {
-            class: "episode-details-subtitle-track-name",
-            style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: .5rem;`,
-          },
-          ...(Boolean(subtitleTrack.committed) &&
-          Boolean(subtitleTrack.staging) &&
-          subtitleTrack.committed.name !== subtitleTrack.staging.toAdd?.name
-            ? [
-                E.div(
-                  {
-                    style: `display: inline; text-decoration: line-through;`,
-                  },
-
-                  E.text(subtitleTrack.committed?.name),
-                ),
-              ]
-            : []),
-          ...(subtitleTrack.staging?.toDelete
-            ? []
-            : [
-                E.text(
-                  subtitleTrack.staging?.toAdd?.name ??
-                    subtitleTrack.committed?.name,
-                ),
-              ]),
+        E.text(
+          subtitleTrack.staging
+            ? LOCALIZED_TEXT.seasonEpisodeTrackStatePendingLabel
+            : LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel,
         ),
       ),
       E.div(
         {
-          class: "episode-details-subtitle-track-expand-icon",
-          style: `flex: 0 0 auto; width: ${ICON_M}rem; height: ${ICON_M}rem; transform: rotate(180deg);`,
+          class: "episode-details-subtitle-track-name",
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: .5rem;`,
         },
-        createArrowIcon(SCHEME.neutral1),
+        ...(Boolean(subtitleTrack.committed) &&
+        Boolean(subtitleTrack.staging) &&
+        subtitleTrack.committed.name !== subtitleTrack.staging.toAdd?.name
+          ? [
+              E.div(
+                {
+                  style: `display: inline; text-decoration: line-through;`,
+                },
+
+                E.text(subtitleTrack.committed?.name),
+              ),
+            ]
+          : []),
+        ...(subtitleTrack.staging?.toDelete
+          ? []
+          : [
+              E.text(
+                subtitleTrack.staging?.toAdd?.name ??
+                  subtitleTrack.committed?.name,
+              ),
+            ]),
       ),
     );
-    this.subtitleTrackButtons.push(ele);
-    ele.addEventListener("click", () =>
-      this.emit("editSubtitleTrack", subtitleTrack),
-    );
-    return ele;
   }
 
   private eStorageFee(videoContainer: VideoContainer): Array<HTMLDivElement> {

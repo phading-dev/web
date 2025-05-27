@@ -12,11 +12,6 @@ import { EpisodeState } from "@phading/product_service_interface/show/episode_st
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import { GetEpisodeResponse } from "@phading/product_service_interface/show/web/publisher/interface";
 import { ProcessingFailureReason } from "@phading/video_service_interface/node/last_processing_failure";
-import {
-  AudioTrack,
-  SubtitleTrack,
-  VideoTrack,
-} from "@phading/video_service_interface/node/video_container";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -481,68 +476,17 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let commitVideo: EpisodeDetails;
-        this.cut.on("commitVideo", (episode) => (commitVideo = episode));
+        let editTracks: EpisodeDetails;
+        this.cut.on("editTracks", (episode) => (editTracks = episode));
 
         // Execute
-        this.cut.episodeVideoCommitButton.val.click();
+        this.cut.editTracksButton.val.click();
 
         // Verify
         assertThat(
-          commitVideo.episodeName,
+          editTracks.episodeName,
           eq("The End of the Beginning and the Beginning of the End"),
           "editDraftState.episodeName",
-        );
-
-        // Prepare
-        let editVideoTrack: VideoTrack;
-        this.cut.on(
-          "editVideoTrack",
-          (videoTrack) => (editVideoTrack = videoTrack),
-        );
-
-        // Execute
-        this.cut.videoTrackButtons[0].click();
-
-        // Verify
-        assertThat(
-          editVideoTrack.resolution,
-          eq("1920x1080"),
-          "editVideoTrack.resolution",
-        );
-
-        // Prepare
-        let editAudioTrack: AudioTrack;
-        this.cut.on(
-          "editAudioTrack",
-          (audioTrack) => (editAudioTrack = audioTrack),
-        );
-
-        // Execute
-        this.cut.audioTrackButtons[0].click();
-
-        // Verify
-        assertThat(
-          editAudioTrack.totalBytes,
-          eq(223),
-          "editAudioTrack.totalBytes",
-        );
-
-        // Prepare
-        let editSubtitleTrack: SubtitleTrack;
-        this.cut.on(
-          "editSubtitleTrack",
-          (subtitleTrack) => (editSubtitleTrack = subtitleTrack),
-        );
-
-        // Execute
-        this.cut.subtitleTrackButtons[0].click();
-
-        // Verify
-        assertThat(
-          editSubtitleTrack.totalBytes,
-          eq(334),
-          "editSubtitleTrack.totalBytes",
         );
       }
       public tearDown() {
@@ -749,6 +693,7 @@ TEST_RUNNER.run({
             videoContainerCached: {
               version: 1,
             },
+            videoUrl: video,
             videoContainer: {
               masterPlaylist: {
                 synced: {
@@ -798,9 +743,19 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_tablet_finalized.png"),
-          path.join(__dirname, "/golden/info_page_tablet_finalized.png"),
-          path.join(__dirname, "/info_page_tablet_finalized_diff.png"),
+          path.join(__dirname, "/info_page_tablet_committed.png"),
+          path.join(__dirname, "/golden/info_page_tablet_committed.png"),
+          path.join(__dirname, "/info_page_tablet_committed_diff.png"),
+          {
+            excludedAreas: [
+              {
+                x: 300,
+                y: 640,
+                width: 90,
+                height: 90,
+              },
+            ],
+          },
         );
 
         // Execute
@@ -808,12 +763,22 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_tablet_finalized_scrolled.png"),
+          path.join(__dirname, "/info_page_tablet_committed_scrolled.png"),
           path.join(
             __dirname,
-            "/golden/info_page_tablet_finalized_scrolled.png",
+            "/golden/info_page_tablet_committed_scrolled.png",
           ),
-          path.join(__dirname, "/info_page_tablet_finalized_scrolled_diff.png"),
+          path.join(__dirname, "/info_page_tablet_committed_scrolled_diff.png"),
+          {
+            excludedAreas: [
+              {
+                x: 300,
+                y: 60,
+                width: 90,
+                height: 90,
+              },
+            ],
+          },
         );
 
         // Execute
@@ -822,9 +787,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_desktop_finalized.png"),
-          path.join(__dirname, "/golden/info_page_desktop_finalized.png"),
-          path.join(__dirname, "/info_page_desktop_finalized_diff.png"),
+          path.join(__dirname, "/info_page_desktop_committed.png"),
+          path.join(__dirname, "/golden/info_page_desktop_committed.png"),
+          path.join(__dirname, "/info_page_desktop_committed_diff.png"),
         );
 
         // Execute
@@ -832,12 +797,15 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_desktop_finalized_scrolled.png"),
+          path.join(__dirname, "/info_page_desktop_committed_scrolled.png"),
           path.join(
             __dirname,
-            "/golden/info_page_desktop_finalized_scrolled.png",
+            "/golden/info_page_desktop_committed_scrolled.png",
           ),
-          path.join(__dirname, "/info_page_desktop_finalized_scrolled_diff.png"),
+          path.join(
+            __dirname,
+            "/info_page_desktop_committed_scrolled_diff.png",
+          ),
         );
 
         // Execute
@@ -846,9 +814,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_phone_finalized.png"),
-          path.join(__dirname, "/golden/info_page_phone_finalized.png"),
-          path.join(__dirname, "/info_page_phone_finalized_diff.png"),
+          path.join(__dirname, "/info_page_phone_committed.png"),
+          path.join(__dirname, "/golden/info_page_phone_committed.png"),
+          path.join(__dirname, "/info_page_phone_committed_diff.png"),
         );
 
         // Execute
@@ -856,9 +824,12 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_phone_finalized_scrolled.png"),
-          path.join(__dirname, "/golden/info_page_phone_finalized_scrolled.png"),
-          path.join(__dirname, "/info_page_phone_finalized_scrolled_diff.png"),
+          path.join(__dirname, "/info_page_phone_committed_scrolled.png"),
+          path.join(
+            __dirname,
+            "/golden/info_page_phone_committed_scrolled.png",
+          ),
+          path.join(__dirname, "/info_page_phone_committed_scrolled_diff.png"),
         );
 
         // Prepare
@@ -959,6 +930,16 @@ TEST_RUNNER.run({
             __dirname,
             "/info_page_tablet_published_premieres_diff.png",
           ),
+          {
+            excludedAreas: [
+              {
+                x: 300,
+                y: 750,
+                width: 90,
+                height: 90,
+              },
+            ],
+          },
         );
 
         // Prepare
@@ -1112,6 +1093,16 @@ TEST_RUNNER.run({
             __dirname,
             "/info_page_tablet_premiered_pending_tracks_diff.png",
           ),
+          {
+            excludedAreas: [
+              {
+                x: 300,
+                y: 750,
+                width: 90,
+                height: 90,
+              },
+            ],
+          },
         );
 
         // Execute

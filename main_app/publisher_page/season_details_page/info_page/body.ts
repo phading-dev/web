@@ -13,7 +13,7 @@ import { createPlusIcon } from "../../../../common/icons";
 import { BASIC_INPUT_STYLE } from "../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import {
-  PAGE_MEDIUM_TOP_DOWN_CARD_STYLE,
+  PAGE_LARGE_TOP_DOWN_CARD_STYLE,
   PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
 } from "../../../../common/page_style";
 import { ScrollLoadingSection } from "../../../../common/scroll_loading_section";
@@ -111,7 +111,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "season-details-info-card",
-          style: `${PAGE_MEDIUM_TOP_DOWN_CARD_STYLE} padding: 2rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
+          style: `${PAGE_LARGE_TOP_DOWN_CARD_STYLE} padding: 2rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
         },
         ...(seasonDetails.state === SeasonState.ARCHIVED
           ? []

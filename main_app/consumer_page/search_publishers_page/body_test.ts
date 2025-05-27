@@ -10,7 +10,7 @@ import {
   SearchPublishersResponse,
 } from "@phading/user_service_interface/web/third_person/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
-import { mouseClick } from "@selfage/puppeteer_test_executor_api";
+import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -198,6 +198,7 @@ TEST_RUNNER.run({
         assertThat(showroomId, eq("account1"), "showroom id");
       }
       public async tearDown() {
+        await mouseMove(-1, -1, 1);
         window.scrollTo(0, 0);
         this.cut.remove();
       }

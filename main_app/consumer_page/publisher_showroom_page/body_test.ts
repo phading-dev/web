@@ -16,7 +16,7 @@ import {
   GetAccountDetailsResponse,
 } from "@phading/user_service_interface/web/third_person/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
-import { mouseClick } from "@selfage/puppeteer_test_executor_api";
+import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { ClientRequestInterface } from "@selfage/service_descriptor/client_request_interface";
@@ -237,6 +237,7 @@ TEST_RUNNER.run({
         assertThat(showDetailsId, eq("season8"), "showDetailsId");
       }
       public async tearDown() {
+        await mouseMove(-1, -1, 1);
         window.scrollTo(0, 0);
         this.cut.remove();
       }

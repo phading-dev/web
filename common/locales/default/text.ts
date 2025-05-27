@@ -773,6 +773,9 @@ export default class Text {
   get seasonEpisodeVideoProcessingLabel() {
     return `Processing...Please check back later.`;
   }
+  get seasonEpisodeVideoComittingVideo() {
+    return `A new video is being finalized. Please check back later.`;
+  }
   get seasonEpisodeNoVersion() {
     return `Finalize the first version.`;
   }
@@ -814,6 +817,15 @@ export default class Text {
   }
   get seasonEpisodeTrackStatePendingLabel() {
     return `Pending`;
+  }
+  get seasonEpisodeTrackStateNewLabel() {
+    return `New`;
+  }
+  get seasonEpisodeTrackStateModifyingLabel() {
+    return `Modifying`;
+  }
+  get seasonEpisodeTrackStateDeletingLabel() {
+    return `Deleting`;
   }
   get seasonEpisodeTrackVideoDurationLabel() {
     return `Duration`;
@@ -997,40 +1009,40 @@ export default class Text {
   get unpublishEpisodeGenericError() {
     return `Failed to unpublish the episode. Please try again later.`;
   }
-  get commitEpisodeVideoTitle() {
-    return `Finalize video`;
+  get updateTracksTitle() {
+    return `Update tracks`;
   }
-  get commitEpisodeVideoNewVersionLabel() {
-    return `New version: `;
+  get saveTrackChangesButtonLabel() {
+    return `Save changes`;
   }
-  get commitEpisodeVideoDraftFooter() {
-    return `All pending changes will be finalized. The video will not be visible to the public until the episode is published.`;
+  get commitTrackChangesButtonLabel() {
+    return `Finalize changes`;
   }
-  get commitEpisodeVideoPublishedFooter() {
-    return `All pending changes will be finalized. The video will be visible to the public immediately once finalized.`;
+  get updateEpisodeTracksTrackMismatchError() {
+    return `Track information may be out of sync. Please refresh the page and try again.`;
   }
-  get commitEpisodeVideoButtonLabel() {
-    return `Finalize`;
-  }
-  get commitEpisodeVideoNoVideoError() {
+  get updateEpisodeTracksNoVideoError() {
     return `No video track after finalized. One video track is required.`;
   }
-  get commitEpisodeVideoMoreThanOneVideoError() {
+  get updateEpisodeTracksMoreThanOneVideoError() {
     return `More than one video tracks after finalized. Only one video track is allowed.`;
   }
-  get commitEpisodeVideoTooManyAudioError() {
+  get updateEpisodeTracksTooManyAudioError() {
     return `Too many audio tracks after finalized.`;
   }
-  get commitEpisodeVideoNoDefaultAudioError() {
+  get updateEpisodeTracksNoDefaultAudioError() {
     return `No default audio track after finalized.`;
   }
-  get commitEpisodeVideoMoreThanOneDefaultAudioError() {
+  get updateEpisodeTracksMoreThanOneDefaultAudioError() {
     return `More than one default audio tracks after finalized. Only one default audio track is allowed.`;
   }
-  get commitEpisodeVideoTooManySubtitleError() {
+  get updateEpisodeTracksTooManySubtitleError() {
     return `Too many subtitle tracks after finalized.`;
   }
-  get commitEpisodeVideoGenericError() {
-    return `Failed to finalize the video. Please try again later.`;
+  get saveEpisodeTracksGenericError() {
+    return `Failed to save changes. Please try again later.`;
+  }
+  get commitEpisodeTracksGenericError() {
+    return `Failed to finalize the tracks. Please try again later.`;
   }
 }

@@ -218,6 +218,7 @@ TEST_RUNNER.run({
       }
       public async tearDown() {
         await forceMouseUp();
+        await mouseMove(-1, -1, 1);
         this.cut.remove();
       }
     })(),

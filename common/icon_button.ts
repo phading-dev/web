@@ -398,25 +398,22 @@ export class SimpleIconButton extends EventEmitter {
     this.body = E.div(
       {
         class: "simple-icon-button",
-        style: `width: ${buttonSize}rem; height: ${buttonSize}rem; box-sizing: border-box; padding: ${(buttonSize - iconSize) / 2}rem; ${customStyle}`,
+        style: `cursor: pointer; width: ${buttonSize}rem; height: ${buttonSize}rem; box-sizing: border-box; padding: ${(buttonSize - iconSize) / 2}rem; ${customStyle}`,
       },
       svg,
     );
-    this.show();
-
+    this.enable();
     this.body.addEventListener("click", () => this.emit("action"));
   }
 
   public enable(): this {
     this.body.style.color = SCHEME.neutral1;
-    this.body.style.cursor = "pointer";
     this.body.style.pointerEvents = "auto";
     return this;
   }
 
   public disable(): this {
     this.body.style.color = SCHEME.neutral2;
-    this.body.style.cursor = "not-allowed";
     this.body.style.pointerEvents = "none";
     return this;
   }

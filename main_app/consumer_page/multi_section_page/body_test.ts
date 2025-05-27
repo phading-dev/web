@@ -15,7 +15,7 @@ import {
   ListContinueWatchingSeasonsResponse,
   ListSeasonsByRecentPremiereTimeResponse,
 } from "@phading/product_service_interface/show/web/consumer/interface";
-import { mouseClick } from "@selfage/puppeteer_test_executor_api";
+import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { ClientRequestInterface } from "@selfage/service_descriptor/client_request_interface";
@@ -142,7 +142,8 @@ TEST_RUNNER.run({
         // Verify
         assertThat(showDetailsId, eq("season2"), "showDetailsId");
       }
-      public tearDown() {
+      public async tearDown() {
+        await mouseMove(-1, -1, 1);
         this.cut.body.remove();
       }
     })(),

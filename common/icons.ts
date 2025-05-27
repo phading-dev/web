@@ -79,6 +79,20 @@ export function createMinusIcon(color: string): SVGSVGElement {
 }
 
 // Points to left
+export function createLineArrowIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "arrow-icon",
+      style: `height: 100%; fill: none; stroke-width: 26; stroke: ${color};`,
+      viewBox: "-70 -20 140 140",
+    },
+    E.path({
+      d: `M0 0 l-50 50 l50 50 M-50 50 l120 0`,
+    }),
+  );
+}
+
+// Points to left
 export function createArrowIcon(color: string): SVGSVGElement {
   return E.svg(
     {
@@ -1027,6 +1041,32 @@ export function createReplayIcon(color: string): SVGSVGElement {
     },
     E.path({
       d: `M33.511,71.013c15.487,0,28.551-10.563,32.375-24.859h9.113L61.055,22L47.111,46.151h8.006   c-3.44,8.563-11.826,14.628-21.605,14.628c-12.837,0-23.28-10.443-23.28-23.28c0-12.836,10.443-23.28,23.28-23.28   c6.604,0,12.566,2.768,16.809,7.196l5.258-9.108c-5.898-5.176-13.619-8.32-22.065-8.32C15.034,3.987,0,19.019,0,37.5   C-0.002,55.981,15.03,71.013,33.511,71.013z`,
+    }),
+  );
+}
+
+export function createEditIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "edit-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: ".5 .5 23 23",
+    },
+    E.path({
+      d: `M20,16v4a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V6A2,2,0,0,1,4,4H8  M12.5 15.8 L22 6.2 L17.8 2 L8.3 11.5 L8 16z`,
+    }),
+  );
+}
+
+export function createSwitchIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "switch-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 26;`,
+      viewBox: "-70 -120 240 240",
+    },
+    E.path({
+      d: `M0 0 l-50 50 l50 50 M-50 50 l140 0 M100 -100 l50 50 l-50 50 M150 -50 l-140 0`,
     }),
   );
 }

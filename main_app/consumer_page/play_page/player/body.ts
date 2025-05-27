@@ -155,7 +155,7 @@ export class Player extends EventEmitter {
           class: "player-controls",
           style: `position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding-bottom: .2rem; background-color: ${SCHEME.neutral4Translucent}; display: flex; flex-flow: column nowrap; transition: opacity .2s;`,
         },
-        assign(this.backButton, createBackButton("").enable()).body,
+        assign(this.backButton, createBackButton().enable()).body,
         E.divRef(
           this.centerControlsContainer,
           {
