@@ -4,7 +4,10 @@ import {
   OutlineBlockingButton,
 } from "../../../../common/blocking_button";
 import { SCHEME } from "../../../../common/color_scheme";
-import { SimpleIconButton, createBackButton } from "../../../../common/icon_button";
+import {
+  SimpleIconButton,
+  createBackButton,
+} from "../../../../common/icon_button";
 import { ImageCropper } from "../../../../common/image_cropper/body";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import {
@@ -52,12 +55,12 @@ export class UpdateAvatarPage extends EventEmitter {
           class: "update-avatar-card",
           style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 1.5rem; align-items: center;`,
         },
-        assign(this.backButton, createBackButton().enable()).body,
+        assign(this.backButton, createBackButton()).body,
         assign(
           this.chooseFileButton,
-          OutlineBlockingButton.create("")
-            .append(E.text(LOCALIZED_TEXT.chooseAvatarLabel))
-            .enable(),
+          new OutlineBlockingButton("").append(
+            E.text(LOCALIZED_TEXT.chooseAvatarLabel),
+          ),
         ).body,
         E.divRef(
           this.loadErrorText,
@@ -135,7 +138,7 @@ export class UpdateAvatarPage extends EventEmitter {
         ),
         assign(
           this.uploadButton,
-          FilledBlockingButton.create("")
+          new FilledBlockingButton("")
             .append(E.text(LOCALIZED_TEXT.uploadAvatarLabel))
             .disable(),
         ).body,

@@ -13,8 +13,8 @@ import {
 import {
   createCrossIcon,
   createEditIcon,
-  createSwitchIcon,
   createLineArrowIcon,
+  createSwitchIcon,
   createTrashCanIcon,
 } from "../../../../../common/icons";
 import { BASIC_INPUT_STYLE } from "../../../../../common/input_styles";
@@ -131,7 +131,7 @@ export class VideoTrackEditor extends EventEmitter {
           }),
           assign(
             this.deleteTrackButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_M,
               ICON_L,
               createTrashCanIcon("currentColor"),
@@ -218,7 +218,7 @@ export class VideoTrackEditor extends EventEmitter {
           }),
           assign(
             this.dropStagingButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_M,
               ICON_M,
               createCrossIcon(SCHEME.neutral1),
@@ -281,7 +281,7 @@ export class VideoTrackEditor extends EventEmitter {
           }),
           assign(
             this.dropStagingButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_M,
               ICON_M,
               createCrossIcon(SCHEME.neutral1),
@@ -394,7 +394,7 @@ export class AudioTrackEditor extends EventEmitter {
           }),
           assign(
             this.editTrackButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_M,
               ICON_M,
               createEditIcon("currentColor"),
@@ -405,7 +405,7 @@ export class AudioTrackEditor extends EventEmitter {
           }),
           assign(
             this.deleteTrackButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_M,
               ICON_L,
               createTrashCanIcon("currentColor"),
@@ -502,7 +502,7 @@ export class AudioTrackEditor extends EventEmitter {
           }),
           assign(
             this.dropStagingButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_M,
               ICON_M,
               createCrossIcon("currentColor"),
@@ -585,7 +585,7 @@ export class AudioTrackEditor extends EventEmitter {
           }),
           assign(
             this.dropStagingButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_M,
               ICON_M,
               createCrossIcon("currentColor"),
@@ -732,7 +732,7 @@ export class SubtitleTrackEditor extends EventEmitter {
           }),
           assign(
             this.editTrackButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_M,
               ICON_M,
               createEditIcon("currentColor"),
@@ -743,7 +743,7 @@ export class SubtitleTrackEditor extends EventEmitter {
           }),
           assign(
             this.deleteTrackButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_M,
               ICON_L,
               createTrashCanIcon("currentColor"),
@@ -812,7 +812,7 @@ export class SubtitleTrackEditor extends EventEmitter {
           }),
           assign(
             this.dropStagingButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_M,
               ICON_M,
               createCrossIcon("currentColor"),
@@ -866,7 +866,7 @@ export class SubtitleTrackEditor extends EventEmitter {
           }),
           assign(
             this.dropStagingButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_M,
               ICON_M,
               createCrossIcon("currentColor"),
@@ -1140,15 +1140,15 @@ export class UpdateTracksPage extends EventEmitter {
           },
           assign(
             this.commitStagingButton,
-            FilledBlockingButton.create<CommitEpisodeStagingDataResponse>().append(
+            new FilledBlockingButton<CommitEpisodeStagingDataResponse>().append(
               E.text(LOCALIZED_TEXT.commitTrackChangesButtonLabel),
             ),
           ).body,
           assign(
             this.saveStagingButton,
-            TextBlockingButton.create<SaveEpisodeStagingDataResponse>()
-              .append(E.text(LOCALIZED_TEXT.saveTrackChangesButtonLabel))
-              .enable(),
+            new TextBlockingButton<SaveEpisodeStagingDataResponse>().append(
+              E.text(LOCALIZED_TEXT.saveTrackChangesButtonLabel),
+            ),
           ).body,
           E.divRef(
             this.actionError,

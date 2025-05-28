@@ -99,14 +99,9 @@ export abstract class BlockingButton<Response = void> extends EventEmitter {
 export class FilledBlockingButton<
   Response = void,
 > extends BlockingButton<Response> {
-  public static create<Response = void>(
-    customStyle: string = "",
-  ): FilledBlockingButton<Response> {
-    return new FilledBlockingButton<Response>(customStyle);
-  }
-
   public constructor(customStyle: string = "") {
     super(`${COMMON_FILLED_BUTTON_STYLE} ${customStyle}`);
+    this.enable();
   }
 
   protected enableOverride(): void {
@@ -123,14 +118,9 @@ export class FilledBlockingButton<
 export class OutlineBlockingButton<
   Response = void,
 > extends BlockingButton<Response> {
-  public static create<Response = void>(
-    customStyle: string = "",
-  ): OutlineBlockingButton<Response> {
-    return new OutlineBlockingButton<Response>(customStyle);
-  }
-
   public constructor(customStyle: string = "") {
     super(`${COMMON_FILLED_BUTTON_STYLE} ${customStyle}`);
+    this.enable();
   }
 
   protected enableOverride(): void {
@@ -147,14 +137,9 @@ export class OutlineBlockingButton<
 export class TextBlockingButton<
   Response = void,
 > extends BlockingButton<Response> {
-  public static create<Response = void>(
-    customStyle: string = "",
-  ): TextBlockingButton<Response> {
-    return new TextBlockingButton<Response>(customStyle);
-  }
-
   public constructor(customStyle: string = "") {
     super(`${COMMON_TEXT_BUTTON_STYLE} ${customStyle}`);
+    this.enable();
   }
 
   protected enableOverride(): void {

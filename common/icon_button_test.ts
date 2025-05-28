@@ -36,7 +36,7 @@ class RenderOversizeCentering implements TestCase {
       createCommentIcon("currentColor"),
       this.position,
       "some text",
-    ).enable();
+    );
     container.append(this.cut.body);
 
     // Execute
@@ -77,7 +77,7 @@ class RenderCenteringWithin implements TestCase {
       createCommentIcon("currentColor"),
       this.position,
       "some text",
-    ).enable();
+    );
     container.append(this.cut.body);
 
     // Execute
@@ -181,7 +181,7 @@ TEST_RUNNER.run({
           createCommentIcon("currentColor"),
           TooltipPosition.BOTTOM,
           "some text",
-        ).enable();
+        );
         container.append(this.cut.body);
         this.cut.hover();
         await new Promise<void>((resolve) =>
@@ -214,7 +214,7 @@ TEST_RUNNER.run({
           createCommentIcon("currentColor"),
           TooltipPosition.BOTTOM,
           "some text",
-        ).enable();
+        );
         let clicked = false;
         cut.on("action", () => (clicked = true));
 
@@ -291,7 +291,7 @@ TEST_RUNNER.run({
           createCommentIcon("currentColor"),
           TooltipPosition.BOTTOM,
           "some text",
-        ).enable();
+        );
         container.append(this.cut.body);
 
         // Verify

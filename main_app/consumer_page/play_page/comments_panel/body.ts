@@ -76,7 +76,7 @@ export class CommentsPanel extends EventEmitter {
         }),
         assign(
           this.commentButton,
-          FilledBlockingButton.create<PostCommentResponse>().append(
+          new FilledBlockingButton<PostCommentResponse>().append(
             E.text(LOCALIZED_TEXT.commentButtonLabel),
           ),
         ).body,

@@ -85,7 +85,7 @@ export class InputFormPage<
           },
           assign(
             this.primaryButton,
-            FilledBlockingButton.create<PrimaryResponse>().append(
+            new FilledBlockingButton<PrimaryResponse>().append(
               E.text(primaryButtonLabel),
             ),
           ).body,
@@ -156,9 +156,7 @@ export class InputFormPage<
   }
 
   public addBackButton(): this {
-    this.card.val.append(
-      assign(this.backButton, createBackButton().enable()).body,
-    );
+    this.card.val.append(assign(this.backButton, createBackButton()).body);
     this.backButton.val.on("action", () => this.emit("back"));
     return this;
   }
@@ -171,10 +169,7 @@ export class InputFormPage<
     this.primaryButton.val.body.after(
       assign(
         this.secondaryBlockingButton,
-        TextBlockingButton.create<SecondaryResponse>()
-          .append(E.text(buttonLabel))
-          .enable()
-          .show(),
+        new TextBlockingButton<SecondaryResponse>().append(E.text(buttonLabel)),
       ).body,
     );
     this.secondaryActionFn = actionFn;

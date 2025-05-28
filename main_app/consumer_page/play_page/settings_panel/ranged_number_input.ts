@@ -30,7 +30,7 @@ export class RangedNumberInput extends EventEmitter {
       },
       assign(
         this.minusButton,
-        SimpleIconButton.create(
+        new SimpleIconButton(
           ICON_BUTTON_M,
           ICON_M,
           createMinusIcon("currentColor"),
@@ -43,7 +43,7 @@ export class RangedNumberInput extends EventEmitter {
       }),
       assign(
         this.plusButton,
-        SimpleIconButton.create(
+        new SimpleIconButton(
           ICON_BUTTON_M,
           ICON_M,
           createPlusIcon("currentColor"),

@@ -380,37 +380,33 @@ export class SeasonDetailsPage extends EventEmitter {
               ),
               assign(
                 this.watchLaterButton,
-                OutlineBlockingButton.create(
+                new OutlineBlockingButton(
                   `display: flex; flex-flow: row nowrap; align-items: center; gap: .7rem;`,
-                )
-                  .append(
-                    E.div(
-                      {
-                        class: "season-details-watch-later-icon",
-                        style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
-                      },
-                      createBookmarkIcon(SCHEME.neutral1),
-                    ),
-                    E.text(LOCALIZED_TEXT.watchLaterLabel),
-                  )
-                  .enable(),
+                ).append(
+                  E.div(
+                    {
+                      class: "season-details-watch-later-icon",
+                      style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
+                    },
+                    createBookmarkIcon(SCHEME.neutral1),
+                  ),
+                  E.text(LOCALIZED_TEXT.watchLaterLabel),
+                ),
               ).body,
               assign(
                 this.removeWatchLaterButton,
-                OutlineBlockingButton.create(
+                new OutlineBlockingButton(
                   `display: flex; flex-flow: row nowrap; align-items: center; gap: .7rem;`,
-                )
-                  .append(
-                    E.div(
-                      {
-                        class: "season-details-watch-later-icon",
-                        style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
-                      },
-                      createFilledBookmarkIcon(SCHEME.neutral1),
-                    ),
-                    E.text(LOCALIZED_TEXT.watchLaterRemoveLabel),
-                  )
-                  .enable(),
+                ).append(
+                  E.div(
+                    {
+                      class: "season-details-watch-later-icon",
+                      style: `width: ${ICON_M}rem; height: ${ICON_M}rem; line-height: 1;`,
+                    },
+                    createFilledBookmarkIcon(SCHEME.neutral1),
+                  ),
+                  E.text(LOCALIZED_TEXT.watchLaterRemoveLabel),
+                ),
               ).body,
               E.divRef(
                 this.shareButton,
@@ -522,14 +518,14 @@ export class SeasonDetailsPage extends EventEmitter {
             this.loadMorePrevEpisodesButton,
             LoadMoreEpisodesButton.create(
               LOCALIZED_TEXT.loadMorePrevEpisodesButtonLabel,
-            ).enable(),
+            ),
           ).body,
           ...episodes.map((episode) => this.createEpisodeItem(episode)),
           assign(
             this.loadMoreNextEpisodesButton,
             LoadMoreEpisodesButton.create(
               LOCALIZED_TEXT.loadMoreNextEpisodesButtonLabel,
-            ).enable(),
+            ),
           ).body,
         ),
       ),
@@ -987,6 +983,7 @@ export class LoadMoreEpisodesButton<
         E.text(label),
       ),
     );
+    this.enable();
   }
 
   protected enableOverride(): void {

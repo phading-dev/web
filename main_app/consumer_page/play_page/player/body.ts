@@ -155,7 +155,7 @@ export class Player extends EventEmitter {
           class: "player-controls",
           style: `position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding-bottom: .2rem; background-color: ${SCHEME.neutral4Translucent}; display: flex; flex-flow: column nowrap; transition: opacity .2s;`,
         },
-        assign(this.backButton, createBackButton().enable()).body,
+        assign(this.backButton, createBackButton()).body,
         E.divRef(
           this.centerControlsContainer,
           {
@@ -169,7 +169,7 @@ export class Player extends EventEmitter {
             },
             assign(
               this.volumeDownButton,
-              SimpleIconButton.create(
+              new SimpleIconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createVolumeLowIcon("currentColor"),
@@ -181,7 +181,7 @@ export class Player extends EventEmitter {
             }),
             assign(
               this.volumeUpButton,
-              SimpleIconButton.create(
+              new SimpleIconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createVolumeFullIcon("currentColor"),
@@ -195,35 +195,35 @@ export class Player extends EventEmitter {
             },
             assign(
               this.skipBackwardButton,
-              SimpleIconButton.create(
+              new SimpleIconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createSkipBackwardBy10Icon("currentColor"),
-              ).enable(),
+              ),
             ).body,
             assign(
               this.playButton,
-              SimpleIconButton.create(
+              new SimpleIconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createPlayIcon("currentColor"),
-              ).enable(),
+              ),
             ).body,
             assign(
               this.pauseButton,
-              SimpleIconButton.create(
+              new SimpleIconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createPauseIcon("currentColor"),
-              ).enable(),
+              ),
             ).body,
             assign(
               this.skipForwardButton,
-              SimpleIconButton.create(
+              new SimpleIconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createSkipForwardBy10Icon("currentColor"),
-              ).enable(),
+              ),
             ).body,
           ),
           E.div(
@@ -233,7 +233,7 @@ export class Player extends EventEmitter {
             },
             assign(
               this.playbackSpeedDownButton,
-              SimpleIconButton.create(
+              new SimpleIconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createFastForwardIcon(
@@ -248,7 +248,7 @@ export class Player extends EventEmitter {
             }),
             assign(
               this.playbackSpeedUpButton,
-              SimpleIconButton.create(
+              new SimpleIconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createFastForwardIcon("currentColor"),
@@ -263,51 +263,51 @@ export class Player extends EventEmitter {
           },
           assign(
             this.playNextButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_L,
               ICON_XL,
               createPlayNextIcon("currentColor"),
-            ).enable(),
+            ),
           ).body,
           assign(
             this.showInfoButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_L,
               ICON_XL,
               createFilledExclamationMarkInACircle("currentColor"),
-            ).enable(),
+            ),
           ).body,
           assign(
             this.showCommentsButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_L,
               ICON_XL,
               createCommentIcon("currentColor"),
-            ).enable(),
+            ),
           ).body,
           assign(
             this.showSettingsButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_L,
               ICON_XL,
               createSettingsIcon("currentColor"),
-            ).enable(),
+            ),
           ).body,
           assign(
             this.fullscreenButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_L,
               ICON_XL,
               createFullscreenIcon("currentColor"),
-            ).enable(),
+            ),
           ).body,
           assign(
             this.exitFullscreenButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_L,
               ICON_XL,
               createExitFullscreenIcon("currentColor"),
-            ).enable(),
+            ),
           ).body,
         ),
         E.divRef(

@@ -138,9 +138,9 @@ export class PaymentPage extends EventEmitter {
                 },
                 assign(
                   this.retryPaymentsButton,
-                  FilledBlockingButton.create("")
-                    .append(E.text(LOCALIZED_TEXT.retryPaymentsLabel))
-                    .enable(),
+                  new FilledBlockingButton("").append(
+                    E.text(LOCALIZED_TEXT.retryPaymentsLabel),
+                  ),
                 ).body,
                 E.divRef(
                   this.retryPaymentsErrorMessage,
@@ -182,17 +182,15 @@ export class PaymentPage extends EventEmitter {
           },
           assign(
             this.addPaymentMethodButton,
-            FilledBlockingButton.create<CreateStripeSessionToAddPaymentMethodResponse>(
+            new FilledBlockingButton<CreateStripeSessionToAddPaymentMethodResponse>(
               "",
-            )
-              .append(
-                E.text(
-                  response.primaryPaymentMethod
-                    ? LOCALIZED_TEXT.updateCardPaymentLabel
-                    : LOCALIZED_TEXT.addCardPaymentLabel,
-                ),
-              )
-              .enable(),
+            ).append(
+              E.text(
+                response.primaryPaymentMethod
+                  ? LOCALIZED_TEXT.updateCardPaymentLabel
+                  : LOCALIZED_TEXT.addCardPaymentLabel,
+              ),
+            ),
           ).body,
           E.divRef(
             this.addPaymentMethodErrorMessage,

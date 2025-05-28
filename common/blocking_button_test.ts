@@ -38,8 +38,6 @@ class RenderCase implements TestCase {
     });
     let cut = this.buttonFactoryFn("")
       .append(E.text("some button"))
-      .enable()
-      .show()
       .addAction(() => resovablePromise);
     this.container = E.div({}, cut.body);
 
@@ -85,7 +83,7 @@ TEST_RUNNER.run({
   cases: [
     new RenderCase(
       "RenderFilledButton",
-      FilledBlockingButton.create,
+      (customeStyle) => new FilledBlockingButton(customeStyle),
       path.join(__dirname, "/filled_blocking_button_default.png"),
       path.join(__dirname, "/golden/filled_blocking_button_default.png"),
       path.join(__dirname, "/filled_blocking_button_default_diff.png"),
@@ -98,7 +96,7 @@ TEST_RUNNER.run({
     ),
     new RenderCase(
       "RenderOutlineButton",
-      OutlineBlockingButton.create,
+      (customeStyle) => new OutlineBlockingButton(customeStyle),
       path.join(__dirname, "/outline_blocking_button_default.png"),
       path.join(__dirname, "/golden/outline_blocking_button_default.png"),
       path.join(__dirname, "/outline_blocking_button_default_diff.png"),
@@ -111,7 +109,7 @@ TEST_RUNNER.run({
     ),
     new RenderCase(
       "RenderTextButton",
-      TextBlockingButton.create,
+      (customeStyle) => new TextBlockingButton(customeStyle),
       path.join(__dirname, "/text_blocking_button_default.png"),
       path.join(__dirname, "/golden/text_blocking_button_default.png"),
       path.join(__dirname, "/text_blocking_button_default_diff.png"),
@@ -127,18 +125,15 @@ TEST_RUNNER.run({
       async execute() {
         // Prepare
         let actioned = false;
-        let cut = FilledBlockingButton.create<number>("")
-          .enable()
-          .show()
-          .addAction(
-            async () => {
-              return 1;
-            },
-            (response) => {
-              assertThat(response, eq(1), "action response");
-              actioned = true;
-            },
-          );
+        let cut = new FilledBlockingButton<number>("").addAction(
+          async () => {
+            return 1;
+          },
+          (response) => {
+            assertThat(response, eq(1), "action response");
+            actioned = true;
+          },
+        );
 
         // Execute
         cut.click();
@@ -153,7 +148,7 @@ TEST_RUNNER.run({
       async execute() {
         // Prepare
         let actioned = false;
-        let cut = FilledBlockingButton.create("").addAction(async () => {
+        let cut = new FilledBlockingButton("").addAction(async () => {
           actioned = true;
         });
 

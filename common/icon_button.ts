@@ -123,32 +123,14 @@ export interface IconButton {
 }
 
 export class IconButton extends EventEmitter {
-  public static create(
-    size: number, // rem
-    padding: number, // rem
-    customStyle: string,
-    iconElement: Element,
-    position: TooltipPosition,
-    text: string,
-  ): IconButton {
-    return new IconButton(
-      size,
-      padding,
-      customStyle,
-      iconElement,
-      position,
-      text,
-    );
-  }
-
   public body: HTMLButtonElement;
   private iconWithTooltip: IconWithTootlip;
   private displayStyle: string;
   private hoverObserver: HoverObserver;
 
   public constructor(
-    size: number,
-    padding: number,
+    size: number, // rem
+    padding: number, // rem
     customStyle: string,
     iconElement: Element,
     position: TooltipPosition,
@@ -183,6 +165,7 @@ export class IconButton extends EventEmitter {
       this.emit("tooltipShowed"),
     );
     this.body.addEventListener("click", () => this.emit("action"));
+    this.enable();
   }
 
   public enable(): this {
@@ -302,30 +285,12 @@ export interface BlockingIconButton {
 export class BlockingIconButton<
   Response = void,
 > extends BlockingButton<Response> {
-  public static create<Response = void>(
-    size: number, // rem
-    padding: number, // rem
-    customStyle: string,
-    iconElement: Element, // SVG needs to use "fill: currentColor;".
-    position: TooltipPosition,
-    text: string,
-  ) {
-    return new BlockingIconButton<Response>(
-      size,
-      padding,
-      customStyle,
-      iconElement,
-      position,
-      text,
-    );
-  }
-
   private iconWithTooltip: IconWithTootlip;
   private hoverObserver: HoverObserver;
 
   public constructor(
-    size: number,
-    padding: number,
+    size: number, // rem
+    padding: number, // rem
     customStyle: string,
     iconElement: Element, // SVG needs to use "fill: currentColor;".
     position: TooltipPosition,
@@ -351,6 +316,7 @@ export class BlockingIconButton<
     this.iconWithTooltip.tooltip.val.addEventListener("transitionend", () =>
       this.emit("tooltipShowed"),
     );
+    this.enable();
   }
 
   protected enableOverride(): void {
@@ -377,15 +343,6 @@ export interface SimpleIconButton {
 }
 
 export class SimpleIconButton extends EventEmitter {
-  public static create(
-    buttonSize: number,
-    iconSize: number,
-    svg: SVGSVGElement,
-    customStyle: string = "",
-  ): SimpleIconButton {
-    return new SimpleIconButton(buttonSize, iconSize, svg, customStyle);
-  }
-
   public body: HTMLDivElement;
 
   public constructor(
@@ -432,7 +389,7 @@ export class SimpleIconButton extends EventEmitter {
 }
 
 export function createBackButton(customStyle = ""): SimpleIconButton {
-  return SimpleIconButton.create(
+  return new SimpleIconButton(
     ICON_BUTTON_L,
     ICON_XL,
     createArrowIcon(SCHEME.neutral1),

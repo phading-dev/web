@@ -237,11 +237,11 @@ export class PlayPage extends EventEmitter {
           },
           assign(
             this.closePanelButton,
-            SimpleIconButton.create(
+            new SimpleIconButton(
               ICON_BUTTON_L,
               ICON_L,
               createCrossIcon("currentColor"),
-            ).enable(),
+            ),
           ).body,
         ),
         assign(
