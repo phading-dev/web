@@ -274,8 +274,14 @@ export default class Text {
   get updateButtonLabel() {
     return `Update`;
   }
-  get updateGenericFailure() {
+  get updateGenericError() {
     return `Failed to update. Please try again later.`;
+  }
+  get createButtonLabel() {
+    return `Create`;
+  }
+  get createGenericError() {
+    return `Failed to create. Please try again later.`;
   }
   get paymentStatusTitle() {
     return `Payment status`;
@@ -292,7 +298,7 @@ export default class Text {
   get retryPaymentsLabel() {
     return `Retry payments`;
   }
-  get retryPaymentsGenericFailure() {
+  get retryPaymentsGenericError() {
     return `Failed to retry payments. Please try again later.`;
   }
   get paymentStatusSuspended() {
@@ -631,12 +637,6 @@ export default class Text {
   }
   get seasonNameTooLongError() {
     return `The name is too long.`;
-  }
-  get createSeasonButtonLabel() {
-    return `Create`;
-  }
-  get createSeasonError() {
-    return `Failed to create a new draft. Please try again later.`;
   }
   get seasonDescriptionLabel() {
     return `Description`;
@@ -1057,10 +1057,10 @@ export default class Text {
   get createEpisodeNameTooLongError() {
     return `The name is too long.`;
   }
-  get createEpisodeButtonLabel() {
-    return `Create`;
+  get updateSeasonInfoTitle() {
+    return `Update season info`;
   }
-  get createEpisodeGenericError() {
-    return `Failed to create a new draft episode. Please try again later.`;
+  get seasonDescriptionTooLongError() {
+    return `The description is too long.`;
   }
 }

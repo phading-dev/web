@@ -392,7 +392,7 @@ export class PaymentPage extends EventEmitter {
     if (error) {
       this.retryPaymentsErrorMessage.val.style.visibility = "visible";
       this.retryPaymentsErrorMessage.val.textContent =
-        LOCALIZED_TEXT.retryPaymentsGenericFailure;
+        LOCALIZED_TEXT.retryPaymentsGenericError;
     } else {
       this.retryPaymentsButton.val.disable();
       this.paymentStatusContent.val.textContent =

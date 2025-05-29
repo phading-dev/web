@@ -45,7 +45,7 @@ export class CreateEpisodePage extends EventEmitter {
         ).body,
       ],
       [this.nameInput.val],
-      LOCALIZED_TEXT.createEpisodeButtonLabel,
+      LOCALIZED_TEXT.createButtonLabel,
     ).addBackButton();
     this.inputFormPage.on("back", () => this.emit("back"));
     this.inputFormPage.addPrimaryAction(
@@ -82,7 +82,7 @@ export class CreateEpisodePage extends EventEmitter {
 
   private postCreate(error?: Error): string {
     if (error) {
-      return LOCALIZED_TEXT.createEpisodeGenericError;
+      return LOCALIZED_TEXT.createGenericError;
     } else {
       return "";
     }

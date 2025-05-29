@@ -143,7 +143,7 @@ export class UpdatePasswordPage extends EventEmitter {
 
   private postUpdatePassword(error?: Error): string {
     if (error) {
-      return LOCALIZED_TEXT.updateGenericFailure;
+      return LOCALIZED_TEXT.updateGenericError;
     } else {
       return "";
     }

@@ -108,7 +108,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
 
   private postUpdateRecoveryEmail(error?: Error): string {
     if (error) {
-      return LOCALIZED_TEXT.updateGenericFailure;
+      return LOCALIZED_TEXT.updateGenericError;
     } else {
       return "";
     }

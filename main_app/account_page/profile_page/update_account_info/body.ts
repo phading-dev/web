@@ -139,7 +139,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
 
   private postUpdateAccountInfo(error?: Error): string {
     if (error) {
-      return LOCALIZED_TEXT.updateGenericFailure;
+      return LOCALIZED_TEXT.updateGenericError;
     } else {
       return "";
     }

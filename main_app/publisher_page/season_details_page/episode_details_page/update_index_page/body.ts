@@ -95,7 +95,7 @@ export class UpdateIndexPage extends EventEmitter {
 
   private postUpdate(error?: Error): string {
     if (error) {
-      return LOCALIZED_TEXT.updateGenericFailure;
+      return LOCALIZED_TEXT.updateGenericError;
     } else {
       return "";
     }
