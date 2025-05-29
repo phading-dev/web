@@ -1048,4 +1048,19 @@ export default class Text {
   get commitEpisodeTracksGenericError() {
     return `Failed to finalize the tracks. Please try again later.`;
   }
+  get createEpisodeTitle() {
+    return `Create a new draft episode`;
+  }
+  get createEpisodeNameLabel() {
+    return `Name`;
+  }
+  get createEpisodeNameTooLongError() {
+    return `The name is too long.`;
+  }
+  get createEpisodeButtonLabel() {
+    return `Create`;
+  }
+  get createEpisodeGenericError() {
+    return `Failed to create a new draft episode. Please try again later.`;
+  }
 }

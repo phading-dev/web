@@ -652,7 +652,7 @@ export class AudioTrackEditor extends EventEmitter {
 
   private changeName(): void {
     if (this.nameInput.val.value.length > MAX_AUDIO_TRACK_NAME_LENGTH) {
-      this.nameInput.val.value = this.nameInput.val.value.slice(
+      this.nameInput.val.value = this.nameInput.val.value.substring(
         0,
         MAX_AUDIO_TRACK_NAME_LENGTH,
       );
@@ -929,7 +929,7 @@ export class SubtitleTrackEditor extends EventEmitter {
 
   private changeName(): void {
     if (this.nameInput.val.value.length > MAX_SUBTITLE_TRACK_NAME_LENGTH) {
-      this.nameInput.val.value = this.nameInput.val.value.slice(
+      this.nameInput.val.value = this.nameInput.val.value.substring(
         0,
         MAX_SUBTITLE_TRACK_NAME_LENGTH,
       );
