@@ -752,8 +752,11 @@ export default class Text {
   get seasonEpisodeVideoExplanation() {
     return `A video consists of video tracks, audio tracks and subtitle tracks. Once a file is uploaded and processed, you can edit the tracks below and finalize the video.`;
   }
-  get seasonEpisodeFailedProcessingLabel() {
-    return `Failed to process file.`;
+  get seasonEpisodeMediaFormatInvalid() {
+    return `Media file format is invalid.`;
+  }
+  get seasonEpisodeMediaFormatFailure() {
+    return `Failed to process media file. Please check if the file is valid and try again.`;
   }
   get seasonEpisodeVideoCodecRequiresH264() {
     return `Video codec must be H.264.`;

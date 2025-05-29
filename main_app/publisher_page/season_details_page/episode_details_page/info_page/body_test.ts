@@ -30,7 +30,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response = {
+        let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
             episodeName:
@@ -47,7 +47,8 @@ TEST_RUNNER.run({
               subtitles: [],
             },
           },
-        } as GetEpisodeResponse;
+        };
+        serviceClientMock.response = response;
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
@@ -137,7 +138,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response = {
+        let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
             episodeName:
@@ -157,7 +158,8 @@ TEST_RUNNER.run({
               subtitles: [],
             },
           },
-        } as GetEpisodeResponse;
+        };
+        serviceClientMock.response = response;
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
@@ -203,7 +205,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response = {
+        let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
             episodeName:
@@ -223,7 +225,8 @@ TEST_RUNNER.run({
               subtitles: [],
             },
           },
-        } as GetEpisodeResponse;
+        };
+        serviceClientMock.response = response;
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
@@ -255,7 +258,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response = {
+        let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
             episodeName:
@@ -275,7 +278,8 @@ TEST_RUNNER.run({
               subtitles: [],
             },
           },
-        } as GetEpisodeResponse;
+        };
+        serviceClientMock.response = response;
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
@@ -313,7 +317,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response = {
+        let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
             episodeName:
@@ -327,6 +331,8 @@ TEST_RUNNER.run({
               },
               lastProcessingFailure: {
                 reasons: [
+                  ProcessingFailureReason.MEDIA_FORMAT_FAILURE,
+                  ProcessingFailureReason.MEDIA_FORMAT_INVALID,
                   ProcessingFailureReason.AUDIO_CODEC_REQUIRES_AAC,
                   ProcessingFailureReason.VIDEO_CODEC_REQUIRES_H264,
                   ProcessingFailureReason.SUBTITLE_ZIP_FORMAT_INVALID,
@@ -338,7 +344,8 @@ TEST_RUNNER.run({
               subtitles: [],
             },
           },
-        } as GetEpisodeResponse;
+        };
+        serviceClientMock.response = response;
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
@@ -380,7 +387,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response = {
+        let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
             episodeName:
@@ -429,7 +436,8 @@ TEST_RUNNER.run({
               ],
             },
           },
-        } as GetEpisodeResponse;
+        };
+        serviceClientMock.response = response;
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
@@ -501,7 +509,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response = {
+        let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
             episodeName:
@@ -510,7 +518,7 @@ TEST_RUNNER.run({
             premiereTimeMs: new Date("2023-10-01T00:00:00Z").getTime(),
             videoContainer: {
               masterPlaylist: {
-                writingToFile: {
+                committing: {
                   version: 1,
                 },
               },
@@ -541,7 +549,8 @@ TEST_RUNNER.run({
               ],
             },
           },
-        } as GetEpisodeResponse;
+        };
+        serviceClientMock.response = response;
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
@@ -573,7 +582,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response = {
+        let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
             episodeName:
@@ -582,7 +591,7 @@ TEST_RUNNER.run({
             premiereTimeMs: new Date("2023-10-01T00:00:00Z").getTime(),
             videoContainer: {
               masterPlaylist: {
-                syncing: {
+                committing: {
                   version: 1,
                 },
               },
@@ -622,7 +631,8 @@ TEST_RUNNER.run({
               ],
             },
           },
-        } as GetEpisodeResponse;
+        };
+        serviceClientMock.response = response;
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
@@ -684,7 +694,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response = {
+        let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
             episodeName:
@@ -727,7 +737,8 @@ TEST_RUNNER.run({
               ],
             },
           },
-        } as GetEpisodeResponse;
+        };
+        serviceClientMock.response = response;
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
@@ -859,7 +870,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response = {
+        let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
             episodeName:
@@ -905,7 +916,8 @@ TEST_RUNNER.run({
               ],
             },
           },
-        } as GetEpisodeResponse;
+        };
+        serviceClientMock.response = response;
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
@@ -980,7 +992,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        serviceClientMock.response = {
+        let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
             episodeName:
@@ -1065,7 +1077,8 @@ TEST_RUNNER.run({
               ],
             },
           },
-        } as GetEpisodeResponse;
+        };
+        serviceClientMock.response = response;
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),

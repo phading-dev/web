@@ -290,14 +290,20 @@ export class InfoPage extends EventEmitter {
   }
 
   private eProcessingFailureText(failure: LastProcessingFailure): Text {
-    let texts = [LOCALIZED_TEXT.seasonEpisodeFailedProcessingLabel];
+    let texts = new Array<string>();
     for (let reason of failure.reasons) {
       switch (reason) {
-        case ProcessingFailureReason.AUDIO_CODEC_REQUIRES_AAC:
-          texts.push(LOCALIZED_TEXT.seasonEpisodeAudioCodecRequiresAac);
+        case ProcessingFailureReason.MEDIA_FORMAT_INVALID:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeMediaFormatInvalid);
+          break;
+        case ProcessingFailureReason.MEDIA_FORMAT_FAILURE:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeMediaFormatFailure);
           break;
         case ProcessingFailureReason.VIDEO_CODEC_REQUIRES_H264:
           texts.push(LOCALIZED_TEXT.seasonEpisodeVideoCodecRequiresH264);
+          break;
+        case ProcessingFailureReason.AUDIO_CODEC_REQUIRES_AAC:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeAudioCodecRequiresAac);
           break;
         case ProcessingFailureReason.SUBTITLE_ZIP_FORMAT_INVALID:
           texts.push(LOCALIZED_TEXT.seasonEpisodeSubtitleZipFormatInvalid);
@@ -414,10 +420,7 @@ export class InfoPage extends EventEmitter {
   }
 
   private eVideoContainerState(episode: EpisodeDetails): Array<HTMLDivElement> {
-    if (
-      episode.videoContainer.masterPlaylist.syncing ||
-      episode.videoContainer.masterPlaylist.writingToFile
-    ) {
+    if (episode.videoContainer.masterPlaylist.committing) {
       return [
         E.div(
           {

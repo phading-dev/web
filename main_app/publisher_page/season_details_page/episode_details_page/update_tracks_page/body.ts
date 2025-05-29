@@ -46,17 +46,19 @@ import {
 import { ValidationError } from "@phading/video_service_interface/node/validation_error";
 import {
   AUDIO_TRACK,
-  AUDIO_TRACK_STAGING_DATA,
   AudioTrack,
-  AudioTrackStagingData,
   SUBTITLE_TRACK,
-  SUBTITLE_TRACK_STAGING_DATA,
   VIDEO_TRACK,
-  VIDEO_TRACK_STAGING_DATA,
   VideoContainer,
   VideoTrack,
-  VideoTrackStagingData,
 } from "@phading/video_service_interface/node/video_container";
+import {
+  AUDIO_TRACK_STAGING_DATA,
+  AudioTrackStagingData,
+  SUBTITLE_TRACK_STAGING_DATA,
+  VIDEO_TRACK_STAGING_DATA,
+  VideoTrackStagingData,
+} from "@phading/video_service_interface/node/video_container_staging_data";
 import { E } from "@selfage/element/factory";
 import { copyMessage } from "@selfage/message/copier";
 import { Ref, assign } from "@selfage/ref";
