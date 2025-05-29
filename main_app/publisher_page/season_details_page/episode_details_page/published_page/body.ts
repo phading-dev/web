@@ -3,6 +3,7 @@ import { InputFormPage } from "../../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../../common/input_form_page/input_with_error_msg";
 import { TextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
+import { SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import {
   newUnpublishEpisodeRequest,
   newUpdateEpisodePremiereTimeRequest,
@@ -23,6 +24,20 @@ export interface PublishedPage {
 
 // TODO: Let user select time zone. Also need TzDate to be flexible in converting timezones.
 export class PublishedPage extends EventEmitter {
+  public static create(
+    seasonId: string,
+    episodeId: string,
+    episode: EpisodeDetails,
+  ): PublishedPage {
+    return new PublishedPage(
+      SERVICE_CLIENT,
+      () => Date.now(),
+      seasonId,
+      episodeId,
+      episode,
+    );
+  }
+
   public inputFormPage: InputFormPage<
     UpdateEpisodePremiereTimeResponse,
     UnpublishEpisodeResponse

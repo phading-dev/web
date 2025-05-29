@@ -59,3 +59,29 @@ export class TabNavigator<Tab, Args = any> {
     this.goTo = () => {};
   }
 }
+
+export class TabSwitcher<Tab> {
+  private currentTab: Tab;
+  private removePreviousTab: () => void = () => {};
+
+  public goTo(
+    tab: Tab,
+    addTab: () => void,
+    removeTab: () => void,
+    updateTab: () => void = () => {}
+  ): void {
+    if (this.currentTab === tab) {
+      updateTab();
+    } else {
+      this.currentTab = tab;
+      this.removePreviousTab();
+      this.removePreviousTab = removeTab;
+      addTab();
+    }
+  }
+
+  public remove(): void {
+    this.removePreviousTab();
+    this.goTo = () => {};
+  }
+}

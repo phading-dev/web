@@ -3,6 +3,7 @@ import { InputFormPage } from "../../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../../common/input_form_page/input_with_error_msg";
 import { TextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
+import { SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { MAX_EPISODE_NAME_LENGTH } from "@phading/constants/show";
 import { newUpdateEpisodeNameRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
@@ -18,6 +19,14 @@ export interface UpdateInfoPage {
 }
 
 export class UpdateInfoPage extends EventEmitter {
+  public static create(
+    seasonId: string,
+    episodeId: string,
+    episode: EpisodeDetails,
+  ): UpdateInfoPage {
+    return new UpdateInfoPage(SERVICE_CLIENT, seasonId, episodeId, episode);
+  }
+
   public inputFormPage: InputFormPage<UpdateEpisodeNameResponse>;
   public episodeNameInput = new Ref<TextInputWithErrorMsg>();
   private request: UpdateEpisodeNameRequestBody = {};

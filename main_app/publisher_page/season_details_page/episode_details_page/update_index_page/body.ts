@@ -3,6 +3,7 @@ import { InputFormPage } from "../../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../../common/input_form_page/input_with_error_msg";
 import { TextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
+import { SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { newUpdateEpisodeIndexRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import {
@@ -19,6 +20,14 @@ export interface UpdateIndexPage {
 // Assumptions:
 //  - Index always starts from 1.
 export class UpdateIndexPage extends EventEmitter {
+  public static create(
+    seasonId: string,
+    episodeId: string,
+    episode: EpisodeDetails,
+  ): UpdateIndexPage {
+    return new UpdateIndexPage(SERVICE_CLIENT, seasonId, episodeId, episode);
+  }
+
   public inputFormPage: InputFormPage<UpdateEpisodeIndexResponse>;
   public episodeIndexInput = new Ref<TextInputWithErrorMsg>();
   private request: UpdateEpisodeIndexRequestBody = {};

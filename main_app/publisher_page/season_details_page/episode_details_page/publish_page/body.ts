@@ -1,8 +1,9 @@
-import EventEmitter from "events";
+import EventEmitter = require("events");
 import { InputFormPage } from "../../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../../common/input_form_page/input_with_error_msg";
 import { TextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
+import { SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { newPublishEpisodeRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import {
   PublishEpisodeRequestBody,
@@ -16,6 +17,15 @@ export interface PublishPage {
 }
 
 export class PublishPage extends EventEmitter {
+  public static create(seasonId: string, episodeId: string): PublishPage {
+    return new PublishPage(
+      SERVICE_CLIENT,
+      () => Date.now(),
+      seasonId,
+      episodeId,
+    );
+  }
+
   public inputFormPage: InputFormPage<PublishEpisodeResponse>;
   public premiereTimeInput = new Ref<TextInputWithErrorMsg>();
   private request: PublishEpisodeRequestBody = {};

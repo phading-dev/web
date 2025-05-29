@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { AddBodiesFn } from "../../../../../common/add_bodies_fn";
-import { TabNavigator } from "../../../../../common/page_navigator";
+import { TabSwitcher } from "../../../../../common/page_navigator";
 import {
   CancelUploadPage,
   CreateCancelUploadPageFn,
@@ -15,11 +15,6 @@ export enum Page {
   RESUME_UPLOAD,
   UPLOADING,
   CANCEL_UPLOAD,
-}
-
-export interface PageArgs {
-  error?: string;
-  uploadFile?: File;
 }
 
 export interface UploadPage {
@@ -45,7 +40,7 @@ export class UploadPage extends EventEmitter {
     );
   }
 
-  private pageNavigator = new TabNavigator<Page, PageArgs>();
+  private pageSwitcher = new TabSwitcher<Page>();
   public newUploadPage: NewUploadPage;
   public resumeUploadPage: ResumeUploadPage;
   public uploadingPage: UploadingPage;
@@ -62,63 +57,63 @@ export class UploadPage extends EventEmitter {
     private uploadingState?: ResumableUploadingState,
   ) {
     super();
-    this.pageNavigator.set(
-      Page.NEW_UPLOAD,
-      (args) => this.addNewUploadPage(args),
-      () => this.newUploadPage.remove(),
-    );
-    this.pageNavigator.set(
-      Page.RESUME_UPLOAD,
-      (args) => this.addResumeUploadPage(args),
-      () => this.resumeUploadPage.remove(),
-    );
-    this.pageNavigator.set(
-      Page.UPLOADING,
-      (args) => this.addUploadingPage(args),
-      () => this.uploadingPage.remove(),
-    );
-    this.pageNavigator.set(
-      Page.CANCEL_UPLOAD,
-      () => this.addCancelUploadPage(),
-      () => this.cancelUploadPage.remove(),
-    );
     this.checkUploadingState();
   }
 
   private checkUploadingState(error?: string): void {
     if (this.uploadingState) {
-      this.pageNavigator.goTo(Page.RESUME_UPLOAD, { error });
+      this.pageSwitcher.goTo(
+        Page.RESUME_UPLOAD,
+        () => this.addResumeUploadPage(error),
+        () => this.resumeUploadPage.remove(),
+      );
     } else {
-      this.pageNavigator.goTo(Page.NEW_UPLOAD, { error });
+      this.pageSwitcher.goTo(
+        Page.NEW_UPLOAD,
+        () => this.addNewUploadPage(error),
+        () => this.newUploadPage.remove(),
+      );
     }
   }
 
-  private addNewUploadPage(args?: PageArgs): void {
-    this.newUploadPage = this.createNewUploadPage(args?.error);
+  private addNewUploadPage(error?: string): void {
+    this.newUploadPage = this.createNewUploadPage(error);
     this.appendBody(this.newUploadPage.body);
     this.newUploadPage.on("back", () => this.emit("back"));
     this.newUploadPage.on("upload", (uploadFile) =>
-      this.pageNavigator.goTo(Page.UPLOADING, { uploadFile }),
+      this.pageSwitcher.goTo(
+        Page.UPLOADING,
+        () => this.addUploadingPage(uploadFile),
+        () => this.uploadingPage.remove(),
+      ),
     );
   }
 
-  private addResumeUploadPage(args?: PageArgs): void {
-    this.resumeUploadPage = this.createResumeUploadPage(args?.error);
+  private addResumeUploadPage(error?: string): void {
+    this.resumeUploadPage = this.createResumeUploadPage(error);
     this.appendBody(this.resumeUploadPage.body);
     this.resumeUploadPage.on("back", () => this.emit("back"));
     this.resumeUploadPage.on("upload", (uploadFile) =>
-      this.pageNavigator.goTo(Page.UPLOADING, { uploadFile }),
+      this.pageSwitcher.goTo(
+        Page.UPLOADING,
+        () => this.addUploadingPage(uploadFile),
+        () => this.uploadingPage.remove(),
+      ),
     );
     this.resumeUploadPage.on("cancel", () =>
-      this.pageNavigator.goTo(Page.CANCEL_UPLOAD),
+      this.pageSwitcher.goTo(
+        Page.CANCEL_UPLOAD,
+        () => this.addCancelUploadPage(),
+        () => this.cancelUploadPage.remove(),
+      ),
     );
   }
 
-  private addUploadingPage(args?: PageArgs): void {
+  private addUploadingPage(file: File): void {
     this.uploadingPage = this.createUploadingPage(
       this.seasonId,
       this.episodeId,
-      args?.uploadFile,
+      file,
       this.uploadingState,
     );
     this.appendBody(this.uploadingPage.body);
@@ -127,7 +122,11 @@ export class UploadPage extends EventEmitter {
       this.checkUploadingState(error),
     );
     this.uploadingPage.on("cancel", () =>
-      this.pageNavigator.goTo(Page.CANCEL_UPLOAD),
+      this.pageSwitcher.goTo(
+        Page.CANCEL_UPLOAD,
+        () => this.addCancelUploadPage(),
+        () => this.cancelUploadPage.remove(),
+      ),
     );
   }
 
@@ -144,6 +143,6 @@ export class UploadPage extends EventEmitter {
   }
 
   public remove(): void {
-    this.pageNavigator.remove();
+    this.pageSwitcher.remove();
   }
 }

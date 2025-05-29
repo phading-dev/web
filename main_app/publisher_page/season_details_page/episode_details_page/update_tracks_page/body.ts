@@ -31,6 +31,7 @@ import {
   ICON_L,
   ICON_M,
 } from "../../../../../common/sizes";
+import { SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import {
   MAX_AUDIO_TRACK_NAME_LENGTH,
   MAX_SUBTITLE_TRACK_NAME_LENGTH,
@@ -954,6 +955,19 @@ export interface UpdateTracksPage {
 }
 
 export class UpdateTracksPage extends EventEmitter {
+  public static create(
+    seasonId: string,
+    episodeId: string,
+    videoContainer: VideoContainer,
+  ): UpdateTracksPage {
+    return new UpdateTracksPage(
+      SERVICE_CLIENT,
+      seasonId,
+      episodeId,
+      videoContainer,
+    );
+  }
+
   public body: HTMLDivElement;
   public backButton = new Ref<SimpleIconButton>();
   public saveStagingButton = new Ref<
