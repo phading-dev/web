@@ -22,7 +22,6 @@ export interface PublishedPage {
   on(event: "back", listener: () => void): this;
 }
 
-// TODO: Let user select time zone. Also need TzDate to be flexible in converting timezones.
 export class PublishedPage extends EventEmitter {
   public static create(
     seasonId: string,

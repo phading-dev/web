@@ -678,13 +678,13 @@ export default class Text {
     return `Draft`;
   }
   get seasonStateDraftFooter() {
-    return `No information is visible to the public. It will be published when the first episode is published.`;
+    return `Not visible to the public. It will be published when the first episode is published.`;
   }
   get seasonStatePublishedLabel() {
     return `Published`;
   }
   get seasonStatePublishedFooter() {
-    return `All information is visible to the public. Published episodes are visible but not watchable until their premiere time.`;
+    return `All information except draft episodes is visible to the public.`;
   }
   get seasonStateArchivedLabel() {
     return `Archived`;
@@ -1077,5 +1077,41 @@ export default class Text {
   }
   get updateSeasonCoverImageUnableToLoadError() {
     return `Failed to read the cover image. Please ensure the file is a valid image and try again.`;
+  }
+  get seasonDraftStateTitle() {
+    return `Draft state`;
+  }
+  get seasonDraftStateDescription() {
+    return `Once published, the season itself cannot be unpublished and can only be archived. Episodes can be unpublished individually until the last one.`;
+  }
+  get seasonDeleteInstruction() {
+    return [
+      `To delete, please type "`,
+      `" below and click "Delete". This action cannot be undone.`,
+    ];
+  }
+  get deleteButtonLabel() {
+    return `Delete`;
+  }
+  get deleteGenericError() {
+    return `Failed to delete. Please try again later.`;
+  }
+  get seasonPublishedStateTitle() {
+    return `Published state`;
+  }
+  get seasonPublishedStateDescription() {
+    return `It can only be archived. Once archived, the season's name and pricing remain visible to the public.`;
+  }
+  get seasonArchiveInstructions() {
+    return [
+      `To archive, please type "`,
+      `" below and click "Archive". This action cannot be undone.`,
+    ];
+  }
+  get archiveButtonLabel() {
+    return `Archive`;
+  }
+  get archiveGenericError() {
+    return `Failed to archive. Please try again later.`;
   }
 }
