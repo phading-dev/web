@@ -1,11 +1,11 @@
 import EventEmitter = require("events");
 import { OUTLINE_BUTTON_STYLE } from "../../../../../../common/button_styles";
 import { SCHEME } from "../../../../../../common/color_scheme";
+import { FileDropZone } from "../../../../../../common/file_drop_zone";
 import { SimpleIconButton } from "../../../../../../common/icon_button";
 import { LOCALIZED_TEXT } from "../../../../../../common/locales/localized_text";
 import { FONT_M } from "../../../../../../common/sizes";
 import { ePage } from "../common/elements";
-import { FileDropZone } from "../common/file_drop_zone";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
@@ -68,7 +68,7 @@ export class ResumeUploadPage extends EventEmitter {
       ),
     );
     this.backButton.val.on("action", () => this.emit("back"));
-    this.fileDropZone.val.on("selected", (file) => this.emit("upload", file));
+    this.fileDropZone.val.on("select", (file) => this.emit("upload", file));
     if (error) {
       this.errorMessage.val.textContent = error;
       this.errorMessage.val.style.display = "block";

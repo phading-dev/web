@@ -19,9 +19,7 @@ import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface InfoPage {
-  on(event: "loaded", listener: () => void): this;
-  on(event: "avatarUpdateHintTransitionEnded", listener: () => void): this;
-  on(event: "updateAvatar", listener: () => void): this;
+  on(event: "updateAvatar", listener: (account: AccountAndUser) => void): this;
   on(
     event: "updateAccountInfo",
     listener: (account: AccountAndUser) => void,
@@ -36,6 +34,8 @@ export interface InfoPage {
   ): this;
   on(event: "switchAccount", listener: () => void): this;
   on(event: "signOut", listener: () => void): this;
+  on(event: "loaded", listener: () => void): this;
+  on(event: "avatarUpdateHintTransitionEnded", listener: () => void): this;
 }
 
 export class InfoPage extends EventEmitter {
@@ -174,7 +174,7 @@ export class InfoPage extends EventEmitter {
       this.hideChangeAvatarHint(),
     );
     this.avatarContainer.val.addEventListener("click", () =>
-      this.emit("updateAvatar"),
+      this.emit("updateAvatar", response.account),
     );
     this.avatarUpdateHint.val.addEventListener("transitionend", () =>
       this.emit("avatarUpdateHintTransitionEnded"),

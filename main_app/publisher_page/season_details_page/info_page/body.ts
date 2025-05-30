@@ -47,13 +47,12 @@ import { WebServiceClient } from "@selfage/web_service_client";
 export interface InfoPage {
   on(event: "editCoverImage", listener: () => void): this;
   on(event: "editSeasonInfo", listener: () => void): this;
-  on(event: "editSeasonPricing", listener: () => void): this;
+  on(event: "editSeasonDraftPricing", listener: () => void): this;
+  on(event: "editSeasonPublishedPricing", listener: () => void): this;
+  on(event: "editSeasonDraftState", listener: () => void): this;
+  on(event: "editSeasonPublishedState", listener: () => void): this;
   on(event: "createDraftEpisode", listener: () => void): this;
-  on(event: "editDraftEpisode", listener: (episodeId: string) => void): this;
-  on(
-    event: "editPublishedEpisode",
-    listener: (episodeId: string) => void,
-  ): this;
+  on(event: "editEpisode", listener: (episodeId: string) => void): this;
   on(event: "loaded", listener: () => void): this;
   on(event: "loadedPublishedEpisodes", listener: () => void): this;
 }
@@ -71,6 +70,7 @@ export class InfoPage extends EventEmitter {
   public coverImageButton = new Ref<HTMLDivElement>();
   public seasonInfoButton = new Ref<HTMLDivElement>();
   public seasonPricingButton = new Ref<HTMLDivElement>();
+  public seasonStateButton = new Ref<HTMLDivElement>();
   public createDraftEpisodeButton = new Ref<HTMLDivElement>();
   public draftEpisodeElements = new Array<HTMLDivElement>();
   private listPublishedEpisodesStartFrom = new Ref<HTMLDivElement>();
@@ -227,35 +227,38 @@ export class InfoPage extends EventEmitter {
         E.div({
           style: `flex: 0 0 auto; height: 2rem;`,
         }),
-        eColumnBoxWithArrow(
-          [
-            E.div(
-              {
-                class: "season-details-state-title",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-              },
-              E.text(LOCALIZED_TEXT.seasonStateLabel),
-            ),
-            E.div(
-              {
-                class: "season-details-state",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-              },
-              E.text(this.getStateText(seasonDetails.state)),
-            ),
-            E.div(
-              {
-                class: "season-details-state-description",
-                style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
-              },
-              E.text(this.getStateFooterText(seasonDetails.state)),
-            ),
-          ],
-          {
-            clickable:
-              seasonDetails.state === SeasonState.ARCHIVED ? false : true,
-            linesGap: 1,
-          },
+        assign(
+          this.seasonStateButton,
+          eColumnBoxWithArrow(
+            [
+              E.div(
+                {
+                  class: "season-details-state-title",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonStateLabel),
+              ),
+              E.div(
+                {
+                  class: "season-details-state",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+                },
+                E.text(this.getStateText(seasonDetails.state)),
+              ),
+              E.div(
+                {
+                  class: "season-details-state-description",
+                  style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(this.getStateFooterText(seasonDetails.state)),
+              ),
+            ],
+            {
+              clickable:
+                seasonDetails.state === SeasonState.ARCHIVED ? false : true,
+              linesGap: 1,
+            },
+          ),
         ),
         E.div({
           style: `flex: 0 0 auto; height: 2rem;`,
@@ -371,7 +374,18 @@ export class InfoPage extends EventEmitter {
         this.emit("editSeasonInfo"),
       );
       this.seasonPricingButton.val.addEventListener("click", () =>
-        this.emit("editSeasonPricing"),
+        this.emit(
+          seasonDetails.state === SeasonState.DRAFT
+            ? "editSeasonDraftPricing"
+            : "editSeasonPublishedPricing",
+        ),
+      );
+      this.seasonStateButton.val.addEventListener("click", () =>
+        this.emit(
+          seasonDetails.state === SeasonState.DRAFT
+            ? "editSeasonDraftState"
+            : "editSeasonPublishedState",
+        ),
       );
       this.createDraftEpisodeButton.val.addEventListener("click", () =>
         this.emit("createDraftEpisode"),
@@ -436,7 +450,7 @@ export class InfoPage extends EventEmitter {
     );
     this.draftEpisodeElements.push(body);
     body.addEventListener("click", () =>
-      this.emit("editDraftEpisode", episode.episodeId),
+      this.emit("editEpisode", episode.episodeId),
     );
     return body;
   }
@@ -528,7 +542,7 @@ export class InfoPage extends EventEmitter {
       ),
     );
     body.addEventListener("click", () =>
-      this.emit("editPublishedEpisode", episode.episodeId),
+      this.emit("editEpisode", episode.episodeId),
     );
     this.publishedEpisodeElements.push(body);
     return body;

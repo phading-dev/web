@@ -1,8 +1,8 @@
 import path = require("path");
-import { SCHEME } from "../../../../../../common/color_scheme";
-import { normalizeBody } from "../../../../../../common/normalize_body";
-import { setTabletView } from "../../../../../../common/view_port";
+import { SCHEME } from "./color_scheme";
 import { FileDropZone } from "./file_drop_zone";
+import { normalizeBody } from "./normalize_body";
+import { setTabletView } from "./view_port";
 import { E } from "@selfage/element/factory";
 import { supplyFiles } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -58,7 +58,7 @@ TEST_RUNNER.run({
 
         // Prepare
         let selected: File;
-        cut.on("selected", (file: File) => {
+        cut.on("select", (file: File) => {
           selected = file;
         });
 

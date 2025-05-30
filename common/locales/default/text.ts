@@ -218,7 +218,10 @@ export default class Text {
     return `Choose an image file`;
   }
   get loadImageError() {
-    return `There is an issue when loading the image file. Please try again or choose a different one.`;
+    return `Failed to read the image file. Please try again or choose a different one.`;
+  }
+  get updateAvatarTitle() {
+    return `Update your avatar`;
   }
   get previewAvatarLabel() {
     return `Previews`;
@@ -227,7 +230,7 @@ export default class Text {
     return `Upload`;
   }
   get uploadAvatarError() {
-    return `There is an issue when uploading your avatar. Please try again later.`;
+    return `Failed to upload your avatar. Please try again later.`;
   }
   get updateAccountInfo() {
     return `Update profile info`;
@@ -1062,5 +1065,17 @@ export default class Text {
   }
   get seasonDescriptionTooLongError() {
     return `The description is too long.`;
+  }
+  get updateSeasonCoverImageTitle() {
+    return `Update cover image`;
+  }
+  get updateSeasonCoverImagePreviewTitle() {
+    return `Preview`;
+  }
+  get updateSeasonCoverImageNoPreview() {
+    return `No preview available yet.`;
+  }
+  get updateSeasonCoverImageUnableToLoadError() {
+    return `Failed to read the cover image. Please ensure the file is a valid image and try again.`;
   }
 }

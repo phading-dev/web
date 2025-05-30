@@ -63,7 +63,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "TabletView_DraftSeasonWithoutEpisodes_DesktopView_PhoneView_EditCoverImage_EditSeasonInfo_EditSeasonPricing_CreateDraftEpisode";
+        "TabletView_DraftSeasonWithoutEpisodes_DesktopView_PhoneView_EditCoverImage_EditSeasonInfo_EditSeasonPricing_EditSeasonState_CreateDraftEpisode";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -214,14 +214,34 @@ TEST_RUNNER.run({
         assertThat(editSeasonInfo, eq(true), "Edit season info");
 
         // Prepare
-        let editSeasonPricing = false;
-        this.cut.on("editSeasonPricing", () => (editSeasonPricing = true));
+        let editSeasonDraftPricing = false;
+        this.cut.on(
+          "editSeasonDraftPricing",
+          () => (editSeasonDraftPricing = true),
+        );
 
         // Execute
         this.cut.seasonPricingButton.val.click();
 
         // Verify
-        assertThat(editSeasonPricing, eq(true), "Edit season pricing");
+        assertThat(
+          editSeasonDraftPricing,
+          eq(true),
+          "Edit season draft pricing",
+        );
+
+        // Prepare
+        let editSeasonDraftState = false;
+        this.cut.on(
+          "editSeasonDraftState",
+          () => (editSeasonDraftState = true),
+        );
+
+        // Execute
+        this.cut.seasonStateButton.val.click();
+
+        // Verify
+        assertThat(editSeasonDraftState, eq(true), "Edit season draft state");
 
         // Prepare
         let createDraftEpisode = false;
@@ -240,7 +260,7 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "TabletView_PublishedSeasonWithDraftEpisodes_ScrolledToLoadMorePublishedEpisodes_DesktopView_PhoneView_ReloadPublishedEpisodesFromNewCursor_EditDraftEpisode_EditPublishedEpisode";
+        "TabletView_PublishedSeasonWithDraftEpisodes_ScrolledToLoadMorePublishedEpisodes_DesktopView_PhoneView_ReloadPublishedEpisodesFromNewCursor_EditSeasonPricing_EditSeasonState_EditDraftEpisode_EditPublishedEpisode";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -496,32 +516,59 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let editDraftEpisodeId: string;
-        this.cut.on("editDraftEpisode", (episodeId: string) => {
-          editDraftEpisodeId = episodeId;
+        let editSeasonPublishedPricing = false;
+        this.cut.on(
+          "editSeasonPublishedPricing",
+          () => (editSeasonPublishedPricing = true),
+        );
+
+        // Execute
+        this.cut.seasonPricingButton.val.click();
+
+        // Verify
+        assertThat(
+          editSeasonPublishedPricing,
+          eq(true),
+          "Edit season published pricing",
+        );
+
+        // Prepare
+        let editSeasonPublishedState = false;
+        this.cut.on(
+          "editSeasonPublishedState",
+          () => (editSeasonPublishedState = true),
+        );
+
+        // Execute
+        this.cut.seasonStateButton.val.click();
+
+        // Verify
+        assertThat(
+          editSeasonPublishedState,
+          eq(true),
+          "Edit season published state",
+        );
+
+        // Prepare
+        let editEpisodeId: string;
+        this.cut.on("editEpisode", (episodeId: string) => {
+          editEpisodeId = episodeId;
         });
 
         // Execute
         this.cut.draftEpisodeElements[0].click();
 
         // Verify
-        assertThat(editDraftEpisodeId, eq("episode1"), "Edit draft episode id");
+        assertThat(editEpisodeId, eq("episode1"), "Edit draft episode id");
 
         // Prepare
-        let editPublishedEpisodeId: string;
-        this.cut.on("editPublishedEpisode", (episodeId: string) => {
-          editPublishedEpisodeId = episodeId;
-        });
+        editEpisodeId = undefined;
 
         // Execute
         this.cut.publishedEpisodeElements[0].click();
 
         // Verify
-        assertThat(
-          editPublishedEpisodeId,
-          eq("episode5"),
-          "Edit published episode id",
-        );
+        assertThat(editEpisodeId, eq("episode5"), "Edit published episode id");
       }
       public tearDown() {
         window.scrollTo(0, 0);

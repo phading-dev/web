@@ -1,24 +1,24 @@
 import EventEmitter = require("events");
-import { SCHEME } from "../../../../../../common/color_scheme";
-import { LOCALIZED_TEXT } from "../../../../../../common/locales/localized_text";
-import { FONT_M } from "../../../../../../common/sizes";
+import { SCHEME } from "./color_scheme";
+import { LOCALIZED_TEXT } from "./locales/localized_text";
+import { FONT_M } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
 export interface FileDropZone {
-  on(event: "selected", listener: (file: File) => void): this;
+  on(event: "select", listener: (file: File) => void): this;
 }
 
 export class FileDropZone extends EventEmitter {
   public body: HTMLDivElement;
   public fileInput = new Ref<HTMLInputElement>();
 
-  public constructor() {
+  public constructor(customStyles: string = "") {
     super();
     this.body = E.div(
       {
         class: "upload-page-drop-zone",
-        style: `cursor: pointer; border: .2rem dashed; border-radius: 1rem; padding: 10rem 2rem; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center; gap: 2rem;`,
+        style: `cursor: pointer; border: .2rem dashed; border-radius: 1rem; padding: 10rem 2rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center; gap: 2rem; ${customStyles}`,
       },
       E.div(
         {
@@ -57,7 +57,7 @@ export class FileDropZone extends EventEmitter {
       e.preventDefault();
       this.lowlight();
       if (e.dataTransfer.files.length > 0) {
-        this.emit("selected", e.dataTransfer.files[0]);
+        this.emit("select", e.dataTransfer.files[0]);
       }
     });
     this.body.addEventListener("click", () => {
@@ -65,7 +65,7 @@ export class FileDropZone extends EventEmitter {
     });
     this.fileInput.val.addEventListener("change", () => {
       if (this.fileInput.val.files.length > 0) {
-        this.emit("selected", this.fileInput.val.files[0]);
+        this.emit("select", this.fileInput.val.files[0]);
       }
     });
   }

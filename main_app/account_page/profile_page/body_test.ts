@@ -31,7 +31,7 @@ class NavigateForwardAndBack implements TestCase {
     await setDesktopView();
     this.cut = new ProfilePage(
       () => new InfoPageMock(),
-      () => new UpdateAvatarPageMock(),
+      (account) => new UpdateAvatarPageMock(account),
       (account) => new UpdateAccountInfoPageMock(account),
       (username) => new UpdatePasswordPageMock(username),
       (username) => new UpdateRecoveryEmailPageMock(username),
@@ -80,7 +80,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new ProfilePage(
           () => new InfoPageMock(),
-          () => new UpdateAvatarPageMock(),
+          (account) => new UpdateAvatarPageMock(account),
           (account) => new UpdateAccountInfoPageMock(account),
           (username) => new UpdatePasswordPageMock(username),
           (username) => new UpdateRecoveryEmailPageMock(username),

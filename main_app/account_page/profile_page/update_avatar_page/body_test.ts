@@ -1,16 +1,11 @@
-import nonImageFile = require("./test_data/non_image.bin");
 import wideImage = require("./test_data/wide.jpeg");
 import path = require("path");
 import { normalizeBody } from "../../../../common/normalize_body";
-import { setDesktopView, setTabletView } from "../../../../common/view_port";
+import { setTabletView } from "../../../../common/view_port";
 import { UpdateAvatarPage } from "./body";
-import { UploadAccountAvatarResponse } from "@phading/user_service_interface/web/self/interface";
-import { supplyFiles, writeFile } from "@selfage/puppeteer_test_executor_api";
+import { supplyFiles } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
-import {
-  asyncAssertImage,
-  asyncAssertScreenshot,
-} from "@selfage/screenshot_test_matcher";
+import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
@@ -20,14 +15,16 @@ TEST_RUNNER.run({
   name: "UpdateAvatarPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "Load_Resize";
+      public name =
+        "NoImage_InvalidFile_PreviewImage_UploadError_UploadSuccess_Back";
       private cut: UpdateAvatarPage;
       public async execute() {
         // Prepare
         await setTabletView();
+        let serviceClientMock = new WebServiceClientMock();
+        this.cut = new UpdateAvatarPage(serviceClientMock, {});
 
         // Execute
-        this.cut = new UpdateAvatarPage(undefined);
         document.body.append(this.cut.body);
 
         // Verify
@@ -35,90 +32,48 @@ TEST_RUNNER.run({
           path.join(__dirname, "/update_avatar_page_default.png"),
           path.join(__dirname, "/golden/update_avatar_page_default.png"),
           path.join(__dirname, "/update_avatar_page_default_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/update_avatar_page_scroll_to_bottom.png"),
-          path.join(
-            __dirname,
-            "/golden/update_avatar_page_scroll_to_bottom.png",
-          ),
-          path.join(__dirname, "/update_avatar_page_scroll_to_bottom_diff.png"),
+        supplyFiles(
+          () => this.cut.fileDropZone.val.click(),
+          "non_existent_file.jpg",
         );
-
-        // Execute
-        supplyFiles(() => this.cut.chooseFileButton.val.click(), wideImage);
         await new Promise<void>((resolve) =>
           this.cut.once("imageLoaded", resolve),
         );
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/update_avatar_page_loaded.png"),
-          path.join(__dirname, "/golden/update_avatar_page_loaded.png"),
-          path.join(__dirname, "/update_avatar_page_loaded_diff.png"),
+          path.join(__dirname, "/update_avatar_page_preview_error.png"),
+          path.join(__dirname, "/golden/update_avatar_page_preview_error.png"),
+          path.join(__dirname, "/update_avatar_page_preview_error_diff.png"),
         );
-      }
-      public tearDown() {
-        window.scrollTo(0, 0);
-        this.cut.remove();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "LoadError";
-      private cut: UpdateAvatarPage;
-      public async execute() {
+
+        // Execute
+        supplyFiles(() => this.cut.fileDropZone.val.click(), wideImage);
+        await new Promise<void>((resolve) =>
+          this.cut.once("imageLoaded", resolve),
+        );
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/update_avatar_page_preview.png"),
+          path.join(__dirname, "/golden/update_avatar_page_preview.png"),
+          path.join(__dirname, "/update_avatar_page_preview_diff.png"),
+        );
+
         // Prepare
-        await setTabletView();
-        this.cut = new UpdateAvatarPage(undefined);
-        document.body.append(this.cut.body);
-
-        // Execute
-        supplyFiles(() => this.cut.chooseFileButton.val.click(), nonImageFile);
-        await new Promise<void>((resolve) =>
-          this.cut.once("imageLoaded", resolve),
-        );
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/update_avatar_page_load_error.png"),
-          path.join(__dirname, "/golden/update_avatar_page_load_error.png"),
-          path.join(__dirname, "/update_avatar_page_load_error_diff.png"),
-        );
-      }
-      public tearDown() {
-        this.cut.remove();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "Upload";
-      private cut: UpdateAvatarPage;
-      public async execute() {
-        // Prepare
-        await setDesktopView();
-        let clientMock = new WebServiceClientMock();
-        this.cut = new UpdateAvatarPage(clientMock);
-        document.body.append(this.cut.body);
-
-        supplyFiles(() => this.cut.chooseFileButton.val.click(), wideImage);
-        await new Promise<void>((resolve) =>
-          this.cut.once("imageLoaded", resolve),
-        );
-
-        clientMock.send = () => {
-          throw new Error("upload error");
-        };
+        serviceClientMock.error = new Error("Fake error");
 
         // Execute
         this.cut.uploadButton.val.click();
         await new Promise<void>((resolve) =>
           this.cut.once("uploaded", resolve),
         );
-        window.scrollTo(0, document.body.scrollHeight);
 
         // Verify
         await asyncAssertScreenshot(
@@ -128,50 +83,62 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        clientMock.send = async (request) => {
-          let toBeSent = await new Promise<string>((resolve) => {
-            let fileReader = new FileReader();
-            fileReader.onload = () => {
-              resolve(fileReader.result as string);
-            };
-            fileReader.readAsBinaryString(request.body as Blob);
-          });
-          await writeFile(
-            path.join(__dirname, "/update_avatar_page_uploaded_image.png"),
-            toBeSent,
-          );
-          return {} as UploadAccountAvatarResponse;
-        };
+        serviceClientMock.error = undefined;
+        let back = false;
+        this.cut.on("back", () => (back = true));
 
         // Execute
         this.cut.uploadButton.val.click();
-        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
+        await new Promise<void>((resolve) =>
+          this.cut.once("uploaded", resolve),
+        );
 
         // Verify
-        await asyncAssertImage(
-          path.join(__dirname, "/update_avatar_page_uploaded_image.png"),
-          path.join(__dirname, "/golden/update_avatar_page_uploaded_image.png"),
-          path.join(__dirname, "/update_avatar_page_uploaded_image_diff.png"),
+        assertThat(back, eq(true), "back when success");
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/update_avatar_page_upload_success.png"),
+          path.join(__dirname, "/golden/update_avatar_page_preview.png"),
+          path.join(__dirname, "/update_avatar_page_upload_success_diff.png"),
         );
+
+        // Prepare
+        back = false;
+
+        // Execute
+        this.cut.backButton.val.click();
+
+        // Verify
+        assertThat(back, eq(true), "back when clicked");
       }
       public tearDown() {
+        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),
-    {
-      name: "Back",
-      execute: () => {
+    new (class implements TestCase {
+      public name = "WithImage";
+      private cut: UpdateAvatarPage;
+      public async execute() {
         // Prepare
-        let cut = new UpdateAvatarPage(undefined);
-        let isBack = false;
-        cut.on("back", () => (isBack = true));
+        await setTabletView();
+        let serviceClientMock = new WebServiceClientMock();
+        this.cut = new UpdateAvatarPage(serviceClientMock, {
+          avatarLargeUrl: wideImage,
+        });
 
         // Execute
-        cut.backButton.val.click();
+        document.body.append(this.cut.body);
 
         // Verify
-        assertThat(isBack, eq(true), "Back");
-      },
-    },
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/update_avatar_page_with_image.png"),
+          path.join(__dirname, "/golden/update_avatar_page_with_image.png"),
+          path.join(__dirname, "/update_avatar_page_with_image_diff.png"),
+          {
+            fullPage: true,
+          },
+        );
+      }
+    })(),
   ],
 });

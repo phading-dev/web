@@ -10,7 +10,7 @@ export class ProfilePageMock extends ProfilePage {
   public constructor(appendBodies: AddBodiesFn) {
     super(
       () => new InfoPageMock(),
-      () => new UpdateAvatarPageMock(),
+      (accountInfo) => new UpdateAvatarPageMock(accountInfo),
       (accountInfo) => new UpdateAccountInfoPageMock(accountInfo),
       (username) => new UpdatePasswordPageMock(username),
       (username) => new UpdateRecoveryEmailPageMock(username),

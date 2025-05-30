@@ -1,5 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../../../../common/color_scheme";
+import { FileDropZone } from "../../../../../../common/file_drop_zone";
 import {
   formatStoragePrice,
   formatUploadPrice,
@@ -9,7 +10,6 @@ import { createQuestionMarkIcon } from "../../../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../../../common/locales/localized_text";
 import { FONT_M, ICON_BUTTON_M, ICON_L } from "../../../../../../common/sizes";
 import { ePage } from "../common/elements";
-import { FileDropZone } from "../common/file_drop_zone";
 import { fileTypesToString } from "../common/file_types_to_string";
 import {
   ACCEPTED_AUDIO_TYPES,
@@ -200,7 +200,7 @@ export class NewUploadPage extends EventEmitter {
       ),
     );
     this.backButton.val.on("action", () => this.emit("back"));
-    this.fileDropZone.val.on("selected", (file) => this.emit("upload", file));
+    this.fileDropZone.val.on("select", (file) => this.emit("upload", file));
     if (error) {
       this.errorMessage.val.textContent = error;
       this.errorMessage.val.style.display = "block";

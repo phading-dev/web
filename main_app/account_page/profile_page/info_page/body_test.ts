@@ -99,14 +99,26 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let updateAvatar = false;
-        this.cut.on("updateAvatar", () => (updateAvatar = true));
+        let accountCaptured: AccountAndUser;
+        this.cut.on("updateAvatar", (account) => (accountCaptured = account));
 
         // Execute
         this.cut.avatarContainer.val.click();
 
         // Verify
-        assertThat(updateAvatar, eq(true), "update avatar");
+        assertThat(
+          accountCaptured,
+          eqMessage(
+            {
+              avatarLargeUrl: userImage,
+              naturalName: "Some name",
+              username: "user1",
+              recoveryEmail: "some@gmail.com",
+            },
+            ACCOUNT_AND_USER,
+          ),
+          "account info",
+        );
       }
       public async tearDown() {
         await mouseMove(-1, -1, 1);
