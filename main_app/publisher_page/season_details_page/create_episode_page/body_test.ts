@@ -93,9 +93,7 @@ TEST_RUNNER.run({
         // Prepare
         serviceClientMock.error = undefined;
         let response: CreateEpisodeResponse = {
-          episode: {
-            episodeId: "episode1",
-          },
+          episodeId: "episode1",
         };
         serviceClientMock.response = response;
         let showEpisode: string;

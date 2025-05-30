@@ -53,7 +53,7 @@ export class CreateEpisodePage extends EventEmitter {
       (response, error) => this.postCreate(error),
     );
     this.inputFormPage.on("handlePrimarySuccess", (response) =>
-      this.emit("showEpisode", response.episode.episodeId),
+      this.emit("showEpisode", response.episodeId),
     );
     this.inputFormPage.on("primaryDone", () => this.emit("created"));
   }
