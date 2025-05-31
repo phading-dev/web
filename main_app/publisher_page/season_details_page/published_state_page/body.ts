@@ -61,14 +61,16 @@ export class PublishedStatePage extends EventEmitter {
       ],
       [this.seasonIdInput.val],
       LOCALIZED_TEXT.archiveButtonLabel,
-    ).addBackButton();
-    this.inputFormPage.on("back", () => this.emit("back"));
-    this.inputFormPage.addPrimaryAction(
-      () => this.archive(),
-      (response, error) => this.postArchive(error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
-    this.inputFormPage.on("primaryDone", () => this.emit("archived"));
+    )
+      .addBackButton()
+      .on("back", () => this.emit("back"))
+      .addPrimaryAction(
+        () => this.archive(),
+        (response, error) => this.postArchive(error),
+      )
+      .on("handlePrimarySuccess", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("archived"));
+    this.seasonIdInput.val.validate();
   }
 
   private validateId(value: string): ValidationResult {

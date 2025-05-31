@@ -49,7 +49,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.seasonNameInput.val.value = "some name";
+        this.cut.seasonNameInput.val.value = " some name ";
         this.cut.seasonNameInput.val.dispatchChange();
 
         // Verify

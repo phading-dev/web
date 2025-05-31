@@ -47,9 +47,6 @@ TEST_RUNNER.run({
         // Execute
         this.cut.newPasswordInput.val.value = createLongString(101);
         this.cut.newPasswordInput.val.dispatchChange();
-        await new Promise<void>((resolve) =>
-          this.cut.newPasswordInput.val.once("validated", resolve),
-        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -64,14 +61,8 @@ TEST_RUNNER.run({
         // Execute
         this.cut.newPasswordInput.val.value = "a new password";
         this.cut.newPasswordInput.val.dispatchChange();
-        await new Promise<void>((resolve) =>
-          this.cut.newPasswordInput.val.once("validated", resolve),
-        );
         this.cut.newPasswordRepeatInput.val.value = "some password";
         this.cut.newPasswordRepeatInput.val.dispatchChange();
-        await new Promise<void>((resolve) =>
-          this.cut.newPasswordRepeatInput.val.once("validated", resolve),
-        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -86,24 +77,25 @@ TEST_RUNNER.run({
           ),
         );
 
-        // Prepare
+        // Execute
         this.cut.currentPasswordInput.val.value = "current password";
         this.cut.currentPasswordInput.val.dispatchChange();
-        await new Promise<void>((resolve) =>
-          this.cut.currentPasswordInput.val.once("validated", resolve),
-        );
         this.cut.newPasswordRepeatInput.val.value = "a new password";
         this.cut.newPasswordRepeatInput.val.dispatchChange();
-        await new Promise<void>((resolve) =>
-          this.cut.newPasswordRepeatInput.val.once("validated", resolve),
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/update_password_page_valid.png"),
+          path.join(__dirname, "/golden/update_password_page_valid.png"),
+          path.join(__dirname, "/update_password_page_valid_diff.png"),
         );
+
+        // Prepare
         clientMock.error = new Error("fake error");
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
 
         // Verify
         assertThat(clientMock.request.descriptor, eq(UPDATE_PASSWORD), "RC");
@@ -135,9 +127,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
 
         // Verify
         assertThat(isBack, eq(true), "Back");

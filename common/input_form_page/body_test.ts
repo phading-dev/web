@@ -66,6 +66,7 @@ TEST_RUNNER.run({
             }
           },
         );
+        input.validate();
         document.body.append(this.cut.body);
 
         // Verify
@@ -195,6 +196,7 @@ TEST_RUNNER.run({
               }
             },
           );
+        input.validate();
         document.body.append(this.cut.body);
 
         // Verify
@@ -279,6 +281,7 @@ TEST_RUNNER.run({
           [input],
           "Update",
         ).addBackButton();
+        input.validate();
         document.body.append(this.cut.body);
 
         // Verify
@@ -329,6 +332,7 @@ TEST_RUNNER.run({
           inputs,
           "Update",
         );
+        inputs.forEach((input) => input.validate());
         document.body.append(this.cut.body);
 
         // Verify

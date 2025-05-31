@@ -94,9 +94,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.episodeIndexInput.val.dispatchEnter();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
 
         // Verify
         assertThat(
@@ -131,9 +129,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
 
         // Verify
         assertThat(back, eq(true), "Back when success");

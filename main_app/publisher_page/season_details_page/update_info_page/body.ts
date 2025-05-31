@@ -63,17 +63,21 @@ export class UpdateInfoPage extends EventEmitter {
       ],
       [this.nameInput.val, this.descriptionInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
-    ).addBackButton();
-    this.inputFormPage.on("back", () => this.emit("back"));
-    this.inputFormPage.addPrimaryAction(
-      () => this.update(),
-      (response, error) => this.postUpdate(response, error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
-    this.inputFormPage.on("primaryDone", () => this.emit("updated"));
+    )
+      .addBackButton()
+      .on("back", () => this.emit("back"))
+      .addPrimaryAction(
+        () => this.update(),
+        (response, error) => this.postUpdate(response, error),
+      )
+      .on("handlePrimarySuccess", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("updated"));
+    this.nameInput.val.validate();
+    this.descriptionInput.val.validate();
   }
 
   private validateNameAndTake(value: string): ValidationResult {
+    value = value.trim();
     if (value.length === 0) {
       return {
         valid: false,
@@ -92,6 +96,7 @@ export class UpdateInfoPage extends EventEmitter {
   }
 
   private validateDescriptionAndTake(value: string): ValidationResult {
+    value = value.trim();
     if (value.length > MAX_SEASON_DESCRIPTION_LENGTH) {
       return {
         valid: false,

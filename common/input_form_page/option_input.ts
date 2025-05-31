@@ -11,7 +11,6 @@ export class RadioOptionInput<ValueType> {
     label: string,
     customStyle: string,
     options: Array<OptionPill<ValueType>>,
-    defaultValue: ValueType,
     private selectValueFn: (value: ValueType) => void,
   ) {
     this.body = E.div(
@@ -34,12 +33,16 @@ export class RadioOptionInput<ValueType> {
         ...options.map((option) => option.body),
       ),
     );
-    this.radioOptionPillsGroup =
-      RadioOptionPillsGroup.create(options).setValue(defaultValue);
-    this.selectValueFn(defaultValue);
+    this.radioOptionPillsGroup = RadioOptionPillsGroup.create(options);
 
     this.radioOptionPillsGroup.on("selected", (value) =>
       this.selectValueFn(value),
     );
+  }
+
+  public setValue(value: ValueType): this {
+    this.radioOptionPillsGroup.setValue(value);
+    this.selectValueFn(value);
+    return this;
   }
 }

@@ -38,11 +38,10 @@ TEST_RUNNER.run({
           "Choose",
           "",
           [walkOption, runOption],
-          ValueType.WALK,
           (value) => {
             selectedValue = value;
           },
-        );
+        ).setValue(ValueType.WALK);
         this.container.append(cut.body);
 
         // Verify

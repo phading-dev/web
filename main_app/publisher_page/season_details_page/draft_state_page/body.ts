@@ -61,14 +61,16 @@ export class DraftStatePage extends EventEmitter {
       ],
       [this.seasonIdInput.val],
       LOCALIZED_TEXT.deleteButtonLabel,
-    ).addBackButton();
-    this.inputFormPage.on("back", () => this.emit("back"));
-    this.inputFormPage.addPrimaryAction(
-      () => this.delete(),
-      (response, error) => this.postDelete(error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
-    this.inputFormPage.on("primaryDone", () => this.emit("deleted"));
+    )
+      .addBackButton()
+      .on("back", () => this.emit("back"))
+      .addPrimaryAction(
+        () => this.delete(),
+        (response, error) => this.postDelete(error),
+      )
+      .on("handlePrimarySuccess", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("deleted"));
+    this.seasonIdInput.val.validate();
   }
 
   private validateId(value: string): ValidationResult {

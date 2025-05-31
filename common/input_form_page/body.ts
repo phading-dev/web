@@ -100,10 +100,8 @@ export class InputFormPage<
         ),
       ),
     );
-    this.refreshPrimaryButton();
-
     for (let input of this.inputs) {
-      input.on("validated", () => this.refreshPrimaryButton());
+      input.on("validate", () => this.refreshPrimaryButton());
       input.on("action", () => this.primaryButton.val.click());
     }
     this.primaryButton.val.addAction(

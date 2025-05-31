@@ -70,7 +70,7 @@ TEST_RUNNER.run({
         serviceClientMock.error = new Error("Fake error");
 
         // Execute
-        this.cut.episodeNameInput.val.value = "A name 2!";
+        this.cut.episodeNameInput.val.value = " A name 2! ";
         this.cut.episodeNameInput.val.dispatchChange();
 
         // Verify
@@ -82,9 +82,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.episodeNameInput.val.dispatchEnter();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
 
         // Verify
         assertThat(
@@ -117,9 +115,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
 
         // Verify
         assertThat(back, eq(true), "back when success");

@@ -50,7 +50,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.nameInput.val.value = "Episode 1";
+        this.cut.nameInput.val.value = " Episode 1 ";
         this.cut.nameInput.val.dispatchChange();
 
         // Verify

@@ -48,9 +48,9 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.naturalNameInput.val.value = "First Second name";
+        this.cut.naturalNameInput.val.value = " First Second name ";
         this.cut.naturalNameInput.val.dispatchChange();
-        this.cut.usernameInput.val.value = "my_username";
+        this.cut.usernameInput.val.value = " my_username ";
         this.cut.usernameInput.val.dispatchChange();
         this.cut.passwordInput.val.value = "123123";
         this.cut.passwordInput.val.dispatchChange();
@@ -74,7 +74,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", () => resolve()),
+          this.cut.once("signUpDone", () => resolve()),
         );
 
         // Verify
@@ -115,7 +115,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", () => resolve()),
+          this.cut.once("signUpDone", () => resolve()),
         );
 
         // Verify

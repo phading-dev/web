@@ -63,7 +63,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.nameInput.val.value = "Season 2";
+        this.cut.nameInput.val.value = " Season 2 ";
         this.cut.nameInput.val.dispatchChange();
 
         // Verify
@@ -91,7 +91,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.descriptionInput.val.value = "This is a description.";
+        this.cut.descriptionInput.val.value = " This is a description. ";
         this.cut.descriptionInput.val.dispatchChange();
 
         // Verify
@@ -138,9 +138,7 @@ TEST_RUNNER.run({
         // Prepare
         serviceClientMock.error = undefined;
         let response: CreateEpisodeResponse = {
-          episode: {
-            episodeId: "episode1",
-          },
+          episodeId: "episode1",
         };
         serviceClientMock.response = response;
         let back = false;

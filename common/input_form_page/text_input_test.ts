@@ -40,7 +40,8 @@ TEST_RUNNER.run({
             }
           },
         );
-        await new Promise<void>((resolve) => this.cut.on("validated", resolve));
+        this.cut.validate();
+        await new Promise<void>((resolve) => this.cut.on("validate", resolve));
         this.followingLine = E.div(
           {
             style: `font-size: 1.4rem; color: black;`,
@@ -65,7 +66,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.value = "12345678901";
         this.cut.dispatchChange();
-        await new Promise<void>((resolve) => this.cut.on("validated", resolve));
+        await new Promise<void>((resolve) => this.cut.on("validate", resolve));
 
         // Verify
         assertThat(this.cut.isValid, eq(false), "Too long input is invalid");
@@ -79,7 +80,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.value = "123456";
         this.cut.dispatchChange();
-        await new Promise<void>((resolve) => this.cut.on("validated", resolve));
+        await new Promise<void>((resolve) => this.cut.on("validate", resolve));
 
         // Verify
         assertThat(this.cut.isValid, eq(true), "valid input");
@@ -93,7 +94,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.value = "";
         this.cut.dispatchChange();
-        await new Promise<void>((resolve) => this.cut.on("validated", resolve));
+        await new Promise<void>((resolve) => this.cut.on("validate", resolve));
 
         // Verify
         assertThat(this.cut.isValid, eq(false), "empty input again");

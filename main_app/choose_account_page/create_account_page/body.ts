@@ -20,9 +20,11 @@ import { LocalSessionStorage } from "@selfage/web_service_client/local_session_s
 
 export interface CreateAccountPage {
   on(event: "back", listener: () => void): this;
+  on(event: "choose", listener: () => void): this;
   on(event: "chosen", listener: () => void): this;
 }
 
+// TODO: Add contact email.
 export class CreateAccountPage extends EventEmitter {
   public static create(): CreateAccountPage {
     return new CreateAccountPage(LOCAL_SESSION_STORAGE, SERVICE_CLIENT);
@@ -77,7 +79,6 @@ export class CreateAccountPage extends EventEmitter {
                 ),
               ),
             ],
-            AccountType.CONSUMER,
             (value) => {
               this.request.accountType = value;
             },
@@ -86,17 +87,21 @@ export class CreateAccountPage extends EventEmitter {
       ],
       [this.naturalNameInput.val],
       LOCALIZED_TEXT.createAccountButtonLabel,
-    ).addBackButton();
-
-    this.inputFormPage.addPrimaryAction(
-      () => this.createAccount(),
-      (response, error) => this.postCreateAccount(response, error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("chosen"));
-    this.inputFormPage.on("back", () => this.emit("back"));
+    )
+      .addBackButton()
+      .on("back", () => this.emit("back"))
+      .addPrimaryAction(
+        () => this.createAccount(),
+        (response, error) => this.postCreateAccount(response, error),
+      )
+      .on("handlePrimarySuccess", () => this.emit("choose"))
+      .on("primaryDone", () => this.emit("chosen"));
+    this.naturalNameInput.val.validate();
+    this.accountTypeInput.val.setValue(AccountType.CONSUMER);
   }
 
   private validateOrTakeNaturalNameInput(value: string): ValidationResult {
+    value = value.trim();
     if (value.length > MAX_NATURAL_NAME_LENGTH) {
       return {
         valid: false,

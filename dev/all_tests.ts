@@ -57,6 +57,7 @@ import "../main_app/publisher_page/create_season_page/body_test";
 import "../main_app/publisher_page/list_page/body_test";
 import "../main_app/publisher_page/search_page/body_test";
 import "../main_app/publisher_page/season_details_page/create_episode_page/body_test";
+import "../main_app/publisher_page/season_details_page/draft_state_page/body_test";
 import "../main_app/publisher_page/season_details_page/episode_details_page/info_page/body_test";
 import "../main_app/publisher_page/season_details_page/episode_details_page/publish_page/body_test";
 import "../main_app/publisher_page/season_details_page/episode_details_page/published_page/body_test";
@@ -69,5 +70,8 @@ import "../main_app/publisher_page/season_details_page/episode_details_page/uplo
 import "../main_app/publisher_page/season_details_page/episode_details_page/upload_page/body_test";
 import "../main_app/publisher_page/season_details_page/episode_details_page/body_test";
 import "../main_app/publisher_page/season_details_page/info_page/body_test";
+import "../main_app/publisher_page/season_details_page/published_state_page/body_test";
 import "../main_app/publisher_page/season_details_page/update_cover_image_page/body_test";
+import "../main_app/publisher_page/season_details_page/update_draft_pricing_page/body_test";
 import "../main_app/publisher_page/season_details_page/update_info_page/body_test";
+import "../main_app/publisher_page/season_details_page/update_published_pricing_page/body_test";

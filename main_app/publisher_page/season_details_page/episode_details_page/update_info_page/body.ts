@@ -16,6 +16,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface UpdateInfoPage {
   on(event: "back", listener: () => void): this;
+  on(event: "updated", listener: () => void): this;
 }
 
 export class UpdateInfoPage extends EventEmitter {
@@ -59,17 +60,20 @@ export class UpdateInfoPage extends EventEmitter {
       ],
       [this.episodeNameInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
-    ).addBackButton();
-    this.inputFormPage.on("back", () => this.emit("back"));
-
-    this.inputFormPage.addPrimaryAction(
-      () => this.update(),
-      (response, error) => this.postUpdate(error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
+    )
+      .addBackButton()
+      .on("back", () => this.emit("back"))
+      .addPrimaryAction(
+        () => this.update(),
+        (response, error) => this.postUpdate(error),
+      )
+      .on("handlePrimarySuccess", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("updated"));
+    this.episodeNameInput.val.validate();
   }
 
   private validateNameAndTake(value: string): ValidationResult {
+    value = value.trim();
     if (value.length === 0) {
       return {
         valid: false,

@@ -16,6 +16,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface UpdatePasswordPage {
   on(event: "back", listener: () => void): this;
+  on(event: "updated", listener: () => void): this;
 }
 
 export class UpdatePasswordPage extends EventEmitter {
@@ -86,14 +87,18 @@ export class UpdatePasswordPage extends EventEmitter {
         this.currentPasswordInput.val,
       ],
       LOCALIZED_TEXT.updateButtonLabel,
-    ).addBackButton();
-
-    this.inputFormPage.addPrimaryAction(
-      () => this.updatePassword(),
-      (response, error) => this.postUpdatePassword(error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
-    this.inputFormPage.on("back", () => this.emit("back"));
+    )
+      .addBackButton()
+      .addPrimaryAction(
+        () => this.updatePassword(),
+        (response, error) => this.postUpdatePassword(error),
+      )
+      .on("handlePrimarySuccess", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("updated"))
+      .on("back", () => this.emit("back"));
+    this.newPasswordInput.val.validate();
+    this.newPasswordRepeatInput.val.validate();
+    this.currentPasswordInput.val.validate();
   }
 
   private validateOrTakeNewPassword(value: string): ValidationResult {

@@ -21,6 +21,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface UpdateAccountInfoPage {
   on(event: "back", listener: () => void): this;
+  on(event: "updated", listener: () => void): this;
 }
 
 export class UpdateAccountInfoPage extends EventEmitter {
@@ -85,17 +86,22 @@ export class UpdateAccountInfoPage extends EventEmitter {
         this.descriptionInput.val,
       ],
       LOCALIZED_TEXT.updateButtonLabel,
-    ).addBackButton();
-
-    this.inputFormPage.addPrimaryAction(
-      () => this.updateAccountInfo(),
-      (response, error) => this.postUpdateAccountInfo(error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
-    this.inputFormPage.on("back", () => this.emit("back"));
+    )
+      .addBackButton()
+      .addPrimaryAction(
+        () => this.updateAccountInfo(),
+        (response, error) => this.postUpdateAccountInfo(error),
+      )
+      .on("handlePrimarySuccess", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("updated"))
+      .on("back", () => this.emit("back"));
+    this.emailInput.val.validate();
+    this.naturalNameInput.val.validate();
+    this.descriptionInput.val.validate();
   }
 
   private validateOrTakeNaturalNameInput(value: string): ValidationResult {
+    value = value.trim();
     if (value.length > MAX_NATURAL_NAME_LENGTH) {
       return {
         valid: false,
@@ -110,6 +116,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
   }
 
   private validateOrTakeEmailInput(value: string): ValidationResult {
+    value = value.trim();
     if (value.length > MAX_EMAIL_LENGTH) {
       return {
         valid: false,
@@ -122,10 +129,11 @@ export class UpdateAccountInfoPage extends EventEmitter {
   }
 
   private validateOrTakeDescriptionInput(value: string): ValidationResult {
+    value = value.trim();
     if (value.length > MAX_DESCRIPTION_LENGTH) {
       return {
         valid: false,
-        errorMsg: LOCALIZED_TEXT.accountDescrptionTooLongError,
+        errorMsg: LOCALIZED_TEXT.accountDescriptionTooLongError,
       };
     } else {
       this.request.description = value;

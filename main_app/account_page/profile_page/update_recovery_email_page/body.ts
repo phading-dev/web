@@ -16,6 +16,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface UpdateRecoveryEmailPage {
   on(event: "back", listener: () => void): this;
+  on(event: "updated", listener: () => void): this;
 }
 
 export class UpdateRecoveryEmailPage extends EventEmitter {
@@ -69,17 +70,21 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
       ],
       [this.newRecoveryEmailInput.val, this.currentPasswordInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
-    ).addBackButton();
-
-    this.inputFormPage.addPrimaryAction(
-      () => this.updateRecoveryEmail(),
-      (response, error) => this.postUpdateRecoveryEmail(error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
-    this.inputFormPage.on("back", () => this.emit("back"));
+    )
+      .addBackButton()
+      .addPrimaryAction(
+        () => this.updateRecoveryEmail(),
+        (response, error) => this.postUpdateRecoveryEmail(error),
+      )
+      .on("handlePrimarySuccess", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("updated"))
+      .on("back", () => this.emit("back"));
+    this.newRecoveryEmailInput.val.validate();
+    this.currentPasswordInput.val.validate();
   }
 
   private validateOrTakeNewEmail(value: string): ValidationResult {
+    value = value.trim();
     if (value.length > MAX_EMAIL_LENGTH) {
       return {
         valid: false,

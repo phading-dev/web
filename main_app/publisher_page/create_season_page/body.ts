@@ -29,7 +29,7 @@ export class CreateSeasonPage extends EventEmitter {
 
   public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.inputFormPage = new InputFormPage(
+    this.inputFormPage = new InputFormPage<CreateSeasonResponse>(
       LOCALIZED_TEXT.createSeasonTitle,
       [
         assign(
@@ -40,24 +40,26 @@ export class CreateSeasonPage extends EventEmitter {
             {
               type: "text",
             },
-            (value) => this.validateOrTakeNaturalNameInput(value),
+            (value) => this.validateNameAndTake(value),
           ),
         ).body,
       ],
       [this.seasonNameInput.val],
       LOCALIZED_TEXT.createButtonLabel,
-    );
-
-    this.inputFormPage.addPrimaryAction(
-      () => this.create(),
-      (response, error) => this.postCreate(response, error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", (response) =>
-      this.emit("showSeason", response.seasonId),
-    );
+    )
+      .addPrimaryAction(
+        () => this.create(),
+        (response, error) => this.postCreate(response, error),
+      )
+      .on("handlePrimarySuccess", (response) =>
+        this.emit("showSeason", response.seasonId),
+      )
+      .on("primaryDone", () => this.emit("createDone"));
+    this.seasonNameInput.val.validate();
   }
 
-  private validateOrTakeNaturalNameInput(value: string): ValidationResult {
+  private validateNameAndTake(value: string): ValidationResult {
+    value = value.trim();
     if (value.length > MAX_SEASON_NAME_LENGTH) {
       return {
         valid: false,

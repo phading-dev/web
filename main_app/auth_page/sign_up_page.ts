@@ -27,8 +27,10 @@ import { LocalSessionStorage } from "@selfage/web_service_client/local_session_s
 export interface SignUpPage {
   on(event: "signIn", listener: () => void): this;
   on(event: "signedUp", listener: () => void): this;
+  on(event: "signUpDone", listener: () => void): this;
 }
 
+// TODO: Add recovery email and contact email.
 export class SignUpPage extends EventEmitter {
   public static create(initAccountType?: AccountType): SignUpPage {
     return new SignUpPage(
@@ -129,7 +131,6 @@ export class SignUpPage extends EventEmitter {
                 ),
               ),
             ],
-            initAccountType ?? AccountType.CONSUMER,
             (value) => {
               this.request.accountType = value;
             },
@@ -151,19 +152,25 @@ export class SignUpPage extends EventEmitter {
         this.repeatPasswordInput.val,
       ],
       LOCALIZED_TEXT.signUpButtonLabel,
-    );
-
+    )
+      .addPrimaryAction(
+        () => this.signUp(),
+        (response, error) => this.postSignUp(response, error),
+      )
+      .on("handlePrimarySuccess", () => this.emit("signedUp"))
+      .on("primaryDone", () => this.emit("signUpDone"));
+    this.naturalNameInput.val.validate();
+    this.usernameInput.val.validate();
+    this.passwordInput.val.validate();
+    this.repeatPasswordInput.val.validate();
+    this.accountTypeInput.val.setValue(initAccountType ?? AccountType.CONSUMER);
     this.switchToSignInButton.val.addEventListener("click", () =>
       this.emit("signIn"),
     );
-    this.inputFormPage.addPrimaryAction(
-      () => this.signUp(),
-      (response, error) => this.postSignUp(response, error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("signedUp"));
   }
 
   private validateOrTakeNaturalNameInput(value: string): ValidationResult {
+    value = value.trim();
     if (value.length > MAX_NATURAL_NAME_LENGTH) {
       return {
         valid: false,
@@ -178,6 +185,7 @@ export class SignUpPage extends EventEmitter {
   }
 
   private validateOrTakeUsernameInput(value: string): ValidationResult {
+    value = value.trim();
     if (value.length > MAX_USERNAME_LENGTH) {
       return {
         valid: false,

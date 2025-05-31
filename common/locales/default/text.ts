@@ -238,7 +238,7 @@ export default class Text {
   get contactEmailTooLongError() {
     return `The contact email is too long.`;
   }
-  get accountDescrptionTooLongError() {
+  get accountDescriptionTooLongError() {
     return `The new description is too long.`;
   }
   get updatePasswordTitle() {
@@ -666,7 +666,7 @@ export default class Text {
     return `Rate cannot be changed anymore.`;
   }
   get seasonNewRateLabel() {
-    return `Upcoming rate: `;
+    return `New rate: `;
   }
   get seasonNewRateEffectiveDateLabel() {
     return `Effective date: `;
@@ -1113,5 +1113,39 @@ export default class Text {
   }
   get archiveGenericError() {
     return `Failed to archive. Please try again later.`;
+  }
+  get updateSeasonPricingTitle() {
+    return `Update pricing`;
+  }
+  get updateSeasonNewRateLabel() {
+    return [
+      `Enter multiplier for `,
+      ` as the new rate. (As a reference, premium movies are typically priced around `,
+      `.)`,
+    ];
+  }
+  get updateSeasonNewRatePreview() {
+    return [`Displayed as `, `.`];
+  }
+  get updateSeasonNewRateInvalidError() {
+    return `Multiplier must be a positive integer.`;
+  }
+  get updateSeasonNewRateTooLargeError() {
+    return `Multiplier is too large.`;
+  }
+  get updateSeasonNewRateIsTheSameError() {
+    return `New rate should be different from the current rate.`;
+  }
+  get updateSeasonNewRateEffectiveDateLabel() {
+    return [`Effective date (`, `)`];
+  }
+  get updateSeasonNewRateEffectiveDateInvalidError() {
+    return `Effective date is invalid.`;
+  }
+  get updateSeasonNewRateEffectiveDateTooSoonError() {
+    return [`Effective date must be `, ` days from now or later.`];
+  }
+  get updateSeasonDeleteNewRateButtonLabel() {
+    return `Delete new rate`;
   }
 }

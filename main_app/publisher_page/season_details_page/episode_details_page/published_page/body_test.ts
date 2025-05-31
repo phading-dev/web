@@ -74,9 +74,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.premiereTimeInput.val.dispatchEnter();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
 
         // Verify
         assertThat(
@@ -109,9 +107,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
 
         // Verify
         assertThat(back, eq(true), "Back when done");
@@ -135,6 +131,9 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.inputFormPage.clickSecondaryButton();
+        await new Promise<void>((resolve) =>
+          this.cut.once("unpublished", resolve),
+        );
 
         // Verify
         assertThat(
@@ -170,6 +169,9 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.inputFormPage.clickSecondaryButton();
+        await new Promise<void>((resolve) =>
+          this.cut.once("unpublished", resolve),
+        );
 
         // Verify
         await asyncAssertScreenshot(

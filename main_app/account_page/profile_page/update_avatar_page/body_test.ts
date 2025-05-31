@@ -139,6 +139,9 @@ TEST_RUNNER.run({
           },
         );
       }
+      public tearDown() {
+        this.cut.remove();
+      }
     })(),
   ],
 });

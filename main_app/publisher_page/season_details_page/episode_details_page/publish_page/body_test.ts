@@ -48,7 +48,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.premiereTimeInput.val.dispatchEnter();
         await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
+          this.cut.once("published", resolve),
         );
 
         // Verify
@@ -104,7 +104,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
+          this.cut.once("published", resolve),
         );
 
         // Verify

@@ -20,6 +20,8 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface PublishedPage {
   on(event: "back", listener: () => void): this;
+  on(event: "updated", listener: () => void): this;
+  on(event: "unpublished", listener: () => void): this;
 }
 
 export class PublishedPage extends EventEmitter {
@@ -81,19 +83,23 @@ export class PublishedPage extends EventEmitter {
       ],
       [this.premiereTimeInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
-    ).addBackButton();
-    this.inputFormPage.on("back", () => this.emit("back"));
-    this.inputFormPage.addPrimaryAction(
-      () => this.update(),
-      (response, error) => this.postUpdate(error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
-    this.inputFormPage.addSecondaryButton(
-      LOCALIZED_TEXT.unpublishButtonLabel,
-      () => this.unpublish(),
-      (response, error) => this.postUnpublish(error),
-    );
-    this.inputFormPage.on("handleSecondarySuccess", () => this.emit("back"));
+    )
+      .addBackButton()
+      .on("back", () => this.emit("back"))
+      .addPrimaryAction(
+        () => this.update(),
+        (response, error) => this.postUpdate(error),
+      )
+      .on("handlePrimarySuccess", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("updated"))
+      .addSecondaryButton(
+        LOCALIZED_TEXT.unpublishButtonLabel,
+        () => this.unpublish(),
+        (response, error) => this.postUnpublish(error),
+      )
+      .on("handleSecondarySuccess", () => this.emit("back"))
+      .on("secondaryDone", () => this.emit("unpublished"));
+    this.premiereTimeInput.val.validate();
   }
 
   private toLocalISOStringUntilMinutes(date: Date): string {

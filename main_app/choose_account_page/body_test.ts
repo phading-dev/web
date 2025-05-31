@@ -37,14 +37,14 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let chosen = false;
-        this.cut.on("chosen", () => (chosen = true));
+        let choose = false;
+        this.cut.on("choose", () => (choose = true));
 
         // Execute
-        this.cut.listAccountsPage.emit("chosen");
+        this.cut.listAccountsPage.emit("choose");
 
         // Verify
-        assertThat(chosen, eq(true), "chosen");
+        assertThat(choose, eq(true), "choose");
 
         // Execute
         this.cut.listAccountsPage.emit("createAccount");
@@ -60,13 +60,13 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        chosen = false;
+        choose = false;
 
         // Execute
-        this.cut.createAccountPage.emit("chosen");
+        this.cut.createAccountPage.emit("choose");
 
         // Verify
-        assertThat(chosen, eq(true), "chosen");
+        assertThat(choose, eq(true), "choose");
 
         // Execute
         this.cut.createAccountPage.emit("back");

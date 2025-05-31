@@ -47,9 +47,6 @@ TEST_RUNNER.run({
         // Execute
         this.cut.newRecoveryEmailInput.val.value = createLongString(201);
         this.cut.newRecoveryEmailInput.val.dispatchChange();
-        await new Promise<void>((resolve) =>
-          this.cut.newRecoveryEmailInput.val.once("validated", resolve),
-        );
 
         // Verify
         await asyncAssertScreenshot(
@@ -67,24 +64,25 @@ TEST_RUNNER.run({
           ),
         );
 
-        // Prepare
+        // Execute
         this.cut.currentPasswordInput.val.value = "current password";
         this.cut.currentPasswordInput.val.dispatchChange();
-        await new Promise<void>((resolve) =>
-          this.cut.currentPasswordInput.val.once("validated", resolve),
-        );
-        this.cut.newRecoveryEmailInput.val.value = "new@gmail.com";
+        this.cut.newRecoveryEmailInput.val.value = " new@gmail.com ";
         this.cut.newRecoveryEmailInput.val.dispatchChange();
-        await new Promise<void>((resolve) =>
-          this.cut.newRecoveryEmailInput.val.once("validated", resolve),
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/update_recovery_email_page_valid.png"),
+          path.join(__dirname, "/golden/update_recovery_email_page_valid.png"),
+          path.join(__dirname, "/update_recovery_email_page_valid_diff.png"),
         );
+
+        // Prepare
         clientMock.error = new Error("fake error");
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
 
         // Verify
         assertThat(
@@ -123,9 +121,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
 
         // Verify
         assertThat(isBack, eq(true), "Back");

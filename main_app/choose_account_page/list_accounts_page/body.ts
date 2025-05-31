@@ -21,7 +21,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
 
 export interface ListAccountsPage {
-  on(event: "chosen", listener: () => void): this;
+  on(event: "choose", listener: () => void): this;
   on(event: "createAccount", listener: () => void): this;
   on(event: "signOut", listener: () => void): this;
   on(event: "loaded", listener: () => void): this;
@@ -136,7 +136,7 @@ export class ListAccountsPage extends EventEmitter {
       }),
     );
     this.localSessionStorage.save(response.signedSession);
-    this.emit("chosen");
+    this.emit("choose");
   }
 
   public remove(): void {

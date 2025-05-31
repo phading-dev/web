@@ -180,7 +180,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.accountItems[1].click();
-        await new Promise<void>((resolve) => this.cut.once("chosen", resolve));
+        await new Promise<void>((resolve) => this.cut.once("choose", resolve));
 
         // Verify
         assertThat(

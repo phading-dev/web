@@ -15,6 +15,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface UpdateIndexPage {
   on(event: "back", listener: () => void): this;
+  on(event: "updated", listener: () => void): this;
 }
 
 // Assumptions:
@@ -51,8 +52,10 @@ export class UpdateIndexPage extends EventEmitter {
             `${LOCALIZED_TEXT.updateEpisodeIndexLabel[0]}1${LOCALIZED_TEXT.updateEpisodeIndexLabel[1]}${episode.totalPublishedEpisodes}${LOCALIZED_TEXT.updateEpisodeIndexLabel[2]}`,
             "",
             {
-              type: "text",
+              type: "number",
               value: `${episode.episodeIndex}`,
+              min: "1",
+              max: `${episode.totalPublishedEpisodes}`,
             },
             (value) => this.validateIndexAndTake(value),
           ),
@@ -60,13 +63,16 @@ export class UpdateIndexPage extends EventEmitter {
       ],
       [this.episodeIndexInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
-    ).addBackButton();
-    this.inputFormPage.on("back", () => this.emit("back"));
-    this.inputFormPage.addPrimaryAction(
-      () => this.update(),
-      (response, error) => this.postUpdate(error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
+    )
+      .addBackButton()
+      .on("back", () => this.emit("back"))
+      .addPrimaryAction(
+        () => this.update(),
+        (response, error) => this.postUpdate(error),
+      )
+      .on("handlePrimarySuccess", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("updated"));
+    this.episodeIndexInput.val.validate();
   }
 
   private validateIndexAndTake(value: string): ValidationResult {

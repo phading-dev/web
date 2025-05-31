@@ -553,6 +553,7 @@ export class AudioTrackEditor extends EventEmitter {
             class: "update-tracks-audio-adding-name",
             style: `${BASIC_INPUT_STYLE} width: 40%; text-align: center;`,
             value: newStaging.toAdd.name,
+            maxlength: `${MAX_AUDIO_TRACK_NAME_LENGTH}`,
           }),
           E.div({
             style: `flex: 1 0 auto; width: 1rem;`,
@@ -863,6 +864,7 @@ export class SubtitleTrackEditor extends EventEmitter {
             class: "update-tracks-subtitle-adding-name",
             style: `${BASIC_INPUT_STYLE} width: max(40%, 20rem); text-align: center;`,
             value: newStaging.toAdd.name,
+            maxlength: `${MAX_SUBTITLE_TRACK_NAME_LENGTH}`,
           }),
           E.div({
             style: `flex: 1 0 auto; width: ${1.5 + ICON_BUTTON_M}rem;`,

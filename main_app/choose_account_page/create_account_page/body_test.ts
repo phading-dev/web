@@ -92,9 +92,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("chosen", resolve));
 
         // Verify
         assertThat(
@@ -133,17 +131,15 @@ TEST_RUNNER.run({
         serviceClientMock.response = {
           signedSession: "session 1",
         } as CreateAccountResponse;
-        let chosen = false;
-        this.cut.on("chosen", () => (chosen = true));
+        let choose = false;
+        this.cut.on("choose", () => (choose = true));
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("chosen", resolve));
 
         // Verify
-        assertThat(chosen, eq(true), "chosen");
+        assertThat(choose, eq(true), "choose");
         assertThat(
           LOCAL_SESSION_STORAGE.read(),
           eq("session 1"),
@@ -197,9 +193,7 @@ TEST_RUNNER.run({
         // Wait for validation.
         await new Promise<void>((resolve) => setTimeout(resolve));
         this.cut.inputFormPage.clickPrimaryButton();
-        await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("chosen", resolve));
 
         // Verify
         assertThat(

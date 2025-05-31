@@ -46,19 +46,22 @@ export class CreateEpisodePage extends EventEmitter {
       ],
       [this.nameInput.val],
       LOCALIZED_TEXT.createButtonLabel,
-    ).addBackButton();
-    this.inputFormPage.on("back", () => this.emit("back"));
-    this.inputFormPage.addPrimaryAction(
-      () => this.create(),
-      (response, error) => this.postCreate(error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", (response) =>
-      this.emit("showEpisode", response.episodeId),
-    );
-    this.inputFormPage.on("primaryDone", () => this.emit("created"));
+    )
+      .addBackButton()
+      .on("back", () => this.emit("back"))
+      .addPrimaryAction(
+        () => this.create(),
+        (response, error) => this.postCreate(error),
+      )
+      .on("handlePrimarySuccess", (response) =>
+        this.emit("showEpisode", response.episodeId),
+      )
+      .on("primaryDone", () => this.emit("created"));
+    this.nameInput.val.validate();
   }
 
   private validateNameAndTake(value: string): ValidationResult {
+    value = value.trim();
     if (value.length === 0) {
       return {
         valid: false,

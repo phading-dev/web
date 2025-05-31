@@ -10,7 +10,7 @@ export interface ValidationResult {
 }
 
 export interface InputWithErrorMsg {
-  on(event: "validated", listener: () => void): this;
+  on(event: "validate", listener: () => void): this;
   on(event: "action", listener: () => void): this;
 }
 
@@ -46,7 +46,6 @@ export class InputWithErrorMsg extends EventEmitter {
     this.inputElement = this.input.val || this.textAreaInput.val;
     this.validateAndTakeFn = validateAndTakeFn;
 
-    this.validate();
     this.input.val?.addEventListener("keydown", (event) => this.keydown(event));
     this.input.val?.addEventListener("change", () => this.validate());
     this.textAreaInput.val?.addEventListener("change", () => this.validate());
@@ -58,7 +57,7 @@ export class InputWithErrorMsg extends EventEmitter {
     }
   }
 
-  private async validate(): Promise<void> {
+  public async validate(): Promise<void> {
     this.resetError();
     let value = this.input.val?.value || this.textAreaInput.val?.value || "";
     let result = await this.validateAndTakeFn(value);
@@ -72,7 +71,7 @@ export class InputWithErrorMsg extends EventEmitter {
       }
       this.valid = false;
     }
-    this.emit("validated");
+    this.emit("validate");
   }
 
   private resetError(): void {

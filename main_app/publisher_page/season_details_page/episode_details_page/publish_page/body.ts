@@ -14,6 +14,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface PublishPage {
   on(event: "back", listener: () => void): this;
+  on(event: "published", listener: () => void): this;
 }
 
 export class PublishPage extends EventEmitter {
@@ -57,17 +58,20 @@ export class PublishPage extends EventEmitter {
       ],
       [this.premiereTimeInput.val],
       LOCALIZED_TEXT.publishButtonLabel,
-    ).addBackButton();
-    this.inputFormPage.on("back", () => this.emit("back"));
-    this.inputFormPage.addPrimaryAction(
-      () => this.publish(),
-      (response, error) => this.postPublish(error),
-    );
-    this.inputFormPage.on("handlePrimarySuccess", () => this.emit("back"));
+    )
+      .addBackButton()
+      .on("back", () => this.emit("back"))
+      .addPrimaryAction(
+        () => this.publish(),
+        (response, error) => this.postPublish(error),
+      )
+      .on("handlePrimarySuccess", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("published"));
+    this.premiereTimeInput.val.validate();
   }
 
   private validatePremiereTimeAndTake(value: string): ValidationResult {
-    if (value === "") {
+    if (value.length === 0) {
       this.request.premiereTimeMs = undefined;
       return {
         valid: true,

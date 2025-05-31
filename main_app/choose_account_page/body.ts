@@ -14,7 +14,7 @@ interface NavigationArgs {
 }
 
 export interface ChooseAccountPage {
-  on(event: "chosen", listener: () => void): this;
+  on(event: "choose", listener: () => void): this;
   on(event: "signOut", listener: () => void): this;
 }
 
@@ -59,7 +59,7 @@ export class ChooseAccountPage extends EventEmitter {
         this.listAccountsPage = this.createListAccountsPage(
           args?.listAccountsPreSelectedAccountId,
         )
-          .on("chosen", () => this.emit("chosen"))
+          .on("choose", () => this.emit("choose"))
           .on("createAccount", () =>
             this.pageNavigator.goTo(Page.CREATE_ACCOUNT),
           )
@@ -68,7 +68,7 @@ export class ChooseAccountPage extends EventEmitter {
         break;
       case Page.CREATE_ACCOUNT:
         this.createAccountPage = this.createCreateAccountPage()
-          .on("chosen", () => this.emit("chosen"))
+          .on("choose", () => this.emit("choose"))
           .on("back", () => this.pageNavigator.goTo(Page.LIST));
         this.appendBodiesFn(this.createAccountPage.body);
         break;

@@ -39,7 +39,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.usernameInput.val.value = "my_username";
+        this.cut.usernameInput.val.value = " my_username ";
         this.cut.usernameInput.val.dispatchChange();
 
         // Verify
@@ -66,7 +66,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
-          this.cut.inputFormPage.once("primaryDone", resolve),
+          this.cut.once("signInDone", resolve),
         );
 
         // Verify
