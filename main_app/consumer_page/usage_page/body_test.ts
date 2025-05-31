@@ -118,7 +118,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.oneMonthInput.val.value = "2020-09";
-        this.cut.oneMonthInput.val.dispatchEvent(new Event("input"));
+        this.cut.oneMonthInput.val.dispatchEvent(new Event("change"));
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
@@ -241,7 +241,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.oneDayInput.val.value = "2020-08-31";
-        this.cut.oneDayInput.val.dispatchEvent(new Event("input"));
+        this.cut.oneDayInput.val.dispatchEvent(new Event("change"));
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
@@ -346,7 +346,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.dayRangeInput.val.startRangeInput.val.value = "2024-01-01";
         this.cut.dayRangeInput.val.startRangeInput.val.dispatchEvent(
-          new Event("input"),
+          new Event("change"),
         );
 
         // Verify
@@ -365,7 +365,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.dayRangeInput.val.endRangeInput.val.value = "2024-02-04";
         this.cut.dayRangeInput.val.endRangeInput.val.dispatchEvent(
-          new Event("input"),
+          new Event("change"),
         );
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
@@ -475,7 +475,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.monthRangeInput.val.startRangeInput.val.value = "2024-01";
         this.cut.monthRangeInput.val.startRangeInput.val.dispatchEvent(
-          new Event("input"),
+          new Event("change"),
         );
 
         // Verify
@@ -494,7 +494,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.monthRangeInput.val.endRangeInput.val.value = "2024-02";
         this.cut.monthRangeInput.val.endRangeInput.val.dispatchEvent(
-          new Event("input"),
+          new Event("change"),
         );
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 

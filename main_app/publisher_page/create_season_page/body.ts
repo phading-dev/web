@@ -60,13 +60,15 @@ export class CreateSeasonPage extends EventEmitter {
 
   private validateNameAndTake(value: string): ValidationResult {
     value = value.trim();
-    if (value.length > MAX_SEASON_NAME_LENGTH) {
+    if (!value) {
+      return {
+        valid: false,
+      };
+    } else if (value.length > MAX_SEASON_NAME_LENGTH) {
       return {
         valid: false,
         errorMsg: LOCALIZED_TEXT.seasonNameTooLongError,
       };
-    } else if (value.length === 0) {
-      return { valid: false };
     } else {
       this.request.name = value;
       return { valid: true };

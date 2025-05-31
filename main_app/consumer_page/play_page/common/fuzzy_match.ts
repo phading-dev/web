@@ -7,7 +7,7 @@ export function normalize(name: string): Array<string> {
     .replace(/[\s\-()_]+/g, " ")
     .toLowerCase()
     .split(" ")
-    .filter((word) => word.length > 0);
+    .filter((word) => word);
 }
 
 export function score(normalizedTarget: Array<string>, option: string): number {

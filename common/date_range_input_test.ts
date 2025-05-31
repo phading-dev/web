@@ -64,7 +64,7 @@ TEST_RUNNER.run({
 
         // Execute
         cut.startRangeInput.val.value = "2025-02";
-        cut.startRangeInput.val.dispatchEvent(new Event("input"));
+        cut.startRangeInput.val.dispatchEvent(new Event("change"));
 
         // Verify
         assertThat(isInvalid, eq(true), "invalid event");
@@ -74,20 +74,20 @@ TEST_RUNNER.run({
 
         // Execute
         cut.endRangeInput.val.value = "2025-05";
-        cut.endRangeInput.val.dispatchEvent(new Event("input"));
+        cut.endRangeInput.val.dispatchEvent(new Event("change"));
 
         // Verify
         assertThat(isInvalid, eq(true), "invalid event 2");
 
         // Prepare
         let hasInput = false;
-        cut.on("input", () => {
+        cut.on("change", () => {
           hasInput = true;
         });
 
         // Execute
         cut.endRangeInput.val.value = "2025-04";
-        cut.endRangeInput.val.dispatchEvent(new Event("input"));
+        cut.endRangeInput.val.dispatchEvent(new Event("change"));
         let { startRange, endRange } = cut.getValues();
 
         // Verify
@@ -150,7 +150,7 @@ TEST_RUNNER.run({
 
         // Execute
         cut.startRangeInput.val.value = "2025-01-02";
-        cut.startRangeInput.val.dispatchEvent(new Event("input"));
+        cut.startRangeInput.val.dispatchEvent(new Event("change"));
 
         // Verify
         assertThat(isInvalid, eq(true), "invalid event");
@@ -160,20 +160,20 @@ TEST_RUNNER.run({
 
         // Execute
         cut.endRangeInput.val.value = "2025-01-05";
-        cut.endRangeInput.val.dispatchEvent(new Event("input"));
+        cut.endRangeInput.val.dispatchEvent(new Event("change"));
 
         // Verify
         assertThat(isInvalid, eq(true), "invalid event 2");
 
         // Prepare
         let hasInput = false;
-        cut.on("input", () => {
+        cut.on("change", () => {
           hasInput = true;
         });
 
         // Execute
         cut.endRangeInput.val.value = "2025-01-04";
-        cut.endRangeInput.val.dispatchEvent(new Event("input"));
+        cut.endRangeInput.val.dispatchEvent(new Event("change"));
         let { startRange, endRange } = cut.getValues();
 
         // Verify

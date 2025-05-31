@@ -124,7 +124,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "WithNaturalName";
+      public name = "NoDescription";
       private cut: UpdateAccountInfoPage;
       public async execute() {
         // Prepare
@@ -134,6 +134,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new UpdateAccountInfoPage(webServiceClientMock, {
           naturalName: "First second",
+          contactEmail: "me@gmail.com",
         });
         document.body.append(this.cut.body);
 
@@ -141,15 +142,15 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/update_account_info_page_with_natural_name.png",
+            "/update_account_info_page_with_no_description.png",
           ),
           path.join(
             __dirname,
-            "/golden/update_account_info_page_with_natural_name.png",
+            "/golden/update_account_info_page_with_no_description.png",
           ),
           path.join(
             __dirname,
-            "/update_account_info_page_with_natural_name_diff.png",
+            "/update_account_info_page_with_no_description_diff.png",
           ),
         );
 
@@ -168,7 +169,7 @@ TEST_RUNNER.run({
           eqMessage(
             {
               naturalName: "First second",
-              contactEmail: "",
+              contactEmail: "me@gmail.com",
               description: "",
             },
             UPDATE_ACCOUNT_REQUEST_BODY,

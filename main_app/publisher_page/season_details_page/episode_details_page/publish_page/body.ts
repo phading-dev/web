@@ -71,7 +71,7 @@ export class PublishPage extends EventEmitter {
   }
 
   private validatePremiereTimeAndTake(value: string): ValidationResult {
-    if (value.length === 0) {
+    if (!value) {
       this.request.premiereTimeMs = undefined;
       return {
         valid: true,

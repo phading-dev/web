@@ -99,7 +99,7 @@ export class CommentsPanel extends EventEmitter {
 
   private validateCommentInput(): void {
     if (
-      this.commentInput.val.value.length > 0 &&
+      this.commentInput.val.value &&
       this.commentInput.val.value.length <= MAX_CONTENT_LENGTH
     ) {
       this.commentButton.val.enable();

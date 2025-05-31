@@ -26,13 +26,13 @@ TEST_RUNNER.run({
           {},
           "",
           (value) => {
-            if (value.length > 10) {
+            if (!value) {
+              return { valid: false };
+            } else if (value.length > 10) {
               return {
                 valid: false,
                 errorMsg: "Too long.",
               };
-            } else if (value.length === 0) {
-              return { valid: false };
             } else {
               return { valid: true };
             }

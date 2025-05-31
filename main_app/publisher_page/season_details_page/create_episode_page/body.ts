@@ -62,7 +62,7 @@ export class CreateEpisodePage extends EventEmitter {
 
   private validateNameAndTake(value: string): ValidationResult {
     value = value.trim();
-    if (value.length === 0) {
+    if (!value) {
       return {
         valid: false,
       };

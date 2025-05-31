@@ -102,13 +102,15 @@ export class UpdateAccountInfoPage extends EventEmitter {
 
   private validateOrTakeNaturalNameInput(value: string): ValidationResult {
     value = value.trim();
-    if (value.length > MAX_NATURAL_NAME_LENGTH) {
+    if (!value) {
+      return {
+        valid: false,
+      };
+    } else if (value.length > MAX_NATURAL_NAME_LENGTH) {
       return {
         valid: false,
         errorMsg: LOCALIZED_TEXT.naturalNameTooLongError,
       };
-    } else if (value.length === 0) {
-      return { valid: false };
     } else {
       this.request.naturalName = value;
       return { valid: true };
@@ -117,7 +119,11 @@ export class UpdateAccountInfoPage extends EventEmitter {
 
   private validateOrTakeEmailInput(value: string): ValidationResult {
     value = value.trim();
-    if (value.length > MAX_EMAIL_LENGTH) {
+    if (!value) {
+      return {
+        valid: false,
+      };
+    } else if (value.length > MAX_EMAIL_LENGTH) {
       return {
         valid: false,
         errorMsg: LOCALIZED_TEXT.contactEmailTooLongError,

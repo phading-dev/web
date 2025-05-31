@@ -102,13 +102,13 @@ export class UpdatePasswordPage extends EventEmitter {
   }
 
   private validateOrTakeNewPassword(value: string): ValidationResult {
-    if (value.length > MAX_PASSWORD_LENGTH) {
+    if (!value) {
+      return { valid: false };
+    } else if (value.length > MAX_PASSWORD_LENGTH) {
       return {
         valid: false,
         errorMsg: LOCALIZED_TEXT.newPasswordTooLongError,
       };
-    } else if (value.length === 0) {
-      return { valid: false };
     } else {
       this.request.newPassword = value;
       return { valid: true };
@@ -116,11 +116,7 @@ export class UpdatePasswordPage extends EventEmitter {
   }
 
   private validateNewPasswordRepeat(value: string): ValidationResult {
-    if (
-      !this.request.newPassword ||
-      this.request.newPassword.length === 0 ||
-      value.length === 0
-    ) {
+    if (!this.request.newPassword || !value) {
       return { valid: false };
     }
     if (value === this.request.newPassword) {
@@ -134,7 +130,7 @@ export class UpdatePasswordPage extends EventEmitter {
   }
 
   private validateOrTakeCurrentPassword(value: string): ValidationResult {
-    if (value.length === 0) {
+    if (!value) {
       return { valid: false };
     } else {
       this.request.currentPassword = value;

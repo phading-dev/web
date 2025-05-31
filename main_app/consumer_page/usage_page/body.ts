@@ -186,11 +186,11 @@ export class UsagePage extends EventEmitter {
     this.rangeTypeInput.on("selected", (value) =>
       this.setRangeTypeAndLoad(value),
     );
-    this.oneDayInput.val.addEventListener("input", () => this.loadOneDay());
-    this.oneMonthInput.val.addEventListener("input", () => this.loadOneMonth());
-    this.dayRangeInput.val.on("input", () => this.loadFromDayRange());
+    this.oneDayInput.val.addEventListener("change", () => this.loadOneDay());
+    this.oneMonthInput.val.addEventListener("change", () => this.loadOneMonth());
+    this.dayRangeInput.val.on("change", () => this.loadFromDayRange());
     this.dayRangeInput.val.on("invalid", () => this.showInvalidRange());
-    this.monthRangeInput.val.on("input", () => this.loadFromMonthRange());
+    this.monthRangeInput.val.on("change", () => this.loadFromMonthRange());
     this.monthRangeInput.val.on("invalid", () => this.showInvalidRange());
   }
 

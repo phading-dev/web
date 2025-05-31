@@ -30,7 +30,7 @@ TEST_RUNNER.run({
           { type: "text" },
           (value) => {
             inputValue = value;
-            if (value.length === 0) {
+            if (!value) {
               return { valid: false };
             } else {
               return { valid: true };

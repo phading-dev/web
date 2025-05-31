@@ -85,13 +85,15 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
 
   private validateOrTakeNewEmail(value: string): ValidationResult {
     value = value.trim();
-    if (value.length > MAX_EMAIL_LENGTH) {
+    if (!value) {
+      return {
+        valid: false,
+      };
+    } else if (value.length > MAX_EMAIL_LENGTH) {
       return {
         valid: false,
         errorMsg: LOCALIZED_TEXT.newPasswordTooLongError,
       };
-    } else if (value.length === 0) {
-      return { valid: false };
     } else {
       this.request.newEmail = value;
       return { valid: true };
@@ -99,7 +101,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
   }
 
   private validateOrTakeCurrentPassword(value: string): ValidationResult {
-    if (value.length === 0) {
+    if (!value) {
       return { valid: false };
     } else {
       this.request.currentPassword = value;

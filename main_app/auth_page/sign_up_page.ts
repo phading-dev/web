@@ -171,13 +171,13 @@ export class SignUpPage extends EventEmitter {
 
   private validateOrTakeNaturalNameInput(value: string): ValidationResult {
     value = value.trim();
-    if (value.length > MAX_NATURAL_NAME_LENGTH) {
+    if (!value) {
+      return { valid: false };
+    } else if (value.length > MAX_NATURAL_NAME_LENGTH) {
       return {
         valid: false,
         errorMsg: LOCALIZED_TEXT.naturalNameTooLongError,
       };
-    } else if (value.length === 0) {
-      return { valid: false };
     } else {
       this.request.naturalName = value;
       return { valid: true };
@@ -186,13 +186,13 @@ export class SignUpPage extends EventEmitter {
 
   private validateOrTakeUsernameInput(value: string): ValidationResult {
     value = value.trim();
-    if (value.length > MAX_USERNAME_LENGTH) {
+    if (!value) {
+      return { valid: false };
+    } else if (value.length > MAX_USERNAME_LENGTH) {
       return {
         valid: false,
         errorMsg: LOCALIZED_TEXT.usernameTooLongError,
       };
-    } else if (value.length === 0) {
-      return { valid: false };
     } else {
       this.request.username = value;
       return { valid: true };
@@ -200,13 +200,13 @@ export class SignUpPage extends EventEmitter {
   }
 
   private validateOrTakePasswordInput(value: string): ValidationResult {
-    if (value.length > MAX_PASSWORD_LENGTH) {
+    if (!value) {
+      return { valid: false };
+    } else if (value.length > MAX_PASSWORD_LENGTH) {
       return {
         valid: false,
         errorMsg: LOCALIZED_TEXT.passwordTooLongError,
       };
-    } else if (value.length === 0) {
-      return { valid: false };
     } else {
       this.request.password = value;
       return { valid: true };
@@ -214,11 +214,7 @@ export class SignUpPage extends EventEmitter {
   }
 
   private validateRepeatPasswordInput(value: string): ValidationResult {
-    if (
-      !this.request.password ||
-      this.request.password.length === 0 ||
-      value.length === 0
-    ) {
+    if (!this.request.password || !value) {
       return {
         valid: false,
       };

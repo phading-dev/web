@@ -237,7 +237,7 @@ export class PaymentPage extends EventEmitter {
     );
     this.listPayments();
 
-    this.monthRangeInput.val.on("input", () => this.listPayments());
+    this.monthRangeInput.val.on("change", () => this.listPayments());
     this.monthRangeInput.val.on("invalid", () => this.showInvalidRange());
     if (this.retryPaymentsButton.val) {
       this.retryPaymentsButton.val.addAction(

@@ -13,7 +13,7 @@ export enum DateType {
 }
 
 export interface DateRangeInput {
-  on(event: "input", listener: () => void): this;
+  on(event: "change", listener: () => void): this;
   on(event: "invalid", listener: () => void): this;
 }
 
@@ -84,8 +84,8 @@ export class DateRangeInput extends EventEmitter {
         }),
       ),
     );
-    this.startRangeInput.val.addEventListener("input", () => this.input());
-    this.endRangeInput.val.addEventListener("input", () => this.input());
+    this.startRangeInput.val.addEventListener("change", () => this.change());
+    this.endRangeInput.val.addEventListener("change", () => this.change());
   }
 
   private static getDayDifference(startDate: TzDate, endDate: TzDate): number {
@@ -99,9 +99,9 @@ export class DateRangeInput extends EventEmitter {
     return endDate.minusDateInMonths(startDate) + 1;
   }
 
-  private input(): void {
+  private change(): void {
     if (this.validateInput()) {
-      this.emit("input");
+      this.emit("change");
     } else {
       this.emit("invalid");
     }

@@ -92,7 +92,7 @@ export class SignInPage extends EventEmitter {
 
   private validateOrTakeUsernameInput(value: string): ValidationResult {
     value = value.trim();
-    if (value.length > 0) {
+    if (value) {
       this.request.username = value;
       return {
         valid: true,
@@ -105,7 +105,7 @@ export class SignInPage extends EventEmitter {
   }
 
   private validateOrTakePasswordInput(value: string): ValidationResult {
-    if (value.length > 0) {
+    if (value) {
       this.request.password = value;
       return {
         valid: true,

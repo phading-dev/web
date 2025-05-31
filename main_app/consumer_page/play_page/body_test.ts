@@ -862,6 +862,9 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.player.val.playButton.val.click();
+        await new Promise<void>((resolve) =>
+          this.cut.player.val.once("playing", resolve),
+        );
         await new Promise((resolve) => setTimeout(resolve, 1000));
         // Advance 30 seconds which is larger than
         // WatchTimeMeter.SYNC_THROTTLE_INTERVAL_MS and

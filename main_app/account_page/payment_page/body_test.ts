@@ -95,7 +95,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.monthRangeInput.val.startRangeInput.val.value = "2025-04";
         this.cut.monthRangeInput.val.startRangeInput.val.dispatchEvent(
-          new Event("input"),
+          new Event("change"),
         );
 
         // Verify
@@ -144,7 +144,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.monthRangeInput.val.endRangeInput.val.value = "2026-12";
         this.cut.monthRangeInput.val.endRangeInput.val.dispatchEvent(
-          new Event("input"),
+          new Event("change"),
         );
         await new Promise((resolve) => this.cut.once("listed", resolve));
 

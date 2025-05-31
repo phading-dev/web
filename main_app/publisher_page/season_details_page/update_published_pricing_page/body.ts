@@ -142,7 +142,7 @@ export class UpdatePublishedPricingPage extends EventEmitter {
   }
 
   private validateGradeAndPreviewAndTake(value: string): ValidationResult {
-    if (value.length === 0) {
+    if (!value) {
       return {
         valid: false,
       };

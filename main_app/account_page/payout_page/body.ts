@@ -122,7 +122,7 @@ export class PayoutPage extends EventEmitter {
     );
     this.listPayouts();
 
-    this.monthRangeInput.val.on("input", () => this.listPayouts());
+    this.monthRangeInput.val.on("change", () => this.listPayouts());
     this.monthRangeInput.val.on("invalid", () => this.showInvalidRange());
   }
 

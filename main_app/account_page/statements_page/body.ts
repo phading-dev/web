@@ -107,7 +107,7 @@ export class StatementsPage extends EventEmitter {
     );
     this.listStatements();
 
-    this.monthRangeInput.val.on("input", () => this.listStatements());
+    this.monthRangeInput.val.on("change", () => this.listStatements());
     this.monthRangeInput.val.on("invalid", () => this.showInvalidRange());
   }
 
