@@ -73,6 +73,12 @@ export default class Text {
   get usernameLabel() {
     return `Username`;
   }
+  get emailLabel() {
+    return `Email`
+  }
+  get emailTooLongError() {
+    return `Email is too long.`
+  }
   get recoveryEmailLabel() {
     return `Recovery email`;
   }
@@ -86,7 +92,7 @@ export default class Text {
     return `Account type`;
   }
   get userTypeConsumerLabel() {
-    return `Consumer`;
+    return `Viewer`;
   }
   get userTypePublisherLabel() {
     return `Publisher`;
@@ -98,16 +104,16 @@ export default class Text {
     return `Your name is too long`;
   }
   get usernameTooLongError() {
-    return `Your username is too long`;
+    return `Username is too long`;
   }
   get usernameIsUsedError() {
-    return `The username is already taken.`;
+    return `Username is already taken.`;
   }
   get passwordTooLongError() {
-    return `Your password is too long`;
+    return `Password is too long`;
   }
   get repeatPasswordNotMatchError() {
-    return `The two passwords don't match`;
+    return `Passwords don’t match. Please make sure both fields are the same.`;
   }
   get signUpButtonLabel() {
     return `Sign up`;
@@ -235,11 +241,8 @@ export default class Text {
   get updateAccountInfo() {
     return `Update profile info`;
   }
-  get contactEmailTooLongError() {
-    return `The contact email is too long.`;
-  }
   get accountDescriptionTooLongError() {
-    return `The new description is too long.`;
+    return `Description is too long.`;
   }
   get updatePasswordTitle() {
     return `Update password`;
@@ -251,13 +254,10 @@ export default class Text {
     return `New password`;
   }
   get newPasswordTooLongError() {
-    return `The new password is too long.`;
+    return `New password is too long.`;
   }
   get repeatNewPasswordLabel() {
     return `Confirm new password`;
-  }
-  get repeatNewPasswordNotMatchError() {
-    return `Please double check your new passwords. They don't match.`;
   }
   get updateUsernameTitle() {
     return `Update username`;
@@ -267,12 +267,6 @@ export default class Text {
   }
   get updateRecoveryEmailTitle() {
     return `Update recovery email`;
-  }
-  get newRecoveryEmailLabel() {
-    return `New email`;
-  }
-  get newRecoveryEmailTooLongError() {
-    return `The new email is too long.`;
   }
   get updateButtonLabel() {
     return `Update`;
@@ -639,7 +633,7 @@ export default class Text {
     return `Name`;
   }
   get seasonNameTooLongError() {
-    return `The name is too long.`;
+    return `Name is too long.`;
   }
   get seasonDescriptionLabel() {
     return `Description`;
@@ -974,7 +968,7 @@ export default class Text {
     return `Name`;
   }
   get updateEpisodeNameTooLongError() {
-    return `The name is too long.`;
+    return `Name is too long.`;
   }
   get updateEpisodeIndexTitle() {
     return `Update episode index`;
@@ -1058,13 +1052,13 @@ export default class Text {
     return `Name`;
   }
   get createEpisodeNameTooLongError() {
-    return `The name is too long.`;
+    return `Name is too long.`;
   }
   get updateSeasonInfoTitle() {
     return `Update season info`;
   }
   get seasonDescriptionTooLongError() {
-    return `The description is too long.`;
+    return `Description is too long.`;
   }
   get updateSeasonCoverImageTitle() {
     return `Update cover image`;

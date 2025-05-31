@@ -124,7 +124,7 @@ export class UpdatePasswordPage extends EventEmitter {
     } else {
       return {
         valid: false,
-        errorMsg: LOCALIZED_TEXT.repeatNewPasswordNotMatchError,
+        errorMsg: LOCALIZED_TEXT.repeatPasswordNotMatchError,
       };
     }
   }

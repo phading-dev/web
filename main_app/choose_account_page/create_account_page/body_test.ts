@@ -17,19 +17,11 @@ import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 normalizeBody();
 
-function createLongString(length: number): string {
-  let characters = [];
-  for (let i = 0; i < length; i++) {
-    characters.push("a");
-  }
-  return characters.join("");
-}
-
 TEST_RUNNER.run({
   name: "CreateAccountPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "Consumer_NameTooLong_NameValid_CreateError_Created";
+      public name = "Consumer_NameTooLong_NameValid_EmailTooLong_EmailValid_CreateError_Created";
       private cut: CreateAccountPage;
       public async execute() {
         // Prepare
@@ -51,7 +43,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.naturalNameInput.val.value = createLongString(120);
+        this.cut.naturalNameInput.val.value = Array(120).fill("a").join("");
         this.cut.naturalNameInput.val.dispatchChange();
 
         // Verify
@@ -71,20 +63,39 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.naturalNameInput.val.value = "First Second";
+        this.cut.naturalNameInput.val.value = " First Second ";
         this.cut.naturalNameInput.val.dispatchChange();
+        this.cut.emailInput.val.value = Array(201).fill("1").join("");
+        this.cut.emailInput.val.dispatchChange();
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/create_account_page_consumer_valid_name.png"),
           path.join(
             __dirname,
-            "/golden/create_account_page_consumer_valid_name.png",
+            "/create_account_page_consumer_email_too_long.png",
           ),
           path.join(
             __dirname,
-            "/create_account_page_consumer_valid_name_diff.png",
+            "/golden/create_account_page_consumer_email_too_long.png",
           ),
+          path.join(
+            __dirname,
+            "/create_account_page_consumer_email_too_long_diff.png",
+          ),
+        );
+
+        // Execute
+        this.cut.emailInput.val.value = " me@gmail.com ";
+        this.cut.emailInput.val.dispatchChange();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/create_account_page_consumer_valid.png"),
+          path.join(
+            __dirname,
+            "/golden/create_account_page_consumer_valid.png",
+          ),
+          path.join(__dirname, "/create_account_page_consumer_valid_diff.png"),
         );
 
         // Prepare
@@ -106,6 +117,7 @@ TEST_RUNNER.run({
             {
               accountType: AccountType.CONSUMER,
               naturalName: "First Second",
+              contactEmail: "me@gmail.com",
             },
             CREATE_ACCOUNT_REQUEST_BODY,
           ),
@@ -190,6 +202,8 @@ TEST_RUNNER.run({
         // Execute
         this.cut.naturalNameInput.val.value = "First Second";
         this.cut.naturalNameInput.val.dispatchChange();
+        this.cut.emailInput.val.value = "me@gmail.com";
+        this.cut.emailInput.val.dispatchChange();
         // Wait for validation.
         await new Promise<void>((resolve) => setTimeout(resolve));
         this.cut.inputFormPage.clickPrimaryButton();
@@ -207,6 +221,7 @@ TEST_RUNNER.run({
             {
               accountType: AccountType.PUBLISHER,
               naturalName: "First Second",
+              contactEmail: "me@gmail.com",
             },
             CREATE_ACCOUNT_REQUEST_BODY,
           ),

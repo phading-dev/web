@@ -50,7 +50,7 @@ export class ProfilePage extends EventEmitter {
     ) => UpdateAccountInfoPage,
     private createUpdatePasswordPage: (username: string) => UpdatePasswordPage,
     private createUpdateRecoveryEmailPage: (
-      username: string,
+      accountInfo: AccountAndUser,
     ) => UpdateRecoveryEmailPage,
     private appendBodies: AddBodiesFn,
   ) {
@@ -88,7 +88,7 @@ export class ProfilePage extends EventEmitter {
       .on("updateRecoveryEmail", (accountInfo) =>
         this.pageSwitcher.goTo(
           Page.UPDATE_RECOVERY_EMAIL,
-          () => this.addUpdateRecoveryEmailPage(accountInfo.username),
+          () => this.addUpdateRecoveryEmailPage(accountInfo),
           () => this.updateRecoveryEmailPage.remove(),
         ),
       )
@@ -136,9 +136,9 @@ export class ProfilePage extends EventEmitter {
     this.appendBodies(this.updatePasswordPage.body);
   }
 
-  private addUpdateRecoveryEmailPage(username: string): void {
+  private addUpdateRecoveryEmailPage(account: AccountAndUser): void {
     this.updateRecoveryEmailPage = this.createUpdateRecoveryEmailPage(
-      username,
+      account,
     ).on("back", () =>
       this.pageSwitcher.goTo(
         Page.INFO,

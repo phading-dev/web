@@ -7,7 +7,10 @@ import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { OptionPill } from "../../../common/option_pills";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import { MAX_NATURAL_NAME_LENGTH } from "@phading/constants/account";
+import {
+  MAX_EMAIL_LENGTH,
+  MAX_NATURAL_NAME_LENGTH,
+} from "@phading/constants/account";
 import { AccountType } from "@phading/user_service_interface/account_type";
 import { newCreateAccountRequest } from "@phading/user_service_interface/web/self/client";
 import {
@@ -24,13 +27,13 @@ export interface CreateAccountPage {
   on(event: "chosen", listener: () => void): this;
 }
 
-// TODO: Add contact email.
 export class CreateAccountPage extends EventEmitter {
   public static create(): CreateAccountPage {
     return new CreateAccountPage(LOCAL_SESSION_STORAGE, SERVICE_CLIENT);
   }
 
   public naturalNameInput = new Ref<TextInputWithErrorMsg>();
+  public emailInput = new Ref<TextInputWithErrorMsg>();
   public consumerOption = new Ref<OptionPill<AccountType>>();
   public publisherOption = new Ref<OptionPill<AccountType>>();
   private accountTypeInput = new Ref<RadioOptionInput<AccountType>>();
@@ -55,6 +58,18 @@ export class CreateAccountPage extends EventEmitter {
               autocomplete: "name",
             },
             (value) => this.validateOrTakeNaturalNameInput(value),
+          ),
+        ).body,
+        assign(
+          this.emailInput,
+          new TextInputWithErrorMsg(
+            LOCALIZED_TEXT.contactEmailLabel,
+            "",
+            {
+              type: "email",
+              autocomplete: "email",
+            },
+            (value) => this.validateOrTakeEmailInput(value),
           ),
         ).body,
         assign(
@@ -85,7 +100,7 @@ export class CreateAccountPage extends EventEmitter {
           ),
         ).body,
       ],
-      [this.naturalNameInput.val],
+      [this.naturalNameInput.val, this.emailInput.val],
       LOCALIZED_TEXT.createAccountButtonLabel,
     )
       .addBackButton()
@@ -97,6 +112,7 @@ export class CreateAccountPage extends EventEmitter {
       .on("handlePrimarySuccess", () => this.emit("choose"))
       .on("primaryDone", () => this.emit("chosen"));
     this.naturalNameInput.val.validate();
+    this.emailInput.val.validate();
     this.accountTypeInput.val.setValue(AccountType.CONSUMER);
   }
 
@@ -113,6 +129,23 @@ export class CreateAccountPage extends EventEmitter {
       };
     } else {
       this.request.naturalName = value;
+      return { valid: true };
+    }
+  }
+
+  private validateOrTakeEmailInput(value: string): ValidationResult {
+    value = value.trim();
+    if (!value) {
+      return {
+        valid: false,
+      };
+    } else if (value.length > MAX_EMAIL_LENGTH) {
+      return {
+        valid: false,
+        errorMsg: LOCALIZED_TEXT.emailTooLongError,
+      };
+    } else {
+      this.request.contactEmail = value;
       return { valid: true };
     }
   }

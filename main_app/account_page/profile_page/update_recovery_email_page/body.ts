@@ -5,6 +5,7 @@ import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_i
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { MAX_EMAIL_LENGTH } from "@phading/constants/account";
+import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
 import { newUpdateRecoveryEmailRequest } from "@phading/user_service_interface/web/self/client";
 import {
   UpdateRecoveryEmailRequestBody,
@@ -20,8 +21,8 @@ export interface UpdateRecoveryEmailPage {
 }
 
 export class UpdateRecoveryEmailPage extends EventEmitter {
-  public static create(username: string): UpdateRecoveryEmailPage {
-    return new UpdateRecoveryEmailPage(SERVICE_CLIENT, username);
+  public static create(account: AccountAndUser): UpdateRecoveryEmailPage {
+    return new UpdateRecoveryEmailPage(SERVICE_CLIENT, account);
   }
 
   public inputFormPage: InputFormPage<UpdateRecoveryEmailResponse>;
@@ -31,7 +32,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
 
   public constructor(
     private serviceClient: WebServiceClient,
-    username: string,
+    account: AccountAndUser,
   ) {
     super();
     this.inputFormPage = new InputFormPage(
@@ -41,16 +42,17 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
           name: "update-password-username",
           style: `display: none;`,
           autocomplete: "username",
-          value: username,
+          value: account.username,
         }),
         assign(
           this.newRecoveryEmailInput,
           new TextInputWithErrorMsg(
-            LOCALIZED_TEXT.newRecoveryEmailLabel,
+            LOCALIZED_TEXT.emailLabel,
             "",
             {
               type: "email",
               autocomplete: "email",
+              value: account.recoveryEmail,
             },
             (value) => this.validateOrTakeNewEmail(value),
           ),
@@ -92,7 +94,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
     } else if (value.length > MAX_EMAIL_LENGTH) {
       return {
         valid: false,
-        errorMsg: LOCALIZED_TEXT.newPasswordTooLongError,
+        errorMsg: LOCALIZED_TEXT.emailTooLongError,
       };
     } else {
       this.request.newEmail = value;

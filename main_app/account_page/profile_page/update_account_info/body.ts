@@ -126,7 +126,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
     } else if (value.length > MAX_EMAIL_LENGTH) {
       return {
         valid: false,
-        errorMsg: LOCALIZED_TEXT.contactEmailTooLongError,
+        errorMsg: LOCALIZED_TEXT.emailTooLongError,
       };
     } else {
       this.request.contactEmail = value;

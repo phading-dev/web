@@ -9,6 +9,7 @@ import { OptionPill } from "../../common/option_pills";
 import { SERVICE_CLIENT } from "../../common/web_service_client";
 import { SWITCH_TEXT_STYLE } from "./styles";
 import {
+  MAX_EMAIL_LENGTH,
   MAX_NATURAL_NAME_LENGTH,
   MAX_PASSWORD_LENGTH,
   MAX_USERNAME_LENGTH,
@@ -42,6 +43,7 @@ export class SignUpPage extends EventEmitter {
 
   public naturalNameInput = new Ref<TextInputWithErrorMsg>();
   public usernameInput = new Ref<TextInputWithErrorMsg>();
+  public emailInput = new Ref<TextInputWithErrorMsg>();
   public passwordInput = new Ref<TextInputWithErrorMsg>();
   public repeatPasswordInput = new Ref<TextInputWithErrorMsg>();
   public consumerOption = new Ref<OptionPill<AccountType>>();
@@ -82,6 +84,18 @@ export class SignUpPage extends EventEmitter {
               autocomplete: "username",
             },
             (value) => this.validateOrTakeUsernameInput(value),
+          ),
+        ).body,
+        assign(
+          this.emailInput,
+          new TextInputWithErrorMsg(
+            LOCALIZED_TEXT.emailLabel,
+            "",
+            {
+              type: "email",
+              autocomplete: "email",
+            },
+            (value) => this.validateOrTakeEmailInput(value),
           ),
         ).body,
         assign(
@@ -161,6 +175,7 @@ export class SignUpPage extends EventEmitter {
       .on("primaryDone", () => this.emit("signUpDone"));
     this.naturalNameInput.val.validate();
     this.usernameInput.val.validate();
+    this.emailInput.val.validate();
     this.passwordInput.val.validate();
     this.repeatPasswordInput.val.validate();
     this.accountTypeInput.val.setValue(initAccountType ?? AccountType.CONSUMER);
@@ -199,6 +214,24 @@ export class SignUpPage extends EventEmitter {
     }
   }
 
+  private validateOrTakeEmailInput(value: string): ValidationResult {
+    value = value.trim();
+    if (!value) {
+      return {
+        valid: false,
+      };
+    } else if (value.length > MAX_EMAIL_LENGTH) {
+      return {
+        valid: false,
+        errorMsg: LOCALIZED_TEXT.emailTooLongError,
+      };
+    } else {
+      this.request.contactEmail = value;
+      this.request.recoveryEmail = value;
+      return { valid: true };
+    }
+  }
+
   private validateOrTakePasswordInput(value: string): ValidationResult {
     if (!value) {
       return { valid: false };
@@ -221,7 +254,7 @@ export class SignUpPage extends EventEmitter {
     } else if (value !== this.request.password) {
       return {
         valid: false,
-        errorMsg: LOCALIZED_TEXT.repeatNewPasswordNotMatchError,
+        errorMsg: LOCALIZED_TEXT.repeatPasswordNotMatchError,
       };
     } else {
       return { valid: true };

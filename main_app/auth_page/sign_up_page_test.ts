@@ -17,14 +17,6 @@ import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 normalizeBody();
 
-function createLongString(length: number): string {
-  let characters = [];
-  for (let i = 0; i < length; i++) {
-    characters.push("a");
-  }
-  return characters.join("");
-}
-
 TEST_RUNNER.run({
   name: "SignUpPageTest",
   cases: [
@@ -56,6 +48,8 @@ TEST_RUNNER.run({
         this.cut.passwordInput.val.dispatchChange();
         this.cut.repeatPasswordInput.val.value = "123123";
         this.cut.repeatPasswordInput.val.dispatchChange();
+        this.cut.emailInput.val.value = " me@gmail.com ";
+        this.cut.emailInput.val.dispatchChange();
         this.cut.publisherOption.val.click();
 
         // Verify
@@ -91,6 +85,8 @@ TEST_RUNNER.run({
               naturalName: "First Second name",
               username: "my_username",
               password: "123123",
+              contactEmail: "me@gmail.com",
+              recoveryEmail: "me@gmail.com",
               accountType: AccountType.PUBLISHER,
             },
             SIGN_UP_REQUEST_BODY,
@@ -184,7 +180,7 @@ TEST_RUNNER.run({
         document.body.appendChild(this.cut.body);
 
         // Execute
-        this.cut.naturalNameInput.val.value = createLongString(120);
+        this.cut.naturalNameInput.val.value = Array(120).fill("a").join("");
         this.cut.naturalNameInput.val.dispatchChange();
 
         // Verify
@@ -231,7 +227,7 @@ TEST_RUNNER.run({
         document.body.appendChild(this.cut.body);
 
         // Execute
-        this.cut.usernameInput.val.value = createLongString(120);
+        this.cut.usernameInput.val.value = Array(120).fill("a").join("");
         this.cut.usernameInput.val.dispatchChange();
 
         // Verify
@@ -266,6 +262,41 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
+      public name = "EmailInputAndError";
+      private cut: SignUpPage;
+      public async execute() {
+        // Prepare
+        await setDesktopView();
+        this.cut = new SignUpPage(undefined, undefined);
+        document.body.appendChild(this.cut.body);
+
+        // Execute
+        this.cut.emailInput.val.value = Array(201).fill("a").join("");
+        this.cut.emailInput.val.dispatchChange();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/sign_up_page_email_too_long_error.png"),
+          path.join(__dirname, "/golden/sign_up_page_email_too_long_error.png"),
+          path.join(__dirname, "/sign_up_page_email_too_long_error_diff.png"),
+        );
+
+        // Execute
+        this.cut.emailInput.val.value = "";
+        this.cut.emailInput.val.dispatchChange();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/sign_up_page_email_missing_error.png"),
+          path.join(__dirname, "/golden/sign_up_page_email_missing_error.png"),
+          path.join(__dirname, "/sign_up_page_email_missing_error_diff.png"),
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
       public name = "PasswordInputAndError";
       private cut: SignUpPage;
       public async execute() {
@@ -275,7 +306,7 @@ TEST_RUNNER.run({
         document.body.appendChild(this.cut.body);
 
         // Execute
-        this.cut.passwordInput.val.value = createLongString(120);
+        this.cut.passwordInput.val.value = Array(120).fill("a").join("");
         this.cut.passwordInput.val.dispatchChange();
 
         // Verify

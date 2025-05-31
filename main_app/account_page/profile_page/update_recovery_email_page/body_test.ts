@@ -34,7 +34,10 @@ TEST_RUNNER.run({
         let clientMock = new WebServiceClientMock();
 
         // Execute
-        this.cut = new UpdateRecoveryEmailPage(clientMock, "user1");
+        this.cut = new UpdateRecoveryEmailPage(clientMock, {
+          username: "user1",
+          recoveryEmail: "me@gmail.com",
+        });
         document.body.append(this.cut.body);
 
         // Verify
@@ -148,7 +151,10 @@ TEST_RUNNER.run({
       name: "Back",
       execute: () => {
         // Prepare
-        let cut = new UpdateRecoveryEmailPage(undefined, "user1");
+        let cut = new UpdateRecoveryEmailPage(undefined, {
+          username: "user1",
+          recoveryEmail: "me@gmail.com",
+        });
         let isBack = false;
         cut.on("back", () => (isBack = true));
 

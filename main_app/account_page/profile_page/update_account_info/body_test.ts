@@ -304,7 +304,7 @@ TEST_RUNNER.run({
         document.body.appendChild(this.cut.body);
 
         // Execute
-        this.cut.emailInput.val.value = Array(101).fill("1").join("");
+        this.cut.emailInput.val.value = Array(201).fill("1").join("");
         this.cut.emailInput.val.dispatchChange();
 
         // Verify
