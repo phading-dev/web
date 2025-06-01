@@ -31,7 +31,6 @@ export interface SignUpPage {
   on(event: "signUpDone", listener: () => void): this;
 }
 
-// TODO: Add recovery email and contact email.
 export class SignUpPage extends EventEmitter {
   public static create(initAccountType?: AccountType): SignUpPage {
     return new SignUpPage(

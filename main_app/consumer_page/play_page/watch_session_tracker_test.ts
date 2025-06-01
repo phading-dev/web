@@ -13,7 +13,7 @@ TEST_RUNNER.run({
   name: "WatchSessionTrackerTest",
   cases: [
     {
-      name: "WatchStart_UpdateWithSync_UpdateWithoutSyncing_End_IdleAndRestart_End_StartSoon",
+      name: "WatchStart_UpdateWithoutSyncing_UpdateWithSync_IdleAndRestart_RestartSoon",
       execute: async () => {
         // Prepare
         let now = 12000;
@@ -86,27 +86,6 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        now = 33000;
-
-        // Execute
-        await tracker.stop(4000);
-
-        // Verify
-        assertThat(
-          serviceClientMock.request.body,
-          eqMessage(
-            {
-              watchSessionId: "session1",
-              seasonId: "season1",
-              episodeId: "ep1",
-              watchedVideoTimeMs: 4000,
-            },
-            WATCH_EPISODE_REQUEST_BODY,
-          ),
-          "RC body stop",
-        );
-
-        // Prepare
         now = 3634000;
         serviceClientMock.response = {
           watchSessionId: "session2",
@@ -130,10 +109,10 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        now = 7640000;
+        now = 7644000;
 
         // Execute
-        await tracker.stop(6000);
+        await tracker.update(6000);
 
         // Verify
         assertThat(

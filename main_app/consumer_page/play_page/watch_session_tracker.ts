@@ -2,7 +2,6 @@ import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { newWatchEpisodeRequest } from "@phading/play_activity_service_interface/show/web/client";
 import { WebServiceClient } from "@selfage/web_service_client";
 
-// TODO: Reduce QPS.
 export class WatchSessionTracker {
   public static create(
     seasonId: string,
@@ -50,11 +49,6 @@ export class WatchSessionTracker {
       this.lastSyncTimestampMs = now;
       await this.sync(videoTimeMs);
     }
-  }
-
-  public async stop(videoTimeMs: number): Promise<void> {
-    this.lastSyncTimestampMs = this.now();
-    await this.sync(videoTimeMs);
   }
 
   private async sync(videoTimeMs: number): Promise<void> {

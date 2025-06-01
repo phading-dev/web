@@ -383,17 +383,25 @@ export class Player extends EventEmitter {
     this.video.val.addEventListener("loadedmetadata", () =>
       this.setDurationAndStartPlaying(),
     );
-    this.video.val.addEventListener("playing", () => this.isPlaying());
-    this.video.val.addEventListener("play", () => this.isPlayed());
-    this.video.val.addEventListener("pause", () => this.isPaused());
-    this.video.val.addEventListener("waiting", () => this.isLoading());
+    this.video.val.addEventListener("playing", () => {
+      this.isPlaying();
+    });
+    this.video.val.addEventListener("play", () => {
+      this.isPlayed();
+    });
+    this.video.val.addEventListener("pause", () => {
+      this.isPaused();
+    });
+    this.video.val.addEventListener("waiting", () => {
+      this.isLoading();
+    });
     this.video.val.addEventListener("progress", () =>
       this.updateBufferProgress(),
     );
     this.video.val.addEventListener("ended", () => this.emit("clearComments"));
-    this.video.val.addEventListener("seeking", () =>
-      this.emit("clearComments"),
-    );
+    this.video.val.addEventListener("seeking", () => {
+      this.emit("clearComments");
+    });
 
     if (this.video.val.paused) {
       this.playButton.val.show();

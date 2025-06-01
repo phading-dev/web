@@ -675,7 +675,7 @@ export class PlayPage extends EventEmitter {
     this.pauseCommentOverlay();
     let currentVideoTimeMs = this.player.val.getCurrentVideoTimeMs();
     this.commentsPanel.val.setPinnedVideoTimeMs(currentVideoTimeMs);
-    this.watchSessionTracker.stop(currentVideoTimeMs);
+    this.watchSessionTracker.update(currentVideoTimeMs);
     this.watchTimeMeter.stop(currentVideoTimeMs);
   }
 

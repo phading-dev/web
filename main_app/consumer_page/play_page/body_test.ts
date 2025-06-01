@@ -834,15 +834,11 @@ TEST_RUNNER.run({
           eqAppr(10000, 0.1),
           "Watch time when ended",
         );
+        // Because nowDate not moved forward.
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies.length,
-          eq(1),
+          eq(0),
           "watchEpisodeRequestBodies.length when ended",
-        );
-        assertThat(
-          serviceClientMock.watchEpisodeRequestBodies[0].watchedVideoTimeMs,
-          eq(10000),
-          "Watch session video time when ended",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/play_page_desktop_watched_until_end.png"),
@@ -897,28 +893,18 @@ TEST_RUNNER.run({
         );
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies.length,
-          eq(4),
+          eq(2),
           "watchEpisodeRequestBodies.length when stopped",
         );
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies[0].watchedVideoTimeMs,
           lt(100),
-          "Watch session video time seeking when stopped",
+          "Watch session video time restart",
         );
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies[1].watchedVideoTimeMs,
-          lt(100),
-          "Watch session video time start when stopped",
-        );
-        assertThat(
-          serviceClientMock.watchEpisodeRequestBodies[2].watchedVideoTimeMs,
           eqAppr(950, 0.1),
           "Watch session video time update when stopped",
-        );
-        assertThat(
-          serviceClientMock.watchEpisodeRequestBodies[3].watchedVideoTimeMs,
-          eqAppr(950, 0.1),
-          "Watch session video time stop when stopped",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/play_page_desktop_interrupted.png"),
@@ -960,18 +946,13 @@ TEST_RUNNER.run({
         );
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies.length,
-          eq(2),
+          eq(1),
           "watchEpisodeRequestBodies.length when resumed",
         );
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies[0].watchedVideoTimeMs,
           eqAppr(1000, 0.1),
           "Watch session video time when resumed",
-        );
-        assertThat(
-          serviceClientMock.watchEpisodeRequestBodies[1].watchedVideoTimeMs,
-          eq(10000),
-          "Watch session video time 2 when resumed",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/play_page_desktop_watched_until_end_2.png"),
