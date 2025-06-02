@@ -695,9 +695,6 @@ export default class Text {
   get seasonCreateDraftEpisodeLabel() {
     return `Add a draft episode`;
   }
-  get seasonEpisodeVersion() {
-    return `Version: `;
-  }
   get seasonEpisodeDuration() {
     return `Duration: `;
   }

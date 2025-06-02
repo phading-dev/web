@@ -27,57 +27,13 @@ export class PageNavigator<Page, Args = any> {
   }
 }
 
-export class TabNavigator<Tab, Args = any> {
-  private currentTab: Tab;
-  private tabsToCreate: Map<Tab, (args?: Args) => void> = new Map();
-  private tabsToRemove: Map<Tab, () => void> = new Map();
-  private tabsToUpdate: Map<Tab, (args?: Args) => void> = new Map();
-
-  public set(
-    tab: Tab,
-    onCreate: (args?: Args) => void,
-    onRemove: () => void,
-    onUpdate?: (args?: Args) => void,
-  ): void {
-    this.tabsToCreate.set(tab, onCreate);
-    this.tabsToRemove.set(tab, onRemove);
-    this.tabsToUpdate.set(tab, onUpdate);
-  }
-
-  public goTo(tab: Tab, args?: Args): void {
-    if (this.currentTab !== tab) {
-      this.tabsToRemove.get(this.currentTab)?.();
-      this.currentTab = tab;
-      this.tabsToCreate.get(this.currentTab)?.(args);
-    } else {
-      this.tabsToUpdate.get(this.currentTab)?.(args);
-    }
-  }
-
-  public remove(): void {
-    this.tabsToRemove.get(this.currentTab)?.();
-    this.goTo = () => {};
-  }
-}
-
-export class TabSwitcher<Tab> {
-  private currentTab: Tab;
+export class TabSwitcher {
   private removePreviousTab: () => void = () => {};
 
-  public goTo(
-    tab: Tab,
-    addTab: () => void,
-    removeTab: () => void,
-    updateTab: () => void = () => {}
-  ): void {
-    if (this.currentTab === tab) {
-      updateTab();
-    } else {
-      this.currentTab = tab;
-      this.removePreviousTab();
-      this.removePreviousTab = removeTab;
-      addTab();
-    }
+  public goTo(addTab: () => void, removeTab: () => void): void {
+    this.removePreviousTab();
+    this.removePreviousTab = removeTab;
+    addTab();
   }
 
   public remove(): void {

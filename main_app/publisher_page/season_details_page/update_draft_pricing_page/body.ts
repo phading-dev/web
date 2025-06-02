@@ -6,6 +6,7 @@ import { ValidationResult } from "../../../../common/input_form_page/input_with_
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { FONT_M } from "../../../../common/sizes";
+import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { eNewRateInputLabel } from "../common/elements";
 import { MAX_GRADE } from "@phading/constants/show";
 import { newUpdateSeasonGradeRequest } from "@phading/product_service_interface/show/web/publisher/client";
@@ -23,6 +24,18 @@ export interface UpdateDraftPricingPage {
 }
 
 export class UpdateDraftPricingPage extends EventEmitter {
+  public static create(
+    seasonId: string,
+    grade: number,
+  ): UpdateDraftPricingPage {
+    return new UpdateDraftPricingPage(
+      SERVICE_CLIENT,
+      () => new Date(),
+      seasonId,
+      grade,
+    );
+  }
+
   public inputFormPage: InputFormPage<UpdateSeasonGradeResponse>;
   public gradeInput = new Ref<TextInputWithErrorMsg>();
   public pricingPreview = new Ref<Text>();

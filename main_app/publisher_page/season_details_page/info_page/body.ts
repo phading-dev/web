@@ -38,6 +38,7 @@ import {
   newListDraftEpisodesRequest,
   newListPublishedEpisodesRequest,
 } from "@phading/product_service_interface/show/web/publisher/client";
+import { SeasonDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import { EpisodeSummary } from "@phading/product_service_interface/show/web/publisher/summary";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -45,10 +46,16 @@ import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface InfoPage {
-  on(event: "editCoverImage", listener: () => void): this;
-  on(event: "editSeasonInfo", listener: () => void): this;
-  on(event: "editSeasonDraftPricing", listener: () => void): this;
-  on(event: "editSeasonPublishedPricing", listener: () => void): this;
+  on(event: "editCoverImage", listener: (season: SeasonDetails) => void): this;
+  on(event: "editSeasonInfo", listener: (season: SeasonDetails) => void): this;
+  on(
+    event: "editSeasonDraftPricing",
+    listener: (season: SeasonDetails) => void,
+  ): this;
+  on(
+    event: "editSeasonPublishedPricing",
+    listener: (season: SeasonDetails) => void,
+  ): this;
   on(event: "editSeasonDraftState", listener: () => void): this;
   on(event: "editSeasonPublishedState", listener: () => void): this;
   on(event: "createDraftEpisode", listener: () => void): this;
@@ -77,7 +84,7 @@ export class InfoPage extends EventEmitter {
   public publishedEpisodeElements = new Array<HTMLDivElement>();
   public listPublishedEpisodeIndexCursorInput = new Ref<HTMLInputElement>();
   private scrollLoadingSection = new Ref<ScrollLoadingSection>();
-  private showGrade: number;
+  private season: SeasonDetails;
   private listPublishedEpisodeIndexCursor: number;
 
   public constructor(
@@ -106,7 +113,7 @@ export class InfoPage extends EventEmitter {
         }),
       ),
     ]);
-    this.showGrade = seasonDetails.grade;
+    this.season = seasonDetails;
     this.body.append(
       E.div(
         {
@@ -368,16 +375,17 @@ export class InfoPage extends EventEmitter {
 
     if (seasonDetails.state !== SeasonState.ARCHIVED) {
       this.coverImageButton.val.addEventListener("click", () =>
-        this.emit("editCoverImage"),
+        this.emit("editCoverImage", this.season),
       );
       this.seasonInfoButton.val.addEventListener("click", () =>
-        this.emit("editSeasonInfo"),
+        this.emit("editSeasonInfo", this.season),
       );
       this.seasonPricingButton.val.addEventListener("click", () =>
         this.emit(
           seasonDetails.state === SeasonState.DRAFT
             ? "editSeasonDraftPricing"
             : "editSeasonPublishedPricing",
+          this.season,
         ),
       );
       this.seasonStateButton.val.addEventListener("click", () =>
@@ -513,30 +521,15 @@ export class InfoPage extends EventEmitter {
         ),
         E.div(
           {
-            class: "season-details-published-episode-secondary-info",
-            style: `display: flex; flex-flow: row nowrap; gap: 1rem;`,
+            class: "season-details-published-episode-duration",
+            style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
           },
-          E.div(
-            {
-              class: "season-details-published-episode-version",
-              style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              `${LOCALIZED_TEXT.seasonEpisodeVersion}${episode.videoContainer.version}`,
-            ),
-          ),
-          E.div(
-            {
-              class: "season-details-published-episode-duration",
-              style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              `${LOCALIZED_TEXT.seasonEpisodeDuration}${formatSecondsAsHHMMSS(episode.videoContainer.durationSec)} (${calculateEstimatedShowMoneyAndFormat(
-                this.showGrade,
-                episode.videoContainer.durationSec,
-                this.getNowDate(),
-              )})`,
-            ),
+          E.text(
+            `${LOCALIZED_TEXT.seasonEpisodeDuration}${formatSecondsAsHHMMSS(episode.videoContainer.durationSec)} (${calculateEstimatedShowMoneyAndFormat(
+              this.season.grade,
+              episode.videoContainer.durationSec,
+              this.getNowDate(),
+            )})`,
           ),
         ),
       ),

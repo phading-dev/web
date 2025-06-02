@@ -1,4 +1,4 @@
-import userImage = require("./test_data/user_image.jpg");
+import userImage = require("../common/test_data/user_image.jpg");
 import path = require("path");
 import { normalizeBody } from "../../../../common/normalize_body";
 import {

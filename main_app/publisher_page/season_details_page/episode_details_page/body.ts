@@ -11,16 +11,6 @@ import { UploadPage } from "./upload_page/body";
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import { VideoContainer } from "@phading/video_service_interface/node/video_container";
 
-export enum Page {
-  INFO,
-  PUBLISH,
-  PUBLISHED,
-  UPDATE_INDEX,
-  UPDATE_INFO,
-  UPDATE_TRACKS,
-  UPLOAD,
-}
-
 export interface EpisodeDetailsPage {
   on(event: "back", listener: () => void): this;
 }
@@ -44,7 +34,7 @@ export class EpisodeDetailsPage extends EventEmitter {
     );
   }
 
-  private pageSwitcher = new TabSwitcher<Page>();
+  private pageSwitcher = new TabSwitcher();
   public infoPage: InfoPage;
   public publishPage: PublishPage;
   public publishedPage: PublishedPage;
@@ -85,7 +75,6 @@ export class EpisodeDetailsPage extends EventEmitter {
   ) {
     super();
     this.pageSwitcher.goTo(
-      Page.INFO,
       () => this.addInfoPage(),
       () => this.infoPage.remove(),
     );
@@ -96,42 +85,36 @@ export class EpisodeDetailsPage extends EventEmitter {
       .on("back", () => this.emit("back"))
       .on("editName", (episode) =>
         this.pageSwitcher.goTo(
-          Page.UPDATE_INFO,
           () => this.addUpdateInfoPage(episode),
           () => this.updateInfoPage.remove(),
         ),
       )
       .on("editIndex", (episode) =>
         this.pageSwitcher.goTo(
-          Page.UPDATE_INDEX,
           () => this.addUpdateIndexPage(episode),
           () => this.updateIndexPage.remove(),
         ),
       )
       .on("editDraftState", () =>
         this.pageSwitcher.goTo(
-          Page.PUBLISH,
           () => this.addPublishPage(),
           () => this.publishPage.remove(),
         ),
       )
       .on("editPublishedState", (episode) =>
         this.pageSwitcher.goTo(
-          Page.PUBLISHED,
           () => this.addPublishedPage(episode),
           () => this.publishedPage.remove(),
         ),
       )
       .on("upload", (episode) =>
         this.pageSwitcher.goTo(
-          Page.UPLOAD,
           () => this.addUploadPage(episode),
           () => this.uploadPage.remove(),
         ),
       )
       .on("editTracks", (episode) =>
         this.pageSwitcher.goTo(
-          Page.UPDATE_TRACKS,
           () => this.addUpdateTracksPage(episode),
           () => this.updateTracksPage.remove(),
         ),
@@ -144,7 +127,6 @@ export class EpisodeDetailsPage extends EventEmitter {
       "back",
       () =>
         this.pageSwitcher.goTo(
-          Page.INFO,
           () => this.addInfoPage(),
           () => this.infoPage.remove(),
         ),
@@ -159,7 +141,6 @@ export class EpisodeDetailsPage extends EventEmitter {
       episode,
     ).on("back", () =>
       this.pageSwitcher.goTo(
-        Page.INFO,
         () => this.addInfoPage(),
         () => this.infoPage.remove(),
       ),
@@ -174,7 +155,6 @@ export class EpisodeDetailsPage extends EventEmitter {
       episode,
     ).on("back", () =>
       this.pageSwitcher.goTo(
-        Page.INFO,
         () => this.addInfoPage(),
         () => this.infoPage.remove(),
       ),
@@ -189,7 +169,6 @@ export class EpisodeDetailsPage extends EventEmitter {
       episode,
     ).on("back", () =>
       this.pageSwitcher.goTo(
-        Page.INFO,
         () => this.addInfoPage(),
         () => this.infoPage.remove(),
       ),
@@ -204,7 +183,6 @@ export class EpisodeDetailsPage extends EventEmitter {
       episode.videoContainer,
     ).on("back", () =>
       this.pageSwitcher.goTo(
-        Page.INFO,
         () => this.addInfoPage(),
         () => this.infoPage.remove(),
       ),
@@ -220,7 +198,6 @@ export class EpisodeDetailsPage extends EventEmitter {
       episode.videoContainer.processing?.uploading,
     ).on("back", () =>
       this.pageSwitcher.goTo(
-        Page.INFO,
         () => this.addInfoPage(),
         () => this.infoPage.remove(),
       ),

@@ -7,6 +7,7 @@ import { ValidationResult } from "../../../../common/input_form_page/input_with_
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { FONT_M } from "../../../../common/sizes";
+import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { ENV_VARS } from "../../../../env_vars";
 import { eNewRateInputLabel } from "../common/elements";
 import {
@@ -35,6 +36,20 @@ export interface UpdatePublishedPricingPage {
 }
 
 export class UpdatePublishedPricingPage extends EventEmitter {
+  public static create(
+    seasonId: string,
+    grade: number,
+    nextGrade?: NextGrade,
+  ): UpdatePublishedPricingPage {
+    return new UpdatePublishedPricingPage(
+      SERVICE_CLIENT,
+      () => new Date(),
+      seasonId,
+      grade,
+      nextGrade,
+    );
+  }
+
   public inputFormPage: InputFormPage<
     UpdateNextSeasonGradeResponse,
     DeleteNextSeasonGradeResponse

@@ -8,14 +8,6 @@ import { UpdatePasswordPage } from "./update_password_page/body";
 import { UpdateRecoveryEmailPage } from "./update_recovery_email_page/body";
 import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
 
-enum Page {
-  INFO = 1,
-  UPDATE_AVATAR = 2,
-  UPDATE_ACCOUNT = 3,
-  UPDATE_PASSWORD = 4,
-  UPDATE_RECOVERY_EMAIL = 5,
-}
-
 export interface ProfilePage {
   on(event: "switchAccount", listener: () => void): this;
   on(event: "signOut", listener: () => void): this;
@@ -33,7 +25,7 @@ export class ProfilePage extends EventEmitter {
     );
   }
 
-  private pageSwitcher = new TabSwitcher<Page>();
+  private pageSwitcher = new TabSwitcher();
   public infoPage: InfoPage;
   public updateAvatarPage: UpdateAvatarPage;
   public updateAccountInfoPage: UpdateAccountInfoPage;
@@ -56,7 +48,6 @@ export class ProfilePage extends EventEmitter {
   ) {
     super();
     this.pageSwitcher.goTo(
-      Page.INFO,
       () => this.addInfoPage(),
       () => this.infoPage.remove(),
     );
@@ -66,28 +57,24 @@ export class ProfilePage extends EventEmitter {
     this.infoPage = this.createInfoPage()
       .on("updateAvatar", (accountInfo) =>
         this.pageSwitcher.goTo(
-          Page.UPDATE_AVATAR,
           () => this.addUpdateAvatarPage(accountInfo),
           () => this.updateAvatarPage.remove(),
         ),
       )
       .on("updateAccountInfo", (accountInfo) =>
         this.pageSwitcher.goTo(
-          Page.UPDATE_ACCOUNT,
           () => this.addUpdateAccountInfoPage(accountInfo),
           () => this.updateAccountInfoPage.remove(),
         ),
       )
       .on("updatePassword", (accountInfo) =>
         this.pageSwitcher.goTo(
-          Page.UPDATE_PASSWORD,
           () => this.addUpdatePasswordPage(accountInfo.username),
           () => this.updatePasswordPage.remove(),
         ),
       )
       .on("updateRecoveryEmail", (accountInfo) =>
         this.pageSwitcher.goTo(
-          Page.UPDATE_RECOVERY_EMAIL,
           () => this.addUpdateRecoveryEmailPage(accountInfo),
           () => this.updateRecoveryEmailPage.remove(),
         ),
@@ -102,7 +89,6 @@ export class ProfilePage extends EventEmitter {
       "back",
       () =>
         this.pageSwitcher.goTo(
-          Page.INFO,
           () => this.addInfoPage(),
           () => this.infoPage.remove(),
         ),
@@ -115,7 +101,6 @@ export class ProfilePage extends EventEmitter {
       accountInfo,
     ).on("back", () =>
       this.pageSwitcher.goTo(
-        Page.INFO,
         () => this.addInfoPage(),
         () => this.infoPage.remove(),
       ),
@@ -128,7 +113,6 @@ export class ProfilePage extends EventEmitter {
       "back",
       () =>
         this.pageSwitcher.goTo(
-          Page.INFO,
           () => this.addInfoPage(),
           () => this.infoPage.remove(),
         ),
@@ -141,7 +125,6 @@ export class ProfilePage extends EventEmitter {
       account,
     ).on("back", () =>
       this.pageSwitcher.goTo(
-        Page.INFO,
         () => this.addInfoPage(),
         () => this.infoPage.remove(),
       ),

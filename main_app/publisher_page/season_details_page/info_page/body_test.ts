@@ -9,6 +9,7 @@ import {
 } from "../../../../common/view_port";
 import { InfoPage } from "./body";
 import { SeasonState } from "@phading/product_service_interface/show/season_state";
+import { SeasonDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import {
   GET_SEASON,
   GET_SEASON_REQUEST_BODY,
@@ -194,40 +195,43 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let editCoverImage = false;
-        this.cut.on("editCoverImage", () => (editCoverImage = true));
+        let seasonCaptured: SeasonDetails;
+        this.cut.on("editCoverImage", (season) => {
+          seasonCaptured = season;
+        });
 
         // Execute
         this.cut.coverImageButton.val.click();
 
         // Verify
-        assertThat(editCoverImage, eq(true), "Edit cover image");
+        assertThat(seasonCaptured.grade, eq(1), "Edit cover image season");
 
         // Prepare
-        let editSeasonInfo = false;
-        this.cut.on("editSeasonInfo", () => (editSeasonInfo = true));
+        seasonCaptured = undefined;
+        this.cut.on("editSeasonInfo", (season) => {
+          seasonCaptured = season;
+        });
 
         // Execute
         this.cut.seasonInfoButton.val.click();
 
         // Verify
-        assertThat(editSeasonInfo, eq(true), "Edit season info");
+        assertThat(seasonCaptured.grade, eq(1), "Edit season info season");
 
         // Prepare
-        let editSeasonDraftPricing = false;
-        this.cut.on(
-          "editSeasonDraftPricing",
-          () => (editSeasonDraftPricing = true),
-        );
+        seasonCaptured = undefined;
+        this.cut.on("editSeasonDraftPricing", (season) => {
+          seasonCaptured = season;
+        });
 
         // Execute
         this.cut.seasonPricingButton.val.click();
 
         // Verify
         assertThat(
-          editSeasonDraftPricing,
-          eq(true),
-          "Edit season draft pricing",
+          seasonCaptured.grade,
+          eq(1),
+          "Edit season draft pricing season",
         );
 
         // Prepare
@@ -284,16 +288,10 @@ TEST_RUNNER.run({
             {
               episodeId: "episode1",
               name: "Episode 1",
-              videoContainer: {
-                version: 0,
-              },
             },
             {
               episodeId: "episode2",
               name: "Episode 2",
-              videoContainer: {
-                version: 1,
-              },
             },
           ],
         };
@@ -304,7 +302,6 @@ TEST_RUNNER.run({
               name: "Episode 10",
               index: 10,
               videoContainer: {
-                version: 1,
                 durationSec: 3600,
               },
             },
@@ -313,7 +310,6 @@ TEST_RUNNER.run({
               name: "Episode 9",
               index: 9,
               videoContainer: {
-                version: 12,
                 durationSec: 3700,
               },
             },
@@ -322,7 +318,6 @@ TEST_RUNNER.run({
               name: "Episode 8",
               index: 8,
               videoContainer: {
-                version: 20,
                 durationSec: 3800,
               },
             },
@@ -384,7 +379,6 @@ TEST_RUNNER.run({
               name: "Episode 7",
               index: 7,
               videoContainer: {
-                version: 5,
                 durationSec: 3900,
               },
             },
@@ -393,7 +387,6 @@ TEST_RUNNER.run({
               name: "Episode 6",
               index: 6,
               videoContainer: {
-                version: 3,
                 durationSec: 3600,
               },
             },
@@ -477,7 +470,6 @@ TEST_RUNNER.run({
               name: "Episode 5",
               index: 5,
               videoContainer: {
-                version: 1,
                 durationSec: 4000,
               },
             },
@@ -516,20 +508,19 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let editSeasonPublishedPricing = false;
-        this.cut.on(
-          "editSeasonPublishedPricing",
-          () => (editSeasonPublishedPricing = true),
-        );
+        let seasonCaptured: SeasonDetails;
+        this.cut.on("editSeasonPublishedPricing", (season) => {
+          seasonCaptured = season;
+        });
 
         // Execute
         this.cut.seasonPricingButton.val.click();
 
         // Verify
         assertThat(
-          editSeasonPublishedPricing,
-          eq(true),
-          "Edit season published pricing",
+          seasonCaptured.grade,
+          eq(599),
+          "Edit season published pricing season",
         );
 
         // Prepare
@@ -550,25 +541,29 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let editEpisodeId: string;
+        let episodeIdCaptured: string;
         this.cut.on("editEpisode", (episodeId: string) => {
-          editEpisodeId = episodeId;
+          episodeIdCaptured = episodeId;
         });
 
         // Execute
         this.cut.draftEpisodeElements[0].click();
 
         // Verify
-        assertThat(editEpisodeId, eq("episode1"), "Edit draft episode id");
+        assertThat(episodeIdCaptured, eq("episode1"), "Edit draft episode id");
 
         // Prepare
-        editEpisodeId = undefined;
+        episodeIdCaptured = undefined;
 
         // Execute
         this.cut.publishedEpisodeElements[0].click();
 
         // Verify
-        assertThat(editEpisodeId, eq("episode5"), "Edit published episode id");
+        assertThat(
+          episodeIdCaptured,
+          eq("episode5"),
+          "Edit published episode id",
+        );
       }
       public tearDown() {
         window.scrollTo(0, 0);

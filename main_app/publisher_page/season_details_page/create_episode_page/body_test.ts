@@ -96,9 +96,11 @@ TEST_RUNNER.run({
           episodeId: "episode1",
         };
         serviceClientMock.response = response;
-        let showEpisode: string;
-        this.cut.on("showEpisode", (episodeId) => {
-          showEpisode = episodeId;
+        let seasonId: string;
+        let episodeId: string;
+        this.cut.on("editEpisode", (seasonId_, episodeId_) => {
+          seasonId = seasonId_;
+          episodeId = episodeId_;
         });
 
         // Execute
@@ -106,7 +108,8 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) => this.cut.once("created", resolve));
 
         // Verify
-        assertThat(showEpisode, eq("episode1"), "show episode");
+        assertThat(seasonId, eq("season1"), "edit episode season");
+        assertThat(episodeId, eq("episode1"), "edit episode");
         await asyncAssertScreenshot(
           path.join(__dirname, "/create_episode_page_create_success.png"),
           path.join(__dirname, "/golden/create_episode_page_name_valid.png"),

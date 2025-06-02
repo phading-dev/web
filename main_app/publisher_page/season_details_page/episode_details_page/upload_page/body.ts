@@ -10,13 +10,6 @@ import { ResumeUploadPage } from "./resume_upload_page/body";
 import { CreateUploadingPageFn, UploadingPage } from "./uploading_page/body";
 import { ResumableUploadingState } from "@phading/video_service_interface/node/video_container";
 
-export enum Page {
-  NEW_UPLOAD,
-  RESUME_UPLOAD,
-  UPLOADING,
-  CANCEL_UPLOAD,
-}
-
 export interface UploadPage {
   on(event: "back", listener: () => void): this;
 }
@@ -40,7 +33,7 @@ export class UploadPage extends EventEmitter {
     );
   }
 
-  private pageSwitcher = new TabSwitcher<Page>();
+  private pageSwitcher = new TabSwitcher();
   public newUploadPage: NewUploadPage;
   public resumeUploadPage: ResumeUploadPage;
   public uploadingPage: UploadingPage;
@@ -63,13 +56,11 @@ export class UploadPage extends EventEmitter {
   private checkUploadingState(error?: string): void {
     if (this.uploadingState) {
       this.pageSwitcher.goTo(
-        Page.RESUME_UPLOAD,
         () => this.addResumeUploadPage(error),
         () => this.resumeUploadPage.remove(),
       );
     } else {
       this.pageSwitcher.goTo(
-        Page.NEW_UPLOAD,
         () => this.addNewUploadPage(error),
         () => this.newUploadPage.remove(),
       );
@@ -82,7 +73,6 @@ export class UploadPage extends EventEmitter {
     this.newUploadPage.on("back", () => this.emit("back"));
     this.newUploadPage.on("upload", (uploadFile) =>
       this.pageSwitcher.goTo(
-        Page.UPLOADING,
         () => this.addUploadingPage(uploadFile),
         () => this.uploadingPage.remove(),
       ),
@@ -95,14 +85,12 @@ export class UploadPage extends EventEmitter {
     this.resumeUploadPage.on("back", () => this.emit("back"));
     this.resumeUploadPage.on("upload", (uploadFile) =>
       this.pageSwitcher.goTo(
-        Page.UPLOADING,
         () => this.addUploadingPage(uploadFile),
         () => this.uploadingPage.remove(),
       ),
     );
     this.resumeUploadPage.on("cancel", () =>
       this.pageSwitcher.goTo(
-        Page.CANCEL_UPLOAD,
         () => this.addCancelUploadPage(),
         () => this.cancelUploadPage.remove(),
       ),
@@ -123,7 +111,6 @@ export class UploadPage extends EventEmitter {
     );
     this.uploadingPage.on("cancel", () =>
       this.pageSwitcher.goTo(
-        Page.CANCEL_UPLOAD,
         () => this.addCancelUploadPage(),
         () => this.cancelUploadPage.remove(),
       ),
