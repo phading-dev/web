@@ -45,9 +45,9 @@ export class UploadPage extends EventEmitter {
     private createUploadingPage: CreateUploadingPageFn,
     private createCancelUploadPage: CreateCancelUploadPageFn,
     private appendBody: AddBodiesFn,
-    private seasonId: string,
-    private episodeId: string,
-    private uploadingState?: ResumableUploadingState,
+    public seasonId: string,
+    public episodeId: string,
+    public uploadingState?: ResumableUploadingState,
   ) {
     super();
     this.checkUploadingState();

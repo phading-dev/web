@@ -4,6 +4,7 @@ import { createLoadingIcon } from "../../../../../../common/icons";
 import { PAGE_CENTER_CARD_BACKGROUND_STYLE } from "../../../../../../common/page_style";
 import { ICON_XXL } from "../../../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../../../common/web_service_client";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/elements";
 import { newCancelUploadingRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import { E } from "@selfage/element/factory";
 import { WebServiceClient } from "@selfage/web_service_client";
@@ -33,7 +34,7 @@ export class CancelUploadPage extends EventEmitter {
     super();
     this.body = E.div(
       {
-        style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
+        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       },
       E.div(
         {

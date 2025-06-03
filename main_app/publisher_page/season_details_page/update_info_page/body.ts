@@ -5,6 +5,7 @@ import { TextAreaInputWithErrorMsg } from "../../../../common/input_form_page/te
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../common/elements";
 import {
   MAX_EPISODE_NAME_LENGTH,
   MAX_SEASON_DESCRIPTION_LENGTH,
@@ -38,8 +39,8 @@ export class UpdateInfoPage extends EventEmitter {
 
   public constructor(
     private serviceClient: WebServiceClient,
-    seasonId: string,
-    season: SeasonDetails,
+    public seasonId: string,
+    public season: SeasonDetails,
   ) {
     super();
     this.request.seasonId = seasonId;
@@ -71,6 +72,7 @@ export class UpdateInfoPage extends EventEmitter {
       ],
       [this.nameInput.val, this.descriptionInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"))

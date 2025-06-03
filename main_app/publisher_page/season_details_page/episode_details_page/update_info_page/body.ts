@@ -4,6 +4,7 @@ import { ValidationResult } from "../../../../../common/input_form_page/input_wi
 import { TextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import { SERVICE_CLIENT } from "../../../../../common/web_service_client";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/elements";
 import { MAX_EPISODE_NAME_LENGTH } from "@phading/constants/show";
 import { newUpdateEpisodeNameRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
@@ -34,15 +35,15 @@ export class UpdateInfoPage extends EventEmitter {
 
   public constructor(
     private serviceClient: WebServiceClient,
-    seasonId: string,
-    episodeId: string,
-    episode: EpisodeDetails,
+    public seasonId: string,
+    public episodeId: string,
+    public episode: EpisodeDetails,
   ) {
     super();
     this.request.seasonId = seasonId;
     this.request.episodeId = episodeId;
 
-    this.inputFormPage = new InputFormPage<UpdateEpisodeNameResponse>(
+    this.inputFormPage = new InputFormPage(
       LOCALIZED_TEXT.updateEpisodeInfoTitle,
       [
         assign(
@@ -60,6 +61,7 @@ export class UpdateInfoPage extends EventEmitter {
       ],
       [this.episodeNameInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"))

@@ -8,6 +8,7 @@ import {
   PAGE_MEDIUM_CENTER_CARD_STYLE,
 } from "../../../../../../common/page_style";
 import { FONT_L } from "../../../../../../common/sizes";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/elements";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
@@ -19,7 +20,7 @@ export function ePage(
   return E.div(
     {
       class: "upload-page",
-      style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
+      style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     },
     E.div(
       {

@@ -20,6 +20,7 @@ import {
 } from "@phading/product_service_interface/show/web/publisher/details";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+import { assertThat, eq } from "@selfage/test_matcher";
 
 normalizeBody();
 
@@ -37,6 +38,9 @@ TEST_RUNNER.run({
           description: "",
           state: SeasonState.DRAFT,
           grade: 1,
+          nextGrade: {
+            grade: 2,
+          },
           totalPublishedEpisodes: 0,
           lastChangeTimeMs: new Date("2024-12-01T18:00:00Z").getTime(),
           createdTimeMs: new Date("2024-01-01T12:00:00Z").getTime(),
@@ -65,19 +69,20 @@ TEST_RUNNER.run({
           (seasonId, season) =>
             new UpdateCoverImagePage(undefined, seasonId, season),
           (seasonId, season) => new UpdateInfoPage(undefined, seasonId, season),
-          (seasonId, season) =>
+          (seasonId, grade) =>
             new UpdateDraftPricingPage(
               undefined,
               () => nowDate,
               seasonId,
-              season,
+              grade,
             ),
-          (seasonId, season) =>
+          (seasonId, grade, nextGrade) =>
             new UpdatePublishedPricingPage(
               undefined,
               () => nowDate,
               seasonId,
-              season,
+              grade,
+              nextGrade,
             ),
           (seasonId) => new DraftStatePage(undefined, seasonId),
           (seasonId) => new PublishedStatePage(undefined, seasonId),
@@ -95,16 +100,43 @@ TEST_RUNNER.run({
         );
 
         // Verify
+        assertThat(
+          this.cut.infoPage.seasonId,
+          eq("season1"),
+          "infoPage.seasonId",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/season_details_page_default.png"),
           path.join(__dirname, "/golden/season_details_page_default.png"),
           path.join(__dirname, "/season_details_page_default_diff.png"),
         );
 
+        // Prepare
+        let back = false;
+        this.cut.on("back", () => {
+          back = true;
+        });
+
+        // Execute
+        this.cut.infoPage.emit("back");
+
+        // Verify
+        assertThat(back, eq(true), "back");
+
         // Execute
         this.cut.infoPage.emit("editCoverImage", seasonDetails);
 
         // Verify
+        assertThat(
+          this.cut.updateCoverImagePage.seasonId,
+          eq("season1"),
+          "updateCoverImagePage.seasonId",
+        );
+        assertThat(
+          this.cut.updateCoverImagePage.season.name,
+          eq(seasonDetails.name),
+          "updateCoverImagePage.season.name",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/season_details_page_update_cover_image.png"),
           path.join(
@@ -137,6 +169,16 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("editSeasonInfo", seasonDetails);
 
         // Verify
+        assertThat(
+          this.cut.updateInfoPage.seasonId,
+          eq("season1"),
+          "updateInfoPage.seasonId",
+        );
+        assertThat(
+          this.cut.updateInfoPage.season.name,
+          eq(seasonDetails.name),
+          "updateInfoPage.season.name",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/season_details_page_update_info.png"),
           path.join(__dirname, "/golden/season_details_page_update_info.png"),
@@ -157,6 +199,16 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("editSeasonDraftPricing", seasonDetails);
 
         // Verify
+        assertThat(
+          this.cut.updateDraftPricingPage.seasonId,
+          eq("season1"),
+          "updateDraftPricingPage.seasonId",
+        );
+        assertThat(
+          this.cut.updateDraftPricingPage.grade,
+          eq(seasonDetails.grade),
+          "updateDraftPricingPage.grade",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/season_details_page_update_draft_pricing.png"),
           path.join(
@@ -189,6 +241,21 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("editSeasonPublishedPricing", seasonDetails);
 
         // Verify
+        assertThat(
+          this.cut.updatePublishedPricingPage.seasonId,
+          eq("season1"),
+          "updatePublishedPricingPage.seasonId",
+        );
+        assertThat(
+          this.cut.updatePublishedPricingPage.grade,
+          eq(seasonDetails.grade),
+          "updatePublishedPricingPage.grade",
+        );
+        assertThat(
+          this.cut.updatePublishedPricingPage.nextGrade.grade,
+          eq(seasonDetails.nextGrade.grade),
+          "updatePublishedPricingPage.nextGrade.grade",
+        );
         await asyncAssertScreenshot(
           path.join(
             __dirname,
@@ -224,6 +291,11 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("editSeasonDraftState");
 
         // Verify
+        assertThat(
+          this.cut.draftStatePage.seasonId,
+          eq("season1"),
+          "draftStatePage.seasonId",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/season_details_page_draft_state.png"),
           path.join(__dirname, "/golden/season_details_page_draft_state.png"),
@@ -250,6 +322,11 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("editSeasonPublishedState");
 
         // Verify
+        assertThat(
+          this.cut.publishedStatePage.seasonId,
+          eq("season1"),
+          "publishedStatePage.seasonId",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/season_details_page_published_state.png"),
           path.join(
@@ -279,6 +356,11 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("createDraftEpisode");
 
         // Verify
+        assertThat(
+          this.cut.createEpisodePage.seasonId,
+          eq("season1"),
+          "createEpisodePage.seasonId",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/season_details_page_create_episode.png"),
           path.join(
@@ -308,6 +390,16 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("editEpisode", "episode1");
 
         // Verify
+        assertThat(
+          this.cut.episodeDetailsPage.seasonId,
+          eq("season1"),
+          "episodeDetailsPage.seasonId",
+        );
+        assertThat(
+          this.cut.episodeDetailsPage.episodeId,
+          eq("episode1"),
+          "episodeDetailsPage.episodeId",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/season_details_page_episode_details.png"),
           path.join(
@@ -315,6 +407,19 @@ TEST_RUNNER.run({
             "/golden/season_details_page_episode_details.png",
           ),
           path.join(__dirname, "/season_details_page_episode_details_diff.png"),
+        );
+
+        // Execute
+        this.cut.episodeDetailsPage.emit("back");
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/season_details_page_back_from_episode.png"),
+          path.join(__dirname, "/golden/season_details_page_default.png"),
+          path.join(
+            __dirname,
+            "/season_details_page_back_from_episode_diff.png",
+          ),
         );
       }
       public tearDown() {

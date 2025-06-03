@@ -20,6 +20,36 @@ import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 normalizeBody();
 
+class SearchInputTestCase implements TestCase {
+  public constructor(
+    public name: string,
+    private value: string,
+    private clickOption: (cut: SearchPage) => void,
+    private action: (cut: SearchPage) => void,
+    private expectedSeasonState: SeasonState,
+    private expectedQuery: string,
+  ) {}
+  public async execute() {
+    // Prepare
+    let cut = SearchPage.create(SeasonState.PUBLISHED, "");
+    let seasonState: SeasonState;
+    let query: string;
+    cut.on("searchSeasons", (seasonState_, query_) => {
+      seasonState = seasonState_;
+      query = query_;
+    });
+
+    // Execute
+    cut.searchInput.val.value = this.value;
+    this.clickOption(cut);
+    this.action(cut);
+
+    // Verify
+    assertThat(seasonState, eq(this.expectedSeasonState), "seasonState");
+    assertThat(query, eq(this.expectedQuery), "query");
+  }
+}
+
 TEST_RUNNER.run({
   name: "SearchPage",
   cases: [
@@ -181,7 +211,7 @@ TEST_RUNNER.run({
 
         // Prepare
         let seasonId: string;
-        this.cut.on("showDetails", (id) => {
+        this.cut.on("showSeason", (id) => {
           seasonId = id;
         });
 
@@ -329,7 +359,7 @@ TEST_RUNNER.run({
 
         // Prepare
         let seasonId: string;
-        this.cut.on("showDetails", (id) => {
+        this.cut.on("showSeason", (id) => {
           seasonId = id;
         });
 
@@ -516,5 +546,64 @@ TEST_RUNNER.run({
         this.cut.remove();
       }
     })(),
+    new (class implements TestCase {
+      public name = "TabletView_EmptyQuery";
+      private cut: SearchPage;
+      public async execute() {
+        // Prepare
+        await setTabletView();
+        this.cut = new SearchPage(
+          undefined,
+          () => new Date("2024-12-23T12:00:00Z"),
+          SeasonState.PUBLISHED,
+          "",
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/search_page_tablet_empty_query.png"),
+          path.join(__dirname, "/golden/search_page_tablet_empty_query.png"),
+          path.join(__dirname, "/search_page_tablet_empty_query_diff.png"),
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new SearchInputTestCase(
+      "SearchInput_Published_Enter",
+      "some query",
+      (cut) => cut.searchOptionPublished.val.click(),
+      (cut) => cut.searchInput.val.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" })),
+      SeasonState.PUBLISHED,
+      "some query",
+    ),
+    new SearchInputTestCase(
+      "SearchInput_Draft_ClickButton",
+      "some query",
+      (cut) => cut.searchOptionDraft.val.click(),
+      (cut) => cut.searchActionButton.val.click(),
+      SeasonState.DRAFT,
+      "some query",
+    ),
+    new SearchInputTestCase(
+      "SearchInput_Archived_ClickButton",
+      "some query",
+      (cut) => cut.searchOptionArchived.val.click(),
+      (cut) => cut.searchActionButton.val.click(),
+      SeasonState.ARCHIVED,
+      "some query",
+    ),
+    new SearchInputTestCase(
+      "SearchInput_Published_EmptyQuery",
+      "",
+      (cut) => cut.searchOptionPublished.val.click(),
+      (cut) => cut.searchActionButton.val.click(),
+      undefined,
+      undefined,
+    ),
   ],
 });

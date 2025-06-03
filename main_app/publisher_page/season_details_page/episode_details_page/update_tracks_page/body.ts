@@ -32,6 +32,7 @@ import {
   ICON_M,
 } from "../../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../../common/web_service_client";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/elements";
 import {
   MAX_AUDIO_TRACK_NAME_LENGTH,
   MAX_SUBTITLE_TRACK_NAME_LENGTH,
@@ -987,15 +988,15 @@ export class UpdateTracksPage extends EventEmitter {
 
   public constructor(
     private serviceClient: WebServiceClient,
-    private seasonId: string,
-    private episodeId: string,
-    videoContainer: VideoContainer,
+    public seasonId: string,
+    public episodeId: string,
+    public videoContainer: VideoContainer,
   ) {
     super();
     this.body = E.div(
       {
         class: "update-tracks-page",
-        style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
+        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       },
       E.div(
         {

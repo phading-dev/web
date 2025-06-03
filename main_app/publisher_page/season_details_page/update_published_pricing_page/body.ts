@@ -9,6 +9,7 @@ import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { FONT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { ENV_VARS } from "../../../../env_vars";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../common/elements";
 import { eNewRateInputLabel } from "../common/elements";
 import {
   MAX_GRADE,
@@ -63,9 +64,9 @@ export class UpdatePublishedPricingPage extends EventEmitter {
   public constructor(
     private serviceClient: WebServiceClient,
     private getNowDate: () => Date,
-    seasonId: string,
-    private grade: number,
-    nextGrade?: NextGrade,
+    public seasonId: string,
+    public grade: number,
+    public nextGrade?: NextGrade,
   ) {
     super();
     this.request.seasonId = seasonId;
@@ -100,7 +101,7 @@ export class UpdatePublishedPricingPage extends EventEmitter {
               type: "number",
               min: "1",
               max: `${MAX_GRADE}`,
-              value: `${nextGrade ? nextGrade.grade : ""}`,
+              value: `${nextGrade?.grade ?? ""}`,
             },
             (value) => this.validateGradeAndPreviewAndTake(value),
           ),
@@ -124,7 +125,7 @@ export class UpdatePublishedPricingPage extends EventEmitter {
             {
               type: "date",
               min: this.minDateStr,
-              value: nextGrade ? nextGrade.effectiveDate : this.minDateStr,
+              value: nextGrade?.effectiveDate ?? this.minDateStr,
             },
             (value) => this.validateEffectiveDateAndTake(value),
           ),
@@ -132,6 +133,7 @@ export class UpdatePublishedPricingPage extends EventEmitter {
       ],
       [this.nextGradeInput.val, this.effectiveDateInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"));

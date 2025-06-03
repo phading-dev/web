@@ -4,6 +4,7 @@ import { ValidationResult } from "../../../common/input_form_page/input_with_err
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../common/elements";
 import { MAX_SEASON_NAME_LENGTH } from "@phading/constants/show";
 import { newCreateSeasonRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import {
@@ -46,6 +47,7 @@ export class CreateSeasonPage extends EventEmitter {
       ],
       [this.seasonNameInput.val],
       LOCALIZED_TEXT.createButtonLabel,
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addPrimaryAction(
         () => this.create(),

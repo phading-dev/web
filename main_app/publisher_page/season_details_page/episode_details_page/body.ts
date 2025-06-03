@@ -9,7 +9,6 @@ import { UpdateInfoPage } from "./update_info_page/body";
 import { UpdateTracksPage } from "./update_tracks_page/body";
 import { UploadPage } from "./upload_page/body";
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
-import { VideoContainer } from "@phading/video_service_interface/node/video_container";
 
 export interface EpisodeDetailsPage {
   on(event: "back", listener: () => void): this;
@@ -28,6 +27,7 @@ export class EpisodeDetailsPage extends EventEmitter {
       UpdateIndexPage.create,
       UpdateInfoPage.create,
       UpdateTracksPage.create,
+      UploadPage.create,
       appendBodies,
       seasonId,
       episodeId,
@@ -44,34 +44,16 @@ export class EpisodeDetailsPage extends EventEmitter {
   public uploadPage: UploadPage;
 
   public constructor(
-    private createInfoPage: (seasonId: string, episodeId: string) => InfoPage,
-    private createPublishPage: (
-      seasonId: string,
-      episodeId: string,
-    ) => PublishPage,
-    private createPublishedPage: (
-      seasonId: string,
-      episodeId: string,
-      episode: EpisodeDetails,
-    ) => PublishedPage,
-    private createUpdateIndexPage: (
-      seasonId: string,
-      episodeId: string,
-      episode: EpisodeDetails,
-    ) => UpdateIndexPage,
-    private createUpdateInfoPage: (
-      seasonId: string,
-      episodeId: string,
-      episode: EpisodeDetails,
-    ) => UpdateInfoPage,
-    private createUpdateTracksPage: (
-      seasonId: string,
-      episodeId: string,
-      videoContainer: VideoContainer,
-    ) => UpdateTracksPage,
+    private createInfoPage: typeof InfoPage.create,
+    private createPublishPage: typeof PublishPage.create,
+    private createPublishedPage: typeof PublishedPage.create,
+    private createUpdateIndexPage: typeof UpdateIndexPage.create,
+    private createUpdateInfoPage: typeof UpdateInfoPage.create,
+    private createUpdateTracksPage: typeof UpdateTracksPage.create,
+    private createUploadPage: typeof UploadPage.create,
     private appendBodies: AddBodiesFn,
-    private seasonId: string,
-    private episodeId: string,
+    public seasonId: string,
+    public episodeId: string,
   ) {
     super();
     this.pageSwitcher.goTo(
@@ -191,7 +173,7 @@ export class EpisodeDetailsPage extends EventEmitter {
   }
 
   private addUploadPage(episode: EpisodeDetails): void {
-    this.uploadPage = UploadPage.create(
+    this.uploadPage = this.createUploadPage(
       this.appendBodies,
       this.seasonId,
       this.episodeId,

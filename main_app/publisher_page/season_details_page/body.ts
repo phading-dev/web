@@ -10,10 +10,11 @@ import { UpdateCoverImagePage } from "./update_cover_image_page/body";
 import { UpdateDraftPricingPage } from "./update_draft_pricing_page/body";
 import { UpdateInfoPage } from "./update_info_page/body";
 import { UpdatePublishedPricingPage } from "./update_published_pricing_page/body";
-import {
-  NextGrade,
-  SeasonDetails,
-} from "@phading/product_service_interface/show/web/publisher/details";
+import { SeasonDetails } from "@phading/product_service_interface/show/web/publisher/details";
+
+export interface SeasonDetailsPage {
+  on(event: "back", listener: () => void): this;
+}
 
 export class SeasonDetailsPage extends EventEmitter {
   public static create(
@@ -47,34 +48,17 @@ export class SeasonDetailsPage extends EventEmitter {
   public episodeDetailsPage: EpisodeDetailsPage;
 
   public constructor(
-    private createInfoPage: (seasonId: string) => InfoPage,
-    private createUpdateCoverImagePage: (
-      seasonId: string,
-      season: SeasonDetails,
-    ) => UpdateCoverImagePage,
-    private createUpdateInfoPage: (
-      seasonId: string,
-      season: SeasonDetails,
-    ) => UpdateInfoPage,
-    private createUpdateDraftPricingPage: (
-      seasonId: string,
-      grade: number,
-    ) => UpdateDraftPricingPage,
-    private createUpdatePublishedPricingPage: (
-      seasonId: string,
-      grade: number,
-      nextGrade?: NextGrade,
-    ) => UpdatePublishedPricingPage,
-    private createDraftStatePage: (seasonId: string) => DraftStatePage,
-    private createPublishedStatePage: (seasonId: string) => PublishedStatePage,
-    private createCreateEpisodePage: (seasonId: string) => CreateEpisodePage,
-    private createEpisodeDetailsPage: (
-      appendBodies: AddBodiesFn,
-      seasonId: string,
-      episodeId: string,
-    ) => EpisodeDetailsPage,
+    private createInfoPage: typeof InfoPage.create,
+    private createUpdateCoverImagePage: typeof UpdateCoverImagePage.create,
+    private createUpdateInfoPage: typeof UpdateInfoPage.create,
+    private createUpdateDraftPricingPage: typeof UpdateDraftPricingPage.create,
+    private createUpdatePublishedPricingPage: typeof UpdatePublishedPricingPage.create,
+    private createDraftStatePage: typeof DraftStatePage.create,
+    private createPublishedStatePage: typeof PublishedStatePage.create,
+    private createCreateEpisodePage: typeof CreateEpisodePage.create,
+    private createEpisodeDetailsPage: typeof EpisodeDetailsPage.create,
     private appendBodies: AddBodiesFn,
-    private seasonId: string,
+    public seasonId: string,
   ) {
     super();
     this.pageSwitcher.goTo(
@@ -85,6 +69,7 @@ export class SeasonDetailsPage extends EventEmitter {
 
   private addInfoPage(): void {
     this.infoPage = this.createInfoPage(this.seasonId)
+      .on("back", () => this.emit("back"))
       .on("editCoverImage", (season) =>
         this.pageSwitcher.goTo(
           () => this.addUpdateCoverImagePage(season),

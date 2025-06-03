@@ -9,6 +9,10 @@ import {
   formatShowPrice,
 } from "../../../../common/formatter/price";
 import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
+import {
+  SimpleIconButton,
+  createBackButton,
+} from "../../../../common/icon_button";
 import { createPlusIcon } from "../../../../common/icons";
 import { BASIC_INPUT_STYLE } from "../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
@@ -22,6 +26,7 @@ import {
   FONT_M,
   FONT_S,
   FONT_WEIGHT_600,
+  ICON_BUTTON_L,
   ICON_L,
 } from "../../../../common/sizes";
 import {
@@ -46,6 +51,7 @@ import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface InfoPage {
+  on(event: "back", listener: () => void): this;
   on(event: "editCoverImage", listener: (season: SeasonDetails) => void): this;
   on(event: "editSeasonInfo", listener: (season: SeasonDetails) => void): this;
   on(
@@ -74,6 +80,7 @@ export class InfoPage extends EventEmitter {
   private static LIST_PUBLISHED_EPISODES_LIMIT = 10;
 
   public body: HTMLDivElement;
+  public backButton = new Ref<SimpleIconButton>();
   public coverImageButton = new Ref<HTMLDivElement>();
   public seasonInfoButton = new Ref<HTMLDivElement>();
   public seasonPricingButton = new Ref<HTMLDivElement>();
@@ -90,7 +97,7 @@ export class InfoPage extends EventEmitter {
   public constructor(
     private serviceClient: WebServiceClient,
     private getNowDate: () => Date,
-    private seasonId: string,
+    public seasonId: string,
   ) {
     super();
     this.body = E.div({
@@ -118,8 +125,9 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "season-details-info-card",
-          style: `${PAGE_LARGE_TOP_DOWN_CARD_STYLE} padding: 2rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
+          style: `${PAGE_LARGE_TOP_DOWN_CARD_STYLE} padding: ${ICON_BUTTON_L + 1}rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
         },
+        assign(this.backButton, createBackButton()).body,
         ...(seasonDetails.state === SeasonState.ARCHIVED
           ? []
           : [
@@ -372,6 +380,7 @@ export class InfoPage extends EventEmitter {
             ]),
       ),
     );
+    this.backButton.val.on("action", () => this.emit("back"));
 
     if (seasonDetails.state !== SeasonState.ARCHIVED) {
       this.coverImageButton.val.addEventListener("click", () =>

@@ -85,8 +85,8 @@ export class InfoPage extends EventEmitter {
   public constructor(
     private serviceClient: WebServiceClient,
     private getNowDate: () => Date,
-    private seasonId: string,
-    private episodeId: string,
+    public seasonId: string,
+    public episodeId: string,
   ) {
     super();
     this.body = E.div({

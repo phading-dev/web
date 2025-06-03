@@ -9,6 +9,7 @@ import { PublishedPage } from "./published_page/body";
 import { UpdateIndexPage } from "./update_index_page/body";
 import { UpdateInfoPage } from "./update_info_page/body";
 import { UpdateTracksPage } from "./update_tracks_page/body";
+import { UploadPageMock } from "./upload_page/body_mock";
 import { EpisodeState } from "@phading/product_service_interface/show/episode_state";
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -40,6 +41,14 @@ function createEpisodeDetailsPage(
       new UpdateInfoPage(undefined, seasonId, episodeId, episode),
     (seasonId, episodeId, videoContainer) =>
       new UpdateTracksPage(undefined, seasonId, episodeId, videoContainer),
+    (appendBody, seasonId, episodeId, uploadingState) =>
+      new UploadPageMock(
+        () => nowDate,
+        appendBody,
+        seasonId,
+        episodeId,
+        uploadingState,
+      ),
     (body) => document.body.append(body),
     "season1",
     "episode1",
@@ -65,6 +74,11 @@ TEST_RUNNER.run({
                 version: 1,
               },
             },
+            processing: {
+              uploading: {
+                fileExt: "mp4",
+              },
+            },
             videos: [],
             audios: [],
             subtitles: [],
@@ -76,6 +90,16 @@ TEST_RUNNER.run({
         this.cut = createEpisodeDetailsPage(episode, nowDate);
 
         // Verify
+        assertThat(
+          this.cut.infoPage.seasonId,
+          eq("season1"),
+          "infoPage.seasonId",
+        );
+        assertThat(
+          this.cut.infoPage.episodeId,
+          eq("episode1"),
+          "infoPage.episodeId",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_draft.png"),
           path.join(__dirname, "/golden/episode_details_page_draft.png"),
@@ -86,6 +110,21 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("editName", episode);
 
         // Verify
+        assertThat(
+          this.cut.updateInfoPage.seasonId,
+          eq("season1"),
+          "updateInfoPage.seasonId",
+        );
+        assertThat(
+          this.cut.updateInfoPage.episodeId,
+          eq("episode1"),
+          "updateInfoPage.episodeId",
+        );
+        assertThat(
+          this.cut.updateInfoPage.episode.episodeName,
+          eq(episode.episodeName),
+          "updateInfoPage.episode.episodeName",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_update_name.png"),
           path.join(__dirname, "/golden/episode_details_page_update_name.png"),
@@ -109,6 +148,16 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("editDraftState", episode);
 
         // Verify
+        assertThat(
+          this.cut.publishPage.seasonId,
+          eq("season1"),
+          "publishPage.seasonId",
+        );
+        assertThat(
+          this.cut.publishPage.episodeId,
+          eq("episode1"),
+          "publishPage.episodeId",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_publish.png"),
           path.join(__dirname, "/golden/episode_details_page_publish.png"),
@@ -129,6 +178,21 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("upload", episode);
 
         // Verify
+        assertThat(
+          this.cut.uploadPage.seasonId,
+          eq("season1"),
+          "uploadPage.seasonId",
+        );
+        assertThat(
+          this.cut.uploadPage.episodeId,
+          eq("episode1"),
+          "uploadPage.episodeId",
+        );
+        assertThat(
+          this.cut.uploadPage.uploadingState.fileExt,
+          eq("mp4"),
+          "uploadPage.uploadingState.fileExt",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_upload.png"),
           path.join(__dirname, "/golden/episode_details_page_upload.png"),
@@ -149,6 +213,22 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("editTracks", episode);
 
         // Verify
+        assertThat(
+          this.cut.updateTracksPage.seasonId,
+          eq("season1"),
+          "updateTracksPage.seasonId",
+        );
+        assertThat(
+          this.cut.updateTracksPage.episodeId,
+          eq("episode1"),
+          "updateTracksPage.episodeId",
+        );
+        assertThat(
+          this.cut.updateTracksPage.videoContainer.masterPlaylist.synced
+            .version,
+          eq(1),
+          "updateTracksPage.videoContainer.masterPlaylist.synced.version",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_update_tracks.png"),
           path.join(
@@ -228,6 +308,21 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("editIndex", episode);
 
         // Verify
+        assertThat(
+          this.cut.updateIndexPage.seasonId,
+          eq("season1"),
+          "updateIndexPage.seasonId",
+        );
+        assertThat(
+          this.cut.updateIndexPage.episodeId,
+          eq("episode1"),
+          "updateIndexPage.episodeId",
+        );
+        assertThat(
+          this.cut.updateIndexPage.episode.episodeName,
+          eq(episode.episodeName),
+          "updateIndexPage.episode.episodeName",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_update_index.png"),
           path.join(__dirname, "/golden/episode_details_page_update_index.png"),
@@ -251,6 +346,21 @@ TEST_RUNNER.run({
         this.cut.infoPage.emit("editPublishedState", episode);
 
         // Verify
+        assertThat(
+          this.cut.publishedPage.seasonId,
+          eq("season1"),
+          "publishedPage.seasonId",
+        );
+        assertThat(
+          this.cut.publishedPage.episodeId,
+          eq("episode1"),
+          "publishedPage.episodeId",
+        );
+        assertThat(
+          this.cut.publishedPage.episode.episodeName,
+          eq(episode.episodeName),
+          "publishedPage.episode.episodeName",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_published_page.png"),
           path.join(

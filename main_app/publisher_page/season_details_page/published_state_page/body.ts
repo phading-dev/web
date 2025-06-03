@@ -6,6 +6,7 @@ import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_i
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { FONT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../common/elements";
 import { newArchiveSeasonRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import { ArchiveSeasonResponse } from "@phading/product_service_interface/show/web/publisher/interface";
 import { E } from "@selfage/element/factory";
@@ -27,7 +28,7 @@ export class PublishedStatePage extends EventEmitter {
 
   public constructor(
     private serviceClient: WebServiceClient,
-    private seasonId: string,
+    public seasonId: string,
   ) {
     super();
     this.inputFormPage = new InputFormPage<ArchiveSeasonResponse>(
@@ -61,6 +62,7 @@ export class PublishedStatePage extends EventEmitter {
       ],
       [this.seasonIdInput.val],
       LOCALIZED_TEXT.archiveButtonLabel,
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"))

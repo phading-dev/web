@@ -33,10 +33,9 @@ export class RadioOptionInput<ValueType> {
         ...options.map((option) => option.body),
       ),
     );
-    this.radioOptionPillsGroup = RadioOptionPillsGroup.create(options);
-
-    this.radioOptionPillsGroup.on("selected", (value) =>
-      this.selectValueFn(value),
+    this.radioOptionPillsGroup = new RadioOptionPillsGroup(options).on(
+      "select",
+      (value) => this.selectValueFn(value),
     );
   }
 

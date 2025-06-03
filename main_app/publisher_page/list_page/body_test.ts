@@ -29,7 +29,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "TabletView_ListPublishedSeasons_ScrolledToLoadMore_ScrolledToBottomAndNoMore_DesktopView_PhoneView";
+        "TabletView_ListPublishedSeasons_ScrolledToLoadMore_ScrolledToBottomAndNoMore_DesktopView_PhoneView_SelectDraft_SelectPublished_SelectArchived";
       private cut: ListPage;
       public async execute() {
         // Prepare
@@ -198,7 +198,7 @@ TEST_RUNNER.run({
 
         // Prepare
         let seasonId: string;
-        this.cut.on("showDetails", (id) => {
+        this.cut.on("showSeason", (id) => {
           seasonId = id;
         });
 
@@ -207,6 +207,36 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(seasonId, eq("season4"), "seasonId");
+
+        // Prepare
+        let state: SeasonState;
+        this.cut.on("listSeasons", (value) => {
+          state = value;
+        });
+
+        // Execute
+        this.cut.draftOption.val.click();
+
+        // Verify
+        assertThat(state, eq(SeasonState.DRAFT), "list draft");
+
+        // Prepare
+        state = undefined;
+
+        // Execute
+        this.cut.publishedOption.val.click();
+
+        // Verify
+        assertThat(state, eq(SeasonState.PUBLISHED), "list published");
+
+        // Prepare
+        state = undefined;
+
+        // Execute
+        this.cut.archivedOption.val.click();
+
+        // Verify
+        assertThat(state, eq(SeasonState.ARCHIVED), "list archived");
       }
       public async tearDown() {
         await mouseMove(-1, -1, 1);
@@ -362,7 +392,7 @@ TEST_RUNNER.run({
 
         // Prepare
         let seasonId: string;
-        this.cut.on("showDetails", (id) => {
+        this.cut.on("showSeason", (id) => {
           seasonId = id;
         });
 

@@ -1,5 +1,9 @@
 import EventEmitter = require("events");
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import {
+  OptionPill,
+  RadioOptionPillsGroup,
+} from "../../../common/option_pills";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
@@ -10,11 +14,15 @@ import {
 } from "../common/elements";
 import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import { newListSeasonsRequest } from "@phading/product_service_interface/show/web/publisher/client";
+import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
+import { FONT_M } from "../../../common/sizes";
+import { SCHEME } from "../../../common/color_scheme";
 
 export interface ListPage {
-  on(event: "showDetails", listener: (seasonId: string) => void): this;
+  on(event: "listSeasons", listener: (value: SeasonState) => void): this;
+  on(event: "showSeason", listener: (seasonId: string) => void): this;
   on(event: "loaded", listener: () => void): this;
 }
 
@@ -27,38 +35,63 @@ export class ListPage extends EventEmitter {
 
   public body: HTMLDivElement;
   private card = new Ref<HTMLDivElement>();
+  public draftOption = new Ref<OptionPill<SeasonState>>();
+  public publishedOption = new Ref<OptionPill<SeasonState>>();
+  public archivedOption = new Ref<OptionPill<SeasonState>>();
   public loadingSection = new Ref<ScrollLoadingSection>();
   private lastChangeTimeCursor: number;
 
   public constructor(
     private serviceClient: WebServiceClient,
     private getNowDate: () => Date,
-    private seasonState: SeasonState,
+    public seasonState: SeasonState,
   ) {
     super();
     this.body = eSeasonItemsPage(
-      this.getTitle(),
       this.card,
+      E.div(
+        {
+          class: "list-page-options",
+          style: `display: flex; align-items: center; gap: 1rem; padding: 1rem 0;`,
+        },
+        E.div({
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`
+        }, E.text(LOCALIZED_TEXT.listSeasonStateTitle)),
+        assign(
+          this.draftOption,
+          new OptionPill(
+            LOCALIZED_TEXT.seasonStateDraftOptionLabel,
+            SeasonState.DRAFT,
+          ),
+        ).body,
+        assign(
+          this.publishedOption,
+          new OptionPill(
+            LOCALIZED_TEXT.seasonStatePublishedOptionLabel,
+            SeasonState.PUBLISHED,
+          ),
+        ).body,
+        assign(
+          this.archivedOption,
+          new OptionPill(
+            LOCALIZED_TEXT.seasonStateArchivedOptionLabel,
+            SeasonState.ARCHIVED,
+          ),
+        ).body,
+      ),
       assign(this.loadingSection, new ScrollLoadingSection()).body,
     );
+    new RadioOptionPillsGroup([
+      this.draftOption.val,
+      this.publishedOption.val,
+      this.archivedOption.val,
+    ])
+      .setValue(this.seasonState)
+      .on("select", (value) => this.emit("listSeasons", value));
+
     this.loadingSection.val.addLoadAction(() => this.load());
     this.loadingSection.val.on("loaded", () => this.emit("loaded"));
     this.loadingSection.val.load();
-  }
-
-  private getTitle(): string {
-    switch (this.seasonState) {
-      case SeasonState.DRAFT:
-        return LOCALIZED_TEXT.draftSeasonsTitle;
-      case SeasonState.PUBLISHED:
-        return LOCALIZED_TEXT.publishedSeasonsTitle;
-      case SeasonState.ARCHIVED:
-        return LOCALIZED_TEXT.archivedSeasonsTitle;
-      default:
-        throw new Error(
-          `Unhandled season state: ${SeasonState[this.seasonState]}`,
-        );
-    }
   }
 
   private async load(): Promise<boolean> {
@@ -75,7 +108,7 @@ export class ListPage extends EventEmitter {
         response.seasons.forEach((season) => {
           let item = eDraftSeasonItem(season, nowDate);
           item.addEventListener("click", () => {
-            this.emit("showDetails", season.seasonId);
+            this.emit("showSeason", season.seasonId);
           });
           this.loadingSection.val.body.before(item);
         });
@@ -84,14 +117,16 @@ export class ListPage extends EventEmitter {
         response.seasons.forEach((season) => {
           let item = ePublishedSeasonItem(season, nowDate);
           item.addEventListener("click", () => {
-            this.emit("showDetails", season.seasonId);
+            this.emit("showSeason", season.seasonId);
           });
           this.loadingSection.val.body.before(item);
         });
         break;
       case SeasonState.ARCHIVED:
         response.seasons.forEach((season) => {
-          this.loadingSection.val.body.before(eArchivedSeasonItem(season, nowDate));
+          this.loadingSection.val.body.before(
+            eArchivedSeasonItem(season, nowDate),
+          );
         });
         break;
       default:

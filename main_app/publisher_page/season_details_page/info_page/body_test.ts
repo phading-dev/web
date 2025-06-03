@@ -64,7 +64,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "TabletView_DraftSeasonWithoutEpisodes_DesktopView_PhoneView_EditCoverImage_EditSeasonInfo_EditSeasonPricing_EditSeasonState_CreateDraftEpisode";
+        "TabletView_DraftSeasonWithoutEpisodes_DesktopView_PhoneView_EditCoverImage_EditSeasonInfo_EditSeasonPricing_EditSeasonState_CreateDraftEpisode_Back";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -256,6 +256,16 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(createDraftEpisode, eq(true), "Create draft episode");
+
+        // Prepare
+        let back = false;
+        this.cut.on("back", () => (back = true));
+
+        // Execute
+        this.cut.backButton.val.click();
+
+        // Verify
+        assertThat(back, eq(true), "Back");
       }
       public tearDown() {
         window.scrollTo(0, 0);

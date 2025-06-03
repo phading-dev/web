@@ -181,6 +181,27 @@ export default class Text {
   get exploreLabel() {
     return `Explore`;
   }
+  get catalogLabel() {
+    return `Catalog`;
+  }
+  get statsLabel() {
+    return `Stats`;
+  }
+  get createSeasonLabel() {
+    return `Draft`;
+  }
+  get searchLabel() {
+    return `Search`;
+  }
+  get seasonStateDraftOptionLabel() {
+    return `Draft`;
+  }
+  get seasonStatePublishedOptionLabel() {
+    return `Published`;
+  }
+  get seasonStateArchivedOptionLabel() {
+    return `Archived`;
+  }
   get quickAccessLabel() {
     return `Quick links`;
   }
@@ -608,26 +629,11 @@ export default class Text {
   get noCoverImage() {
     return `No cover image`;
   }
-  get publishedSeasonsTitle() {
-    return `Published`;
-  }
-  get draftSeasonsTitle() {
-    return `Drafts`;
-  }
-  get archivedSeasonsTitle() {
-    return `Archived`;
-  }
-  get searchPublishedSeasonsTitle() {
-    return [`Searching for published "`, `"`];
-  }
-  get searchDraftSeasonsTitle() {
-    return [`Searching for drafts "`, `"`];
-  }
-  get searchArchivedSeasonsTitle() {
-    return [`Searching for archived "`, `"`];
+  get listSeasonStateTitle() {
+    return `State: `;
   }
   get createSeasonTitle() {
-    return `Create new draft`;
+    return `Create a new draft season`;
   }
   get seasonNameLabel() {
     return `Name`;

@@ -35,7 +35,7 @@ TEST_RUNNER.run({
         this.container.append(walkOption.body, runOption.body);
         let selectedValue: ValueType;
         let cut = new RadioOptionPillsGroup([walkOption, runOption]);
-        cut.on("selected", (value) => {
+        cut.on("select", (value) => {
           selectedValue = value;
         });
         cut.setValue(ValueType.WALK);

@@ -25,7 +25,6 @@ import { Ref } from "@selfage/ref";
 export let PAGE_NAVIGATION_PADDING_BOTTOM = 7;
 
 export function eSeasonItemsPage(
-  title: string,
   card: Ref<HTMLDivElement>,
   ...elements: Array<HTMLElement>
 ): HTMLDivElement {
@@ -40,13 +39,6 @@ export function eSeasonItemsPage(
         class: "season-item-card",
         style: `${PAGE_LARGE_TOP_DOWN_CARD_STYLE} padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem;`,
       },
-      E.div(
-        {
-          class: "season-item-card-title",
-          style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
-        },
-        E.text(title),
-      ),
       ...elements,
     ),
   );

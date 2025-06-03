@@ -4,6 +4,7 @@ import { ValidationResult } from "../../../../../common/input_form_page/input_wi
 import { TextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import { SERVICE_CLIENT } from "../../../../../common/web_service_client";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/elements";
 import { newUpdateEpisodeIndexRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import {
@@ -35,9 +36,9 @@ export class UpdateIndexPage extends EventEmitter {
 
   public constructor(
     private serviceClient: WebServiceClient,
-    seasonId: string,
-    episodeId: string,
-    private episode: EpisodeDetails,
+    public seasonId: string,
+    public episodeId: string,
+    public episode: EpisodeDetails,
   ) {
     super();
     this.request.seasonId = seasonId;
@@ -63,6 +64,7 @@ export class UpdateIndexPage extends EventEmitter {
       ],
       [this.episodeIndexInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"))

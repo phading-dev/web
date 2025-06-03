@@ -96,14 +96,14 @@ export class UsagePage extends EventEmitter {
             },
             assign(
               this.oneDayOption,
-              OptionPill.create(
+              new OptionPill(
                 LOCALIZED_TEXT.usageReportSelectOneDayLabel,
                 RangeType.ONE_DAY,
               ),
             ).body,
             assign(
               this.daysOption,
-              OptionPill.create(
+              new OptionPill(
                 LOCALIZED_TEXT.usageReportSelectDaysLabel,
                 RangeType.DAYS,
               ),
@@ -115,14 +115,14 @@ export class UsagePage extends EventEmitter {
             },
             assign(
               this.oneMonthOption,
-              OptionPill.create(
+              new OptionPill(
                 LOCALIZED_TEXT.usageReportSelectOneMonthLabel,
                 RangeType.ONE_MONTH,
               ),
             ).body,
             assign(
               this.monthsOption,
-              OptionPill.create(
+              new OptionPill(
                 LOCALIZED_TEXT.usageReportSelectMonths,
                 RangeType.MONTHS,
               ),
@@ -157,7 +157,7 @@ export class UsagePage extends EventEmitter {
         }),
       ),
     );
-    this.rangeTypeInput = RadioOptionPillsGroup.create([
+    this.rangeTypeInput = new RadioOptionPillsGroup([
       this.oneDayOption.val,
       this.daysOption.val,
       this.oneMonthOption.val,
@@ -183,7 +183,7 @@ export class UsagePage extends EventEmitter {
     this.rangeTypeInput.setValue(RangeType.ONE_MONTH);
     this.setRangeTypeAndLoad(RangeType.ONE_MONTH);
 
-    this.rangeTypeInput.on("selected", (value) =>
+    this.rangeTypeInput.on("select", (value) =>
       this.setRangeTypeAndLoad(value),
     );
     this.oneDayInput.val.addEventListener("change", () => this.loadOneDay());

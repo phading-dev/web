@@ -161,21 +161,21 @@ export class SettingsPanel extends EventEmitter {
           LOCALIZED_TEXT.commentOverlayStyleLabel,
           assign(
             this.commentOverlayDisabledOption,
-            OptionPill.create(
+            new OptionPill(
               LOCALIZED_TEXT.commentOverlayStyleDisabledOptionLabel,
               CommentOverlayStyle.NONE,
             ),
           ).body,
           assign(
             this.commentOverlaySideOption,
-            OptionPill.create(
+            new OptionPill(
               LOCALIZED_TEXT.commentOverlayStyleSideOptionLabel,
               CommentOverlayStyle.SIDE,
             ),
           ).body,
           assign(
             this.commentOverlayDanmakuOption,
-            OptionPill.create(
+            new OptionPill(
               LOCALIZED_TEXT.commentOverlayStyleDanmakuOptionLabel,
               CommentOverlayStyle.DANMAKU,
             ),
@@ -234,14 +234,14 @@ export class SettingsPanel extends EventEmitter {
             LOCALIZED_TEXT.danmakuOverlayStackingMethodLabel,
             assign(
               this.danmakuStackingRandomOption,
-              OptionPill.create(
+              new OptionPill(
                 LOCALIZED_TEXT.danmakuOverlayStackingRandomOptionLabel,
                 StackingMethod.RANDOM,
               ),
             ).body,
             assign(
               this.danmakuStackingTopDownOption,
-              OptionPill.create(
+              new OptionPill(
                 LOCALIZED_TEXT.danmakuOverlayStackingTopDownOptionLabel,
                 StackingMethod.TOP_DOWN,
               ),
@@ -253,13 +253,13 @@ export class SettingsPanel extends EventEmitter {
     this.show();
 
     this.showOrHideDanmkauSettings(settings.commentOverlaySettings.style);
-    RadioOptionPillsGroup.create([
+    new RadioOptionPillsGroup([
       this.commentOverlayDisabledOption.val,
       this.commentOverlaySideOption.val,
       this.commentOverlayDanmakuOption.val,
     ])
       .setValue(settings.commentOverlaySettings.style)
-      .on("selected", (value) => {
+      .on("select", (value) => {
         this.showOrHideDanmkauSettings(value);
         this.settings.commentOverlaySettings.style = value;
         this.emit("updateCommentOverlaySettings");
@@ -281,12 +281,12 @@ export class SettingsPanel extends EventEmitter {
       this.settings.commentOverlaySettings.danmakuSettings.density = value;
       this.emit("updateCommentOverlaySettings");
     });
-    RadioOptionPillsGroup.create([
+    new RadioOptionPillsGroup([
       this.danmakuStackingRandomOption.val,
       this.danmakuStackingTopDownOption.val,
     ])
       .setValue(settings.commentOverlaySettings.danmakuSettings.stackingMethod)
-      .on("selected", (value) => {
+      .on("select", (value) => {
         this.settings.commentOverlaySettings.danmakuSettings.stackingMethod =
           value;
         this.emit("updateCommentOverlaySettings");
@@ -299,18 +299,18 @@ export class SettingsPanel extends EventEmitter {
   ): void {
     this.subtitles = subtitles;
     this.subtitleOptions = [
-      OptionPill.create(LOCALIZED_TEXT.subtitleOptionOff, -1),
-      ...this.subtitles.map((subtitle, index) =>
-        OptionPill.create(subtitle, index),
+      new OptionPill(LOCALIZED_TEXT.subtitleOptionOff, -1),
+      ...this.subtitles.map(
+        (subtitle, index) => new OptionPill(subtitle, index),
       ),
     ];
     this.subtitleOptionsNotAvailable.val.remove();
     this.subtitleOptionsContainer.val.append(
       ...this.subtitleOptions.map((option) => option.body),
     );
-    RadioOptionPillsGroup.create(this.subtitleOptions)
+    new RadioOptionPillsGroup(this.subtitleOptions)
       .setValue(initIndex)
-      .on("selected", (value) => {
+      .on("select", (value) => {
         if (value === -1) {
           this.settings.videoSettings.preferredSubtitleName = undefined;
         } else {
@@ -326,16 +326,16 @@ export class SettingsPanel extends EventEmitter {
     initIndex: number,
   ): void {
     this.audios = audios;
-    this.audioOptions = this.audios.map((audio, index) =>
-      OptionPill.create(audio, index),
+    this.audioOptions = this.audios.map(
+      (audio, index) => new OptionPill(audio, index),
     );
     this.audioOptionsNotAvailable.val.remove();
     this.audioOptionsContainer.val.append(
       ...this.audioOptions.map((option) => option.body),
     );
-    RadioOptionPillsGroup.create(this.audioOptions)
+    new RadioOptionPillsGroup(this.audioOptions)
       .setValue(initIndex)
-      .on("selected", (value) => {
+      .on("select", (value) => {
         this.settings.videoSettings.preferredAudioName = this.audios[value];
         this.emit("selectAudio", value);
       });

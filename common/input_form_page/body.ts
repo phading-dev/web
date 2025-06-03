@@ -56,12 +56,13 @@ export class InputFormPage<
     lines: Array<HTMLElement>,
     private inputs: Array<InputWithErrorMsg>,
     primaryButtonLabel: string,
+    customStyle: string = "",
   ) {
     super();
     this.body = E.div(
       {
         class: "input-form",
-        style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
+        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} ${customStyle}`,
       },
       E.formRef(
         this.card,

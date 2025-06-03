@@ -153,7 +153,7 @@ export function createTrashCanIcon(color: string): SVGSVGElement {
   );
 }
 
-// Double arrows pointing top-right and bottom-left.
+// Two arrows pointing top-right and bottom-left.
 export function createExpandIcon(color: string): SVGSVGElement {
   return E.svg(
     {
@@ -845,6 +845,20 @@ export function createMenuIcon(color: string): SVGSVGElement {
   );
 }
 
+export function createListIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "menu-icon",
+      style: `height: 100%; fill: none; stroke-width: 4; stroke-linecap: round; stroke: ${color};`,
+      viewBox: "2 2 20 20",
+    },
+    E.path({
+      d: `M4 6 h0.1 M10 6 h10 M4 12 h0.1 M10 12 h10 M4 18 h0.1 M10 18 h10`,
+    }),
+  );
+
+}
+
 export function createCheckmarkIcon(color: string): SVGSVGElement {
   return E.svg(
     {
@@ -1058,6 +1072,7 @@ export function createEditIcon(color: string): SVGSVGElement {
   );
 }
 
+// Two arrows pointing left and right.
 export function createSwitchIcon(color: string): SVGSVGElement {
   return E.svg(
     {

@@ -19,6 +19,7 @@ export class EpisodeDetailsPageMock extends EpisodeDetailsPage {
       undefined,
       undefined,
       undefined,
+      undefined,
       appendBodies,
       seasonId,
       episodeId,

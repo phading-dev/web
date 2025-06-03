@@ -4,18 +4,10 @@ import { FONT_M, LINE_HEIGHT_M } from "./sizes";
 import { E } from "@selfage/element/factory";
 
 export interface OptionPill<ValueType> {
-  on(event: "selected", listener: (value: ValueType) => void): this;
+  on(event: "select", listener: (value: ValueType) => void): this;
 }
 
 export class OptionPill<ValueType> extends EventEmitter {
-  public static create<ValueType>(
-    label: string,
-    value: ValueType,
-    customStyle?: string,
-  ): OptionPill<ValueType> {
-    return new OptionPill(label, value, customStyle);
-  }
-
   private container: HTMLDivElement;
 
   public constructor(
@@ -32,7 +24,9 @@ export class OptionPill<ValueType> extends EventEmitter {
       E.text(label),
     );
 
-    this.container.addEventListener("click", () => this.selected());
+    this.container.addEventListener("click", () =>
+      this.emit("select", this.value),
+    );
   }
 
   public get body(): HTMLDivElement {
@@ -41,10 +35,6 @@ export class OptionPill<ValueType> extends EventEmitter {
 
   public get value(): ValueType {
     return this.value_;
-  }
-
-  private selected(): void {
-    this.emit("selected", this.value);
   }
 
   public highlight(): this {
@@ -65,32 +55,26 @@ export class OptionPill<ValueType> extends EventEmitter {
 }
 
 export interface RadioOptionPillsGroup<ValueType> {
-  on(event: "selected", listener: (value: ValueType) => void): this;
+  on(event: "select", listener: (value: ValueType) => void): this;
 }
 
 export class RadioOptionPillsGroup<ValueType> extends EventEmitter {
-  public static create<ValueType>(
-    pills: Array<OptionPill<ValueType>>,
-  ): RadioOptionPillsGroup<ValueType> {
-    return new RadioOptionPillsGroup<ValueType>(pills);
-  }
-
   private currentPill: OptionPill<ValueType>;
 
   public constructor(private pills: Array<OptionPill<ValueType>>) {
     super();
     for (let pill of this.pills) {
       pill.lowlight();
-      pill.on("selected", () => this.selectedOption(pill));
+      pill.on("select", () => this.selectOption(pill));
     }
   }
 
-  private selectedOption(pill: OptionPill<ValueType>): void {
+  private selectOption(pill: OptionPill<ValueType>): void {
     if (this.currentPill === pill) {
       return;
     }
     this.setCurrentPill(pill);
-    this.emit("selected", pill.value);
+    this.emit("select", pill.value);
   }
 
   public setValue(value: ValueType): this {

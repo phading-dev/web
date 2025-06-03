@@ -7,6 +7,7 @@ import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_i
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { FONT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../common/elements";
 import { eNewRateInputLabel } from "../common/elements";
 import { MAX_GRADE } from "@phading/constants/show";
 import { newUpdateSeasonGradeRequest } from "@phading/product_service_interface/show/web/publisher/client";
@@ -44,8 +45,8 @@ export class UpdateDraftPricingPage extends EventEmitter {
   public constructor(
     private serviceClient: WebServiceClient,
     private getNowDate: () => Date,
-    seasonId: string,
-    grade: number,
+    public seasonId: string,
+    public grade: number,
   ) {
     super();
     this.request.seasonId = seasonId;
@@ -81,6 +82,7 @@ export class UpdateDraftPricingPage extends EventEmitter {
       ],
       [this.gradeInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"))

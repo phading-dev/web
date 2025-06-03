@@ -129,7 +129,7 @@ export class SignUpPage extends EventEmitter {
             [
               assign(
                 this.consumerOption,
-                OptionPill.create(
+                new OptionPill(
                   LOCALIZED_TEXT.userTypeConsumerLabel,
                   AccountType.CONSUMER,
                   "",
@@ -137,7 +137,7 @@ export class SignUpPage extends EventEmitter {
               ),
               assign(
                 this.publisherOption,
-                OptionPill.create(
+                new OptionPill(
                   LOCALIZED_TEXT.userTypePublisherLabel,
                   AccountType.PUBLISHER,
                   "",

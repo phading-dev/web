@@ -16,6 +16,7 @@ import {
 } from "../../../../common/page_style";
 import { FONT_L, FONT_M, FONT_S } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../common/elements";
 import { newUploadCoverImageRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import { SeasonDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import { UploadCoverImageResponse } from "@phading/product_service_interface/show/web/publisher/interface";
@@ -49,14 +50,14 @@ export class UpdateCoverImagePage extends EventEmitter {
 
   public constructor(
     private serviceClient: WebServiceClient,
-    private seasonId: string,
-    season: SeasonDetails,
+    public seasonId: string,
+    public season: SeasonDetails,
   ) {
     super();
     this.body = E.div(
       {
         class: "update-cover-image-page",
-        style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
+        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       },
       E.div(
         {
