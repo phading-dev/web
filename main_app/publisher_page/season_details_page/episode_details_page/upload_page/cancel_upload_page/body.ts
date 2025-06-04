@@ -9,11 +9,6 @@ import { newCancelUploadingRequest } from "@phading/product_service_interface/sh
 import { E } from "@selfage/element/factory";
 import { WebServiceClient } from "@selfage/web_service_client";
 
-export type CreateCancelUploadPageFn = (
-  seasonId: string,
-  episodeId: string,
-) => CancelUploadPage;
-
 export interface CancelUploadPage {
   on(event: "restart", listener: () => void): this;
 }

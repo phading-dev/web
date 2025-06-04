@@ -23,15 +23,15 @@ normalizeBody();
 class SearchInputTestCase implements TestCase {
   public constructor(
     public name: string,
-    private value: string,
-    private clickOption: (cut: SearchPage) => void,
+    private initSeasonState: SeasonState,
+    private initQuery: string,
     private action: (cut: SearchPage) => void,
     private expectedSeasonState: SeasonState,
     private expectedQuery: string,
   ) {}
   public async execute() {
     // Prepare
-    let cut = SearchPage.create(SeasonState.PUBLISHED, "");
+    let cut = SearchPage.create(this.initSeasonState, this.initQuery);
     let seasonState: SeasonState;
     let query: string;
     cut.on("searchSeasons", (seasonState_, query_) => {
@@ -40,8 +40,6 @@ class SearchInputTestCase implements TestCase {
     });
 
     // Execute
-    cut.searchInput.val.value = this.value;
-    this.clickOption(cut);
     this.action(cut);
 
     // Verify
@@ -574,36 +572,74 @@ TEST_RUNNER.run({
       }
     })(),
     new SearchInputTestCase(
-      "SearchInput_Published_Enter",
-      "some query",
-      (cut) => cut.searchOptionPublished.val.click(),
-      (cut) => cut.searchInput.val.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" })),
+      "SearchInput_Published_ValueAndEnter",
+      SeasonState.PUBLISHED,
+      "",
+      (cut) => {
+        cut.searchInput.val.value = "some query";
+        cut.searchInput.val.dispatchEvent(
+          new KeyboardEvent("keydown", { key: "Enter" }),
+        );
+      },
       SeasonState.PUBLISHED,
       "some query",
     ),
     new SearchInputTestCase(
       "SearchInput_Draft_ClickButton",
-      "some query",
-      (cut) => cut.searchOptionDraft.val.click(),
-      (cut) => cut.searchActionButton.val.click(),
+      SeasonState.DRAFT,
+      "",
+      (cut) => {
+        cut.searchInput.val.value = "some query";
+        cut.searchActionButton.val.click();
+      },
       SeasonState.DRAFT,
       "some query",
     ),
     new SearchInputTestCase(
       "SearchInput_Archived_ClickButton",
-      "some query",
-      (cut) => cut.searchOptionArchived.val.click(),
-      (cut) => cut.searchActionButton.val.click(),
+      SeasonState.ARCHIVED,
+      "",
+      (cut) => {
+        cut.searchInput.val.value = "some query";
+        cut.searchActionButton.val.click();
+      },
       SeasonState.ARCHIVED,
       "some query",
     ),
     new SearchInputTestCase(
       "SearchInput_Published_EmptyQuery",
-      "",
+      SeasonState.PUBLISHED,
+      "some query",
+      (cut) => {
+        cut.searchInput.val.value = "";
+        cut.searchActionButton.val.click();
+      },
+      undefined,
+      undefined,
+    ),
+    new SearchInputTestCase(
+      "SearchInput_Published_SwitchToArchived",
+      SeasonState.PUBLISHED,
+      "some query",
+      (cut) => cut.searchOptionArchived.val.click(),
+      SeasonState.ARCHIVED,
+      "some query",
+    ),
+    new SearchInputTestCase(
+      "SearchInput_Published_SwitchToDraft",
+      SeasonState.PUBLISHED,
+      "some query",
+      (cut) => cut.searchOptionDraft.val.click(),
+      SeasonState.DRAFT,
+      "some query",
+    ),
+    new SearchInputTestCase(
+      "SearchInput_Draft_SwitchToPublished",
+      SeasonState.DRAFT,
+      "some query",
       (cut) => cut.searchOptionPublished.val.click(),
-      (cut) => cut.searchActionButton.val.click(),
-      undefined,
-      undefined,
+      SeasonState.PUBLISHED,
+      "some query",
     ),
   ],
 });

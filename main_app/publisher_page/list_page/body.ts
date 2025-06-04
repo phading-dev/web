@@ -17,8 +17,6 @@ import { newListSeasonsRequest } from "@phading/product_service_interface/show/w
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
-import { FONT_M } from "../../../common/sizes";
-import { SCHEME } from "../../../common/color_scheme";
 
 export interface ListPage {
   on(event: "listSeasons", listener: (value: SeasonState) => void): this;
@@ -52,11 +50,8 @@ export class ListPage extends EventEmitter {
       E.div(
         {
           class: "list-page-options",
-          style: `display: flex; align-items: center; gap: 1rem; padding: 1rem 0;`,
+          style: `display: flex; align-items: center; gap: 1rem; padding-bottom: 1rem;`,
         },
-        E.div({
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`
-        }, E.text(LOCALIZED_TEXT.listSeasonStateTitle)),
         assign(
           this.draftOption,
           new OptionPill(
@@ -141,5 +136,6 @@ export class ListPage extends EventEmitter {
 
   public remove(): void {
     this.body.remove();
+    this.loadingSection.val.stopLoading();
   }
 }

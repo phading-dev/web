@@ -5,6 +5,7 @@ import {
 } from "../../../../common/blocking_button";
 import { SCHEME } from "../../../../common/color_scheme";
 import { FileDropZone } from "../../../../common/file_drop_zone";
+import { formatBytesShort } from "../../../../common/formatter/quantity";
 import {
   SimpleIconButton,
   createBackButton,
@@ -17,6 +18,11 @@ import {
 import { FONT_L, FONT_M, FONT_S } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../common/elements";
+import {
+  COVER_IMAGE_HEIGHT,
+  COVER_IMAGE_WIDTH,
+  MAX_COVER_IMAGE_BUFFER_SIZE,
+} from "@phading/constants/show";
 import { newUploadCoverImageRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import { SeasonDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import { UploadCoverImageResponse } from "@phading/product_service_interface/show/web/publisher/interface";
@@ -35,7 +41,12 @@ export class UpdateCoverImagePage extends EventEmitter {
     seasonId: string,
     season: SeasonDetails,
   ): UpdateCoverImagePage {
-    return new UpdateCoverImagePage(SERVICE_CLIENT, seasonId, season);
+    return new UpdateCoverImagePage(
+      SERVICE_CLIENT,
+      MAX_COVER_IMAGE_BUFFER_SIZE,
+      seasonId,
+      season,
+    );
   }
 
   public body: HTMLDivElement;
@@ -50,6 +61,7 @@ export class UpdateCoverImagePage extends EventEmitter {
 
   public constructor(
     private serviceClient: WebServiceClient,
+    private maxImageSize: number,
     public seasonId: string,
     public season: SeasonDetails,
   ) {
@@ -77,20 +89,26 @@ export class UpdateCoverImagePage extends EventEmitter {
         }),
         assign(this.fileDropZone, new FileDropZone("width: 100%;")).body,
         E.div({
-          style: `flex: 0 0 auto; height: 1rem;`,
+          style: `flex: 0 0 auto; height: 2rem;`,
         }),
         assign(
           this.loadErrorMessage,
-          E.div(
-            {
-              class: "update-cover-image-load-error-message",
-              style: `visibility: hidden; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
-            },
-            E.text("1"),
+          E.div({
+            class: "update-cover-image-load-error-message",
+            style: `display: none; align-self: flex-start; margin-bottom: .5rem; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
+          }),
+        ),
+        E.div(
+          {
+            class: "update-cover-image-instruction",
+            style: `align-self: flex-start; font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+          },
+          E.text(
+            `${LOCALIZED_TEXT.updateSeasonCoverImageInstruction[0]}${COVER_IMAGE_WIDTH}${LOCALIZED_TEXT.updateSeasonCoverImageInstruction[1]}${COVER_IMAGE_HEIGHT}${LOCALIZED_TEXT.updateSeasonCoverImageInstruction[2]}`,
           ),
         ),
         E.div({
-          style: `flex: 0 0 auto; height: 2rem;`,
+          style: `flex: 0 0 auto; height: 3rem;`,
         }),
         E.div(
           {
@@ -143,21 +161,26 @@ export class UpdateCoverImagePage extends EventEmitter {
       ),
     );
     this.backButton.val.on("action", () => this.emit("back"));
-    this.fileDropZone.val.on("select", (file: File) =>
-      this.previewImageAndSelect(file),
-    );
+    this.fileDropZone.val.on("select", (file: File) => this.selectFile(file));
     this.submitButton.val.addAction(
       () => this.upload(),
       (response, error) => this.postUpload(error),
     );
   }
 
-  private async previewImageAndSelect(file: File): Promise<void> {
+  private async selectFile(file: File): Promise<void> {
     this.loadIndex++;
     let loadIndex = this.loadIndex;
 
-    this.loadErrorMessage.val.style.visibility = "hidden";
+    this.loadErrorMessage.val.style.display = "none";
     this.submitButton.val.disable();
+    if (file.size > this.maxImageSize) {
+      this.loadErrorMessage.val.style.display = "block";
+      this.loadErrorMessage.val.textContent = `${LOCALIZED_TEXT.fileSizeTooLarge[0]}${formatBytesShort(this.maxImageSize)}${LOCALIZED_TEXT.fileSizeTooLarge[1]}`;
+      this.emit("loaded");
+      return;
+    }
+
     let imageEle: HTMLImageElement;
     try {
       imageEle = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -185,7 +208,7 @@ export class UpdateCoverImagePage extends EventEmitter {
         return;
       }
       console.error("Error loading image file:", error);
-      this.loadErrorMessage.val.style.visibility = "visible";
+      this.loadErrorMessage.val.style.display = "block";
       this.loadErrorMessage.val.textContent =
         LOCALIZED_TEXT.updateSeasonCoverImageUnableToLoadError;
       this.emit("loaded");

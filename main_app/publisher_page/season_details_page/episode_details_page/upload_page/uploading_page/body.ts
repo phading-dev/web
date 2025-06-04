@@ -29,13 +29,6 @@ import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
-export type CreateUploadingPageFn = (
-  seasonId: string,
-  episodeId: string,
-  file: File,
-  uploadingState?: ResumableUploadingState,
-) => UploadingPage;
-
 export interface UploadingPage {
   on(event: "back", listener: () => void): this;
   on(event: "reSelect", listener: (error: string) => void): this;

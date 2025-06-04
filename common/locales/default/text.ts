@@ -74,10 +74,10 @@ export default class Text {
     return `Username`;
   }
   get emailLabel() {
-    return `Email`
+    return `Email`;
   }
   get emailTooLongError() {
-    return `Email is too long.`
+    return `Email is too long.`;
   }
   get recoveryEmailLabel() {
     return `Recovery email`;
@@ -202,35 +202,11 @@ export default class Text {
   get seasonStateArchivedOptionLabel() {
     return `Archived`;
   }
-  get quickAccessLabel() {
-    return `Quick links`;
+  get searchTargetSeasonLabel() {
+    return `Videos`;
   }
-  get recentPremieresLabel() {
-    return `Recent premieres`;
-  }
-  get topRatedLabel() {
-    return `Top rated`;
-  }
-  get continueWatchingLabel() {
-    return `Continue watching`;
-  }
-  get securitySettingsLabel() {
-    return `Security settings`;
-  }
-  get paymentMethodsLabel() {
-    return `Payment methods`;
-  }
-  get usageReportLabel() {
-    return `Usage report`;
-  }
-  get chatAppName() {
-    return `Chat`;
-  }
-  get showAppName() {
-    return `Show`;
-  }
-  get musicAppName() {
-    return `Music`;
+  get searchTargetPublisherLabel() {
+    return `Publishers`;
   }
   get changeAvatarLabel() {
     return `Update`;
@@ -628,9 +604,6 @@ export default class Text {
   }
   get noCoverImage() {
     return `No cover image`;
-  }
-  get listSeasonStateTitle() {
-    return `State: `;
   }
   get createSeasonTitle() {
     return `Create a new draft season`;
@@ -1065,6 +1038,13 @@ export default class Text {
   }
   get updateSeasonCoverImageTitle() {
     return `Update cover image`;
+  }
+  get updateSeasonCoverImageInstruction() {
+    return [
+      `Please choose an image file with 2:3 aspect ratio. It will be resized to `,
+      `x`,
+      ` pixels.`,
+    ];
   }
   get updateSeasonCoverImagePreviewTitle() {
     return `Preview`;

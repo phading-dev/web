@@ -9,9 +9,13 @@ import {
   createSearchIcon,
 } from "../../common/icons";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
+import {
+  eBottomNavigationBarRef,
+  eNavigationItemRef,
+} from "../../common/navigation_bar";
 import { TabSwitcher } from "../../common/page_navigator";
 import { PAGE_CENTER_CARD_BACKGROUND_STYLE } from "../../common/page_style";
-import { FONT_L, FONT_S, ICON_XL } from "../../common/sizes";
+import { FONT_L } from "../../common/sizes";
 import { CreateSeasonPage } from "./create_season_page/body";
 import { ListPage } from "./list_page/body";
 import { SearchPage } from "./search_page/body";
@@ -20,10 +24,6 @@ import { SeasonState } from "@phading/product_service_interface/show/season_stat
 import { PublisherPage as PublisherPageUrl } from "@phading/web_interface/main/publisher/page";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
-
-let NAVIGATION_BUTTON_STYLE = `flex: 1 0 0; padding: .7rem 0 .3rem 0; display: flex; flex-flow: column nowrap; align-items: center; gap: .3rem; cursor: pointer;`;
-let NAVIGATION_ICON_STYLE = `width: ${ICON_XL}rem; height: ${ICON_XL}rem;`;
-let NAVIGATION_TEXT_STYLE = `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`;
 
 export interface PublisherPage {
   on(event: "newUrl", listener: (newUrl: PublisherPageUrl) => void): this;
@@ -41,6 +41,7 @@ export class PublisherPage extends EventEmitter {
     );
   }
 
+  private navigationBar = new Ref<HTMLDivElement>();
   public listButton = new Ref<HTMLDivElement>();
   public searchButton = new Ref<HTMLDivElement>();
   public createSeasonButton = new Ref<HTMLDivElement>();
@@ -65,127 +66,32 @@ export class PublisherPage extends EventEmitter {
   ) {
     super();
     appendBodies(
-      E.div(
-        {
-          class: "publisher-page-navigation-bar-parent",
-          style: `position: fixed; left: 0; bottom: 0; z-index: 1; width: 100%; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center;`,
-        },
-        E.div(
-          {
-            class: "publisher-page-navigation-bar-content-container",
-            style: `background-color: ${SCHEME.neutral4}; box-shadow: 0 0 .3rem ${SCHEME.neutral1}; width: 100%; max-width: 60rem; border-top-left-radius: .5rem; border-top-right-radius: .5rem; display: flex; flex-flow: column nowrap;`,
-          },
-          E.div(
-            {
-              class: "publisher-page-navigation-bar-level-one",
-              style: `display: flex; flex-flow: row nowrap; gap: 1rem;`,
-            },
-            E.divRef(
-              this.listButton,
-              {
-                class: "publisher-page-navigation-bar-home-button",
-                style: NAVIGATION_BUTTON_STYLE,
-              },
-              E.div(
-                {
-                  class: "publisher-page-navigation-bar-home-icon",
-                  style: NAVIGATION_ICON_STYLE,
-                },
-                createListIcon(SCHEME.neutral1),
-              ),
-              E.div(
-                {
-                  class: "publisher-page-navigation-bar-home-text",
-                  style: NAVIGATION_TEXT_STYLE,
-                },
-                E.text(LOCALIZED_TEXT.catalogLabel),
-              ),
-            ),
-            E.divRef(
-              this.searchButton,
-              {
-                class: "publisher-page-navigation-bar-search-button",
-                style: NAVIGATION_BUTTON_STYLE,
-              },
-              E.div(
-                {
-                  class: "publisher-page-navigation-bar-search-icon",
-                  style: NAVIGATION_ICON_STYLE,
-                },
-                createSearchIcon(SCHEME.neutral1),
-              ),
-              E.div(
-                {
-                  class: "publisher-page-navigation-bar-search-text",
-                  style: NAVIGATION_TEXT_STYLE,
-                },
-                E.text(LOCALIZED_TEXT.searchLabel),
-              ),
-            ),
-            E.divRef(
-              this.createSeasonButton,
-              {
-                class: "publisher-page-navigation-bar-create-season-button",
-                style: NAVIGATION_BUTTON_STYLE,
-              },
-              E.div(
-                {
-                  class: "publisher-page-navigation-bar-create-season-icon",
-                  style: NAVIGATION_ICON_STYLE,
-                },
-                createPlusIcon(SCHEME.neutral1),
-              ),
-              E.div(
-                {
-                  class: "publisher-page-navigation-bar-create-season-text",
-                  style: NAVIGATION_TEXT_STYLE,
-                },
-                E.text(LOCALIZED_TEXT.createSeasonLabel),
-              ),
-            ),
-            E.divRef(
-              this.statsButton,
-              {
-                class: "publisher-page-navigation-bar-stats-button",
-                style: NAVIGATION_BUTTON_STYLE,
-              },
-              E.div(
-                {
-                  class: "publisher-page-navigation-bar-stats-icon",
-                  style: NAVIGATION_ICON_STYLE,
-                },
-                createHistogramIcon(SCHEME.neutral1),
-              ),
-              E.div(
-                {
-                  class: "publisher-page-navigation-bar-stats-text",
-                  style: NAVIGATION_TEXT_STYLE,
-                },
-                E.text(LOCALIZED_TEXT.statsLabel),
-              ),
-            ),
-            E.divRef(
-              this.accountButton,
-              {
-                class: "publisher-page-navigation-bar-account-button",
-                style: NAVIGATION_BUTTON_STYLE,
-              },
-              E.div(
-                {
-                  class: "publisher-page-navigation-bar-account-icon",
-                  style: NAVIGATION_ICON_STYLE,
-                },
-                createAccountIcon(SCHEME.neutral1),
-              ),
-              E.div(
-                {
-                  class: "publisher-page-navigation-bar-account-text",
-                  style: NAVIGATION_TEXT_STYLE,
-                },
-                E.text(LOCALIZED_TEXT.accountLabel),
-              ),
-            ),
-          ),
+      eBottomNavigationBarRef(
+        this.navigationBar,
+        eNavigationItemRef(
+          this.listButton,
+          createListIcon(SCHEME.neutral1),
+          LOCALIZED_TEXT.catalogLabel,
+        ),
+        eNavigationItemRef(
+          this.searchButton,
+          createSearchIcon(SCHEME.neutral1),
+          LOCALIZED_TEXT.searchLabel,
+        ),
+        eNavigationItemRef(
+          this.createSeasonButton,
+          createPlusIcon(SCHEME.neutral1),
+          LOCALIZED_TEXT.createSeasonLabel,
+        ),
+        eNavigationItemRef(
+          this.statsButton,
+          createHistogramIcon(SCHEME.neutral1),
+          LOCALIZED_TEXT.statsLabel,
+        ),
+        eNavigationItemRef(
+          this.accountButton,
+          createAccountIcon(SCHEME.neutral1),
+          LOCALIZED_TEXT.accountLabel,
         ),
       ),
     );
@@ -366,6 +272,7 @@ export class PublisherPage extends EventEmitter {
   }
 
   public remove(): void {
+    this.navigationBar.val.remove();
     this.pageSwitcher.remove();
   }
 }

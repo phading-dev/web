@@ -4,6 +4,7 @@ import path = require("path");
 import { normalizeBody } from "../../../../common/normalize_body";
 import { setTabletView } from "../../../../common/view_port";
 import { UpdateCoverImagePage } from "./body";
+import { MAX_COVER_IMAGE_BUFFER_SIZE } from "@phading/constants/show";
 import {
   UPLOAD_COVER_IMAGE,
   UPLOAD_COVER_IMAGE_REQUEST_METADATA,
@@ -28,7 +29,12 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        this.cut = new UpdateCoverImagePage(serviceClientMock, "season1", {});
+        this.cut = new UpdateCoverImagePage(
+          serviceClientMock,
+          25 * 1024,
+          "season1",
+          {},
+        );
 
         // Execute
         document.body.append(this.cut.body);
@@ -55,6 +61,20 @@ TEST_RUNNER.run({
           path.join(__dirname, "/update_cover_image_invalid_file.png"),
           path.join(__dirname, "/golden/update_cover_image_invalid_file.png"),
           path.join(__dirname, "/update_cover_image_invalid_file_diff.png"),
+          {
+            fullPage: true,
+          },
+        );
+
+        // Execute
+        supplyFiles(() => this.cut.fileDropZone.val.click(), coverImage2);
+        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/update_cover_image_file_too_large.png"),
+          path.join(__dirname, "/golden/update_cover_image_file_too_large.png"),
+          path.join(__dirname, "/update_cover_image_file_too_large_diff.png"),
           {
             fullPage: true,
           },
@@ -159,9 +179,14 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        this.cut = new UpdateCoverImagePage(serviceClientMock, "season1", {
-          coverImageUrl: coverImage1,
-        });
+        this.cut = new UpdateCoverImagePage(
+          serviceClientMock,
+          MAX_COVER_IMAGE_BUFFER_SIZE,
+          "season1",
+          {
+            coverImageUrl: coverImage1,
+          },
+        );
 
         // Execute
         document.body.append(this.cut.body);

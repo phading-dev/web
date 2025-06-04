@@ -61,16 +61,16 @@ export class SearchPage extends EventEmitter {
       this.card,
       E.div(
         {
-          class: "publisher-page-navigation-bar-search-sub-menu",
-          style: `margin-bottom: 2rem; display: flex; flex-flow: column nowrap;`,
+          class: "search-page-search-input",
+          style: `padding-bottom: 1rem; display: flex; flex-flow: column nowrap;`,
         },
         E.div(
           {
-            class: "publisher-page-search-bar-line",
+            class: "search-page-search-line",
             style: `width: 100%; box-sizing: border-box; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
           },
           E.inputRef(this.searchInput, {
-            class: "publisher-page-search-bar-input",
+            class: "search-page-search-input-field",
             style: `${BASIC_INPUT_STYLE} flex: 1 0 0;`,
             value: query ?? "",
           }),
@@ -200,5 +200,6 @@ export class SearchPage extends EventEmitter {
 
   public remove(): void {
     this.body.remove();
+    this.loadingSection.val?.stopLoading();
   }
 }

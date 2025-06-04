@@ -1,13 +1,10 @@
 import EventEmitter = require("events");
 import { AddBodiesFn } from "../../../../../common/add_bodies_fn";
 import { TabSwitcher } from "../../../../../common/page_navigator";
-import {
-  CancelUploadPage,
-  CreateCancelUploadPageFn,
-} from "./cancel_upload_page/body";
+import { CancelUploadPage } from "./cancel_upload_page/body";
 import { NewUploadPage } from "./new_upload_page/body";
 import { ResumeUploadPage } from "./resume_upload_page/body";
-import { CreateUploadingPageFn, UploadingPage } from "./uploading_page/body";
+import { UploadingPage } from "./uploading_page/body";
 import { ResumableUploadingState } from "@phading/video_service_interface/node/video_container";
 
 export interface UploadPage {
@@ -40,10 +37,10 @@ export class UploadPage extends EventEmitter {
   public cancelUploadPage: CancelUploadPage;
 
   public constructor(
-    private createNewUploadPage: (error?: string) => NewUploadPage,
-    private createResumeUploadPage: (error?: string) => ResumeUploadPage,
-    private createUploadingPage: CreateUploadingPageFn,
-    private createCancelUploadPage: CreateCancelUploadPageFn,
+    private createNewUploadPage: typeof NewUploadPage.create,
+    private createResumeUploadPage: typeof ResumeUploadPage.create,
+    private createUploadingPage: typeof UploadingPage.create,
+    private createCancelUploadPage: typeof CancelUploadPage.create,
     private appendBody: AddBodiesFn,
     public seasonId: string,
     public episodeId: string,
