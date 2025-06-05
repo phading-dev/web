@@ -10,8 +10,9 @@ import { eBox } from "../../../common/value_box";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
 import {
+  eContainerTitle,
   eContinueEpisodeItem,
-  eContinueEpisodeItemContainer,
+  eContinueEpisodeItemContainerRef,
   eFullItemsPage,
 } from "../common/elements";
 import { newListMeterReadingsPerMonthRequest } from "@phading/meter_service_interface/show/web/consumer/client";
@@ -120,18 +121,16 @@ export class HistoryPage extends EventEmitter {
           ),
         ),
       ),
-      E.div(
-        {
-          class: "continue-watching-title",
-          style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
-        },
-        E.text(LOCALIZED_TEXT.watchHistoryTitle),
-      ),
+      E.div({
+        style: `style: 0 0 auot; height: 2rem;`,
+      }),
+      eContainerTitle(LOCALIZED_TEXT.watchHistoryTitle),
       assign(this.loadingSection, new ScrollLoadingSection()).body,
     );
-    this.loadingSection.val.addLoadAction(() => this.load());
-    this.loadingSection.val.on("loaded", () => this.emit("loaded"));
-    this.loadingSection.val.load();
+    this.loadingSection.val
+      .addLoadAction(() => this.load())
+      .on("loaded", () => this.emit("loaded"))
+      .load();
 
     this.estimatesCard.val.addEventListener("click", () =>
       this.emit("viewUsage"),
@@ -179,7 +178,14 @@ export class HistoryPage extends EventEmitter {
       if (!contentContainer) {
         contentContainer = new Ref<HTMLDivElement>();
         this.loadingSection.val.body.before(
-          eContinueEpisodeItemContainer(dateStr, contentContainer),
+          E.div({
+            style: `flex: 0 0 auto; height: 2rem;`,
+          }),
+          eContainerTitle(dateStr),
+          E.div({
+            style: `flex: 0 0 auto; height: 1rem;`,
+          }),
+          eContinueEpisodeItemContainerRef(contentContainer),
         );
         this.dateToContentContainer.set(dateStr, contentContainer);
       }

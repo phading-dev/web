@@ -57,10 +57,7 @@ export interface Player {
   on(event: "playing", listener: () => void): this;
   on(event: "notPlaying", listener: () => void): this;
   on(event: "clearComments", listener: () => void): this;
-  on(
-    event: "play",
-    listener: (seasonId: string, episodeId: string) => void,
-  ): this;
+  on(event: "play", listener: (episodeId: string) => void): this;
   on(event: "showInfo", listener: () => void): this;
   on(event: "showComments", listener: () => void): this;
   on(event: "showSettings", listener: () => void): this;
@@ -75,7 +72,6 @@ export class Player extends EventEmitter {
     settings: VideoSettings,
     videoUrl: string,
     continueTimestampMs: number,
-    seasonId: string,
     nextEpisodeId?: string,
   ): Player {
     return new Player(
@@ -83,7 +79,6 @@ export class Player extends EventEmitter {
       settings,
       videoUrl,
       continueTimestampMs,
-      seasonId,
       nextEpisodeId,
     );
   }
@@ -135,7 +130,6 @@ export class Player extends EventEmitter {
     private settings: VideoSettings,
     videoUrl: string,
     private continueTimestampMs: number,
-    private seasonId: string,
     private nextEpisodeId?: string,
     private autoPlay = true, // for testing purpose
   ) {
@@ -443,7 +437,7 @@ export class Player extends EventEmitter {
 
     if (this.nextEpisodeId) {
       this.playNextButton.val.on("action", () =>
-        this.emit("play", this.seasonId, this.nextEpisodeId),
+        this.emit("play", this.nextEpisodeId),
       );
     } else {
       this.playNextButton.val.hide();
@@ -838,6 +832,7 @@ export class Player extends EventEmitter {
   }
 
   public destroy(): void {
+    this.video.val.pause();
     this.hls.destroy();
     this.resizeObserver.disconnect();
     this.window.removeEventListener("keydown", this.keyOperate);

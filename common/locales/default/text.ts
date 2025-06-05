@@ -446,12 +446,6 @@ export default class Text {
   get newPricingStarting() {
     return [` - New rate: `, ` starting in `, ` days.`, ` day.`];
   }
-  get viewHistoryLink() {
-    return `View history >`;
-  }
-  get viewMoreLink() {
-    return `View more >`;
-  }
   get continueWatchingTitle() {
     return `Continue watching`;
   }
@@ -476,8 +470,8 @@ export default class Text {
   get watchHistoryTitle() {
     return `Watch history`;
   }
-  get usageReportTitle() {
-    return `Usage report`;
+  get usageTitle() {
+    return `Usage estimates`;
   }
   get usageReportSelectOneDayLabel() {
     return `One day`;
@@ -535,9 +529,6 @@ export default class Text {
   }
   get nextEpisode() {
     return `Next episode:`;
-  }
-  get noNextEpisode() {
-    return `No upcoming episode`;
   }
   get videoPlayGeneralSettingsLabel() {
     return `General settings`;

@@ -3,7 +3,7 @@ import { SCHEME } from "../../../common/color_scheme";
 import { SimpleIconButton } from "../../../common/icon_button";
 import { createCrossIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { PageNavigator } from "../../../common/page_navigator";
+import { TabSwitcher } from "../../../common/page_navigator";
 import { getRootFontSize } from "../../../common/root_font_size";
 import { ICON_BUTTON_L, ICON_L } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
@@ -44,10 +44,8 @@ import {
   newSaveVideoPlayerSettingsRequest,
 } from "@phading/user_service_interface/web/self/client";
 import {
-  CommentOverlaySettings,
   CommentOverlayStyle,
   VideoPlayerSettings,
-  VideoSettings,
 } from "@phading/user_service_interface/web/self/video_player_settings";
 import { newGetAccountSummaryRequest } from "@phading/user_service_interface/web/third_person/client";
 import { E } from "@selfage/element/factory";
@@ -66,7 +64,7 @@ export enum Tab {
 }
 
 export interface PlayPage {
-  on(event: "back", listener: () => void): this;
+  on(event: "showDetails", listener: (seasonId: string) => void): this;
   on(
     event: "play",
     listener: (seasonId: string, episodeId: string) => void,
@@ -109,66 +107,39 @@ export class PlayPage extends EventEmitter {
   public commentsPanel = new Ref<CommentsPanel>();
   public settingsPanel = new Ref<SettingsPanel>();
   private settings: VideoPlayerSettings;
-  private tabNavigator: PageNavigator<Tab>;
+  private tabSwitcher = new TabSwitcher();
   public watchSessionTracker: WatchSessionTracker;
   public watchTimeMeter: WatchTimeMeter;
-  private commentOverlayNavigator: PageNavigator<CommentOverlayStyle>;
-  private playCommentOverlay: () => void;
-  private pauseCommentOverlay: () => void;
+  private commentOverlaySwitcher = new TabSwitcher();
+  private commentOverlayStyle: CommentOverlayStyle;
+  private playCommentOverlay: () => void = () => {};
+  private pauseCommentOverlay: () => void = () => {};
   private addCommentsToCommentOverlay: (
     comments: Array<CommentWithAuthor>,
-  ) => void;
-  private applySettingsToCommentOverlay: () => void;
-  private clearCommentsInCommentOverlay: () => void;
+  ) => void = () => {};
+  private applySettingsToCommentOverlay: () => void = () => {};
+  private clearCommentsInCommentOverlay: () => void = () => {};
   private comments: Array<CommentWithAuthor>;
   private commentPointerIndex: number;
   private commentPinnedVideoTimeMsEnd: number;
   private lastVideoTimeMs: number;
   private loadCommentsRequestId = 0;
   private playingLoopId: number;
+  private removed = false;
 
   public constructor(
     private window: Window,
     private serviceClient: WebServiceClient,
-    private createPlayer: (
-      settings: VideoSettings,
-      videoUrl: string,
-      continueTimestampMs: number,
-      seasonId: string,
-      nextEpisodeId?: string,
-    ) => Player,
-    private createInfoPanel: (
-      customeStyle: string,
-      episode: Episode,
-      seasonSummary: SeasonSummary,
-      nextEpisode?: Episode,
-      nextEpisodeWatchedVideoTimeMs?: number,
-    ) => InfoPanel,
-    private createCommentsPanel: (
-      customeStyle: string,
-      seasonId: string,
-      episodeId: string,
-    ) => CommentsPanel,
-    private createSettingsPanel: (
-      customeStyle: string,
-      settings: VideoPlayerSettings,
-    ) => SettingsPanel,
-    private createSideCommentOverlay: (
-      settings: CommentOverlaySettings,
-    ) => SideCommentOverlay,
-    private createDanmakuOverlay: (
-      settings: CommentOverlaySettings,
-    ) => DanmakuOverlay,
-    private createWatchSessionTracker: (
-      seasonId: string,
-      episodeId: string,
-    ) => WatchSessionTracker,
-    private createWatchTimeMeter: (
-      seasonId: string,
-      episodeId: string,
-    ) => WatchTimeMeter,
-    private seasonId: string,
-    private episodeId: string,
+    private createPlayer: typeof Player.create,
+    private createInfoPanel: typeof InfoPanel.create,
+    private createCommentsPanel: typeof CommentsPanel.create,
+    private createSettingsPanel: typeof SettingsPanel.create,
+    private createSideCommentOverlay: typeof SideCommentOverlay.create,
+    private createDanmakuOverlay: typeof DanmakuOverlay.create,
+    private createWatchSessionTracker: typeof WatchSessionTracker.create,
+    private createWatchTimeMeter: typeof WatchTimeMeter.create,
+    public seasonId: string,
+    public episodeId: string,
   ) {
     super();
     this.body = E.div({
@@ -200,6 +171,10 @@ export class PlayPage extends EventEmitter {
       ),
       this.getNormalizedVideoPlayerSettings(),
     ]);
+    if (this.removed) {
+      return;
+    }
+
     this.settings = settings;
 
     this.body.append(
@@ -219,7 +194,6 @@ export class PlayPage extends EventEmitter {
             this.settings.videoSettings,
             videoUrl,
             watchedVideoTimeMs ?? 0,
-            this.seasonId,
             nextEpisode?.episodeId,
           ),
         ).elements,
@@ -268,13 +242,9 @@ export class PlayPage extends EventEmitter {
         ).body,
       ),
     );
-    this.hidePanel(Tab.INFO);
-    this.hidePanel(Tab.COMMENTS);
-    this.hidePanel(Tab.SETTINGS);
-    this.tabNavigator = new PageNavigator(
-      (tab) => this.showPanel(tab),
-      (tab) => this.hidePanel(tab),
-    );
+    this.infoPanel.val.hide();
+    this.commentsPanel.val.hide();
+    this.settingsPanel.val.hide();
     this.closePanel();
     this.closePanelButton.val.on("action", () => this.closePanel());
     this.player.val.on("showInfo", () => this.openPanel(Tab.INFO));
@@ -311,10 +281,6 @@ export class PlayPage extends EventEmitter {
       this.player.val.interrupt(LOCALIZED_TEXT.interruptReasonNoConnectivity),
     );
 
-    this.commentOverlayNavigator = new PageNavigator(
-      (style) => this.addCommentOverlay(style),
-      (style) => this.removeCommentOverlay(style),
-    );
     this.applyCommentOverlaySettings();
     this.settingsPanel.val.on("updateCommentOverlaySettings", () => {
       this.applyCommentOverlaySettings();
@@ -332,13 +298,16 @@ export class PlayPage extends EventEmitter {
     this.player.val.on("playing", () => this.startPlaying());
     this.player.val.on("notPlaying", () => this.stopPlaying());
 
-    this.player.val.on("play", (seasonId, episodeId) =>
-      this.emit("play", seasonId, episodeId),
+    this.infoPanel.val.on("play", (episodeId) =>
+      this.emit("play", this.seasonId, episodeId),
     );
-    this.infoPanel.val.on("play", (seasonId, episodeId) =>
-      this.emit("play", seasonId, episodeId),
+    this.player.val.on("play", (episodeId) =>
+      this.emit("play", this.seasonId, episodeId),
     );
-    this.player.val.on("back", () => this.emit("back"));
+    this.infoPanel.val.on("showDetails", () =>
+      this.emit("showDetails", this.seasonId),
+    );
+    this.player.val.on("back", () => this.emit("showDetails", this.seasonId));
     this.player.val.on("saveSettings", () => this.saveSettings());
     this.player.val.on("goFullscreen", () => this.goFullscreen());
     this.player.val.on("exitFullscreen", () => this.exitFullscreen());
@@ -416,34 +385,6 @@ export class PlayPage extends EventEmitter {
     return settings;
   }
 
-  private showPanel(tab: Tab): void {
-    switch (tab) {
-      case Tab.INFO:
-        this.infoPanel.val.show();
-        break;
-      case Tab.COMMENTS:
-        this.commentsPanel.val.show();
-        break;
-      case Tab.SETTINGS:
-        this.settingsPanel.val.show();
-        break;
-    }
-  }
-
-  private hidePanel(tab: Tab): void {
-    switch (tab) {
-      case Tab.INFO:
-        this.infoPanel.val.hide();
-        break;
-      case Tab.COMMENTS:
-        this.commentsPanel.val.hide();
-        break;
-      case Tab.SETTINGS:
-        this.settingsPanel.val.hide();
-        break;
-    }
-  }
-
   private openPanel(tab: Tab): void {
     if (this.panelContainer.val.style.display === "none") {
       if (
@@ -455,7 +396,26 @@ export class PlayPage extends EventEmitter {
         this.dockCardHorizontally();
       }
     }
-    this.tabNavigator.goTo(tab);
+    switch (tab) {
+      case Tab.INFO:
+        this.tabSwitcher.goTo(
+          () => this.infoPanel.val.show(),
+          () => this.infoPanel.val.hide(),
+        );
+        break;
+      case Tab.COMMENTS:
+        this.tabSwitcher.goTo(
+          () => this.commentsPanel.val.show(),
+          () => this.commentsPanel.val.hide(),
+        );
+        break;
+      case Tab.SETTINGS:
+        this.tabSwitcher.goTo(
+          () => this.settingsPanel.val.show(),
+          () => this.settingsPanel.val.hide(),
+        );
+        break;
+    }
   }
 
   private closePanel(): void {
@@ -487,66 +447,75 @@ export class PlayPage extends EventEmitter {
     });
   }
 
-  private addCommentOverlay(style: CommentOverlayStyle): void {
-    switch (style) {
-      case CommentOverlayStyle.SIDE:
-        this.commentOverlayContainer.val.append(
-          assign(
-            this.sideCommentOverlay,
-            this.createSideCommentOverlay(this.settings.commentOverlaySettings),
-          ).body,
-        );
-        this.playCommentOverlay = () => {};
-        this.pauseCommentOverlay = () => {};
-        this.addCommentsToCommentOverlay = (comments) =>
-          this.sideCommentOverlay.val.add(comments);
-        this.applySettingsToCommentOverlay = () =>
-          this.sideCommentOverlay.val.applySettings();
-        this.clearCommentsInCommentOverlay = () =>
-          this.sideCommentOverlay.val.clear();
-        break;
-      case CommentOverlayStyle.DANMAKU:
-        this.commentOverlayContainer.val.append(
-          assign(
-            this.danmakuOverlay,
-            this.createDanmakuOverlay(this.settings.commentOverlaySettings),
-          ).body,
-        );
-        this.playCommentOverlay = () => this.danmakuOverlay.val.play();
-        this.pauseCommentOverlay = () => this.danmakuOverlay.val.pause();
-        this.addCommentsToCommentOverlay = (comments) =>
-          this.danmakuOverlay.val.add(comments);
-        this.applySettingsToCommentOverlay = () =>
-          this.danmakuOverlay.val.applySettings();
-        this.clearCommentsInCommentOverlay = () =>
-          this.danmakuOverlay.val.clear();
-        break;
-      case CommentOverlayStyle.NONE:
-        this.playCommentOverlay = () => {};
-        this.pauseCommentOverlay = () => {};
-        this.addCommentsToCommentOverlay = () => {};
-        this.applySettingsToCommentOverlay = () => {};
-        this.clearCommentsInCommentOverlay = () => {};
-        break;
-    }
-  }
-
-  private removeCommentOverlay(style: CommentOverlayStyle): void {
-    switch (style) {
-      case CommentOverlayStyle.SIDE:
-        this.sideCommentOverlay.val.remove();
-        break;
-      case CommentOverlayStyle.DANMAKU:
-        this.danmakuOverlay.val.remove();
-        break;
-    }
-  }
-
   private applyCommentOverlaySettings(): void {
-    this.commentOverlayNavigator.goTo(
-      this.settings.commentOverlaySettings.style,
-    );
+    if (
+      this.settings.commentOverlaySettings.style !== this.commentOverlayStyle
+    ) {
+      switch (this.settings.commentOverlaySettings.style) {
+        case CommentOverlayStyle.SIDE:
+          this.commentOverlaySwitcher.goTo(
+            () => this.addSideCommentOverlay(),
+            () => this.sideCommentOverlay.val.remove(),
+          );
+          break;
+        case CommentOverlayStyle.DANMAKU:
+          this.commentOverlaySwitcher.goTo(
+            () => this.addDanmakuOverlay(),
+            () => this.danmakuOverlay.val.remove(),
+          );
+          break;
+        case CommentOverlayStyle.NONE:
+          this.commentOverlaySwitcher.goTo(
+            () => this.addNoneCommentOverlay(),
+            () => {},
+          );
+          break;
+      }
+      this.commentOverlayStyle = this.settings.commentOverlaySettings.style;
+    }
     this.applySettingsToCommentOverlay();
+  }
+
+  private addSideCommentOverlay(): void {
+    this.commentOverlayContainer.val.append(
+      assign(
+        this.sideCommentOverlay,
+        this.createSideCommentOverlay(this.settings.commentOverlaySettings),
+      ).body,
+    );
+    this.playCommentOverlay = () => {};
+    this.pauseCommentOverlay = () => {};
+    this.addCommentsToCommentOverlay = (comments) =>
+      this.sideCommentOverlay.val.add(comments);
+    this.applySettingsToCommentOverlay = () =>
+      this.sideCommentOverlay.val.applySettings();
+    this.clearCommentsInCommentOverlay = () =>
+      this.sideCommentOverlay.val.clear();
+  }
+
+  private addDanmakuOverlay(): void {
+    console.log("Adding danmaku overlay");
+    this.commentOverlayContainer.val.append(
+      assign(
+        this.danmakuOverlay,
+        this.createDanmakuOverlay(this.settings.commentOverlaySettings),
+      ).body,
+    );
+    this.playCommentOverlay = () => this.danmakuOverlay.val.play();
+    this.pauseCommentOverlay = () => this.danmakuOverlay.val.pause();
+    this.addCommentsToCommentOverlay = (comments) =>
+      this.danmakuOverlay.val.add(comments);
+    this.applySettingsToCommentOverlay = () =>
+      this.danmakuOverlay.val.applySettings();
+    this.clearCommentsInCommentOverlay = () => this.danmakuOverlay.val.clear();
+  }
+
+  private addNoneCommentOverlay(): void {
+    this.playCommentOverlay = () => {};
+    this.pauseCommentOverlay = () => {};
+    this.addCommentsToCommentOverlay = () => {};
+    this.applySettingsToCommentOverlay = () => {};
+    this.clearCommentsInCommentOverlay = () => {};
   }
 
   private async addPostedComment(comment: Comment): Promise<void> {
@@ -673,10 +642,13 @@ export class PlayPage extends EventEmitter {
   private stopPlaying(): void {
     this.window.clearTimeout(this.playingLoopId);
     this.pauseCommentOverlay();
-    let currentVideoTimeMs = this.player.val.getCurrentVideoTimeMs();
-    this.commentsPanel.val.setPinnedVideoTimeMs(currentVideoTimeMs);
-    this.watchSessionTracker.update(currentVideoTimeMs);
-    this.watchTimeMeter.stop(currentVideoTimeMs);
+    if (this.player.val) {
+      // May be removed before the player is initialized.
+      let currentVideoTimeMs = this.player.val.getCurrentVideoTimeMs();
+      this.commentsPanel.val.setPinnedVideoTimeMs(currentVideoTimeMs);
+      this.watchSessionTracker.update(currentVideoTimeMs);
+      this.watchTimeMeter.stop(currentVideoTimeMs);
+    }
   }
 
   private async saveSettings(): Promise<void> {
@@ -700,9 +672,10 @@ export class PlayPage extends EventEmitter {
   }
 
   public remove(): void {
+    this.removed = true;
     this.body.remove();
     this.stopPlaying();
-    this.player.val.destroy();
-    this.commentOverlayNavigator.remove();
+    this.player.val?.destroy();
+    this.commentOverlaySwitcher.remove();
   }
 }

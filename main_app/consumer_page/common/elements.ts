@@ -7,6 +7,7 @@ import {
 } from "../../../common/formatter/rating";
 import { formatSecondsAsHHMMSS } from "../../../common/formatter/timestamp";
 import {
+  createArrowIcon,
   createCircularProgressIcon,
   createFilledStarIcon,
 } from "../../../common/icons";
@@ -34,34 +35,49 @@ export function eFullItemsPage(
   return E.div(
     {
       class: "full-page",
-      style: `width: 100%; min-height: 100%; background-color: ${SCHEME.neutral4}; padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+      style: `width: 100%; min-height: 100%; background-color: ${SCHEME.neutral4}; padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem; box-sizing: border-box; display: flex; flex-flow: column nowrap;`,
     },
     ...elements,
   );
 }
 
-export function eSeasonItemContainer(
-  title: string,
-  contentContainer: Ref<HTMLDivElement>,
-  ...elements: Array<HTMLElement>
+export function eSeasonItemContainerRef(
+  ref: Ref<HTMLDivElement>,
 ): HTMLDivElement {
+  return E.divRef(ref, {
+    class: "season-item-container-content",
+    style: `width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(17.6rem, 1fr)); gap: 1rem;`,
+  });
+}
+
+export function eContainerTitle(title: string): HTMLDivElement {
   return E.div(
     {
-      class: "season-item-container",
-      style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
+      class: "container-title",
+      style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
     },
+    E.text(title),
+  );
+}
+
+export function eContainerTitleClickableRef(
+  ref: Ref<HTMLDivElement>,
+  title: string,
+): HTMLDivElement {
+  return E.divRef(
+    ref,
+    {
+      class: "container-title-clickable",
+      style: `cursor: pointer; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: .5rem;`,
+    },
+    eContainerTitle(title),
     E.div(
       {
-        class: "season-item-container-title",
-        style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+        class: "container-title-arrow",
+        style: `width: ${ICON_M}rem; height: ${ICON_M}rem; transform: rotate(180deg);`,
       },
-      E.text(title),
+      createArrowIcon(SCHEME.neutral0),
     ),
-    E.divRef(contentContainer, {
-      class: "season-item-container-content",
-      style: `width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(17.6rem, 1fr)); gap: 1rem;`,
-    }),
-    ...elements,
   );
 }
 
@@ -132,29 +148,13 @@ export function eSeasonItem(
   );
 }
 
-export function eContinueEpisodeItemContainer(
-  title: string,
-  contentContainer: Ref<HTMLDivElement>,
-  ...elements: Array<HTMLElement>
+export function eContinueEpisodeItemContainerRef(
+  ref: Ref<HTMLDivElement>,
 ): HTMLDivElement {
-  return E.div(
-    {
-      class: "continue-watching-section",
-      style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
-    },
-    E.div(
-      {
-        class: "continue-watching-title",
-        style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
-      },
-      E.text(title),
-    ),
-    E.divRef(contentContainer, {
-      class: "continue-watching-content",
-      style: `width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr)); gap: 1rem;`,
-    }),
-    ...elements,
-  );
+  return E.divRef(ref, {
+    class: "continue-watching-content",
+    style: `width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr)); gap: 1rem;`,
+  });
 }
 
 export function eContinueEpisodeItem(
@@ -232,29 +232,13 @@ export function eContinueEpisodeItem(
   );
 }
 
-export function ePublisherItemContainer(
-  title: string,
-  contentContainer: Ref<HTMLDivElement>,
-  ...elements: Array<HTMLElement>
+export function ePublisherItemContainerRef(
+  ref: Ref<HTMLDivElement>,
 ): HTMLDivElement {
-  return E.div(
-    {
-      class: "publishers-section",
-      style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 2rem;`,
-    },
-    E.div(
-      {
-        class: "publishers-title",
-        style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
-      },
-      E.text(title),
-    ),
-    E.divRef(contentContainer, {
-      class: "publishers-content",
-      style: `width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr)); gap: 2rem;`,
-    }),
-    ...elements,
-  );
+  return E.divRef(ref, {
+    class: "publishers-content",
+    style: `width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr)); gap: 2rem;`,
+  });
 }
 
 export function ePublisherItem(

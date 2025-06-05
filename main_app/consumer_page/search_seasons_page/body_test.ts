@@ -9,6 +9,7 @@ import {
   SEARCH_SEASONS_REQUEST_BODY,
   SearchSeasonsResponse,
 } from "@phading/product_service_interface/show/web/consumer/interface";
+import { SearchTarget } from "@phading/web_interface/main/consumer/page";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -22,7 +23,7 @@ TEST_RUNNER.run({
   name: "SearchSeasonsPage",
   cases: [
     new (class implements TestCase {
-      public name = "Render_Scroll_Click";
+      public name = "Render_Scroll_Click_Search";
       private cut: SearchSeasonsPage;
       public async execute() {
         // Prepare
@@ -207,10 +208,55 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(showDetailsId, eq("season8"), "showDetailsId");
+
+        // Prepare
+        let searchTarget: SearchTarget;
+        let query: string;
+        this.cut.searchInput.val.on("search", (searchTarget_, query_) => {
+          searchTarget = searchTarget_;
+          query = query_;
+        });
+
+        // Execute
+        this.cut.searchInput.val.emit(
+          "search",
+          SearchTarget.PUBLISHER,
+          "new query",
+        );
+
+        // Verify
+        assertThat(searchTarget, eq(SearchTarget.PUBLISHER), "search target");
+        assertThat(query, eq("new query"), "search query");
       }
       public async tearDown() {
         await mouseMove(-1, -1, 1);
         window.scrollTo(0, 0);
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "EmptyQuery";
+      private cut: SearchSeasonsPage;
+      public async execute() {
+        // Prepare
+        await setTabletView();
+        this.cut = new SearchSeasonsPage(
+          undefined,
+          () => new Date("2024-01-01"),
+          undefined,
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/search_seasons_page_empty_query.png"),
+          path.join(__dirname, "/golden/search_seasons_page_empty_query.png"),
+          path.join(__dirname, "/search_seasons_page_empty_query_diff.png"),
+        );
+      }
+      public tearDown() {
         this.cut.remove();
       }
     })(),

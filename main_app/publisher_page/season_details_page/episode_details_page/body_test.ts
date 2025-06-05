@@ -18,13 +18,10 @@ import { assertThat, eq } from "@selfage/test_matcher";
 
 normalizeBody();
 
-function createEpisodeDetailsPage(
-  episode: EpisodeDetails,
-  nowDate: Date,
-): EpisodeDetailsPage {
+function createEpisodeDetailsPage(nowDate: Date): EpisodeDetailsPage {
   return new EpisodeDetailsPage(
     (seasonId, episodeId) =>
-      new InfoPageMock(episode, () => nowDate, seasonId, episodeId),
+      new InfoPageMock(() => nowDate, seasonId, episodeId),
     (seasonId, episodeId) =>
       new PublishPage(undefined, () => nowDate.getTime(), seasonId, episodeId),
     (seasonId, episodeId, episode) =>
@@ -87,7 +84,7 @@ TEST_RUNNER.run({
         let nowDate = new Date("2023-10-10");
 
         // Execute
-        this.cut = createEpisodeDetailsPage(episode, nowDate);
+        this.cut = createEpisodeDetailsPage(nowDate);
 
         // Verify
         assertThat(
@@ -101,9 +98,9 @@ TEST_RUNNER.run({
           "infoPage.episodeId",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/episode_details_page_draft.png"),
-          path.join(__dirname, "/golden/episode_details_page_draft.png"),
-          path.join(__dirname, "/episode_details_page_draft_diff.png"),
+          path.join(__dirname, "/episode_details_page.png"),
+          path.join(__dirname, "/golden/episode_details_page.png"),
+          path.join(__dirname, "/episode_details_page_diff.png"),
         );
 
         // Execute
@@ -137,7 +134,7 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_update_name_back.png"),
-          path.join(__dirname, "/golden/episode_details_page_draft.png"),
+          path.join(__dirname, "/golden/episode_details_page.png"),
           path.join(
             __dirname,
             "/episode_details_page_update_name_back_diff.png",
@@ -170,7 +167,7 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_publish_back.png"),
-          path.join(__dirname, "/golden/episode_details_page_draft.png"),
+          path.join(__dirname, "/golden/episode_details_page.png"),
           path.join(__dirname, "/episode_details_page_publish_back_diff.png"),
         );
 
@@ -205,7 +202,7 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_upload_back.png"),
-          path.join(__dirname, "/golden/episode_details_page_draft.png"),
+          path.join(__dirname, "/golden/episode_details_page.png"),
           path.join(__dirname, "/episode_details_page_upload_back_diff.png"),
         );
 
@@ -244,7 +241,7 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_update_tracks_back.png"),
-          path.join(__dirname, "/golden/episode_details_page_draft.png"),
+          path.join(__dirname, "/golden/episode_details_page.png"),
           path.join(
             __dirname,
             "/episode_details_page_update_tracks_back_diff.png",
@@ -293,16 +290,7 @@ TEST_RUNNER.run({
           },
         };
         let nowDate = new Date("2023-10-10");
-
-        // Execute
-        this.cut = createEpisodeDetailsPage(episode, nowDate);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/episode_details_page_published.png"),
-          path.join(__dirname, "/golden/episode_details_page_published.png"),
-          path.join(__dirname, "/episode_details_page_published_diff.png"),
-        );
+        this.cut = createEpisodeDetailsPage(nowDate);
 
         // Execute
         this.cut.infoPage.emit("editIndex", episode);
@@ -335,7 +323,7 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_update_index_back.png"),
-          path.join(__dirname, "/golden/episode_details_page_published.png"),
+          path.join(__dirname, "/golden/episode_details_page.png"),
           path.join(
             __dirname,
             "/episode_details_page_update_index_back_diff.png",
@@ -376,7 +364,7 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/episode_details_page_published_page_back.png"),
-          path.join(__dirname, "/golden/episode_details_page_published.png"),
+          path.join(__dirname, "/golden/episode_details_page.png"),
           path.join(
             __dirname,
             "/episode_details_page_published_page_back_diff.png",

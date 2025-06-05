@@ -32,10 +32,8 @@ import { Ref } from "@selfage/ref";
 import { EventEmitter } from "events";
 
 export interface InfoPanel {
-  on(
-    event: "play",
-    listener: (seasonId: string, episodeId: string) => void,
-  ): this;
+  on(event: "showDetails", listener: () => void): this;
+  on(event: "play", listener: (episodeId: string) => void): this;
 }
 
 export class InfoPanel extends EventEmitter {
@@ -60,6 +58,7 @@ export class InfoPanel extends EventEmitter {
   private metering = new Ref<Text>();
   public meteringQuestionMark = new Ref<HTMLDivElement>();
   private meteringExplained = new Ref<HTMLDivElement>();
+  public seasonInfoButton = new Ref<HTMLDivElement>();
   public nextEpisodeButton = new Ref<HTMLDivElement>();
   private nowDate: Date;
 
@@ -81,7 +80,7 @@ export class InfoPanel extends EventEmitter {
       E.div(
         {
           class: "info-panel-episode-name",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};font-weight: ${FONT_WEIGHT_600};`,
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
         },
         E.text(episode.name),
       ),
@@ -133,10 +132,11 @@ export class InfoPanel extends EventEmitter {
       E.div({
         style: `flex: 0 0 auto; height: 2rem;`,
       }),
-      E.div(
+      E.divRef(
+        this.seasonInfoButton,
         {
           class: "info-panel-season-info-row",
-          style: `display: flex; flex-flow: row nowrap; gap: 1rem;`,
+          style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem;`,
         },
         E.div(
           {
@@ -199,28 +199,19 @@ export class InfoPanel extends EventEmitter {
       "click",
       this.showMeteringExplained,
     );
+    this.seasonInfoButton.val.addEventListener("click", () =>
+      this.emit("showDetails"),
+    );
     if (this.nextEpisodeButton.val) {
       this.nextEpisodeButton.val.addEventListener("click", () => {
-        this.emit(
-          "play",
-          this.seasonSummary.seasonId,
-          this.nextEpisode.episodeId,
-        );
+        this.emit("play", this.nextEpisode.episodeId);
       });
     }
   }
 
   private createNextEpisodeElements(): Array<HTMLElement> {
     if (!this.nextEpisode) {
-      return [
-        E.div(
-          {
-            class: "info-panel-next-episode",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(LOCALIZED_TEXT.noNextEpisode),
-        ),
-      ];
+      return [];
     } else {
       let hasPremiered =
         this.nextEpisode.premiereTimeMs <= this.nowDate.getTime();

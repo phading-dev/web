@@ -9,6 +9,7 @@ import {
   SEARCH_PUBLISHERS_REQUEST_BODY,
   SearchPublishersResponse,
 } from "@phading/user_service_interface/web/third_person/interface";
+import { SearchTarget } from "@phading/web_interface/main/consumer/page";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -22,7 +23,7 @@ TEST_RUNNER.run({
   name: "SearchPublishersPage",
   cases: [
     new (class implements TestCase {
-      public name = "Render_Scroll_Click";
+      public name = "Render_Scroll_Click_Search";
       private cut: SearchPublishersPage;
       public async execute() {
         // Prepare
@@ -192,10 +193,29 @@ TEST_RUNNER.run({
         });
 
         // Execute
-        await mouseClick(100, 50);
+        await mouseClick(100, 180);
 
         // Verify
         assertThat(showroomId, eq("account1"), "showroom id");
+
+        // Prepare
+        let searchTarget: SearchTarget;
+        let query: string;
+        this.cut.searchInput.val.on("search", (searchTarget_, query_) => {
+          searchTarget = searchTarget_;
+          query = query_;
+        });
+
+        // Execute
+        this.cut.searchInput.val.emit(
+          "search",
+          SearchTarget.SEASON,
+          "new query",
+        );
+
+        // Verify
+        assertThat(searchTarget, eq(SearchTarget.SEASON), "search target");
+        assertThat(query, eq("new query"), "search query");
       }
       public async tearDown() {
         await mouseMove(-1, -1, 1);

@@ -31,7 +31,16 @@ class SearchInputTestCase implements TestCase {
   ) {}
   public async execute() {
     // Prepare
-    let cut = SearchPage.create(this.initSeasonState, this.initQuery);
+    let serviceClientMock = new WebServiceClientMock();
+    serviceClientMock.response = {
+      seasons: [],
+    } as SearchSeasonsResponse;
+    let cut = new SearchPage(
+      serviceClientMock,
+      () => new Date("2024-12-23T12:00:00Z"),
+      this.initSeasonState,
+      this.initQuery,
+    );
     let seasonState: SeasonState;
     let query: string;
     cut.on("searchSeasons", (seasonState_, query_) => {

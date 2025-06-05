@@ -2,13 +2,15 @@ import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
+  eContainerTitle,
   eFullItemsPage,
   eSeasonItem,
-  eSeasonItemContainer,
+  eSeasonItemContainerRef,
 } from "../common/elements";
 import { newListFromWatchLaterListRequest } from "@phading/play_activity_service_interface/show/web/client";
 import { newGetSeasonSummaryRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { SeasonSummary } from "@phading/product_service_interface/show/web/consumer/info";
+import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
@@ -36,10 +38,11 @@ export class WatchLaterPage extends EventEmitter {
   ) {
     super();
     this.body = eFullItemsPage(
-      eSeasonItemContainer(
-        LOCALIZED_TEXT.watchLaterTitle,
-        this.contentContainer,
-      ),
+      eContainerTitle(LOCALIZED_TEXT.watchLaterTitle),
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+      eSeasonItemContainerRef(this.contentContainer),
       assign(this.loadingSection, new ScrollLoadingSection()).body,
     );
     this.loadingSection.val.addLoadAction(() => this.load());

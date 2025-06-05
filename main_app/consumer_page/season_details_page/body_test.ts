@@ -74,7 +74,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "FirstTimeWatchingASeasonWithTwoEpisodes_Desktop_Tablet_Phone_PlayContinueEpisode_RateAndUnratingAllStars_WaterLaterAndUndo_CopyShareLink_PublisherShowroom_PlayEpisode1_PlayEpisode2";
+        "FirstTimeWatchingASeasonWithTwoEpisodes_Desktop_Tablet_Phone_PlayContinueEpisode_RateAndUnratingAllStars_WaterLaterAndUndo_CopyShareLink_Showroom_PlayEpisode1_PlayEpisode2_Back";
       private cut: SeasonDetailsPage;
       public async execute() {
         // Prepare
@@ -295,7 +295,7 @@ TEST_RUNNER.run({
           playEpisodeId = episodeId;
         });
         let publisherId: string;
-        this.cut.on("publisherShowroom", (id) => {
+        this.cut.on("showroom", (id) => {
           publisherId = id;
         });
 
@@ -964,6 +964,16 @@ TEST_RUNNER.run({
         // Verify
         assertThat(playSeasonId, eq("season1"), "Play seasonId 2");
         assertThat(playEpisodeId, eq("episode2"), "Play episodeId 2");
+
+        // Prepare
+        let back = false;
+        this.cut.on("back", () => back = true);
+
+        // Execute
+        this.cut.backButton.val.click();
+
+        // Verify
+        assertThat(back, eq(true), "Back");
       }
       public tearDown() {
         window.scrollTo(0, 0);

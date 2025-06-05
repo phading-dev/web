@@ -1,5 +1,4 @@
 import "../../dev/env";
-import coverImage = require("./common/test_data/cover_tall.jpg");
 import path = require("path");
 import { normalizeBody } from "../../common/normalize_body";
 import { setTabletView } from "../../common/view_port";
@@ -9,8 +8,6 @@ import { ListPageMock } from "./list_page/body_mock";
 import { SearchPageMock } from "./search_page/body_mock";
 import { SeasonDetailsPageMock } from "./season_details_page/body_mock";
 import { SeasonState } from "@phading/product_service_interface/show/season_state";
-import { SeasonDetails } from "@phading/product_service_interface/show/web/publisher/details";
-import { SeasonSummary } from "@phading/product_service_interface/show/web/publisher/summary";
 import {
   PUBLISHER_PAGE,
   PublisherPage as PublisherPageUrl,
@@ -22,45 +19,15 @@ import { assertThat, eq } from "@selfage/test_matcher";
 
 normalizeBody();
 
-let SEASONS: Array<SeasonSummary> = [
-  {
-    seasonId: "season1",
-    name: "Re-Zero: Starting Life in Another World Season 1",
-    coverImageUrl: coverImage,
-    totalPublishedEpisodes: 25,
-    averageRating: 4.52,
-    ratingsCount: 12345,
-    lastChangeTimeMs: new Date("2024-12-23T12:00:00Z").getTime(),
-    grade: 1800,
-  },
-];
-let SEASON_DETAILS: SeasonDetails = {
-  name: "Re-Zero: Starting Life in Another World Season 1",
-  description: "",
-  state: SeasonState.DRAFT,
-  grade: 1,
-  nextGrade: {
-    grade: 2,
-  },
-  totalPublishedEpisodes: 0,
-  lastChangeTimeMs: new Date("2024-12-01T18:00:00Z").getTime(),
-  createdTimeMs: new Date("2024-01-01T12:00:00Z").getTime(),
-};
-
 function createPublisherPage(): PublisherPage {
   let nowDate = new Date("2023-10-10T00:00:00Z");
   return new PublisherPage(
     () => new CreateSeasonPage(undefined),
-    (seasonState) => new ListPageMock(SEASONS, () => nowDate, seasonState),
+    (seasonState) => new ListPageMock(() => nowDate, seasonState),
     (seasonState, query) =>
-      new SearchPageMock(SEASONS, () => nowDate, seasonState, query),
+      new SearchPageMock(() => nowDate, seasonState, query),
     (appendBodies, seasonId) =>
-      new SeasonDetailsPageMock(
-        SEASON_DETAILS,
-        () => nowDate,
-        appendBodies,
-        seasonId,
-      ),
+      new SeasonDetailsPageMock(() => nowDate, appendBodies, seasonId),
     (...bodies) => document.body.append(...bodies),
   );
 }
@@ -392,26 +359,6 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_InvalidSeasonDetails";
-      private cut: PublisherPage;
-      public async execute() {
-        // Prepare
-        await setTabletView();
-        this.cut = createPublisherPage();
-
-        // Execute
-        this.cut.applyUrl({
-          seasonDetails: {},
-        });
-
-        // Verify
-        assertThat(Boolean(this.cut.listPage), eq(true), "listPage");
-      }
-      public tearDown() {
-        this.cut.remove();
-      }
-    })(),
-    new (class implements TestCase {
       public name =
         "ApplyUrl_ListPage_SameStateSamePage_DifferentStateDifferentPage";
       private cut: PublisherPage;
@@ -578,7 +525,7 @@ TEST_RUNNER.run({
         this.cut.applyUrl({
           seasonDetails: {
             seasonId: "season1",
-          }
+          },
         });
 
         // Verify

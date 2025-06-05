@@ -23,6 +23,10 @@ import {
 } from "../../../common/formatter/rating";
 import { formatSecondsAsHHMMSS } from "../../../common/formatter/timestamp";
 import {
+  SimpleIconButton,
+  createBackButton,
+} from "../../../common/icon_button";
+import {
   createBookmarkIcon,
   createCheckmarkIcon,
   createCircularProgressIcon,
@@ -46,6 +50,7 @@ import {
   FONT_L,
   FONT_M,
   FONT_WEIGHT_600,
+  ICON_BUTTON_L,
   ICON_BUTTON_M,
   ICON_L,
   ICON_M,
@@ -84,11 +89,12 @@ import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
 
 export interface SeasonDetailsPage {
+  on(event: "back", listener: () => void): this;
   on(
     event: "play",
     listener: (seasonId: string, episodeId: string) => void,
   ): this;
-  on(event: "publisherShowroom", listener: (publisherId: string) => void): this;
+  on(event: "showroom", listener: (publisherId: string) => void): this;
   on(event: "gotContinueTime", listener: () => void): this;
   on(event: "loaded", listener: () => void): this;
   on(event: "rated", listener: () => void): this;
@@ -109,6 +115,7 @@ export class SeasonDetailsPage extends EventEmitter {
   private static MAX_DAYS_TO_SHOW_INCREASED_PRICE = 10;
 
   public body: HTMLDivElement;
+  public backButton = new Ref<SimpleIconButton>();
   public continueEpisodeButton = new Ref<HTMLDivElement>();
   public ratingOneStarButton = new Ref<HTMLDivElement>();
   public ratingTwoStarButton = new Ref<HTMLDivElement>();
@@ -134,7 +141,7 @@ export class SeasonDetailsPage extends EventEmitter {
   public constructor(
     private serviceClient: WebServiceClient,
     private getNowDate: () => Date,
-    private seasonId: string,
+    public seasonId: string,
   ) {
     super();
     this.body = E.div({
@@ -203,8 +210,9 @@ export class SeasonDetailsPage extends EventEmitter {
       E.div(
         {
           class: "season-details-card",
-          style: `${PAGE_EX_LARGE_TOP_DOWN_CARD_STYLE} padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem; display: flex; flex-flow: column nowrap;`,
+          style: `${PAGE_EX_LARGE_TOP_DOWN_CARD_STYLE} padding: ${ICON_BUTTON_L + 1}rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem; display: flex; flex-flow: column nowrap;`,
         },
+        assign(this.backButton, createBackButton()).body,
         E.div(
           {
             class: "season-details-info",
@@ -530,6 +538,8 @@ export class SeasonDetailsPage extends EventEmitter {
         ),
       ),
     );
+    this.backButton.val.on("action", () => this.emit("back"));
+
     this.setIndividualRating(individualRatingResponse.rating);
     if (checkInWatchLaterListResponse.isIn) {
       this.watchLaterButton.val.hide();
@@ -572,7 +582,7 @@ export class SeasonDetailsPage extends EventEmitter {
     );
     this.shareButton.val.addEventListener("click", () => this.copyShareLink());
     this.publisherButton.val.addEventListener("click", () =>
-      this.emit("publisherShowroom", publisher.accountId),
+      this.emit("showroom", publisher.accountId),
     );
     this.showMoreDescriptionButton.val.addEventListener("click", () =>
       this.showMoreDescription(),

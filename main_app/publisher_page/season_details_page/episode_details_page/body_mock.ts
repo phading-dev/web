@@ -1,11 +1,9 @@
 import { AddBodiesFn } from "../../../../common/add_bodies_fn";
 import { EpisodeDetailsPage } from "./body";
 import { InfoPageMock } from "./info_page/body_mock";
-import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
 
 export class EpisodeDetailsPageMock extends EpisodeDetailsPage {
   public constructor(
-    episode: EpisodeDetails,
     getNowDate: () => Date,
     appendBodies: AddBodiesFn,
     seasonId: string,
@@ -13,7 +11,7 @@ export class EpisodeDetailsPageMock extends EpisodeDetailsPage {
   ) {
     super(
       (seasonId, episodeId) =>
-        new InfoPageMock(episode, getNowDate, seasonId, episodeId),
+        new InfoPageMock(getNowDate, seasonId, episodeId),
       undefined,
       undefined,
       undefined,

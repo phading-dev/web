@@ -16,7 +16,7 @@ TEST_RUNNER.run({
   name: "InfoPanelTest",
   cases: [
     new (class implements TestCase {
-      public name = "FirstTimeWatching";
+      public name = "FirstTimeWatching_PlayNextEpisode_ShowSeason";
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
@@ -113,10 +113,8 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let playSeasonId: string;
         let playEpisodeId: string;
-        cut.on("play", (seasonId, episodeId) => {
-          playSeasonId = seasonId;
+        cut.on("play", (episodeId) => {
           playEpisodeId = episodeId;
         });
 
@@ -124,8 +122,19 @@ TEST_RUNNER.run({
         cut.nextEpisodeButton.val.click();
 
         // Verify
-        assertThat(playSeasonId, eq("season1"), "play season id");
         assertThat(playEpisodeId, eq("episode2"), "play episode id");
+
+        // Prepare
+        let showDetails = false;
+        cut.on("showDetails", () => {
+          showDetails = true;
+        });
+
+        // Execute
+        cut.seasonInfoButton.val.click();
+
+        // Verify
+        assertThat(showDetails, eq(true), "show details");
       }
       public tearDown() {
         this.container.remove();

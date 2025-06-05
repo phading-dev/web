@@ -52,7 +52,7 @@ export function ePublishedSeasonItem(
   return E.div(
     {
       class: "published-season-item",
-      style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; customStyle}`,
+      style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customStyle}`,
     },
     E.div(
       {

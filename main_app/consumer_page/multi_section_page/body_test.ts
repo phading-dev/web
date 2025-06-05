@@ -11,8 +11,10 @@ import {
 import { MultiSectionPage } from "./body";
 import {
   LIST_CONTINUE_WATCHING_SEASONS,
+  LIST_SEASONS_BY_RATING,
   LIST_SEASONS_BY_RECENT_PREMIERE_TIME,
   ListContinueWatchingSeasonsResponse,
+  ListSeasonsByRatingResponse,
   ListSeasonsByRecentPremiereTimeResponse,
 } from "@phading/product_service_interface/show/web/consumer/interface";
 import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";
@@ -40,8 +42,8 @@ TEST_RUNNER.run({
             options?: WebClientOptions,
           ): Promise<any> {
             switch (request.descriptor) {
-              case LIST_CONTINUE_WATCHING_SEASONS:
-                return {
+              case LIST_CONTINUE_WATCHING_SEASONS: {
+                let response: ListContinueWatchingSeasonsResponse = {
                   continues: [
                     {
                       season: {
@@ -60,9 +62,11 @@ TEST_RUNNER.run({
                       continueTimeMs: 134000,
                     },
                   ],
-                } as ListContinueWatchingSeasonsResponse;
-              case LIST_SEASONS_BY_RECENT_PREMIERE_TIME:
-                return {
+                };
+                return response;
+              }
+              case LIST_SEASONS_BY_RECENT_PREMIERE_TIME: {
+                let response: ListSeasonsByRecentPremiereTimeResponse = {
                   seasons: [
                     {
                       seasonId: "season2",
@@ -73,7 +77,24 @@ TEST_RUNNER.run({
                       averageRating: 4.5,
                     },
                   ],
-                } as ListSeasonsByRecentPremiereTimeResponse;
+                };
+                return response;
+              }
+              case LIST_SEASONS_BY_RATING: {
+                let response: ListSeasonsByRatingResponse = {
+                  seasons: [
+                    {
+                      seasonId: "season3",
+                      name: "My Hero Academia",
+                      coverImageUrl: coverImage,
+                      grade: 120,
+                      ratingsCount: 4567,
+                      averageRating: 4.8,
+                    },
+                  ],
+                };
+                return response;
+              }
             }
           }
         })();
@@ -144,7 +165,7 @@ TEST_RUNNER.run({
       }
       public async tearDown() {
         await mouseMove(-1, -1, 1);
-        this.cut.body.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
@@ -159,8 +180,8 @@ TEST_RUNNER.run({
             options?: WebClientOptions,
           ): Promise<any> {
             switch (request.descriptor) {
-              case LIST_CONTINUE_WATCHING_SEASONS:
-                return {
+              case LIST_CONTINUE_WATCHING_SEASONS: {
+                let response: ListContinueWatchingSeasonsResponse = {
                   continues: [
                     {
                       season: {
@@ -228,9 +249,11 @@ TEST_RUNNER.run({
                       continueTimeMs: 30000,
                     },
                   ],
-                } as ListContinueWatchingSeasonsResponse;
-              case LIST_SEASONS_BY_RECENT_PREMIERE_TIME:
-                return {
+                };
+                return response;
+              }
+              case LIST_SEASONS_BY_RECENT_PREMIERE_TIME: {
+                let response: ListSeasonsByRecentPremiereTimeResponse = {
                   seasons: [
                     {
                       seasonId: "season2",
@@ -257,7 +280,40 @@ TEST_RUNNER.run({
                       averageRating: 4.9,
                     },
                   ],
-                } as ListSeasonsByRecentPremiereTimeResponse;
+                };
+                return response;
+              }
+              case LIST_SEASONS_BY_RATING: {
+                let response: ListSeasonsByRatingResponse = {
+                  seasons: [
+                    {
+                      seasonId: "season5",
+                      name: "Jujutsu Kaisen",
+                      coverImageUrl: coverImage,
+                      grade: 150,
+                      ratingsCount: 5678,
+                      averageRating: 4.6,
+                    },
+                    {
+                      seasonId: "season6",
+                      name: "Tokyo Revengers",
+                      coverImageUrl: coverImage2,
+                      grade: 130,
+                      ratingsCount: 3456,
+                      averageRating: 4.7,
+                    },
+                    {
+                      seasonId: "season7",
+                      name: "Demon Slayer",
+                      coverImageUrl: coverImage2,
+                      grade: 100,
+                      ratingsCount: 2345,
+                      averageRating: 4.9,
+                    },
+                  ],
+                };
+                return response;
+              }
             }
           }
         })();
@@ -339,7 +395,7 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        this.cut.body.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
@@ -354,12 +410,14 @@ TEST_RUNNER.run({
             options?: WebClientOptions,
           ): Promise<any> {
             switch (request.descriptor) {
-              case LIST_CONTINUE_WATCHING_SEASONS:
-                return {
+              case LIST_CONTINUE_WATCHING_SEASONS: {
+                let response: ListContinueWatchingSeasonsResponse = {
                   continues: [],
-                } as ListContinueWatchingSeasonsResponse;
-              case LIST_SEASONS_BY_RECENT_PREMIERE_TIME:
-                return {
+                };
+                return response;
+              }
+              case LIST_SEASONS_BY_RECENT_PREMIERE_TIME: {
+                let response: ListSeasonsByRecentPremiereTimeResponse = {
                   seasons: [
                     {
                       seasonId: "season2",
@@ -370,7 +428,24 @@ TEST_RUNNER.run({
                       averageRating: 4.5,
                     },
                   ],
-                } as ListSeasonsByRecentPremiereTimeResponse;
+                };
+                return response;
+              }
+              case LIST_SEASONS_BY_RATING: {
+                let response: ListSeasonsByRatingResponse = {
+                  seasons: [
+                    {
+                      seasonId: "season3",
+                      name: "My Hero Academia",
+                      coverImageUrl: coverImage,
+                      grade: 120,
+                      ratingsCount: 4567,
+                      averageRating: 4.8,
+                    },
+                  ],
+                };
+                return response;
+              }
             }
           }
         })();
@@ -393,7 +468,7 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        this.cut.body.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
@@ -407,8 +482,8 @@ TEST_RUNNER.run({
             options?: WebClientOptions,
           ): Promise<any> {
             switch (request.descriptor) {
-              case LIST_CONTINUE_WATCHING_SEASONS:
-                return {
+              case LIST_CONTINUE_WATCHING_SEASONS: {
+                let response: ListContinueWatchingSeasonsResponse = {
                   continues: [
                     {
                       season: {
@@ -427,11 +502,21 @@ TEST_RUNNER.run({
                       continueTimeMs: 134000,
                     },
                   ],
-                } as ListContinueWatchingSeasonsResponse;
-              case LIST_SEASONS_BY_RECENT_PREMIERE_TIME:
-                return {
+                };
+                return response;
+              }
+              case LIST_SEASONS_BY_RECENT_PREMIERE_TIME: {
+                let response: ListSeasonsByRecentPremiereTimeResponse = {
                   seasons: [],
-                } as ListSeasonsByRecentPremiereTimeResponse;
+                };
+                return response;
+              }
+              case LIST_SEASONS_BY_RATING: {
+                let response: ListSeasonsByRatingResponse = {
+                  seasons: [],
+                };
+                return response;
+              }
             }
           }
         })();
@@ -448,13 +533,9 @@ TEST_RUNNER.run({
         this.cut.on("listWatchHistory", () => {
           listWatchHistory = true;
         });
-        let listRecentPremieres = false;
-        this.cut.on("listRecentPremieres", () => {
-          listRecentPremieres = true;
-        });
 
         // Execute
-        this.cut.continueWatchingViewMore.val.click();
+        this.cut.continueWatchingButton.val.click();
 
         // Verify
         assertThat(
@@ -463,8 +544,14 @@ TEST_RUNNER.run({
           "listWatchHistory should be emitted",
         );
 
+        // Prepare
+        let listRecentPremieres = false;
+        this.cut.on("listRecentPremieres", () => {
+          listRecentPremieres = true;
+        });
+
         // Execute
-        this.cut.recentPremieresViewMore.val.click();
+        this.cut.recentPremieresButton.val.click();
 
         // Verify
         assertThat(
@@ -472,10 +559,22 @@ TEST_RUNNER.run({
           eq(true),
           "listRecentPremieres should be emitted",
         );
+
+        // Prepare
+        let listTopRated = false;
+        this.cut.on("listTopRated", () => {
+          listTopRated = true;
+        });
+
+        // Execute
+        this.cut.topRatedButton.val.click();
+
+        // Verify
+        assertThat(listTopRated, eq(true), "listTopRated should be emitted");
       }
       public tearDown() {
         window.scrollTo(0, 0);
-        this.cut.body.remove();
+        this.cut.remove();
       }
     })(),
   ],

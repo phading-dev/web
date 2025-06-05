@@ -1,17 +1,17 @@
 import EventEmitter = require("events");
-import { CLICKABLE_TEXT_STYLE } from "../../../common/button_styles";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { FONT_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
+  eContainerTitleClickableRef,
   eContinueEpisodeItem,
-  eContinueEpisodeItemContainer,
+  eContinueEpisodeItemContainerRef,
   eFullItemsPage,
   eSeasonItem,
-  eSeasonItemContainer,
+  eSeasonItemContainerRef,
 } from "../common/elements";
 import {
   newListContinueWatchingSeasonsRequest,
+  newListSeasonsByRatingRequest,
   newListSeasonsByRecentPremiereTimeRequest,
 } from "@phading/product_service_interface/show/web/consumer/client";
 import { E } from "@selfage/element/factory";
@@ -26,6 +26,7 @@ export interface MultiSectionPage {
   on(event: "showDetails", listener: (seasonId: string) => void): this;
   on(event: "listWatchHistory", listener: () => void): this;
   on(event: "listRecentPremieres", listener: () => void): this;
+  on(event: "listTopRated", listener: () => void): this;
   on(event: "loaded", listener: () => void): this;
 }
 
@@ -37,8 +38,9 @@ export class MultiSectionPage extends EventEmitter {
   private static LIMIT = 10;
 
   public body: HTMLDivElement;
-  public continueWatchingViewMore = new Ref<HTMLDivElement>();
-  public recentPremieresViewMore = new Ref<HTMLDivElement>();
+  public continueWatchingButton = new Ref<HTMLDivElement>();
+  public recentPremieresButton = new Ref<HTMLDivElement>();
+  public topRatedButton = new Ref<HTMLDivElement>();
 
   public constructor(
     private serviceClient: WebServiceClient,
@@ -50,52 +52,67 @@ export class MultiSectionPage extends EventEmitter {
   }
 
   private async load() {
-    let [continueWatchingSeasonsResponse, recentPremiereSeasonsResponse] =
-      await Promise.all([
-        this.serviceClient.send(
-          newListContinueWatchingSeasonsRequest({
-            limit: MultiSectionPage.LIMIT,
-          }),
-        ),
-        this.serviceClient.send(
-          newListSeasonsByRecentPremiereTimeRequest({
-            limit: MultiSectionPage.LIMIT,
-          }),
-        ),
-      ]);
-    let episodeContent = new Ref<HTMLDivElement>();
-    let seasonContent = new Ref<HTMLDivElement>();
+    let [
+      continueWatchingSeasonsResponse,
+      recentPremiereSeasonsResponse,
+      topRatedSeasonsResponse,
+    ] = await Promise.all([
+      this.serviceClient.send(
+        newListContinueWatchingSeasonsRequest({
+          limit: MultiSectionPage.LIMIT,
+        }),
+      ),
+      this.serviceClient.send(
+        newListSeasonsByRecentPremiereTimeRequest({
+          limit: MultiSectionPage.LIMIT,
+        }),
+      ),
+      this.serviceClient.send(
+        newListSeasonsByRatingRequest({
+          limit: MultiSectionPage.LIMIT,
+        }),
+      ),
+    ]);
+    let continueWatchingContent = new Ref<HTMLDivElement>();
+    let recentPremieresContent = new Ref<HTMLDivElement>();
+    let topRatedContent = new Ref<HTMLDivElement>();
     this.body.append(
       ...(continueWatchingSeasonsResponse.continues.length > 0
         ? [
-            eContinueEpisodeItemContainer(
+            eContainerTitleClickableRef(
+              this.continueWatchingButton,
               LOCALIZED_TEXT.continueWatchingTitle,
-              episodeContent,
-              E.divRef(
-                this.continueWatchingViewMore,
-                {
-                  class: "multi-section-continue-watching-view-history",
-                  style: `${CLICKABLE_TEXT_STYLE} font-size: ${FONT_M}rem; align-self: flex-end;`,
-                },
-                E.text(LOCALIZED_TEXT.viewHistoryLink),
-              ),
             ),
+            E.div({
+              style: `flex: 0 0 auto; height: 1rem;`,
+            }),
+            eContinueEpisodeItemContainerRef(continueWatchingContent),
+            E.div({
+              style: `flex: 0 0 auto; height: 2rem;`,
+            }),
           ]
         : []),
-      eSeasonItemContainer(
+      eContainerTitleClickableRef(
+        this.recentPremieresButton,
         LOCALIZED_TEXT.recentPremieresTitle,
-        seasonContent,
-        E.divRef(
-          this.recentPremieresViewMore,
-          {
-            class: "multi-section-recent-premiere-view-more",
-            style: `${CLICKABLE_TEXT_STYLE} font-size: ${FONT_M}rem; align-self: flex-end;`,
-          },
-          E.text(LOCALIZED_TEXT.viewMoreLink),
-        ),
       ),
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+      eSeasonItemContainerRef(recentPremieresContent),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      eContainerTitleClickableRef(
+        this.topRatedButton,
+        LOCALIZED_TEXT.topRatedTitle,
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+      eSeasonItemContainerRef(topRatedContent),
     );
-    if (episodeContent.val) {
+    if (continueWatchingContent.val) {
       for (
         let i = 0;
         i < continueWatchingSeasonsResponse.continues.length && i < 3;
@@ -114,7 +131,7 @@ export class MultiSectionPage extends EventEmitter {
             continueSummary.episode.episodeId,
           );
         });
-        episodeContent.val.append(item);
+        continueWatchingContent.val.append(item);
       }
     }
     recentPremiereSeasonsResponse.seasons.forEach((season) => {
@@ -122,17 +139,29 @@ export class MultiSectionPage extends EventEmitter {
       item.addEventListener("click", () => {
         this.emit("showDetails", season.seasonId);
       });
-      seasonContent.val.append(item);
+      recentPremieresContent.val.append(item);
+    });
+    topRatedSeasonsResponse.seasons.forEach((season) => {
+      let item = eSeasonItem(season, this.getNowDate());
+      item.addEventListener("click", () => {
+        this.emit("showDetails", season.seasonId);
+      });
+      topRatedContent.val.append(item);
     });
 
-    if (this.continueWatchingViewMore.val) {
-      this.continueWatchingViewMore.val.addEventListener("click", () => {
-        this.emit("listWatchHistory");
-      });
-    }
-    this.recentPremieresViewMore.val.addEventListener("click", () => {
+    this.continueWatchingButton.val?.addEventListener("click", () => {
+      this.emit("listWatchHistory");
+    });
+    this.recentPremieresButton.val.addEventListener("click", () => {
       this.emit("listRecentPremieres");
     });
+    this.topRatedButton.val.addEventListener("click", () => {
+      this.emit("listTopRated");
+    });
     this.emit("loaded");
+  }
+
+  public remove(): void {
+    this.body.remove();
   }
 }

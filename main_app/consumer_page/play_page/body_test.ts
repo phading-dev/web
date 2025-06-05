@@ -278,13 +278,12 @@ function createPlayPage(
   return new PlayPage(
     window,
     serviceClientMock,
-    (settings, videoUrl, continueTimestampMs, seasonId, nextEpisodeId) =>
+    (settings, videoUrl, continueTimestampMs, nextEpisodeId) =>
       new Player(
         window,
         settings,
         videoUrl,
         continueTimestampMs,
-        seasonId,
         nextEpisodeId,
         false,
       ),
@@ -1653,7 +1652,7 @@ TEST_RUNNER.run({
     })(),
     new (class {
       public name =
-        "Back_PlayNext_GoFullscreen_ExitFullscreen_UpdateVolumeSaveSettings";
+        "PlayNext_ShowSeasonDetails_GoFullscreen_ExitFullscreen_UpdateVolumeSaveSettings";
       private cut: PlayPage;
       public async execute() {
         // Prepare
@@ -1669,18 +1668,6 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) =>
           this.cut.player.val.once("metadataLoaded", resolve),
         );
-        let back = false;
-        this.cut.on("back", () => {
-          back = true;
-        });
-
-        // Execute
-        this.cut.player.val.backButton.val.click();
-
-        // Verify
-        assertThat(back, eq(true), "Go back");
-
-        // Prepare
         let playSeasonId: string;
         let playEpisodeId: string;
         this.cut.on("play", (seasonId, episodeId) => {
@@ -1705,6 +1692,35 @@ TEST_RUNNER.run({
         // Verify
         assertThat(playSeasonId, eq("season1"), "Play next season id 2");
         assertThat(playEpisodeId, eq("episode2"), "Play next episode id 2");
+
+        // Prepare
+        let showDetailsSeasonId: string;
+        this.cut.on("showDetails", (seasonId) => {
+          showDetailsSeasonId = seasonId;
+        });
+
+        // Execute
+        this.cut.player.val.backButton.val.click();
+
+        // Verify
+        assertThat(
+          showDetailsSeasonId,
+          eq("season1"),
+          "show details season id when back",
+        );
+
+        // Prepare
+        showDetailsSeasonId = undefined;
+
+        // Execute
+        this.cut.infoPanel.val.seasonInfoButton.val.click();
+
+        // Verify
+        assertThat(
+          showDetailsSeasonId,
+          eq("season1"),
+          "show details season id",
+        );
 
         // Execute
         this.cut.player.val.fullscreenButton.val.click();

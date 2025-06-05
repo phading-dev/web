@@ -137,9 +137,6 @@ export class PublisherPage extends EventEmitter {
     if (newUrl.search && !newUrl.search.seasonState) {
       newUrl.search = undefined;
     }
-    if (newUrl.seasonDetails && !newUrl.seasonDetails.seasonId) {
-      newUrl.seasonDetails = undefined;
-    }
     if (
       !newUrl.create &&
       !newUrl.list &&

@@ -58,7 +58,6 @@ TEST_RUNNER.run({
           settings,
           videoOnlyUrl,
           0,
-          "season1",
           undefined,
           false,
         );
@@ -285,7 +284,6 @@ TEST_RUNNER.run({
           settings,
           videoOnlyUrl,
           1000,
-          "season1",
           undefined,
           false,
         );
@@ -394,7 +392,6 @@ TEST_RUNNER.run({
           settings,
           videoOnlyUrl,
           0,
-          "season1",
           undefined,
           false,
         );
@@ -492,7 +489,6 @@ TEST_RUNNER.run({
           settings,
           videoOnlyUrl,
           0,
-          "season1",
           undefined,
           false,
         );
@@ -567,7 +563,6 @@ TEST_RUNNER.run({
           settings,
           videoOnlyUrl,
           0,
-          "season1",
           undefined,
           false,
         );
@@ -700,7 +695,6 @@ TEST_RUNNER.run({
           settings,
           videoOnlyUrl,
           0,
-          "season1",
           undefined,
           false,
         );
@@ -853,7 +847,6 @@ TEST_RUNNER.run({
           settings,
           videoOnlyUrl,
           0,
-          "season1",
           "episode2",
           false,
         );
@@ -874,10 +867,8 @@ TEST_RUNNER.run({
         assertThat(back, eq(true), "back");
 
         // Prepare
-        let playNextSeasonId: string;
         let playNextEpisodeId: string;
-        this.cut.on("play", (seasonId, episodeId) => {
-          playNextSeasonId = seasonId;
+        this.cut.on("play", (episodeId) => {
           playNextEpisodeId = episodeId;
         });
 
@@ -885,7 +876,6 @@ TEST_RUNNER.run({
         this.cut.playNextButton.val.click();
 
         // Verify
-        assertThat(playNextSeasonId, eq("season1"), "play next season");
         assertThat(playNextEpisodeId, eq("episode2"), "play next episode");
 
         // Prepare
@@ -987,7 +977,6 @@ TEST_RUNNER.run({
           settings,
           videoOnlyUrl,
           0,
-          "season1",
           undefined,
           false,
         );
@@ -1036,15 +1025,7 @@ TEST_RUNNER.run({
         let settings: VideoSettings = JSON.parse(
           JSON.stringify(SETTINGS),
         ) as VideoSettings;
-        this.cut = new Player(
-          window,
-          settings,
-          oneAudio,
-          0,
-          "season1",
-          undefined,
-          false,
-        );
+        this.cut = new Player(window, settings, oneAudio, 0, undefined, false);
         this.container.append(...this.cut.elements);
 
         let audioTracks: Array<string>;
@@ -1095,7 +1076,6 @@ TEST_RUNNER.run({
           settings,
           oneAudioOneSubtitle,
           0,
-          "season1",
           undefined,
           false,
         );
@@ -1156,7 +1136,6 @@ TEST_RUNNER.run({
           settings,
           oneAudioOneSubtitle,
           0,
-          "season1",
           undefined,
           false,
         );
@@ -1228,7 +1207,6 @@ TEST_RUNNER.run({
           settings,
           twoAudiosTwoSubtitles,
           0,
-          "season1",
           undefined,
           false,
         );
@@ -1305,7 +1283,6 @@ TEST_RUNNER.run({
           settings,
           videoOnlyUrl,
           0,
-          "season1",
           undefined,
           false,
         );

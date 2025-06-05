@@ -12,12 +12,9 @@ import { UpdateCoverImagePage } from "./update_cover_image_page/body";
 import { UpdateDraftPricingPage } from "./update_draft_pricing_page/body";
 import { UpdateInfoPage } from "./update_info_page/body";
 import { UpdatePublishedPricingPage } from "./update_published_pricing_page/body";
-import { EpisodeState } from "@phading/product_service_interface/show/episode_state";
+import { MAX_COVER_IMAGE_BUFFER_SIZE } from "@phading/constants/show";
 import { SeasonState } from "@phading/product_service_interface/show/season_state";
-import {
-  EpisodeDetails,
-  SeasonDetails,
-} from "@phading/product_service_interface/show/web/publisher/details";
+import { SeasonDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -45,29 +42,18 @@ TEST_RUNNER.run({
           lastChangeTimeMs: new Date("2024-12-01T18:00:00Z").getTime(),
           createdTimeMs: new Date("2024-01-01T12:00:00Z").getTime(),
         };
-        let episode: EpisodeDetails = {
-          seasonName: "Re-Zero: Starting Life in Another World",
-          episodeName: "The End of the Beginning and the Beginning of the End",
-          state: EpisodeState.DRAFT,
-          videoContainer: {
-            masterPlaylist: {
-              synced: {
-                version: 1,
-              },
-            },
-            videos: [],
-            audios: [],
-            subtitles: [],
-          },
-        };
         let nowDate = new Date("2023-10-10T00:00:00Z");
 
         // Execute
         this.cut = new SeasonDetailsPage(
-          (seasonId) =>
-            new InfoPageMock(seasonDetails, () => nowDate, seasonId),
+          (seasonId) => new InfoPageMock(() => nowDate, seasonId),
           (seasonId, season) =>
-            new UpdateCoverImagePage(undefined, seasonId, season),
+            new UpdateCoverImagePage(
+              undefined,
+              MAX_COVER_IMAGE_BUFFER_SIZE,
+              seasonId,
+              season,
+            ),
           (seasonId, season) => new UpdateInfoPage(undefined, seasonId, season),
           (seasonId, grade) =>
             new UpdateDraftPricingPage(
@@ -89,7 +75,6 @@ TEST_RUNNER.run({
           (seasonId) => new CreateEpisodePage(undefined, seasonId),
           (appendBodes, seasonId, episodeId) =>
             new EpisodeDetailsPageMock(
-              episode,
               () => nowDate,
               appendBodes,
               seasonId,

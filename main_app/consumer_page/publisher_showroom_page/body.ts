@@ -2,13 +2,15 @@ import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
+  eContainerTitle,
   eFullItemsPage,
   ePublisherContextItem,
   eSeasonItem,
-  eSeasonItemContainer,
+  eSeasonItemContainerRef,
 } from "../common/elements";
 import { newListSeasonsByRecentPremiereTimeAndPublisherRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { newGetAccountDetailsRequest } from "@phading/user_service_interface/web/third_person/client";
+import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
@@ -38,7 +40,7 @@ export class PublisherShowroomPage extends EventEmitter {
   public constructor(
     private serviceClient: WebServiceClient,
     private getNowDate: () => Date,
-    private accountId: string,
+    public accountId: string,
   ) {
     super();
     this.body = eFullItemsPage();
@@ -52,11 +54,15 @@ export class PublisherShowroomPage extends EventEmitter {
       }),
     );
     this.body.append(
-      ePublisherContextItem(response.account, `width: 100%;`),
-      eSeasonItemContainer(
-        LOCALIZED_TEXT.recentPremieresTitle,
-        this.contentContainer,
-      ),
+      ePublisherContextItem(response.account),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      eContainerTitle(LOCALIZED_TEXT.recentPremieresTitle),
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+      eSeasonItemContainerRef(this.contentContainer),
       assign(this.loadingSection, new ScrollLoadingSection()).body,
     );
     this.loadingSection.val.addLoadAction(() => this.load());

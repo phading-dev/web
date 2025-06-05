@@ -34,7 +34,7 @@ export enum RangeType {
   MONTHS = 4,
 }
 
-export interface UsagePageResult {
+export interface UsagePage {
   on(event: "loaded", listener: (result: any) => void): this;
 }
 
@@ -83,7 +83,7 @@ export class UsagePage extends EventEmitter {
             class: "usage-page-title",
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
           },
-          E.text(LOCALIZED_TEXT.usageReportTitle),
+          E.text(LOCALIZED_TEXT.usageTitle),
         ),
         E.div(
           {
