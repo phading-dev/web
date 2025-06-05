@@ -177,7 +177,7 @@ TEST_RUNNER.run({
         );
       }
       public async tearDown() {
-        this.cut.body.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
@@ -229,7 +229,7 @@ TEST_RUNNER.run({
         );
       }
       public async tearDown() {
-        this.cut.body.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
@@ -346,7 +346,7 @@ TEST_RUNNER.run({
         );
       }
       public async tearDown() {
-        this.cut.body.remove();
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
@@ -457,7 +457,7 @@ TEST_RUNNER.run({
         );
       }
       public async tearDown() {
-        this.cut.body.remove();
+        this.cut.remove();
       }
     })(),
   ],

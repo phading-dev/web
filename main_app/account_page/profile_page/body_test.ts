@@ -18,7 +18,7 @@ TEST_RUNNER.run({
   name: "ProfilePageTest",
   cases: [
     new (class implements TestCase {
-      public name = "Default";
+      public name = "Navigation";
       private cut: ProfilePage;
       public async execute() {
         // Prepare
@@ -33,7 +33,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut = new ProfilePage(
-          () => new InfoPageMock(account),
+          () => new InfoPageMock(),
           (account) => new UpdateAvatarPage(undefined, account),
           (account) => new UpdateAccountInfoPage(undefined, account),
           (username) => new UpdatePasswordPage(undefined, username),

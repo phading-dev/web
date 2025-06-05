@@ -421,4 +421,8 @@ export class PaymentPage extends EventEmitter {
     }
     this.emit("added");
   }
+
+  public remove(): void {
+    this.body.remove();
+  }
 }

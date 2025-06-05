@@ -382,6 +382,32 @@ export function createPaymentIcon(color: string): SVGSVGElement {
   );
 }
 
+export function createCoinsHandIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "coins-hand-icon",
+      style: `height: 100%; fill: none; stroke-width: 2; stroke: ${color}; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: "1 1 22 22",
+    },
+    E.path({
+      d: `M13.53 8.35C13 8.76 12.257 9 11.5 9C9.57 9 8 7.43 8 5.5C8 3.57 9.57 2 11.5 2C12.75 2 13.85 2.66 14.47 3.648M6 20H8.61C8.95 20.09 9.29 20.13 9.62 20.21L12.38 20.88C12.975 21.025 13.6 21.04 14.20 20.92L17.25 20.33C18.06 20.17 18.8 19.785 19.38 19.22L21.54 17.12C22.154 16.52 22.154 15.55 21.54 14.95C20.98 14.41 20.1 14.35 19.48 14.81L16.96 16.645C16.6 16.91 16.164 17.05 15.71 17.05H13.29L14.83 17.05C15.7 17.05 16.41 16.36 16.41 15.52V15.21C16.41 14.51 15.92 13.89 15.214 13.72L12.83 13.14C12.44 13.05 12.04 13 11.64 13C10.68 13 8.93 13.8 8.93 13.8L6 15.025M20 6.5C20 8.43 18.43 10 16.5 10C14.57 10 13 8.43 13 6.5C13 4.57 14.57 3 16.5 3C18.43 3 20 4.57 20 6.5ZM2 14.6L2 20.4C2 20.96 2 21.24 2.11 21.454C2.205 21.64 2.36 21.8 2.55 21.9C2.76 22 3.04 22 3.6 22H4.4C4.96 22 5.24 22 5.454 21.89C5.64 21.795 5.795 21.64 5.89 21.454C6 21.24 6 20.96 6 20.4V14.6C6 14.04 6 13.76 5.89 13.546C5.795 13.36 5.64 13.205 5.454 13.11C5.24 13 4.96 13 4.4 13L3.6 13C3.04 13 2.76 13 2.546 13.11C2.36 13.205 2.205 13.36 2.11 13.546C2 13.76 2 14.04 2 14.6Z`,
+    }),
+  );
+}
+
+export function createDocumentIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "document-icon",
+      style: `height: 100%; fill: none; stroke-width: 1.5; stroke: ${color}; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: "1 1 22 22",
+    },
+    E.path({
+      d: `M3 14V10C3 6.23 3 4.34 4.17 3.17C5.34 2 7.23 2 11 2H13C16.77 2 18.66 2 19.83 3.17C20.48 3.825 20.77 4.7 20.9 6M21 10V14C21 17.77 21 19.66 19.83 20.83C18.66 22 16.77 22 13 22H11C7.23 22 5.34 22 4.17 20.83C3.52 20.175 3.23 19.3 3.1 18 M16 8H15M12 8H8 M8 12H9M16 12H12 M8 16H13`,
+    }),
+  );
+}
+
 export function createSecurityIcon(color: string): SVGSVGElement {
   return E.svg(
     {
@@ -856,7 +882,6 @@ export function createListIcon(color: string): SVGSVGElement {
       d: `M4 6 h0.1 M10 6 h10 M4 12 h0.1 M10 12 h10 M4 18 h0.1 M10 18 h10`,
     }),
   );
-
 }
 
 export function createCheckmarkIcon(color: string): SVGSVGElement {

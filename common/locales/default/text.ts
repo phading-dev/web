@@ -157,23 +157,20 @@ export default class Text {
   get accountNotFoundError() {
     return `The requested account is not owned by you. You can sign out and sign in to the correct user.`;
   }
-  get chooseAppLabel() {
-    return `Switch app`;
-  }
-  get menuLabel() {
-    return `Menu`;
-  }
   get accountLabel() {
     return `Account`;
   }
+  get paymentLabel() {
+    return `Payment`;
+  }
+  get payoutLabel() {
+    return `Payout`;
+  }
+  get statementsLabel() {
+    return `Statements`;
+  }
   get homeLabel() {
     return `Home`;
-  }
-  get backLabel() {
-    return `Back`;
-  }
-  get uploadLabel() {
-    return `Upload`;
   }
   get activityLabel() {
     return `Activity`;
