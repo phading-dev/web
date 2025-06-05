@@ -34,7 +34,7 @@ TEST_RUNNER.run({
   name: "PublisherPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "NavigationCanNotEarn";
+      public name = "NavigationCanNotEarn_SwitchAccount_SignOut";
       private cut: AccountPage;
       public async execute() {
         // Prepare
@@ -126,6 +126,31 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(home, eq(true), "go to home");
+
+        // Prepare
+        let switchAccount = false;
+        this.cut.on("switchAccount", () => {
+          switchAccount = true;
+        });
+
+        // Execute
+        this.cut.profilePage.emit("switchAccount");
+
+        // Verify
+        assertThat(switchAccount, eq(true), "switch account");
+
+        // Prepare
+        let signOut = false;
+
+        this.cut.on("signOut", () => {
+          signOut = true;
+        });
+
+        // Execute
+        this.cut.profilePage.emit("signOut");
+
+        // Verify
+        assertThat(signOut, eq(true), "sign out");
       }
       public tearDown() {
         this.cut.remove();

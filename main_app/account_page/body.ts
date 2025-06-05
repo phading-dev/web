@@ -24,8 +24,8 @@ import { Ref } from "@selfage/ref";
 export interface AccountPage {
   on(event: "replaceUrl", listener: (newUrl: AccountPageUrl) => void): this;
   on(event: "newUrl", listener: (newUrl: AccountPageUrl) => void): this;
-  on(event: "switchAccount", listener: () => void): this;
   on(event: "goToHome", listener: () => void): this;
+  on(event: "switchAccount", listener: () => void): this;
   on(event: "signOut", listener: () => void): this;
 }
 
@@ -173,7 +173,9 @@ export class AccountPage extends EventEmitter {
   }
 
   private addProfilePage(): void {
-    this.profilePage = this.createProfilePage(this.appendBodies);
+    this.profilePage = this.createProfilePage(this.appendBodies)
+      .on("switchAccount", () => this.emit("switchAccount"))
+      .on("signOut", () => this.emit("signOut"));
   }
 
   private addStatementsPage(canEarn: boolean): void {
