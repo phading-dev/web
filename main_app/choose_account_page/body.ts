@@ -1,17 +1,8 @@
 import EventEmitter = require("events");
 import { AddBodiesFn } from "../../common/add_bodies_fn";
-import { PageNavigator } from "../../common/page_navigator";
+import { TabSwitcher } from "../../common/page_navigator";
 import { CreateAccountPage } from "./create_account_page/body";
 import { ListAccountsPage } from "./list_accounts_page/body";
-
-enum Page {
-  LIST,
-  CREATE_ACCOUNT,
-}
-
-interface NavigationArgs {
-  listAccountsPreSelectedAccountId?: string;
-}
 
 export interface ChooseAccountPage {
   on(event: "choose", listener: () => void): this;
@@ -31,9 +22,9 @@ export class ChooseAccountPage extends EventEmitter {
     );
   }
 
+  private pageSwitcher = new TabSwitcher();
   public listAccountsPage: ListAccountsPage;
   public createAccountPage: CreateAccountPage;
-  private pageNavigator: PageNavigator<Page, NavigationArgs>;
 
   public constructor(
     private createCreateAccountPage: () => CreateAccountPage,
@@ -44,49 +35,38 @@ export class ChooseAccountPage extends EventEmitter {
     preSelectedAccountId?: string,
   ) {
     super();
-    this.pageNavigator = new PageNavigator<Page>(
-      (page, args) => this.addPage(page, args),
-      (page) => this.removePage(page),
+    this.pageSwitcher.goTo(
+      () => this.addListAccountsPage(preSelectedAccountId),
+      () => this.listAccountsPage.remove(),
     );
-    this.pageNavigator.goTo(Page.LIST, {
-      listAccountsPreSelectedAccountId: preSelectedAccountId,
-    });
   }
 
-  private addPage(page: Page, args?: NavigationArgs): void {
-    switch (page) {
-      case Page.LIST:
-        this.listAccountsPage = this.createListAccountsPage(
-          args?.listAccountsPreSelectedAccountId,
-        )
-          .on("choose", () => this.emit("choose"))
-          .on("createAccount", () =>
-            this.pageNavigator.goTo(Page.CREATE_ACCOUNT),
-          )
-          .on("signOut", () => this.emit("signOut"));
-        this.appendBodiesFn(this.listAccountsPage.body);
-        break;
-      case Page.CREATE_ACCOUNT:
-        this.createAccountPage = this.createCreateAccountPage()
-          .on("choose", () => this.emit("choose"))
-          .on("back", () => this.pageNavigator.goTo(Page.LIST));
-        this.appendBodiesFn(this.createAccountPage.body);
-        break;
-    }
+  private addListAccountsPage(preSelectedAccountId?: string): void {
+    this.listAccountsPage = this.createListAccountsPage(preSelectedAccountId)
+      .on("choose", () => this.emit("choose"))
+      .on("createAccount", () =>
+        this.pageSwitcher.goTo(
+          () => this.addCreateAccountPage(),
+          () => this.createAccountPage.remove(),
+        ),
+      )
+      .on("signOut", () => this.emit("signOut"));
+    this.appendBodiesFn(this.listAccountsPage.body);
   }
 
-  private removePage(page: Page): void {
-    switch (page) {
-      case Page.LIST:
-        this.listAccountsPage.remove();
-        break;
-      case Page.CREATE_ACCOUNT:
-        this.createAccountPage.remove();
-        break;
-    }
+  private addCreateAccountPage(): void {
+    this.createAccountPage = this.createCreateAccountPage()
+      .on("choose", () => this.emit("choose"))
+      .on("back", () =>
+        this.pageSwitcher.goTo(
+          () => this.addListAccountsPage(),
+          () => this.listAccountsPage.remove(),
+        ),
+      );
+    this.appendBodiesFn(this.createAccountPage.body);
   }
 
   public remove(): void {
-    this.pageNavigator.remove();
+    this.pageSwitcher.remove();
   }
 }

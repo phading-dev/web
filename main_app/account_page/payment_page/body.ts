@@ -61,7 +61,7 @@ export class PaymentPage extends EventEmitter {
   private listRequestIndex = 0;
 
   public constructor(
-    public serviceClient: WebServiceClient,
+    private serviceClient: WebServiceClient,
     private window: Window,
     private getNowDate: () => Date,
   ) {
