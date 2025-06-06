@@ -1,49 +1,39 @@
 import EventEmitter = require("events");
 import { AddBodiesFn } from "../common/add_bodies_fn";
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
-import { PageNavigator } from "../common/page_navigator";
+import { TabSwitcher } from "../common/page_navigator";
 import { SERVICE_CLIENT } from "../common/web_service_client";
 import { AccountPage } from "./account_page/body";
 import { AuthPage } from "./auth_page/body";
 import { ChooseAccountPage } from "./choose_account_page/body";
 import { ConsumerPage } from "./consumer_page/body";
 import { PublisherPage } from "./publisher_page/body";
-import { AccountType } from "@phading/user_service_interface/account_type";
 import { newCheckCapabilityRequest } from "@phading/user_session_service_interface/web/client";
 import { CheckCapabilityResponse } from "@phading/user_session_service_interface/web/interface";
 import {
   MAIN_APP,
   MainApp as MainAppUrl,
 } from "@phading/web_interface/main/app";
-import { BlockingLoop } from "@selfage/blocking_loop";
 import { HttpError, StatusCode } from "@selfage/http_error";
 import { copyMessage } from "@selfage/message/copier";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
 
-enum Page {
-  AUTH = 1,
-  CHOOSE_ACCOUNT = 2,
-  ACCOUNT = 3,
-  CONSUMER = 4,
-  PUBLISHER = 5,
-}
-
 export interface MainApp {
-  on(event: "newUrl", listener: (newUrl: MainAppUrl) => void): this;
+  on(event: "replaceUrl", listener: (url: MainAppUrl) => void): this;
+  on(event: "newUrl", listener: (url: MainAppUrl) => void): this;
   on(event: "urlApplied", listener: () => void): this;
 }
 
 export class MainApp extends EventEmitter {
   public static create(appendBodies: AddBodiesFn): MainApp {
     return new MainApp(
+      window,
       LOCAL_SESSION_STORAGE,
       SERVICE_CLIENT,
-      // Use ANIMATION_FRAME to stop looping when the tab is not focus.
-      BlockingLoop.createWithAinmationFrame,
+      AccountPage.create,
       AuthPage.create,
       ChooseAccountPage.create,
-      AccountPage.create,
       ConsumerPage.create,
       PublisherPage.create,
       appendBodies,
@@ -52,50 +42,142 @@ export class MainApp extends EventEmitter {
 
   private static CHECK_AUTH_INTERVAL_MS = 60 * 1000;
 
+  private pageSwitcher = new TabSwitcher();
+  public accountPage: AccountPage;
   public authPage: AuthPage;
   public chooseAccountPage: ChooseAccountPage;
-  public accountPage: AccountPage;
   public consumerPage: ConsumerPage;
   public publisherPage: PublisherPage;
-  private pageNavigator: PageNavigator<Page>;
-  private url: MainAppUrl;
   private applyIndex = 0;
-  private blockingLoop: BlockingLoop;
+  private url: MainAppUrl;
+  private checkAuthInterval: number;
 
   public constructor(
+    private window: Window,
     private localSessionStorage: LocalSessionStorage,
     private serviceClient: WebServiceClient,
-    private createBlockingLoop: () => BlockingLoop,
-    private createAuthPage: (
-      appendBodies: AddBodiesFn,
-      signUpInitAccountType?: AccountType,
-    ) => AuthPage,
-    private createChooseAccountPage: (
-      appendBodies: AddBodiesFn,
-      preSelectedAccountId?: string,
-    ) => ChooseAccountPage,
-    private createAccountPage: (appendBodies: AddBodiesFn) => AccountPage,
-    private createConsumerPage: (appendBodies: AddBodiesFn) => ConsumerPage,
-    private createPublisherPage: (appendBodies: AddBodiesFn) => PublisherPage,
+    private createAccountPage: typeof AccountPage.create,
+    private createAuthPage: typeof AuthPage.create,
+    private createChooseAccountPage: typeof ChooseAccountPage.create,
+    private createConsumerPage: typeof ConsumerPage.create,
+    private createPublisherPage: typeof PublisherPage.create,
     private appendBodies: AddBodiesFn,
   ) {
     super();
-    this.pageNavigator = new PageNavigator(
-      (page) => this.addPage(page),
-      (page) => this.removePage(page),
-      (page) => this.updatePage(page),
+    this.checkAuthInterval = this.window.setInterval(
+      () => this.applyUrl(this.url),
+      MainApp.CHECK_AUTH_INTERVAL_MS,
     );
-    this.blockingLoop = this.createBlockingLoop()
-      .setAction(() => this.checkAuthAndApplyUrl(this.url))
-      .setInterval(MainApp.CHECK_AUTH_INTERVAL_MS)
-      .start();
+  }
+
+  private newUrl(url: MainAppUrl): void {
+    this.emit("newUrl", url);
+    this.applyUrl(url);
+  }
+
+  public async applyUrl(newUrl?: MainAppUrl): Promise<void> {
+    this.applyIndex++;
+    let applyIndex = this.applyIndex;
+
+    // If URL changes during auth page, it always tracks the latest URL.
+    this.url = newUrl;
+    let capabilities = await this.checkAuth();
+    if (applyIndex !== this.applyIndex) {
+      // A new url has been applied. Abort the current one.
+      return;
+    }
+    if (!capabilities.authenticated) {
+      if (!this.authPage) {
+        this.pageSwitcher.goTo(
+          () => this.addAuthPage(),
+          () => this.removeAuthPage(),
+        );
+        this.emit("urlApplied");
+      }
+      return;
+    }
+
+    if (!this.url) {
+      this.url = {};
+    }
+    if (!capabilities.canConsume) {
+      this.url.consumer = undefined;
+    }
+    if (!capabilities.canPublish) {
+      this.url.publisher = undefined;
+    }
+    if (
+      !this.url.account &&
+      !this.url.chooseAccount &&
+      !this.url.consumer &&
+      !this.url.publisher
+    ) {
+      if (capabilities.canConsume) {
+        this.url.consumer = {};
+      } else if (capabilities.canPublish) {
+        this.url.publisher = {};
+      } else {
+        // TODO: Assumes that neither is false is because of payment issues. Replace with API calls if there are other reasons.
+        this.url.account = {
+          payment: {},
+        };
+      }
+    }
+
+    if (this.url.chooseAccount) {
+      if (
+        !this.chooseAccountPage ||
+        this.url.chooseAccount.preSelectedAccountId !==
+          this.chooseAccountPage.preSelectedAccountId
+      ) {
+        this.pageSwitcher.goTo(
+          () =>
+            this.addChooseAccountPage(
+              this.url.chooseAccount.preSelectedAccountId,
+            ),
+          () => this.removeChooseAccountPage(),
+        );
+      }
+    } else if (this.url.account) {
+      if (!this.accountPage) {
+        this.pageSwitcher.goTo(
+          () => this.addAccountPage(),
+          () => this.removeAccountPage(),
+        );
+      }
+      this.accountPage.applyUrl(capabilities.canEarn, this.url.account);
+    } else if (this.url.consumer) {
+      if (!this.consumerPage) {
+        this.pageSwitcher.goTo(
+          () => this.addConsumerPage(),
+          () => this.removeConsumerPage(),
+        );
+      }
+      this.consumerPage.applyUrl(this.url.consumer);
+    } else if (this.url.publisher) {
+      if (!this.publisherPage) {
+        this.pageSwitcher.goTo(
+          () => this.addPublisherPage(),
+          () => this.removePublisherPage(),
+        );
+      }
+      this.publisherPage.applyUrl(this.url.publisher);
+    }
+    this.emit("urlApplied");
   }
 
   private async checkAuth(): Promise<{
     authenticated?: boolean;
     canConsume?: boolean;
     canPublish?: boolean;
+    canEarn?: boolean;
   }> {
+    if (!this.localSessionStorage.read()) {
+      return {
+        authenticated: false,
+      };
+    }
+
     let response: CheckCapabilityResponse;
     try {
       response = await this.serviceClient.send(
@@ -103,6 +185,7 @@ export class MainApp extends EventEmitter {
           capabilitiesMask: {
             checkCanConsume: true,
             checkCanPublish: true,
+            checkCanEarn: true,
           },
         }),
       );
@@ -111,169 +194,119 @@ export class MainApp extends EventEmitter {
         return {
           authenticated: false,
         };
+      } else {
+        throw e;
       }
     }
     return {
       authenticated: true,
       canConsume: response.capabilities.canConsume,
       canPublish: response.capabilities.canPublish,
+      canEarn: response.capabilities.canEarn,
     };
   }
 
-  public async checkAuthAndApplyUrl(newUrl?: MainAppUrl): Promise<void> {
-    this.applyIndex++;
-    if (!newUrl) {
-      newUrl = {};
-    }
-    this.url = newUrl;
-
-    if (!this.localSessionStorage.read()) {
-      this.pageNavigator.goTo(Page.AUTH);
-      return;
-    }
-
-    let applyIndex = this.applyIndex;
-    let capabilities = await this.checkAuth();
-    if (applyIndex !== this.applyIndex) {
-      // A new url has been applied. Abort the current one.
-      return;
-    }
-    if (!capabilities.authenticated) {
-      this.pageNavigator.goTo(Page.AUTH);
-      this.emit("urlApplied");
-      return;
-    }
-
-    if (this.url.chooseAccount) {
-      this.pageNavigator.goTo(Page.CHOOSE_ACCOUNT);
-    } else if (this.url.account) {
-      this.pageNavigator.goTo(Page.ACCOUNT);
-    } else if (capabilities.canConsume) {
-      this.pageNavigator.goTo(Page.CONSUMER);
-    } else if (capabilities.canPublish) {
-      this.pageNavigator.goTo(Page.PUBLISHER);
-    } else {
-      throw new Error("Unhandled case.");
-    }
-    this.emit("urlApplied");
-  }
-
-  private addPage(page: Page): void {
-    switch (page) {
-      case Page.AUTH:
-        this.authPage = this.createAuthPage(
-          this.appendBodies,
-          this.url.auth?.initAccountType,
-        ).on("signedIn", () => {
-          let newUrl = copyMessage(this.url, MAIN_APP);
-          newUrl.auth = undefined;
-          this.checkAuthAndApplyUrl(newUrl);
+  private addAccountPage(): void {
+    this.accountPage = this.createAccountPage(this.appendBodies)
+      .on("replaceUrl", (url) => {
+        this.url.account = url;
+        this.emit("replaceUrl", this.url);
+      })
+      .on("newUrl", (url) => {
+        this.url.account = url;
+        this.emit("newUrl", this.url);
+      })
+      .on("goToHome", () => {
+        this.newUrl({});
+      })
+      .on("chooseAccount", () => {
+        this.newUrl({
+          chooseAccount: {},
         });
-        break;
-      case Page.CHOOSE_ACCOUNT:
-        this.chooseAccountPage = this.createChooseAccountPage(
-          this.appendBodies,
-          this.url.chooseAccount?.preSelectedAccountId,
-        )
-          .on("chosen", () => {
-            let newUrl = copyMessage(this.url, MAIN_APP);
-            newUrl.chooseAccount = undefined;
-            this.checkAuthAndApplyUrl(newUrl);
-            this.emit("newUrl", this.url);
-          })
-          .on("signOut", () => this.signOut());
-        break;
-      case Page.ACCOUNT:
-        this.accountPage = this.createAccountPage(this.appendBodies)
-          .on("newUrl", (newUrl) => {
-            this.url.account = newUrl;
-            this.emit("newUrl", this.url);
-          })
-          .on("switchAccount", () => {
-            let newUrl: MainAppUrl = {
-              chooseAccount: {},
-            };
-            this.checkAuthAndApplyUrl(newUrl);
-          })
-          .on("goToHome", () => {
-            let newUrl: MainAppUrl = {};
-            this.checkAuthAndApplyUrl(newUrl);
-            this.emit("newUrl", newUrl);
-          })
-          .on("signOut", () => this.signOut());
-        break;
-      case Page.CONSUMER:
-        this.consumerPage = this.createConsumerPage(this.appendBodies)
-          .on("newUrl", (newUrl) => {
-            this.url.consumer = newUrl;
-            this.emit("newUrl", this.url);
-          })
-          .on("goToAccount", () => {
-            let newUrl: MainAppUrl = {
-              account: {},
-            };
-            this.checkAuthAndApplyUrl(newUrl);
-            this.emit("newUrl", this.url);
-          });
-        break;
-      case Page.PUBLISHER:
-        this.publisherPage = this.createPublisherPage(this.appendBodies)
-          .on("newUrl", (newUrl) => {
-            this.url.publisher = newUrl;
-            this.emit("newUrl", this.url);
-          })
-          .on("goToAccount", () => {
-            let newUrl: MainAppUrl = {
-              account: {},
-            };
-            this.checkAuthAndApplyUrl(newUrl);
-            this.emit("newUrl", this.url);
-          });
-        break;
-    }
+      })
+      .on("signOut", () => this.signOut());
   }
 
-  private removePage(page: Page): void {
-    switch (page) {
-      case Page.AUTH:
-        this.authPage.remove();
-        break;
-      case Page.CHOOSE_ACCOUNT:
-        this.chooseAccountPage.remove();
-        break;
-      case Page.ACCOUNT:
-        this.accountPage.remove();
-        break;
-      case Page.CONSUMER:
-        this.consumerPage.remove();
-        break;
-      case Page.PUBLISHER:
-        this.publisherPage.remove();
-        break;
-    }
+  private removeAccountPage(): void {
+    this.accountPage.remove();
+    this.accountPage = undefined;
   }
 
-  private updatePage(page: Page): void {
-    switch (page) {
-      case Page.ACCOUNT:
-        this.accountPage.applyUrl(this.url.account);
-        break;
-      case Page.CONSUMER:
-        this.consumerPage.applyUrl(this.url.consumer);
-        break;
-      case Page.PUBLISHER:
-        this.publisherPage.applyUrl(this.url.publisher);
-        break;
-    }
+  private addAuthPage(): void {
+    this.authPage = this.createAuthPage(this.appendBodies).on(
+      "signedIn",
+      () => {
+        this.applyUrl(this.url);
+      },
+    );
+  }
+
+  private removeAuthPage(): void {
+    this.authPage.remove();
+    this.authPage = undefined;
+  }
+
+  private addChooseAccountPage(preSelectedAccountId?: string): void {
+    this.chooseAccountPage = this.createChooseAccountPage(
+      this.appendBodies,
+      preSelectedAccountId,
+    )
+      .on("choose", () => {
+        let newUrl = copyMessage(this.url, MAIN_APP);
+        newUrl.chooseAccount = undefined;
+        this.newUrl(newUrl);
+      })
+      .on("signOut", () => this.signOut());
+  }
+
+  private removeChooseAccountPage(): void {
+    this.chooseAccountPage.remove();
+    this.chooseAccountPage = undefined;
+  }
+
+  private addConsumerPage(): void {
+    this.consumerPage = this.createConsumerPage(this.appendBodies)
+      .on("newUrl", (url) => {
+        this.url.consumer = url;
+        this.emit("newUrl", this.url);
+      })
+      .on("goToAccount", () => {
+        this.newUrl({
+          account: {},
+        });
+      });
+  }
+
+  private removeConsumerPage(): void {
+    this.consumerPage.remove();
+    this.consumerPage = undefined;
+  }
+
+  private addPublisherPage(): void {
+    this.publisherPage = this.createPublisherPage(this.appendBodies)
+      .on("newUrl", (url) => {
+        this.url.publisher = url;
+        this.emit("newUrl", this.url);
+      })
+      .on("goToAccount", () => {
+        this.newUrl({
+          account: {},
+        });
+      });
+  }
+
+  private removePublisherPage(): void {
+    this.publisherPage.remove();
+    this.publisherPage = undefined;
   }
 
   private signOut(): void {
     this.localSessionStorage.clear();
-    this.checkAuthAndApplyUrl(this.url);
+    this.newUrl({});
   }
 
   public remove(): void {
-    this.pageNavigator.remove();
-    this.blockingLoop.stop();
+    this.window.clearInterval(this.checkAuthInterval);
+    this.pageSwitcher.remove();
   }
 }

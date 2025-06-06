@@ -32,7 +32,7 @@ export interface InfoPage {
     event: "updateRecoveryEmail",
     listener: (account: AccountAndUser) => void,
   ): this;
-  on(event: "switchAccount", listener: () => void): this;
+  on(event: "chooseAccount", listener: () => void): this;
   on(event: "signOut", listener: () => void): this;
   on(event: "loaded", listener: () => void): this;
   on(event: "avatarUpdateHintTransitionEnded", listener: () => void): this;
@@ -49,7 +49,7 @@ export class InfoPage extends EventEmitter {
   public accountInfo = new Ref<HTMLDivElement>();
   public password = new Ref<HTMLDivElement>();
   public recoveryEmail = new Ref<HTMLDivElement>();
-  public switchAccountButton = new Ref<HTMLDivElement>();
+  public chooseAccountButton = new Ref<HTMLDivElement>();
   public signOutButton = new Ref<HTMLDivElement>();
 
   public constructor(private serviceClient: WebServiceClient) {
@@ -147,12 +147,12 @@ export class InfoPage extends EventEmitter {
             style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: wrap row; justify-content: center; align-items: center; column-gap: 10rem; row-gap: 2rem;`,
           },
           E.divRef(
-            this.switchAccountButton,
+            this.chooseAccountButton,
             {
               class: "account-info-switch-account",
               style: `${OUTLINE_BUTTON_STYLE} color: ${SCHEME.neutral0}; border-color: ${SCHEME.neutral1};`,
             },
-            E.text(LOCALIZED_TEXT.switchAccountButtonLabel),
+            E.text(LOCALIZED_TEXT.chooseAccountButtonLabel),
           ),
           E.divRef(
             this.signOutButton,
@@ -188,8 +188,8 @@ export class InfoPage extends EventEmitter {
     this.recoveryEmail.val.addEventListener("click", () =>
       this.emit("updateRecoveryEmail", response.account),
     );
-    this.switchAccountButton.val.addEventListener("click", () =>
-      this.emit("switchAccount"),
+    this.chooseAccountButton.val.addEventListener("click", () =>
+      this.emit("chooseAccount"),
     );
     this.signOutButton.val.addEventListener("click", () =>
       this.emit("signOut"),

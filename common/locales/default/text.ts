@@ -208,7 +208,7 @@ export default class Text {
   get changeAvatarLabel() {
     return `Update`;
   }
-  get switchAccountButtonLabel() {
+  get chooseAccountButtonLabel() {
     return `Switch account`;
   }
   get signOutButtonLabel() {

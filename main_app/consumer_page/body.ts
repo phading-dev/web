@@ -31,7 +31,7 @@ import {
 import { Ref } from "@selfage/ref";
 
 export interface ConsumerPage {
-  on(event: "newUrl", listener: (newUrl: ConsumerPageUrl) => void): this;
+  on(event: "newUrl", listener: (url: ConsumerPageUrl) => void): this;
   on(event: "goToAccount", listener: () => void): this;
 }
 
@@ -72,7 +72,6 @@ export class ConsumerPage extends EventEmitter {
   public usagePage: UsagePage;
   public watchLaterPage: WatchLaterPage;
   private lastListUrl: ConsumerPageUrl;
-  private url: ConsumerPageUrl;
 
   public constructor(
     private createHistoryPage: typeof HistoryPage.create,
@@ -147,8 +146,8 @@ export class ConsumerPage extends EventEmitter {
   }
 
   private newUrl(newUrl: ConsumerPageUrl): void {
-    this.applyUrl(newUrl);
     this.emit("newUrl", newUrl);
+    this.applyUrl(newUrl);
   }
 
   public applyUrl(newUrl?: ConsumerPageUrl): this {
@@ -170,55 +169,60 @@ export class ConsumerPage extends EventEmitter {
       !newUrl.watchLater &&
       !newUrl.usage
     ) {
-      newUrl = { home: {} };
+      newUrl.home = {};
     }
 
-    if (newUrl.home && !this.url?.home) {
+    if (newUrl.home && !this.multiSectionPage) {
       this.pageSwitcher.goTo(
         () => this.addMultiSectionPage(),
-        () => this.multiSectionPage.remove(),
+        () => this.removeMultiSectionPage(),
       );
-    } else if (newUrl.listRecentPremieres && !this.url?.listRecentPremieres) {
+    } else if (newUrl.listRecentPremieres && !this.listRecentPremieresPage) {
       this.pageSwitcher.goTo(
         () => this.addListRecentPremieresPage(),
-        () => this.listRecentPremieresPage.remove(),
+        () => this.removeListRecentPremieresPage(),
       );
-    } else if (newUrl.listTopRated && !this.url?.listTopRated) {
+    } else if (newUrl.listTopRated && !this.listTopRatedPage) {
       this.pageSwitcher.goTo(
         () => this.addListTopRatedPage(),
-        () => this.listTopRatedPage.remove(),
+        () => this.removeListTopRatedPage(),
       );
-    } else if (
-      newUrl.search &&
-      (!this.url?.search ||
-        this.url.search.searchTarget !== newUrl.search.searchTarget ||
-        this.url.search.query !== newUrl.search.query)
-    ) {
+    } else if (newUrl.search) {
       if (newUrl.search.searchTarget === SearchTarget.PUBLISHER) {
-        this.pageSwitcher.goTo(
-          () => this.addSearchPublishersPage(newUrl.search.query),
-          () => this.searchPublishersPage.remove(),
-        );
+        if (
+          !this.searchPublishersPage ||
+          this.searchPublishersPage.query !== newUrl.search.query
+        ) {
+          this.pageSwitcher.goTo(
+            () => this.addSearchPublishersPage(newUrl.search.query),
+            () => this.removeSearchPublishersPage(),
+          );
+        }
       } else if (newUrl.search.searchTarget === SearchTarget.SEASON) {
-        this.pageSwitcher.goTo(
-          () => this.addSearchSeasonsPage(newUrl.search.query),
-          () => this.searchSeasonsPage.remove(),
-        );
+        if (
+          !this.searchSeasonsPage ||
+          this.searchSeasonsPage.query !== newUrl.search.query
+        ) {
+          this.pageSwitcher.goTo(
+            () => this.addSearchSeasonsPage(newUrl.search.query),
+            () => this.removeSearchSeasonsPage(),
+          );
+        }
       }
     } else if (
       newUrl.seasonDetails &&
-      (!this.url?.seasonDetails ||
-        this.url.seasonDetails.seasonId !== newUrl.seasonDetails.seasonId)
+      (!this.seasonDetailsPage ||
+        this.seasonDetailsPage.seasonId !== newUrl.seasonDetails.seasonId)
     ) {
       this.pageSwitcher.goTo(
         () => this.addSeasonDetailsPage(newUrl.seasonDetails.seasonId),
-        () => this.seasonDetailsPage.remove(),
+        () => this.removeSeasonDetailsPage(),
       );
     } else if (
       newUrl.play &&
-      (!this.url?.play ||
-        this.url.play.seasonId !== newUrl.play.seasonId ||
-        this.url.play.episodeId !== newUrl.play.episodeId)
+      (!this.playPage ||
+        this.playPage.seasonId !== newUrl.play.seasonId ||
+        this.playPage.episodeId !== newUrl.play.episodeId)
     ) {
       this.pageSwitcher.goTo(
         () => this.addPlayPage(newUrl.play.seasonId, newUrl.play.episodeId),
@@ -226,42 +230,41 @@ export class ConsumerPage extends EventEmitter {
       );
     } else if (
       newUrl.publisherShowroom &&
-      (!this.url?.publisherShowroom ||
-        this.url.publisherShowroom.accountId !==
+      (!this.publisherShowroomPage ||
+        this.publisherShowroomPage.accountId !==
           newUrl.publisherShowroom.accountId)
     ) {
       this.pageSwitcher.goTo(
         () => this.addPublisherShowroomPage(newUrl.publisherShowroom.accountId),
-        () => this.publisherShowroomPage.remove(),
+        () => this.removePublisherShowroomPage(),
       );
-    } else if (newUrl.history && !this.url?.history) {
+    } else if (newUrl.history && !this.historyPage) {
       this.pageSwitcher.goTo(
         () => this.addHistoryPage(),
-        () => this.historyPage.remove(),
+        () => this.removeHistoryPage(),
       );
-    } else if (newUrl.usage && !this.url?.usage) {
+    } else if (newUrl.usage && !this.usagePage) {
       this.pageSwitcher.goTo(
         () => this.addUsagePage(),
-        () => this.usagePage.remove(),
+        () => this.removeUsagePage(),
       );
-    } else if (newUrl.watchLater && !this.url?.watchLater) {
+    } else if (newUrl.watchLater && !this.watchLaterPage) {
       this.pageSwitcher.goTo(
         () => this.addWatchLaterPage(),
-        () => this.watchLaterPage.remove(),
+        () => this.removeWatchLaterPage(),
       );
     }
     if (
-      this.url?.home ||
-      this.url?.listRecentPremieres ||
-      this.url?.listTopRated ||
-      this.url?.search ||
-      this.url?.publisherShowroom ||
-      this.url?.history ||
-      this.url?.watchLater
+      newUrl.home ||
+      newUrl.listRecentPremieres ||
+      newUrl.listTopRated ||
+      newUrl.search ||
+      newUrl.publisherShowroom ||
+      newUrl.history ||
+      newUrl.watchLater
     ) {
-      this.lastListUrl = this.url;
+      this.lastListUrl = newUrl;
     }
-    this.url = newUrl;
     return this;
   }
 
@@ -283,6 +286,11 @@ export class ConsumerPage extends EventEmitter {
     this.appendBodies(this.historyPage.body);
   }
 
+  private removeHistoryPage(): void {
+    this.historyPage.remove();
+    this.historyPage = undefined;
+  }
+
   private addListRecentPremieresPage(): void {
     this.listRecentPremieresPage = this.createListRecentPremieresPage().on(
       "showDetails",
@@ -297,6 +305,11 @@ export class ConsumerPage extends EventEmitter {
     this.appendBodies(this.listRecentPremieresPage.body);
   }
 
+  private removeListRecentPremieresPage(): void {
+    this.listRecentPremieresPage.remove();
+    this.listRecentPremieresPage = undefined;
+  }
+
   private addListTopRatedPage(): void {
     this.listTopRatedPage = this.createListTopRatedPage().on(
       "showDetails",
@@ -309,6 +322,11 @@ export class ConsumerPage extends EventEmitter {
       },
     );
     this.appendBodies(this.listTopRatedPage.body);
+  }
+
+  private removeListTopRatedPage(): void {
+    this.listTopRatedPage.remove();
+    this.listTopRatedPage = undefined;
   }
 
   private addMultiSectionPage(): void {
@@ -346,6 +364,11 @@ export class ConsumerPage extends EventEmitter {
     this.appendBodies(this.multiSectionPage.body);
   }
 
+  private removeMultiSectionPage(): void {
+    this.multiSectionPage.remove();
+    this.multiSectionPage = undefined;
+  }
+
   private addPlayPage(seasonId: string, episodeId: string): void {
     this.hideNavigationBar();
     this.playPage = this.createPlayPage(seasonId, episodeId)
@@ -369,6 +392,7 @@ export class ConsumerPage extends EventEmitter {
 
   private removePlayPage(): void {
     this.playPage.remove();
+    this.playPage = undefined;
     this.showNavigationBar();
   }
 
@@ -383,6 +407,11 @@ export class ConsumerPage extends EventEmitter {
       });
     });
     this.appendBodies(this.publisherShowroomPage.body);
+  }
+
+  private removePublisherShowroomPage(): void {
+    this.publisherShowroomPage.remove();
+    this.publisherShowroomPage = undefined;
   }
 
   private addSearchPublishersPage(query: string): void {
@@ -405,6 +434,11 @@ export class ConsumerPage extends EventEmitter {
     this.appendBodies(this.searchPublishersPage.body);
   }
 
+  private removeSearchPublishersPage(): void {
+    this.searchPublishersPage.remove();
+    this.searchPublishersPage = undefined;
+  }
+
   private addSearchSeasonsPage(query: string): void {
     this.searchSeasonsPage = this.createSearchSeasonsPage(query)
       .on("search", (searchTarget, query) => {
@@ -423,6 +457,11 @@ export class ConsumerPage extends EventEmitter {
         });
       });
     this.appendBodies(this.searchSeasonsPage.body);
+  }
+
+  private removeSearchSeasonsPage(): void {
+    this.searchSeasonsPage.remove();
+    this.searchSeasonsPage = undefined;
   }
 
   private addSeasonDetailsPage(seasonId: string): void {
@@ -448,9 +487,19 @@ export class ConsumerPage extends EventEmitter {
     this.appendBodies(this.seasonDetailsPage.body);
   }
 
+  private removeSeasonDetailsPage(): void {
+    this.seasonDetailsPage.remove();
+    this.seasonDetailsPage = undefined;
+  }
+
   private addUsagePage(): void {
     this.usagePage = this.createUsagePage();
     this.appendBodies(this.usagePage.body);
+  }
+
+  private removeUsagePage(): void {
+    this.usagePage.remove();
+    this.usagePage = undefined;
   }
 
   private addWatchLaterPage(): void {
@@ -465,6 +514,11 @@ export class ConsumerPage extends EventEmitter {
       },
     );
     this.appendBodies(this.watchLaterPage.body);
+  }
+
+  private removeWatchLaterPage(): void {
+    this.watchLaterPage.remove();
+    this.watchLaterPage = undefined;
   }
 
   public remove(): void {

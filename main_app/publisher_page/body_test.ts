@@ -12,6 +12,7 @@ import {
   PUBLISHER_PAGE,
   PublisherPage as PublisherPageUrl,
 } from "@phading/web_interface/main/publisher/page";
+import { copyMessage } from "@selfage/message/copier";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -43,7 +44,10 @@ TEST_RUNNER.run({
         await setTabletView();
         this.cut = createPublisherPage();
         let newUrl: PublisherPageUrl;
-        this.cut.on("newUrl", (url) => (newUrl = url));
+        this.cut.on(
+          "newUrl",
+          (url) => (newUrl = copyMessage(url, PUBLISHER_PAGE)),
+        );
 
         // Execute
         this.cut.applyUrl();
@@ -202,6 +206,32 @@ TEST_RUNNER.run({
         );
 
         // Execute
+        this.cut.seasonDetailsPage.emit("back");
+
+        // Verify
+        assertThat(
+          newUrl,
+          eqMessage(
+            {
+              search: {
+                seasonState: SeasonState.PUBLISHED,
+                query: "",
+              },
+            },
+            PUBLISHER_PAGE,
+          ),
+          "newUrl.search back from season details after search",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/publisher_page_back_from_season_details.png"),
+          path.join(__dirname, "/golden/publisher_page_search.png"),
+          path.join(
+            __dirname,
+            "/publisher_page_back_from_season_details_diff.png",
+          ),
+        );
+
+        // Execute
         this.cut.searchPage.emit("searchSeasons", SeasonState.DRAFT, "My Hero");
 
         // Verify
@@ -232,7 +262,7 @@ TEST_RUNNER.run({
           path.join(__dirname, "/publisher_page_search_after_search.png"),
           path.join(
             __dirname,
-            "/golden/publisher_page_search_after_search.png",
+            "/golden/publisher_page_search_queries.png",
           ),
           path.join(__dirname, "/publisher_page_search_after_search_diff.png"),
         );
@@ -298,25 +328,31 @@ TEST_RUNNER.run({
           newUrl,
           eqMessage(
             {
-              create: {},
+              search: {
+                seasonState: SeasonState.DRAFT,
+                query: "My Hero",
+              },
             },
             PUBLISHER_PAGE,
           ),
-          "newUrl.create back from season details after create",
+          "newUrl.search back from season details after create",
         );
         await asyncAssertScreenshot(
           path.join(
             __dirname,
             "/publisher_page_back_from_season_details_after_create.png",
           ),
-          path.join(__dirname, "/golden/publisher_page_create.png"),
+          path.join(
+            __dirname,
+            "/golden/publisher_page_search_queries.png",
+          ),
           path.join(
             __dirname,
             "/publisher_page_back_from_season_details_after_create_diff.png",
           ),
         );
       }
-      public async beforeEach() {
+      public tearDown() {
         this.cut.remove();
       }
     })(),

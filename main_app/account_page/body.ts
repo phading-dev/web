@@ -22,10 +22,10 @@ import { AccountPage as AccountPageUrl } from "@phading/web_interface/main/accou
 import { Ref } from "@selfage/ref";
 
 export interface AccountPage {
-  on(event: "replaceUrl", listener: (newUrl: AccountPageUrl) => void): this;
-  on(event: "newUrl", listener: (newUrl: AccountPageUrl) => void): this;
+  on(event: "replaceUrl", listener: (url: AccountPageUrl) => void): this;
+  on(event: "newUrl", listener: (url: AccountPageUrl) => void): this;
   on(event: "goToHome", listener: () => void): this;
-  on(event: "switchAccount", listener: () => void): this;
+  on(event: "chooseAccount", listener: () => void): this;
   on(event: "signOut", listener: () => void): this;
 }
 
@@ -52,7 +52,6 @@ export class AccountPage extends EventEmitter {
   public payoutPage: PayoutPage;
   public profilePage: ProfilePage;
   public statementsPage: StatementsPage;
-  private url: AccountPageUrl;
   private canEarn: boolean;
 
   public constructor(
@@ -129,25 +128,25 @@ export class AccountPage extends EventEmitter {
     ) {
       newUrl.profile = {};
     }
-    if (newUrl.profile && !this.url?.profile) {
+    if (newUrl.profile && !this.profilePage) {
       this.pageSwitcher.goTo(
         () => this.addProfilePage(),
-        () => this.profilePage.remove(),
+        () => this.removeProfilePage(),
       );
-    } else if (newUrl.payment && !this.url?.payment) {
+    } else if (newUrl.payment && !this.paymentPage) {
       this.pageSwitcher.goTo(
         () => this.addPaymentPage(),
-        () => this.paymentPage.remove(),
+        () => this.removePaymentPage(),
       );
-    } else if (newUrl.payout && !this.url?.payout) {
+    } else if (newUrl.payout && !this.payoutPage) {
       this.pageSwitcher.goTo(
         () => this.addPayoutPage(),
-        () => this.payoutPage.remove(),
+        () => this.removePayoutPage(),
       );
-    } else if (newUrl.statements && !this.url?.statements) {
+    } else if (newUrl.statements && !this.statementsPage) {
       this.pageSwitcher.goTo(
         () => this.addStatementsPage(canEarn),
-        () => this.statementsPage.remove(),
+        () => this.removeStatementsPage(),
       );
     }
 
@@ -158,7 +157,6 @@ export class AccountPage extends EventEmitter {
     }
 
     this.canEarn = canEarn;
-    this.url = newUrl;
     return this;
   }
 
@@ -167,20 +165,40 @@ export class AccountPage extends EventEmitter {
     document.body.append(this.paymentPage.body);
   }
 
+  private removePaymentPage(): void {
+    this.paymentPage.remove();
+    this.paymentPage = undefined;
+  }
+
   private addPayoutPage(): void {
     this.payoutPage = this.createPayoutPage();
     document.body.append(this.payoutPage.body);
   }
 
+  private removePayoutPage(): void {
+    this.payoutPage.remove();
+    this.payoutPage = undefined;
+  }
+
   private addProfilePage(): void {
     this.profilePage = this.createProfilePage(this.appendBodies)
-      .on("switchAccount", () => this.emit("switchAccount"))
+      .on("chooseAccount", () => this.emit("chooseAccount"))
       .on("signOut", () => this.emit("signOut"));
+  }
+
+  private removeProfilePage(): void {
+    this.profilePage.remove();
+    this.profilePage = undefined;
   }
 
   private addStatementsPage(canEarn: boolean): void {
     this.statementsPage = this.createStatementsPage(canEarn);
     document.body.append(this.statementsPage.body);
+  }
+
+  private removeStatementsPage(): void {
+    this.statementsPage.remove();
+    this.statementsPage = undefined;
   }
 
   public remove(): void {

@@ -19,6 +19,7 @@ import {
   ConsumerPage as ConsumerPageUrl,
   SearchTarget,
 } from "@phading/web_interface/main/consumer/page";
+import { copyMessage } from "@selfage/message/copier";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -57,7 +58,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
         let newUrl: ConsumerPageUrl;
         this.cut.on("newUrl", (url) => {
-          newUrl = url;
+          newUrl = copyMessage(url, CONSUMER_PAGE);
         });
 
         // Execute
@@ -406,6 +407,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
+        this.cut.homeButton.val.click();
         this.cut.multiSectionPage.emit("listWatchHistory");
 
         // Verify
@@ -438,7 +440,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
         let newUrl: ConsumerPageUrl;
         this.cut.on("newUrl", (url) => {
-          newUrl = url;
+          newUrl = copyMessage(url, CONSUMER_PAGE);
         });
         this.cut.applyUrl();
 
@@ -733,7 +735,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
         let newUrl: ConsumerPageUrl;
         this.cut.on("newUrl", (url) => {
-          newUrl = url;
+          newUrl = copyMessage(url, CONSUMER_PAGE);
         });
         this.cut.applyUrl();
 

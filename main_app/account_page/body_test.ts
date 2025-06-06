@@ -34,7 +34,7 @@ TEST_RUNNER.run({
   name: "PublisherPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "NavigationCanNotEarn_SwitchAccount_SignOut";
+      public name = "NavigationCanNotEarn_ChooseAccount_SignOut";
       private cut: AccountPage;
       public async execute() {
         // Prepare
@@ -42,7 +42,7 @@ TEST_RUNNER.run({
         this.cut = createAccountPage();
         let newUrl: AccountPageUrl;
         this.cut.on("newUrl", (url) => {
-          newUrl = url;
+          newUrl = copyMessage(url, ACCOUNT_PAGE);
         });
 
         // Execute
@@ -128,16 +128,16 @@ TEST_RUNNER.run({
         assertThat(home, eq(true), "go to home");
 
         // Prepare
-        let switchAccount = false;
-        this.cut.on("switchAccount", () => {
-          switchAccount = true;
+        let chooseAccount = false;
+        this.cut.on("chooseAccount", () => {
+          chooseAccount = true;
         });
 
         // Execute
-        this.cut.profilePage.emit("switchAccount");
+        this.cut.profilePage.emit("chooseAccount");
 
         // Verify
-        assertThat(switchAccount, eq(true), "switch account");
+        assertThat(chooseAccount, eq(true), "choose account");
 
         // Prepare
         let signOut = false;
@@ -165,7 +165,7 @@ TEST_RUNNER.run({
         this.cut = createAccountPage();
         let newUrl: AccountPageUrl;
         this.cut.on("newUrl", (url) => {
-          newUrl = url;
+          newUrl = copyMessage(url, ACCOUNT_PAGE);
         });
 
         // Execute

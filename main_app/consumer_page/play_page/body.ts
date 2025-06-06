@@ -494,7 +494,6 @@ export class PlayPage extends EventEmitter {
   }
 
   private addDanmakuOverlay(): void {
-    console.log("Adding danmaku overlay");
     this.commentOverlayContainer.val.append(
       assign(
         this.danmakuOverlay,

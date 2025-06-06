@@ -79,3 +79,4 @@ import "../main_app/publisher_page/season_details_page/update_info_page/body_tes
 import "../main_app/publisher_page/season_details_page/update_published_pricing_page/body_test";
 import "../main_app/publisher_page/season_details_page/body_test";
 import "../main_app/publisher_page/body_test";
+import "../main_app/body_test";

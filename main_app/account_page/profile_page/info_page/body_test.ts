@@ -309,7 +309,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "SwitchAccount";
+      public name = "ChooseAccount";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -318,14 +318,14 @@ TEST_RUNNER.run({
         this.cut = new InfoPage(webServiceClientMock);
         document.body.append(this.cut.body);
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
-        let switchAccount = false;
-        this.cut.on("switchAccount", () => (switchAccount = true));
+        let chooseAccount = false;
+        this.cut.on("chooseAccount", () => (chooseAccount = true));
 
         // Execute
-        this.cut.switchAccountButton.val.click();
+        this.cut.chooseAccountButton.val.click();
 
         // Verify
-        assertThat(switchAccount, eq(true), "switch account");
+        assertThat(chooseAccount, eq(true), "choose account");
       }
       public tearDown() {
         this.cut.remove();

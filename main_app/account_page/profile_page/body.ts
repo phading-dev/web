@@ -9,7 +9,7 @@ import { UpdateRecoveryEmailPage } from "./update_recovery_email_page/body";
 import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
 
 export interface ProfilePage {
-  on(event: "switchAccount", listener: () => void): this;
+  on(event: "chooseAccount", listener: () => void): this;
   on(event: "signOut", listener: () => void): this;
 }
 
@@ -79,7 +79,7 @@ export class ProfilePage extends EventEmitter {
           () => this.updateRecoveryEmailPage.remove(),
         ),
       )
-      .on("switchAccount", () => this.emit("switchAccount"))
+      .on("chooseAccount", () => this.emit("chooseAccount"))
       .on("signOut", () => this.emit("signOut"));
     this.appendBodies(this.infoPage.body);
   }

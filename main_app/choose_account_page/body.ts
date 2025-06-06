@@ -32,7 +32,7 @@ export class ChooseAccountPage extends EventEmitter {
       preSelectedAccountId?: string,
     ) => ListAccountsPage,
     private appendBodiesFn: AddBodiesFn,
-    preSelectedAccountId?: string,
+    public preSelectedAccountId?: string,
   ) {
     super();
     this.pageSwitcher.goTo(

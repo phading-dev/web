@@ -11,6 +11,7 @@ import { UpdateRecoveryEmailPage } from "./update_recovery_email_page/body";
 import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+import { assertThat, eq } from "@selfage/test_matcher";
 
 normalizeBody();
 
@@ -144,6 +145,46 @@ TEST_RUNNER.run({
             "/profile_page_go_to_update_recovery_email_diff.png",
           ),
         );
+
+        // Execute
+        this.cut.updateRecoveryEmailPage.emit("back");
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/profile_page_back_from_update_recovery_email.png",
+          ),
+          path.join(__dirname, "/golden/profile_page_default.png"),
+          path.join(
+            __dirname,
+            "/profile_page_back_from_update_recovery_email_diff.png",
+          ),
+        );
+
+        // Prepare
+        let chooseAccount = false;
+        this.cut.on("chooseAccount", () => {
+          chooseAccount = true;
+        });
+
+        // Execute
+        this.cut.infoPage.emit("chooseAccount");
+
+        // Verify
+        assertThat(chooseAccount, eq(true), "choose account");
+
+        // Prepare
+        let signOut = false;
+        this.cut.on("signOut", () => {
+          signOut = true;
+        });
+
+        // Execute
+        this.cut.infoPage.emit("signOut");
+
+        // Verify
+        assertThat(signOut, eq(true), "sign out");
       }
       public tearDown() {
         this.cut.remove();
