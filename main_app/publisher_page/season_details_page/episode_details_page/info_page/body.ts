@@ -813,5 +813,6 @@ export class InfoPage extends EventEmitter {
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 }

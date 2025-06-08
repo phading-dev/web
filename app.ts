@@ -1,102 +1,170 @@
 import EventEmitter = require("events");
-import { AddBodiesFn } from "./common/add_bodies_fn";
-import { PageNavigator } from "./common/page_navigator";
+import { TabSwitcher } from "./common/page_navigator";
 import { MainApp } from "./main_app/body";
-import { MarketingPage } from "./marketing_page/body";
-import { App as AppUrl, Page } from "@phading/web_interface/app";
+import { ReplacePrimaryPaymentMethodAction } from "./replace_primary_payment_method_action/action";
+import { SetConnectedAccountOnboardedAction } from "./set_connected_account_onboarded_action/action";
+import { AppRl } from "@phading/web_interface/app";
 
 export interface App {
-  on(event: "newUrl", listener: (newUrl: AppUrl) => void): this;
+  on(event: "replaceRl", listener: (rl: AppRl) => void): this;
+  on(event: "pushRl", listener: (rl: AppRl) => void): this;
+  on(event: "rlApplied", listener: () => void): this;
+  on(event: "chosen", listener: (accountId: string) => void): this;
 }
 
 export class App extends EventEmitter {
   public static create(documentBody: HTMLElement): App {
-    return new App(MainApp.create, MarketingPage.create, documentBody);
-  }
-
-  public mainApp: MainApp;
-  public marketingPage: MarketingPage;
-  private pageNavigator: PageNavigator<Page>;
-  private url: AppUrl;
-
-  public constructor(
-    private createMainApp: (addBodiesFn: AddBodiesFn) => MainApp,
-    private createMarketingPage: () => MarketingPage,
-    private documentBody: HTMLElement,
-  ) {
-    super();
-    this.pageNavigator = new PageNavigator(
-      (page) => this.addPage(page),
-      (page) => this.removePage(page),
-      (page) => this.updatePage(page),
+    return new App(
+      MainApp.create,
+      ReplacePrimaryPaymentMethodAction.create,
+      SetConnectedAccountOnboardedAction.create,
+      documentBody,
     );
   }
 
-  public applyUrl(newUrl?: AppUrl): void {
-    if (!newUrl) {
-      newUrl = {};
-    }
-    if (!newUrl.main) {
-      newUrl.page = Page.MAIN;
-    }
-    this.url = newUrl;
-    this.pageNavigator.goTo(this.url.page);
+  private pageSwitcher = new TabSwitcher();
+  public mainApp: MainApp;
+  public replacePrimaryPaymentMethodAction: ReplacePrimaryPaymentMethodAction;
+  public setConnectedAccountOnboardedAction: SetConnectedAccountOnboardedAction;
+  private rl: AppRl;
+
+  public constructor(
+    private createMainApp: typeof MainApp.create,
+    private createReplacePrimaryPaymentMethodAction: typeof ReplacePrimaryPaymentMethodAction.create,
+    private createSetConnectedAccountOnboardedAction: typeof SetConnectedAccountOnboardedAction.create,
+    private documentBody: HTMLElement,
+  ) {
+    super();
   }
 
-  private addPage(page: Page): void {
-    switch (page) {
-      case Page.MAIN:
-        this.mainApp = this.createMainApp((...bodies) =>
-          this.documentBody.append(...bodies),
-        ).on("newUrl", (newUrl) => {
-          this.url.main = newUrl;
-          this.emit("newUrl", this.url);
-        });
-        break;
-      case Page.MARKETING:
-        this.marketingPage = this.createMarketingPage().on(
-          "signUp",
-          (accountType) => {
-            let newUrl: AppUrl = {
-              page: Page.MAIN,
-              main: {
-                auth: {
-                  initAccountType: accountType,
-                },
-              },
-            };
-            this.applyUrl(newUrl);
-            this.emit("newUrl", newUrl);
-          },
+  private replaceRl(rl: AppRl): void {
+    this.emit("replaceRl", rl);
+    this.applyRl(rl);
+  }
+
+  public async applyRl(rl?: AppRl): Promise<void> {
+    this.rl = rl;
+    if (!this.rl) {
+      this.rl = {};
+    }
+    if (
+      !this.rl.main &&
+      !this.rl.replacePrimaryPaymentMethod &&
+      !this.rl.setConnectedAccountOnboarded
+    ) {
+      this.rl.main = {};
+    }
+
+    if (this.rl.main) {
+      if (!this.mainApp) {
+        this.pageSwitcher.goTo(
+          () => this.addMainApp(),
+          () => this.removeMainApp(),
         );
-        this.documentBody.append(this.marketingPage.body);
-        break;
+      }
+      await this.mainApp.applyRl(this.rl.main);
+    } else if (
+      this.rl.replacePrimaryPaymentMethod &&
+      (!this.replacePrimaryPaymentMethodAction ||
+        this.replacePrimaryPaymentMethodAction.accountId !==
+          this.rl.replacePrimaryPaymentMethod.accountId)
+    ) {
+      this.pageSwitcher.goTo(
+        () =>
+          this.addReplacePrimaryPaymentMethodAction(
+            this.rl.replacePrimaryPaymentMethod.accountId,
+          ),
+        () => this.removeReplacePrimaryPaymentMethodAction(),
+      );
+    } else if (
+      this.rl.setConnectedAccountOnboarded &&
+      (!this.setConnectedAccountOnboardedAction ||
+        this.setConnectedAccountOnboardedAction.accountId !==
+          this.rl.setConnectedAccountOnboarded.accountId)
+    ) {
+      this.pageSwitcher.goTo(
+        () =>
+          this.addSetConnectedAccountOnboardedAction(
+            this.rl.setConnectedAccountOnboarded.accountId,
+          ),
+        () => this.removeSetConnectedAccountOnboardedAction(),
+      );
     }
+    this.emit("rlApplied");
   }
 
-  private removePage(page: Page): void {
-    switch (page) {
-      case Page.MAIN:
-        this.mainApp.remove();
-        break;
-      case Page.MARKETING:
-        this.marketingPage.remove();
-        break;
-    }
+  private addMainApp(): void {
+    this.mainApp = this.createMainApp((...bodies) =>
+      this.documentBody.append(...bodies),
+    )
+      .on("replaceRl", (rl) => {
+        this.rl.main = rl;
+        this.emit("replaceRl", this.rl);
+      })
+      .on("pushRl", (rl) => {
+        this.rl.main = rl;
+        this.emit("pushRl", this.rl);
+      })
+      .on("chosen", (accountId) => {
+        this.emit("chosen", accountId);
+      });
   }
 
-  private updatePage(page: Page): void {
-    switch (page) {
-      case Page.MAIN:
-        this.mainApp.checkAuthAndApplyUrl(this.url.main);
-        break;
-      case Page.MARKETING:
-        this.marketingPage.applyUrl(this.url.marketing);
-        break;
-    }
+  private removeMainApp(): void {
+    this.mainApp.remove();
+    this.mainApp = undefined;
+  }
+
+  private addReplacePrimaryPaymentMethodAction(accountId: string): void {
+    this.replacePrimaryPaymentMethodAction =
+      this.createReplacePrimaryPaymentMethodAction(accountId).on(
+        "complete",
+        (accountId) => {
+          this.replaceRl({
+            main: {
+              chooseAccount: {
+                accountId: accountId,
+              },
+              account: {
+                payment: {},
+              },
+            },
+          });
+        },
+      );
+  }
+
+  private removeReplacePrimaryPaymentMethodAction(): void {
+    this.replacePrimaryPaymentMethodAction.removeAllListeners();
+    this.replacePrimaryPaymentMethodAction = undefined;
+  }
+
+  private addSetConnectedAccountOnboardedAction(accountId: string): void {
+    this.setConnectedAccountOnboardedAction =
+      this.createSetConnectedAccountOnboardedAction(accountId).on(
+        "complete",
+        (accountId) => {
+          this.replaceRl({
+            main: {
+              chooseAccount: {
+                accountId: accountId,
+              },
+              account: {
+                payout: {},
+              },
+            },
+          });
+        },
+      );
+  }
+
+  private removeSetConnectedAccountOnboardedAction(): void {
+    this.setConnectedAccountOnboardedAction.removeAllListeners();
+    this.setConnectedAccountOnboardedAction = undefined;
   }
 
   public remove(): void {
-    this.pageNavigator.remove();
+    this.pageSwitcher.remove();
+    this.removeAllListeners();
   }
 }

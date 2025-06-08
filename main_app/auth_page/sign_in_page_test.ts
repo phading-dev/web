@@ -1,5 +1,4 @@
 import path = require("path");
-import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
 import { normalizeBody } from "../../common/normalize_body";
 import { setDesktopView } from "../../common/view_port";
 import { SignInPage } from "./sign_in_page";
@@ -28,7 +27,7 @@ TEST_RUNNER.run({
         let serviceClientMock = new WebServiceClientMock();
 
         // Execute
-        this.cut = new SignInPage(LOCAL_SESSION_STORAGE, serviceClientMock);
+        this.cut = new SignInPage(serviceClientMock);
         document.body.appendChild(this.cut.body);
 
         // Verify
@@ -81,19 +80,15 @@ TEST_RUNNER.run({
         serviceClientMock.response = {
           signedSession: "signed_session",
         } as SignInResponse;
+        let signedSession: string;
+        this.cut.on("auth", (session) => (signedSession = session));
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
-        await new Promise<void>((resolve) =>
-          this.cut.once("signedIn", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("auth", resolve));
 
         // Verify
-        assertThat(
-          LOCAL_SESSION_STORAGE.read(),
-          eq("signed_session"),
-          "stored session",
-        );
+        assertThat(signedSession, eq("signed_session"), "stored session");
         assertThat(
           serviceClientMock.request.descriptor,
           eq(SIGN_IN),
@@ -110,14 +105,13 @@ TEST_RUNNER.run({
       }
       public tearDown() {
         this.cut.remove();
-        LOCAL_SESSION_STORAGE.clear();
       }
     })(),
     {
       name: "GoToSignUp",
       execute: async () => {
         // Prepare
-        let cut = new SignInPage(undefined, undefined);
+        let cut = new SignInPage(undefined);
         let goToSignUp = false;
         cut.on("signUp", () => (goToSignUp = true));
 

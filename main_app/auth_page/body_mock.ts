@@ -10,9 +10,8 @@ export class AuthPageMock extends AuthPage {
     signUpInitAccountType?: AccountType,
   ) {
     super(
-      () => new SignInPage(undefined, undefined),
-      (initAccountType) =>
-        new SignUpPage(undefined, undefined, initAccountType),
+      () => new SignInPage(undefined),
+      (initAccountType) => new SignUpPage(undefined, initAccountType),
       appendBodies,
       signUpInitAccountType,
     );

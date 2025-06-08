@@ -14,19 +14,16 @@ import {
   CHECK_CAPABILITY_REQUEST_BODY,
   CheckCapabilityResponse,
 } from "@phading/user_session_service_interface/web/interface";
-import { AccountPage as AccountPageUrl } from "@phading/web_interface/main/account/page";
-import {
-  MAIN_APP,
-  MainApp as MainAppUrl,
-} from "@phading/web_interface/main/app";
-import { ConsumerPage as ConsumerPageUrl } from "@phading/web_interface/main/consumer/page";
-import { PublisherPage as PublisherPageUrl } from "@phading/web_interface/main/publisher/page";
+import { AccountPageRl } from "@phading/web_interface/main/account/page";
+import { MAIN_APP_RL, MainAppRl } from "@phading/web_interface/main/app";
+import { ConsumerPageRl } from "@phading/web_interface/main/consumer/page";
+import { PublisherPageRl } from "@phading/web_interface/main/publisher/page";
 import { newUnauthorizedError } from "@selfage/http_error";
 import { copyMessage } from "@selfage/message/copier";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
-import { assertThat, eq } from "@selfage/test_matcher";
+import { assertThat, eq, isArray } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 normalizeBody();
@@ -34,9 +31,10 @@ normalizeBody();
 function createMainApp(
   serviceClientMock: WebServiceClientMock,
   window?: Window,
-): MainApp {
+): [MainApp, Array<MainAppRl>] {
   let nowDate = new Date("2023-10-10T00:00:00Z");
-  return new MainApp(
+  let rls = new Array<MainAppRl>();
+  let app = new MainApp(
     window ??
       ({
         setInterval: () => {},
@@ -44,15 +42,22 @@ function createMainApp(
       } as any),
     LOCAL_SESSION_STORAGE,
     serviceClientMock,
-    (appendBodies) => new AccountPageMock(() => nowDate, appendBodies),
+    (appendBodies, canEarn) =>
+      new AccountPageMock(() => nowDate, appendBodies, canEarn),
     (appendBodies, initAccountType) =>
       new AuthPageMock(appendBodies, initAccountType),
-    (appendBodies, preSelectedAccountId) =>
-      new ChooseAccountPageMock(appendBodies, preSelectedAccountId),
+    (appendBodies, accountId) =>
+      new ChooseAccountPageMock(appendBodies, accountId),
     (appendBodies) => new ConsumerPageMock(() => nowDate, appendBodies),
     (appendBodies) => new PublisherPageMock(() => nowDate, appendBodies),
     (...bodies) => document.body.append(...bodies),
-  );
+  )
+    .on("pushRl", (rl) => rls.push(copyMessage(rl, MAIN_APP_RL)))
+    .on(
+      "replaceRl",
+      (rl) => (rls[rls.length - 1] = copyMessage(rl, MAIN_APP_RL)),
+    );
+  return [app, rls];
 }
 
 TEST_RUNNER.run({
@@ -65,17 +70,11 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        this.cut = createMainApp(serviceClientMock);
-        let replaceUrl: MainAppUrl;
-        this.cut.on(
-          "replaceUrl",
-          (url) => (replaceUrl = copyMessage(url, MAIN_APP)),
-        );
-        let newUrl: MainAppUrl;
-        this.cut.on("newUrl", (url) => (newUrl = copyMessage(url, MAIN_APP)));
+        let [cut, rls] = createMainApp(serviceClientMock);
+        this.cut = cut;
 
         // Execute
-        await this.cut.applyUrl();
+        await this.cut.applyRl();
 
         // Verify
         await asyncAssertScreenshot(
@@ -85,7 +84,6 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        LOCAL_SESSION_STORAGE.save("session 1");
         let response: CheckCapabilityResponse = {
           capabilities: {
             canConsume: true,
@@ -96,12 +94,17 @@ TEST_RUNNER.run({
         serviceClientMock.response = response;
 
         // Execute
-        this.cut.authPage.emit("signedIn");
+        this.cut.authPage.emit("auth", "session 1");
         await new Promise<void>((resolve) =>
-          this.cut.once("urlApplied", resolve),
+          this.cut.once("rlApplied", resolve),
         );
 
         // Verify
+        assertThat(
+          LOCAL_SESSION_STORAGE.read(),
+          eq("session 1"),
+          "session after auth",
+        );
         assertThat(
           serviceClientMock.request.descriptor,
           eq(CHECK_CAPABILITY),
@@ -121,7 +124,6 @@ TEST_RUNNER.run({
           ),
           "RC body",
         );
-        assertThat(newUrl, eq(undefined), "no newUrl");
         await asyncAssertScreenshot(
           path.join(__dirname, "/main_app_consumer.png"),
           path.join(__dirname, "/golden/main_app_consumer.png"),
@@ -129,40 +131,47 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.consumerPage.emit("newUrl", {
+        this.cut.consumerPage.emit("pushRl", {
           history: {},
-        } as ConsumerPageUrl);
+        } as ConsumerPageRl);
 
         // Verify
         assertThat(
-          newUrl,
-          eqMessage(
-            {
-              consumer: {
-                history: {},
+          rls,
+          isArray([
+            eqMessage(
+              {
+                consumer: {
+                  history: {},
+                },
               },
-            },
-            MAIN_APP,
-          ),
-          "new url consumer history",
+              MAIN_APP_RL,
+            ),
+          ]),
+          "new rl consumer history",
         );
+
+        // Prepare
+        rls.length = 0;
 
         // Execute
         this.cut.consumerPage.emit("goToAccount");
         await new Promise<void>((resolve) =>
-          this.cut.once("urlApplied", resolve),
+          this.cut.once("rlApplied", resolve),
         );
 
         // Verify
         assertThat(
-          newUrl,
-          eqMessage(
-            {
-              account: {},
-            },
-            MAIN_APP,
-          ),
-          "new url account profile",
+          rls,
+          isArray([
+            eqMessage(
+              {
+                account: {},
+              },
+              MAIN_APP_RL,
+            ),
+          ]),
+          "new rl account profile",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/main_app_account_consumer.png"),
@@ -171,77 +180,71 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.accountPage.emit("replaceUrl", {
+        this.cut.accountPage.emit("replaceRl", {
           payment: {},
-        } as AccountPageUrl);
+        } as AccountPageRl);
 
         // Verify
         assertThat(
-          replaceUrl,
-          eqMessage(
-            {
-              account: {
-                payment: {},
+          rls,
+          isArray([
+            eqMessage(
+              {
+                account: {
+                  payment: {},
+                },
               },
-            },
-            MAIN_APP,
-          ),
-          "replace url account payment",
+              MAIN_APP_RL,
+            ),
+          ]),
+          "replace rl account payment",
         );
 
+        // Prepare
+        rls.length = 0;
+
         // Execute
-        this.cut.accountPage.emit("newUrl", {
+        this.cut.accountPage.emit("pushRl", {
           statements: {},
-        } as AccountPageUrl);
+        } as AccountPageRl);
 
         // Verify
         assertThat(
-          newUrl,
-          eqMessage(
-            {
-              account: {
-                statements: {},
+          rls,
+          isArray([
+            eqMessage(
+              {
+                account: {
+                  statements: {},
+                },
               },
-            },
-            MAIN_APP,
-          ),
-          "new url account statements",
+              MAIN_APP_RL,
+            ),
+          ]),
+          "new rl account statements",
         );
+
+        // Prepare
+        rls.length = 0;
 
         // Execute
-        this.cut.accountPage.emit("goToHome");
-        await new Promise<void>((resolve) =>
-          this.cut.once("urlApplied", resolve),
-        );
-
-        // Verify
-        assertThat(newUrl, eqMessage({}, MAIN_APP), "new url home");
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/main_app_consumer.png"),
-          path.join(__dirname, "/golden/main_app_consumer.png"),
-          path.join(__dirname, "/main_app_consumer_diff.png"),
-        );
-
-        // Execute
-        this.cut.consumerPage.emit("goToAccount");
-        await new Promise<void>((resolve) =>
-          this.cut.once("urlApplied", resolve),
-        );
         this.cut.accountPage.emit("chooseAccount");
         await new Promise<void>((resolve) =>
-          this.cut.once("urlApplied", resolve),
+          this.cut.once("rlApplied", resolve),
         );
 
         // Verify
         assertThat(
-          newUrl,
-          eqMessage(
-            {
-              chooseAccount: {},
-            },
-            MAIN_APP,
-          ),
-          "new url chooseAccount",
+          rls,
+          isArray([
+            eqMessage(
+              {
+                chooseAccount: {},
+              },
+              MAIN_APP_RL,
+            ),
+          ]),
+          "new rl chooseAccount",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/main_app_choose_account.png"),
@@ -260,16 +263,21 @@ TEST_RUNNER.run({
         serviceClientMock.response = response;
 
         // Execute
-        this.cut.chooseAccountPage.emit("choose");
+        this.cut.chooseAccountPage.emit("choose", "session 2");
         await new Promise<void>((resolve) =>
-          this.cut.once("urlApplied", resolve),
+          this.cut.once("rlApplied", resolve),
         );
 
         // Verify
         assertThat(
-          newUrl,
-          eqMessage({}, MAIN_APP),
-          "new url home after choose",
+          LOCAL_SESSION_STORAGE.read(),
+          eq("session 2"),
+          "session after choose",
+        );
+        assertThat(
+          rls,
+          isArray([eqMessage({}, MAIN_APP_RL)]),
+          "new rl home after choose",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/main_app_publisher.png"),
@@ -277,41 +285,51 @@ TEST_RUNNER.run({
           path.join(__dirname, "/main_app_publisher_diff.png"),
         );
 
+        // Prepare
+        rls.length = 0;
+
         // Execute
-        this.cut.publisherPage.emit("newUrl", {
+        this.cut.publisherPage.emit("pushRl", {
           usage: {},
-        } as PublisherPageUrl);
+        } as PublisherPageRl);
 
         // Verify
         assertThat(
-          newUrl,
-          eqMessage(
-            {
-              publisher: {
-                usage: {},
+          rls,
+          isArray([
+            eqMessage(
+              {
+                publisher: {
+                  usage: {},
+                },
               },
-            },
-            MAIN_APP,
-          ),
-          "new url publisher usage",
+              MAIN_APP_RL,
+            ),
+          ]),
+          "new rl publisher usage",
         );
+
+        // Prepare
+        rls.length = 0;
 
         // Execute
         this.cut.publisherPage.emit("goToAccount");
         await new Promise<void>((resolve) =>
-          this.cut.once("urlApplied", resolve),
+          this.cut.once("rlApplied", resolve),
         );
 
         // Verify
         assertThat(
-          newUrl,
-          eqMessage(
-            {
-              account: {},
-            },
-            MAIN_APP,
-          ),
-          "new url account after publisher",
+          rls,
+          isArray([
+            eqMessage(
+              {
+                account: {},
+              },
+              MAIN_APP_RL,
+            ),
+          ]),
+          "new rl account as publisher",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/main_app_account_publisher.png"),
@@ -319,14 +337,54 @@ TEST_RUNNER.run({
           path.join(__dirname, "/main_app_account_publisher_diff.png"),
         );
 
+        // Prepare
+        rls.length = 0;
+
         // Execute
-        this.cut.accountPage.emit("signOut");
+        this.cut.accountPage.emit("goToHome");
         await new Promise<void>((resolve) =>
-          this.cut.once("urlApplied", resolve),
+          this.cut.once("rlApplied", resolve),
         );
 
         // Verify
-        assertThat(newUrl, eqMessage({}, MAIN_APP), "new url after sign out");
+        assertThat(
+          rls,
+          isArray([eqMessage({}, MAIN_APP_RL)]),
+          "new rl publisher home",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/main_app_publisher.png"),
+          path.join(__dirname, "/golden/main_app_publisher.png"),
+          path.join(__dirname, "/main_app_publisher_diff.png"),
+        );
+
+        // Prepare
+        rls.length = 0;
+
+        // Execute
+        this.cut.publisherPage.emit("goToAccount");
+        await new Promise<void>((resolve) =>
+          this.cut.once("rlApplied", resolve),
+        );
+        this.cut.accountPage.emit("signOut");
+        await new Promise<void>((resolve) =>
+          this.cut.once("rlApplied", resolve),
+        );
+
+        // Verify
+        assertThat(
+          rls,
+          isArray([
+            eqMessage(
+              {
+                account: {},
+              },
+              MAIN_APP_RL,
+            ),
+            eqMessage({}, MAIN_APP_RL),
+          ]),
+          "new rl after sign out",
+        );
         assertThat(LOCAL_SESSION_STORAGE.read(), eq(null), "session cleared");
         await asyncAssertScreenshot(
           path.join(__dirname, "/main_app_auth.png"),
@@ -340,8 +398,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name =
-        "ApplyUrl_ChooseAccountPreselectedPublisher_ApplyWithPreselectedConsumer_ChooseAndContinueAsConsumer_ApplyUrl_ChooseAccountSignOut";
+      public name = "ApplyRl_SelectedConsumer_ApplyRl_ChooseAccountSignOut";
       private cut: MainApp;
       public async execute() {
         // Prepare
@@ -356,105 +413,70 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         LOCAL_SESSION_STORAGE.save("session 1");
-        this.cut = createMainApp(serviceClientMock);
-        let newUrl: MainAppUrl;
-        this.cut.on("newUrl", (url) => (newUrl = copyMessage(url, MAIN_APP)));
-
-        // Execute
-        await this.cut.applyUrl({
+        let [cut, rls] = createMainApp(serviceClientMock);
+        this.cut = cut;
+        rls.push({
           chooseAccount: {
-            preSelectedAccountId: "publisher 1",
+            accountId: "consumer 1",
           },
           consumer: {
             home: {},
           },
         });
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/main_app_choose_account_preselected_publisher.png",
-          ),
-          path.join(
-            __dirname,
-            "/golden/main_app_choose_account_preselected_publisher.png",
-          ),
-          path.join(
-            __dirname,
-            "/main_app_choose_account_preselected_publisher_diff.png",
-          ),
-        );
-
-        // Execute
-        await this.cut.applyUrl({
-          chooseAccount: {
-            preSelectedAccountId: "consumer 1",
-          },
-          consumer: {
-            home: {},
-          },
+        let chosenAccountId: string;
+        this.cut.on("chosen", (accountId) => {
+          chosenAccountId = accountId;
         });
 
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/main_app_choose_account_preselected_consumer.png",
-          ),
-          path.join(
-            __dirname,
-            "/golden/main_app_choose_account_preselected_consumer.png",
-          ),
-          path.join(
-            __dirname,
-            "/main_app_choose_account_preselected_consumer_diff.png",
-          ),
-        );
-
         // Execute
-        this.cut.chooseAccountPage.emit("choose");
-        await new Promise<void>((resolve) =>
-          this.cut.once("urlApplied", resolve),
-        );
+        await this.cut.applyRl(rls[0]);
 
         // Verify
+        assertThat(chosenAccountId, eq("consumer 1"), "chosen account id");
         assertThat(
-          newUrl,
-          eqMessage(
-            {
-              consumer: {
-                home: {},
+          rls,
+          isArray([
+            eqMessage(
+              {
+                consumer: {
+                  home: {},
+                },
               },
-            },
-            MAIN_APP,
-          ),
-          "new url consumer home",
+              MAIN_APP_RL,
+            ),
+          ]),
+          "new rl choose account selected consumer",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/main_app_consumer.png"),
+          path.join(
+            __dirname,
+            "/main_app_choose_account_selected_consumer.png",
+          ),
           path.join(__dirname, "/golden/main_app_consumer.png"),
-          path.join(__dirname, "/main_app_consumer_diff.png"),
+          path.join(
+            __dirname,
+            "/main_app_choose_account_selected_consumer_diff.png",
+          ),
         );
 
         // Prepare
-        await this.cut.applyUrl({
-          chooseAccount: {
-            preSelectedAccountId: "consumer 1",
-          },
-          consumer: {
-            home: {},
-          },
+        rls.length = 0;
+        await this.cut.applyRl({
+          chooseAccount: {},
         });
 
         // Execute
         this.cut.chooseAccountPage.emit("signOut");
         await new Promise<void>((resolve) =>
-          this.cut.once("urlApplied", resolve),
+          this.cut.once("rlApplied", resolve),
         );
 
         // Verify
-        assertThat(newUrl, eqMessage({}, MAIN_APP), "new url consumer home");
+        assertThat(
+          rls,
+          isArray([eqMessage({}, MAIN_APP_RL)]),
+          "new rl sign out",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/main_app_auth.png"),
           path.join(__dirname, "/golden/main_app_auth.png"),
@@ -467,7 +489,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_AccountPayoutPage_AsConsumer";
+      public name = "ApplyRl_AccountPayoutPageAsConsumer_PushRl";
       private cut: MainApp;
       public async execute() {
         // Prepare
@@ -482,35 +504,58 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         LOCAL_SESSION_STORAGE.save("session 1");
-        this.cut = createMainApp(serviceClientMock);
-        let replaceUrl: MainAppUrl;
-        this.cut.on(
-          "replaceUrl",
-          (url) => (replaceUrl = copyMessage(url, MAIN_APP)),
-        );
-
-        // Execute
-        await this.cut.applyUrl({
+        let [cut, rls] = createMainApp(serviceClientMock);
+        this.cut = cut;
+        rls.push({
           account: {
             payout: {},
           },
         });
 
+        // Execute
+        await this.cut.applyRl(rls[0]);
+
         // Verify
         assertThat(
-          replaceUrl,
-          eqMessage(
-            {
-              account: {},
-            },
-            MAIN_APP,
-          ),
-          "replace url account",
+          rls,
+          isArray([
+            eqMessage(
+              {
+                account: {},
+              },
+              MAIN_APP_RL,
+            ),
+          ]),
+          "replace rl account",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/main_app_account_consumer.png"),
           path.join(__dirname, "/golden/main_app_account_consumer.png"),
           path.join(__dirname, "/main_app_account_consumer_diff.png"),
+        );
+
+        // Prepare
+        rls.length = 0;
+
+        // Execute
+        this.cut.accountPage.emit("pushRl", {
+          payment: {},
+        } as AccountPageRl);
+
+        // Verify
+        assertThat(
+          rls,
+          isArray([
+            eqMessage(
+              {
+                account: {
+                  payment: {},
+                },
+              },
+              MAIN_APP_RL,
+            ),
+          ]),
+          "new rl account payment",
         );
       }
       public tearDown() {
@@ -519,7 +564,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_EmptyNoCapabilities";
+      public name = "ApplyRl_EmptyNoCapabilities";
       private cut: MainApp;
       public async execute() {
         // Prepare
@@ -534,10 +579,10 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         LOCAL_SESSION_STORAGE.save("session 1");
-        this.cut = createMainApp(serviceClientMock);
+        [this.cut] = createMainApp(serviceClientMock);
 
         // Execute
-        await this.cut.applyUrl({});
+        await this.cut.applyRl({});
 
         // Verify
         await asyncAssertScreenshot(
@@ -552,7 +597,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_PublisherUrlAsConsumer_ConsumerUrlUpdatePage";
+      public name = "ApplyRl_PublisherRlAsConsumer_ConsumerRlUpdatePage_PushRl";
       private cut: MainApp;
       public async execute() {
         // Prepare
@@ -567,14 +612,21 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         LOCAL_SESSION_STORAGE.save("session 1");
-        this.cut = createMainApp(serviceClientMock);
-
-        // Execute
-        await this.cut.applyUrl({
+        let [cut, rls] = createMainApp(serviceClientMock);
+        this.cut = cut;
+        rls.push({
           publisher: {},
         });
 
+        // Execute
+        await this.cut.applyRl(rls[0]);
+
         // Verify
+        assertThat(
+          rls,
+          isArray([eqMessage({}, MAIN_APP_RL)]),
+          "replace rl home",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/main_app_consumer.png"),
           path.join(__dirname, "/golden/main_app_consumer.png"),
@@ -585,7 +637,7 @@ TEST_RUNNER.run({
         let page = this.cut.consumerPage;
 
         // Execute
-        await this.cut.applyUrl({
+        await this.cut.applyRl({
           consumer: {
             listRecentPremieres: {},
           },
@@ -595,7 +647,7 @@ TEST_RUNNER.run({
         assertThat(
           this.cut.consumerPage,
           eq(page),
-          "same consumer page after applyUrl",
+          "same consumer page after applyRl",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/main_app_consumer_list_recent_premieres.png"),
@@ -608,6 +660,30 @@ TEST_RUNNER.run({
             "/main_app_consumer_list_recent_premieres_diff.png",
           ),
         );
+
+        // Prepare
+        rls.length = 0;
+
+        // Excute
+        this.cut.consumerPage.emit("pushRl", {
+          history: {},
+        } as ConsumerPageRl);
+
+        // Verify
+        assertThat(
+          rls,
+          isArray([
+            eqMessage(
+              {
+                consumer: {
+                  history: {},
+                },
+              },
+              MAIN_APP_RL,
+            ),
+          ]),
+          "new rl consumer history",
+        );
       }
       public tearDown() {
         LOCAL_SESSION_STORAGE.clear();
@@ -615,7 +691,8 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_ConsumerUrlAsPublisher_PublisherUrlUpdatePage";
+      public name =
+        "ApplyRl_ConsumerRlAsPublisher_PublisherRlUpdatePage_PushRl";
       private cut: MainApp;
       public async execute() {
         // Prepare
@@ -630,14 +707,23 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         LOCAL_SESSION_STORAGE.save("session 1");
-        this.cut = createMainApp(serviceClientMock);
+        let [cut, rls] = createMainApp(serviceClientMock);
+        this.cut = cut;
+        rls.push({
+          consumer: {},
+        });
 
         // Execute
-        await this.cut.applyUrl({
+        await this.cut.applyRl({
           consumer: {},
         });
 
         // Verify
+        assertThat(
+          rls,
+          isArray([eqMessage({}, MAIN_APP_RL)]),
+          "replace rl home",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/main_app_publisher.png"),
           path.join(__dirname, "/golden/main_app_publisher.png"),
@@ -648,7 +734,7 @@ TEST_RUNNER.run({
         let page = this.cut.publisherPage;
 
         // Execute
-        await this.cut.applyUrl({
+        await this.cut.applyRl({
           publisher: {},
         });
 
@@ -659,6 +745,30 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/main_app_publisher_create_season.png"),
           path.join(__dirname, "/main_app_publisher_create_season_diff.png"),
         );
+
+        // Prepare
+        rls.length = 0;
+
+        // Execute
+        this.cut.publisherPage.emit("pushRl", {
+          usage: {},
+        } as PublisherPageRl);
+
+        // Verify
+        assertThat(
+          rls,
+          isArray([
+            eqMessage(
+              {
+                publisher: {
+                  usage: {},
+                },
+              },
+              MAIN_APP_RL,
+            ),
+          ]),
+          "new rl publisher usage",
+        );
       }
       public tearDown() {
         LOCAL_SESSION_STORAGE.clear();
@@ -666,7 +776,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_AccountUrlProfilePage_AccountUrlPaymentPage";
+      public name = "ApplyRl_AccountRlProfilePage_AccountRlPaymentPage";
       private cut: MainApp;
       public async execute() {
         // Prepare
@@ -681,10 +791,10 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         LOCAL_SESSION_STORAGE.save("session 1");
-        this.cut = createMainApp(serviceClientMock);
+        [this.cut] = createMainApp(serviceClientMock);
 
         // Execute
-        await this.cut.applyUrl({
+        await this.cut.applyRl({
           account: {
             profile: {},
           },
@@ -701,7 +811,7 @@ TEST_RUNNER.run({
         let page = this.cut.accountPage;
 
         // Execute
-        await this.cut.applyUrl({
+        await this.cut.applyRl({
           account: {
             payment: {},
           },
@@ -721,7 +831,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_AuthCheckFailed_UrlChanged_AuthedAndApplyNewUrl";
+      public name = "ApplyRl_AuthCheckFailed_RlChanged_AuthedAndApplyNewRl";
       private cut: MainApp;
       public async execute() {
         // Prepare
@@ -729,16 +839,16 @@ TEST_RUNNER.run({
         let serviceClientMock = new WebServiceClientMock();
         serviceClientMock.error = newUnauthorizedError("Fake error");
         LOCAL_SESSION_STORAGE.save("session 1");
-        this.cut = createMainApp(serviceClientMock);
+        [this.cut] = createMainApp(serviceClientMock);
 
         // Execute
-        await this.cut.applyUrl({});
+        await this.cut.applyRl({});
 
         // Verify
         assertThat(Boolean(this.cut.authPage), eq(true), "auth page created");
 
         // Execute
-        await this.cut.applyUrl({
+        await this.cut.applyRl({
           account: {},
         });
 
@@ -757,12 +867,17 @@ TEST_RUNNER.run({
         serviceClientMock.response = response;
 
         // Execute
-        this.cut.authPage.emit("signedIn");
+        this.cut.authPage.emit("auth", "session 2");
         await new Promise<void>((resolve) =>
-          this.cut.once("urlApplied", resolve),
+          this.cut.once("rlApplied", resolve),
         );
 
         // Verify
+        assertThat(
+          LOCAL_SESSION_STORAGE.read(),
+          eq("session 2"),
+          "session after auth",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/main_app_account_consumer.png"),
           path.join(__dirname, "/golden/main_app_account_consumer.png"),

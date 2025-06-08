@@ -144,5 +144,6 @@ export class UpdateDraftPricingPage extends EventEmitter {
 
   public remove(): void {
     this.inputFormPage.remove();
+    this.removeAllListeners();
   }
 }

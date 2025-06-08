@@ -1,7 +1,6 @@
 import EventEmitter = require("events");
 import { OUTLINE_BUTTON_STYLE } from "../../../common/button_styles";
 import { SCHEME } from "../../../common/color_scheme";
-import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import {
   PAGE_CENTER_CARD_BACKGROUND_STYLE,
@@ -11,48 +10,32 @@ import { FONT_L, FONT_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { AccountItem, AddAccountItem } from "./account_item";
 import { AccountSummary } from "@phading/user_service_interface/web/self/account";
-import {
-  newListAccountsRequest,
-  newSwitchAccountRequest,
-} from "@phading/user_service_interface/web/self/client";
+import { newListAccountsRequest } from "@phading/user_service_interface/web/self/client";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
-import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
 
 export interface ListAccountsPage {
-  on(event: "choose", listener: () => void): this;
-  on(event: "createAccount", listener: () => void): this;
+  on(event: "switch", listener: (accountId: string) => void): this;
+  on(event: "create", listener: () => void): this;
   on(event: "signOut", listener: () => void): this;
   on(event: "loaded", listener: () => void): this;
 }
 
 export class ListAccountsPage extends EventEmitter {
-  public static create(preSelectedAccountId?: string): ListAccountsPage {
-    return new ListAccountsPage(
-      LOCAL_SESSION_STORAGE,
-      SERVICE_CLIENT,
-      AccountItem.create,
-      AddAccountItem.create,
-      preSelectedAccountId,
-    );
+  public static create(error?: string): ListAccountsPage {
+    return new ListAccountsPage(SERVICE_CLIENT, error);
   }
 
   public body: HTMLDivElement;
-  public accountItems: Array<AccountItem>;
-  public addAccountItem = new Ref<AddAccountItem>();
+  public accountItems = new Array<AccountItem>();
+  public createAccountButton = new Ref<AddAccountItem>();
   public signOutButton = new Ref<HTMLDivElement>();
   public errorMessage = new Ref<HTMLDivElement>();
 
   public constructor(
-    private localSessionStorage: LocalSessionStorage,
     private serviceClient: WebServiceClient,
-    private createAccountItem: (
-      account: AccountSummary,
-      highlight: boolean,
-    ) => AccountItem,
-    private createAddAccountItem: () => AddAccountItem,
-    private preSelectedAccountId?: string,
+    private error?: string,
   ) {
     super();
     this.body = E.div({
@@ -66,17 +49,6 @@ export class ListAccountsPage extends EventEmitter {
   private async load(): Promise<void> {
     let response = await this.serviceClient.send(newListAccountsRequest({}));
 
-    this.accountItems = response.accounts.map((account) =>
-      this.createAccountItem(
-        account,
-        account.accountId === this.preSelectedAccountId,
-      ),
-    );
-    let accountNotFoundError = this.preSelectedAccountId
-      ? !response.accounts.find(
-          (account) => account.accountId === this.preSelectedAccountId,
-        )
-      : false;
     this.body.append(
       E.div(
         {
@@ -95,8 +67,8 @@ export class ListAccountsPage extends EventEmitter {
             class: "list-accounts-items",
             style: `display: flex; flex-flow: row wrap; justify-content: center; gap: 2rem; padding-bottom: 3rem;`,
           },
-          ...this.accountItems.map((accountItem) => accountItem.body),
-          assign(this.addAccountItem, this.createAddAccountItem()).body,
+          ...response.accounts.map((account) => this.addAccountItem(account)),
+          assign(this.createAccountButton, new AddAccountItem()).body,
         ),
         E.divRef(
           this.signOutButton,
@@ -110,36 +82,30 @@ export class ListAccountsPage extends EventEmitter {
           this.errorMessage,
           {
             class: "list-accounts-error-message",
-            style: `padding-top: 2rem; font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: ${accountNotFoundError ? "visible" : "hidden"};`,
+            style: `padding-top: 2rem; font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: ${this.error ? "visible" : "hidden"};`,
           },
-          E.text(
-            accountNotFoundError ? LOCALIZED_TEXT.accountNotFoundError : "1",
-          ),
+          E.text(this.error ?? "1"),
         ),
       ),
     );
 
-    this.accountItems.forEach((accountItem) => {
-      accountItem.on("choose", (accountId) => this.switchAccount(accountId));
-    });
-    this.addAccountItem.val.on("create", () => this.emit("createAccount"));
+    this.createAccountButton.val.on("create", () => this.emit("create"));
     this.signOutButton.val.addEventListener("click", () =>
       this.emit("signOut"),
     );
     this.emit("loaded");
   }
 
-  private async switchAccount(accountId: string): Promise<void> {
-    let response = await this.serviceClient.send(
-      newSwitchAccountRequest({
-        accountId,
-      }),
+  private addAccountItem(account: AccountSummary): HTMLDivElement {
+    let item = new AccountItem(account).on("choose", (accountId) =>
+      this.emit("switch", accountId),
     );
-    this.localSessionStorage.save(response.signedSession);
-    this.emit("choose");
+    this.accountItems.push(item);
+    return item.body;
   }
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 }

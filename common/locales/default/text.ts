@@ -155,7 +155,10 @@ export default class Text {
     return `Choose an account`;
   }
   get accountNotFoundError() {
-    return `The requested account is not owned by you. You can sign out and sign in to the correct user.`;
+    return `Requested account not found. Or you can sign out and sign in to other users.`;
+  }
+  get switchAccountFailedError() {
+    return `Failed to switch account. Please try again later.`;
   }
   get accountLabel() {
     return `Account`;

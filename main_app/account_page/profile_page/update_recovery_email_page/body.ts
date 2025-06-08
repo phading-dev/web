@@ -129,5 +129,6 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
 
   public remove(): void {
     this.inputFormPage.remove();
+    this.removeAllListeners();
   }
 }

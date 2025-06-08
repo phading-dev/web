@@ -2,7 +2,6 @@ import EventEmitter = require("events");
 import { InputFormPage } from "../../common/input_form_page/body";
 import { ValidationResult } from "../../common/input_form_page/input_with_error_msg";
 import { TextInputWithErrorMsg } from "../../common/input_form_page/text_input";
-import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
 import { SERVICE_CLIENT } from "../../common/web_service_client";
 import { SWITCH_TEXT_STYLE } from "./styles";
@@ -14,17 +13,16 @@ import {
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
-import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
 
 export interface SignInPage {
+  on(event: "auth", listener: (signedSession: string) => void): this;
   on(event: "signUp", listener: () => void): this;
-  on(event: "signedIn", listener: () => void): this;
   on(event: "signInDone", listener: () => void): this;
 }
 
 export class SignInPage extends EventEmitter {
   public static create(): SignInPage {
-    return new SignInPage(LOCAL_SESSION_STORAGE, SERVICE_CLIENT);
+    return new SignInPage(SERVICE_CLIENT);
   }
 
   public usernameInput = new Ref<TextInputWithErrorMsg>();
@@ -33,12 +31,9 @@ export class SignInPage extends EventEmitter {
   public inputFormPage: InputFormPage<SignInResponse>;
   private request: SignInRequestBody = {};
 
-  public constructor(
-    private localSessionStorage: LocalSessionStorage,
-    private serviceClient: WebServiceClient,
-  ) {
+  public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.inputFormPage = new InputFormPage(
+    this.inputFormPage = new InputFormPage<SignInResponse>(
       LOCALIZED_TEXT.signInTitle,
       [
         assign(
@@ -81,7 +76,9 @@ export class SignInPage extends EventEmitter {
         () => this.signIn(),
         (response, error) => this.postSignIn(response, error),
       )
-      .on("handlePrimarySuccess", () => this.emit("signedIn"))
+      .on("handlePrimarySuccess", (response) =>
+        this.emit("auth", response.signedSession),
+      )
       .on("primaryDone", () => this.emit("signInDone"));
     this.usernameInput.val.validate();
     this.passwordInput.val.validate();
@@ -125,7 +122,6 @@ export class SignInPage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.signInError;
     } else {
-      this.localSessionStorage.save(response.signedSession);
       return "";
     }
   }
@@ -135,6 +131,6 @@ export class SignInPage extends EventEmitter {
   }
 
   public remove(): void {
-    this.inputFormPage.remove();
+    this.inputFormPage.removeAllListeners().remove();
   }
 }

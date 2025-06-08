@@ -10,6 +10,7 @@ import { E } from "@selfage/element/factory";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface CancelUploadPage {
+  on(event: "back", listener: () => void): this;
   on(event: "restart", listener: () => void): this;
 }
 
@@ -29,6 +30,7 @@ export class CancelUploadPage extends EventEmitter {
     super();
     this.body = E.div(
       {
+        class: "cancel-upload-page",
         style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       },
       E.div(
@@ -43,16 +45,24 @@ export class CancelUploadPage extends EventEmitter {
   }
 
   private async cancel() {
-    await this.serviceClient.send(
-      newCancelUploadingRequest({
-        seasonId: this.seasonId,
-        episodeId: this.episodeId,
-      }),
-    );
+    try {
+      await this.serviceClient.send(
+        newCancelUploadingRequest({
+          seasonId: this.seasonId,
+          episodeId: this.episodeId,
+        }),
+      );
+    } catch (e) {
+      console.error("Error cancelling upload:", e);
+      // No way to recover from this error. Go back to fetch the latest state.
+      this.emit("back");
+      return;
+    }
     this.emit("restart");
   }
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 }

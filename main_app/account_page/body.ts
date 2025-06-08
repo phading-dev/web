@@ -18,25 +18,29 @@ import { PaymentPage } from "./payment_page/body";
 import { PayoutPage } from "./payout_page/body";
 import { ProfilePage } from "./profile_page/body";
 import { StatementsPage } from "./statements_page/body";
-import { AccountPage as AccountPageUrl } from "@phading/web_interface/main/account/page";
+import { AccountPageRl } from "@phading/web_interface/main/account/page";
 import { Ref } from "@selfage/ref";
 
 export interface AccountPage {
-  on(event: "replaceUrl", listener: (url: AccountPageUrl) => void): this;
-  on(event: "newUrl", listener: (url: AccountPageUrl) => void): this;
+  on(event: "replaceRl", listener: (rl: AccountPageRl) => void): this;
+  on(event: "pushRl", listener: (rl: AccountPageRl) => void): this;
   on(event: "goToHome", listener: () => void): this;
   on(event: "chooseAccount", listener: () => void): this;
   on(event: "signOut", listener: () => void): this;
 }
 
 export class AccountPage extends EventEmitter {
-  public static create(appendBodies: AddBodiesFn): AccountPage {
+  public static create(
+    appendBodies: AddBodiesFn,
+    canEarn: boolean,
+  ): AccountPage {
     return new AccountPage(
       PaymentPage.create,
       PayoutPage.create,
       ProfilePage.create,
       StatementsPage.create,
       appendBodies,
+      canEarn,
     );
   }
 
@@ -52,7 +56,6 @@ export class AccountPage extends EventEmitter {
   public payoutPage: PayoutPage;
   public profilePage: ProfilePage;
   public statementsPage: StatementsPage;
-  private canEarn: boolean;
 
   public constructor(
     private createPaymentPage: typeof PaymentPage.create,
@@ -60,6 +63,7 @@ export class AccountPage extends EventEmitter {
     private createProfilePage: typeof ProfilePage.create,
     private createStatementsPage: typeof StatementsPage.create,
     private appendBodies: AddBodiesFn,
+    public canEarn: boolean,
   ) {
     super();
     appendBodies(
@@ -80,11 +84,15 @@ export class AccountPage extends EventEmitter {
           createPaymentIcon(SCHEME.neutral1),
           LOCALIZED_TEXT.paymentLabel,
         ),
-        eNavigationItemRef(
-          this.payoutButton,
-          createCoinsHandIcon(SCHEME.neutral1),
-          LOCALIZED_TEXT.payoutLabel,
-        ),
+        ...(canEarn
+          ? [
+              eNavigationItemRef(
+                this.payoutButton,
+                createCoinsHandIcon(SCHEME.neutral1),
+                LOCALIZED_TEXT.payoutLabel,
+              ),
+            ]
+          : []),
         eNavigationItemRef(
           this.statementsButton,
           createDocumentIcon(SCHEME.neutral1),
@@ -94,69 +102,56 @@ export class AccountPage extends EventEmitter {
     );
     this.homeButton.val.addEventListener("click", () => this.emit("goToHome"));
     this.profileButton.val.addEventListener("click", () => {
-      this.newUrl({ profile: {} });
+      this.pushRl({ profile: {} });
     });
     this.paymentButton.val.addEventListener("click", () => {
-      this.newUrl({ payment: {} });
+      this.pushRl({ payment: {} });
     });
-    this.payoutButton.val.addEventListener("click", () => {
-      this.newUrl({ payout: {} });
+    this.payoutButton.val?.addEventListener("click", () => {
+      this.pushRl({ payout: {} });
     });
     this.statementsButton.val.addEventListener("click", () => {
-      this.newUrl({ statements: {} });
+      this.pushRl({ statements: {} });
     });
   }
 
-  private newUrl(newUrl: AccountPageUrl): void {
-    this.emit("newUrl", newUrl);
-    this.applyUrl(this.canEarn, newUrl);
+  private pushRl(rl: AccountPageRl): void {
+    this.emit("pushRl", rl);
+    this.applyRl(rl);
   }
 
-  public applyUrl(canEarn: boolean, newUrl?: AccountPageUrl): this {
-    if (!newUrl) {
-      newUrl = {};
+  public applyRl(rl?: AccountPageRl): this {
+    if (!rl) {
+      rl = {};
     }
-    if (!canEarn) {
-      newUrl.payout = undefined;
-      this.emit("replaceUrl", newUrl);
+    if (!this.canEarn && rl.payout) {
+      rl.payout = undefined;
+      this.emit("replaceRl", rl);
     }
-    if (
-      !newUrl.payment &&
-      !newUrl.payout &&
-      !newUrl.profile &&
-      !newUrl.statements
-    ) {
-      newUrl.profile = {};
+    if (!rl.payment && !rl.payout && !rl.profile && !rl.statements) {
+      rl.profile = {};
     }
-    if (newUrl.profile && !this.profilePage) {
+    if (rl.profile && !this.profilePage) {
       this.pageSwitcher.goTo(
         () => this.addProfilePage(),
         () => this.removeProfilePage(),
       );
-    } else if (newUrl.payment && !this.paymentPage) {
+    } else if (rl.payment && !this.paymentPage) {
       this.pageSwitcher.goTo(
         () => this.addPaymentPage(),
         () => this.removePaymentPage(),
       );
-    } else if (newUrl.payout && !this.payoutPage) {
+    } else if (rl.payout && !this.payoutPage) {
       this.pageSwitcher.goTo(
         () => this.addPayoutPage(),
         () => this.removePayoutPage(),
       );
-    } else if (newUrl.statements && !this.statementsPage) {
+    } else if (rl.statements && !this.statementsPage) {
       this.pageSwitcher.goTo(
-        () => this.addStatementsPage(canEarn),
+        () => this.addStatementsPage(this.canEarn),
         () => this.removeStatementsPage(),
       );
     }
-
-    if (canEarn) {
-      this.payoutButton.val.style.display = "flex";
-    } else {
-      this.payoutButton.val.style.display = "none";
-    }
-
-    this.canEarn = canEarn;
     return this;
   }
 
@@ -204,5 +199,6 @@ export class AccountPage extends EventEmitter {
   public remove(): void {
     this.navigationBar.val.remove();
     this.pageSwitcher.remove();
+    this.removeAllListeners();
   }
 }

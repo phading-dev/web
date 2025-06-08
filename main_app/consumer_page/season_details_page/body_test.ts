@@ -284,6 +284,11 @@ TEST_RUNNER.run({
           }
         })();
         this.cut = new SeasonDetailsPage(
+          {
+            location: {
+              origin: "https://example.com",
+            },
+          } as any,
           serviceClientMock,
           () => new Date("2024-02-01T08:00:00Z"),
           "season1",
@@ -874,12 +879,18 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.shareButton.val.click();
-        await new Promise<void>((resolve) =>
-          this.cut.once("shareLinkCopied", resolve),
+        let url = await new Promise<string>((resolve) =>
+          this.cut.once("shareLinkCopied", (url) => resolve(url)),
         );
 
         // Verify
-        // TODO: verify link: assertThat(await navigator.clipboard.readText(), eq(), "share link");
+        assertThat(
+          url,
+          eq(
+            "https://example.com/?e=%7B%221%22%3A%7B%223%22%3A%7B%225%22%3A%7B%221%22%3A%22season1%22%7D%7D%7D%7D",
+          ),
+          "Share link",
+        );
         await asyncAssertScreenshot(
           path.join(
             __dirname,
@@ -967,7 +978,7 @@ TEST_RUNNER.run({
 
         // Prepare
         let back = false;
-        this.cut.on("back", () => back = true);
+        this.cut.on("back", () => (back = true));
 
         // Execute
         this.cut.backButton.val.click();
@@ -1160,6 +1171,7 @@ TEST_RUNNER.run({
           }
         })();
         this.cut = new SeasonDetailsPage(
+          undefined,
           serviceClientMock,
           () => new Date("2024-02-01T08:00:00Z"),
           "season1",
@@ -1450,6 +1462,7 @@ TEST_RUNNER.run({
           }
         })();
         this.cut = new SeasonDetailsPage(
+          undefined,
           serviceClientMock,
           () => new Date("2024-02-01T08:00:00Z"),
           "season1",
@@ -1588,6 +1601,7 @@ TEST_RUNNER.run({
           }
         })();
         this.cut = new SeasonDetailsPage(
+          undefined,
           serviceClientMock,
           () => new Date("2024-02-01T08:00:00Z"),
           "season1",

@@ -188,5 +188,6 @@ export class EpisodeDetailsPage extends EventEmitter {
 
   public remove(): void {
     this.pageSwitcher.remove();
+    this.removeAllListeners();
   }
 }

@@ -3,7 +3,6 @@ import { InputFormPage } from "../../common/input_form_page/body";
 import { ValidationResult } from "../../common/input_form_page/input_with_error_msg";
 import { RadioOptionInput } from "../../common/input_form_page/option_input";
 import { TextInputWithErrorMsg } from "../../common/input_form_page/text_input";
-import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
 import { OptionPill } from "../../common/option_pills";
 import { SERVICE_CLIENT } from "../../common/web_service_client";
@@ -23,21 +22,16 @@ import {
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
-import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
 
 export interface SignUpPage {
+  on(event: "auth", listener: (signedSession: string) => void): this;
   on(event: "signIn", listener: () => void): this;
-  on(event: "signedUp", listener: () => void): this;
   on(event: "signUpDone", listener: () => void): this;
 }
 
 export class SignUpPage extends EventEmitter {
   public static create(initAccountType?: AccountType): SignUpPage {
-    return new SignUpPage(
-      LOCAL_SESSION_STORAGE,
-      SERVICE_CLIENT,
-      initAccountType,
-    );
+    return new SignUpPage(SERVICE_CLIENT, initAccountType);
   }
 
   public naturalNameInput = new Ref<TextInputWithErrorMsg>();
@@ -53,12 +47,11 @@ export class SignUpPage extends EventEmitter {
   private request: SignUpRequestBody = {};
 
   public constructor(
-    private localSessionStorage: LocalSessionStorage,
     private serviceClient: WebServiceClient,
     initAccountType?: AccountType,
   ) {
     super();
-    this.inputFormPage = new InputFormPage(
+    this.inputFormPage = new InputFormPage<SignUpResponse>(
       LOCALIZED_TEXT.signUpTitle,
       [
         assign(
@@ -170,7 +163,9 @@ export class SignUpPage extends EventEmitter {
         () => this.signUp(),
         (response, error) => this.postSignUp(response, error),
       )
-      .on("handlePrimarySuccess", () => this.emit("signedUp"))
+      .on("handlePrimarySuccess", (response) =>
+        this.emit("auth", response.signedSession),
+      )
       .on("primaryDone", () => this.emit("signUpDone"));
     this.naturalNameInput.val.validate();
     this.usernameInput.val.validate();
@@ -270,7 +265,6 @@ export class SignUpPage extends EventEmitter {
     } else if (!response.usernameIsAvailable) {
       return LOCALIZED_TEXT.usernameIsUsedError;
     } else {
-      this.localSessionStorage.save(response.signedSession);
       return "";
     }
   }
@@ -280,6 +274,6 @@ export class SignUpPage extends EventEmitter {
   }
 
   public remove(): void {
-    this.inputFormPage.remove();
+    this.inputFormPage.removeAllListeners().remove();
   }
 }

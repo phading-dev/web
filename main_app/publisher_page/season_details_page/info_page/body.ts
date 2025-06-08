@@ -553,5 +553,6 @@ export class InfoPage extends EventEmitter {
   public remove(): void {
     this.body.remove();
     this.scrollLoadingSection.val?.stopLoading();
+    this.removeAllListeners();
   }
 }

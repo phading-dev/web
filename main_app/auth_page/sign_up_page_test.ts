@@ -1,5 +1,4 @@
 import path = require("path");
-import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
 import { normalizeBody } from "../../common/normalize_body";
 import { setDesktopView } from "../../common/view_port";
 import { SignUpPage } from "./sign_up_page";
@@ -29,7 +28,7 @@ TEST_RUNNER.run({
         let webServiceClientMock = new WebServiceClientMock();
 
         // Execute
-        this.cut = new SignUpPage(LOCAL_SESSION_STORAGE, webServiceClientMock);
+        this.cut = new SignUpPage(webServiceClientMock);
         document.body.appendChild(this.cut.body);
 
         // Verify
@@ -72,7 +71,6 @@ TEST_RUNNER.run({
         );
 
         // Verify
-        assertThat(LOCAL_SESSION_STORAGE.read(), eq(null), "no session");
         assertThat(
           webServiceClientMock.request.descriptor,
           eq(SIGN_UP),
@@ -115,7 +113,6 @@ TEST_RUNNER.run({
         );
 
         // Verify
-        assertThat(LOCAL_SESSION_STORAGE.read(), eq(null), "no session");
         await asyncAssertScreenshot(
           path.join(__dirname, "/sign_up_page_username_is_used.png"),
           path.join(__dirname, "/golden/sign_up_page_username_is_used.png"),
@@ -127,25 +124,26 @@ TEST_RUNNER.run({
           usernameIsAvailable: true,
           signedSession: "signed_session",
         } as SignUpResponse;
+        let signedSession: string;
+        this.cut.on("auth", (session) => {
+          signedSession = session;
+        });
 
         // Execute
         this.cut.usernameInput.val.value = "my_new_username";
         this.cut.usernameInput.val.dispatchChange();
         this.cut.inputFormPage.clickPrimaryButton();
-        await new Promise<void>((resolve) =>
-          this.cut.once("signedUp", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("auth", resolve));
 
         // Verify
         assertThat(
-          LOCAL_SESSION_STORAGE.read(),
+          signedSession,
           eq("signed_session"),
-          "stored session",
+          "auth signed session",
         );
       }
       public tearDown() {
         this.cut.remove();
-        LOCAL_SESSION_STORAGE.clear();
       }
     })(),
     new (class implements TestCase {
@@ -156,7 +154,7 @@ TEST_RUNNER.run({
         await setDesktopView();
 
         // Execute
-        this.cut = new SignUpPage(undefined, undefined, AccountType.PUBLISHER);
+        this.cut = new SignUpPage(undefined, AccountType.PUBLISHER);
         document.body.appendChild(this.cut.body);
 
         // Verify
@@ -176,7 +174,7 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setDesktopView();
-        this.cut = new SignUpPage(undefined, undefined);
+        this.cut = new SignUpPage(undefined);
         document.body.appendChild(this.cut.body);
 
         // Execute

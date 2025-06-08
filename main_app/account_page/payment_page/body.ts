@@ -424,5 +424,6 @@ export class PaymentPage extends EventEmitter {
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 }

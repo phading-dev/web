@@ -25,13 +25,13 @@ import { SeasonDetailsPage } from "./season_details_page/body";
 import { UsagePage } from "./usage_page/body";
 import { WatchLaterPage } from "./watch_later_page/body";
 import {
-  ConsumerPage as ConsumerPageUrl,
+  ConsumerPageRl,
   SearchTarget,
 } from "@phading/web_interface/main/consumer/page";
 import { Ref } from "@selfage/ref";
 
 export interface ConsumerPage {
-  on(event: "newUrl", listener: (url: ConsumerPageUrl) => void): this;
+  on(event: "pushRl", listener: (rl: ConsumerPageRl) => void): this;
   on(event: "goToAccount", listener: () => void): this;
 }
 
@@ -71,7 +71,7 @@ export class ConsumerPage extends EventEmitter {
   public seasonDetailsPage: SeasonDetailsPage;
   public usagePage: UsagePage;
   public watchLaterPage: WatchLaterPage;
-  private lastListUrl: ConsumerPageUrl;
+  private lastListRl: ConsumerPageRl;
 
   public constructor(
     private createHistoryPage: typeof HistoryPage.create,
@@ -116,19 +116,19 @@ export class ConsumerPage extends EventEmitter {
     this.showNavigationBar();
 
     this.homeButton.val.addEventListener("click", () => {
-      this.newUrl({
+      this.pushRl({
         home: {},
       });
     });
     this.exploreButton.val.addEventListener("click", () => {
-      this.newUrl({
+      this.pushRl({
         search: {
           searchTarget: SearchTarget.SEASON,
         },
       });
     });
     this.activityButton.val.addEventListener("click", () => {
-      this.newUrl({
+      this.pushRl({
         history: {},
       });
     });
@@ -145,125 +145,124 @@ export class ConsumerPage extends EventEmitter {
     this.navigationBar.val.style.display = `none`;
   }
 
-  private newUrl(newUrl: ConsumerPageUrl): void {
-    this.emit("newUrl", newUrl);
-    this.applyUrl(newUrl);
+  private pushRl(rl: ConsumerPageRl): void {
+    this.emit("pushRl", rl);
+    this.applyRl(rl);
   }
 
-  public applyUrl(newUrl?: ConsumerPageUrl): this {
-    if (!newUrl) {
-      newUrl = {};
+  public applyRl(rl?: ConsumerPageRl): this {
+    if (!rl) {
+      rl = {};
     }
-    if (newUrl.search && !newUrl.search.searchTarget) {
-      newUrl.search = undefined;
+    if (rl.search && !rl.search.searchTarget) {
+      rl.search = undefined;
     }
     if (
-      !newUrl.home &&
-      !newUrl.listTopRated &&
-      !newUrl.listRecentPremieres &&
-      !newUrl.search &&
-      !newUrl.seasonDetails &&
-      !newUrl.play &&
-      !newUrl.publisherShowroom &&
-      !newUrl.history &&
-      !newUrl.watchLater &&
-      !newUrl.usage
+      !rl.home &&
+      !rl.listTopRated &&
+      !rl.listRecentPremieres &&
+      !rl.search &&
+      !rl.seasonDetails &&
+      !rl.play &&
+      !rl.publisherShowroom &&
+      !rl.history &&
+      !rl.watchLater &&
+      !rl.usage
     ) {
-      newUrl.home = {};
+      rl.home = {};
     }
 
-    if (newUrl.home && !this.multiSectionPage) {
+    if (rl.home && !this.multiSectionPage) {
       this.pageSwitcher.goTo(
         () => this.addMultiSectionPage(),
         () => this.removeMultiSectionPage(),
       );
-    } else if (newUrl.listRecentPremieres && !this.listRecentPremieresPage) {
+    } else if (rl.listRecentPremieres && !this.listRecentPremieresPage) {
       this.pageSwitcher.goTo(
         () => this.addListRecentPremieresPage(),
         () => this.removeListRecentPremieresPage(),
       );
-    } else if (newUrl.listTopRated && !this.listTopRatedPage) {
+    } else if (rl.listTopRated && !this.listTopRatedPage) {
       this.pageSwitcher.goTo(
         () => this.addListTopRatedPage(),
         () => this.removeListTopRatedPage(),
       );
-    } else if (newUrl.search) {
-      if (newUrl.search.searchTarget === SearchTarget.PUBLISHER) {
+    } else if (rl.search) {
+      if (rl.search.searchTarget === SearchTarget.PUBLISHER) {
         if (
           !this.searchPublishersPage ||
-          this.searchPublishersPage.query !== newUrl.search.query
+          this.searchPublishersPage.query !== rl.search.query
         ) {
           this.pageSwitcher.goTo(
-            () => this.addSearchPublishersPage(newUrl.search.query),
+            () => this.addSearchPublishersPage(rl.search.query),
             () => this.removeSearchPublishersPage(),
           );
         }
-      } else if (newUrl.search.searchTarget === SearchTarget.SEASON) {
+      } else if (rl.search.searchTarget === SearchTarget.SEASON) {
         if (
           !this.searchSeasonsPage ||
-          this.searchSeasonsPage.query !== newUrl.search.query
+          this.searchSeasonsPage.query !== rl.search.query
         ) {
           this.pageSwitcher.goTo(
-            () => this.addSearchSeasonsPage(newUrl.search.query),
+            () => this.addSearchSeasonsPage(rl.search.query),
             () => this.removeSearchSeasonsPage(),
           );
         }
       }
     } else if (
-      newUrl.seasonDetails &&
+      rl.seasonDetails &&
       (!this.seasonDetailsPage ||
-        this.seasonDetailsPage.seasonId !== newUrl.seasonDetails.seasonId)
+        this.seasonDetailsPage.seasonId !== rl.seasonDetails.seasonId)
     ) {
       this.pageSwitcher.goTo(
-        () => this.addSeasonDetailsPage(newUrl.seasonDetails.seasonId),
+        () => this.addSeasonDetailsPage(rl.seasonDetails.seasonId),
         () => this.removeSeasonDetailsPage(),
       );
     } else if (
-      newUrl.play &&
+      rl.play &&
       (!this.playPage ||
-        this.playPage.seasonId !== newUrl.play.seasonId ||
-        this.playPage.episodeId !== newUrl.play.episodeId)
+        this.playPage.seasonId !== rl.play.seasonId ||
+        this.playPage.episodeId !== rl.play.episodeId)
     ) {
       this.pageSwitcher.goTo(
-        () => this.addPlayPage(newUrl.play.seasonId, newUrl.play.episodeId),
+        () => this.addPlayPage(rl.play.seasonId, rl.play.episodeId),
         () => this.removePlayPage(),
       );
     } else if (
-      newUrl.publisherShowroom &&
+      rl.publisherShowroom &&
       (!this.publisherShowroomPage ||
-        this.publisherShowroomPage.accountId !==
-          newUrl.publisherShowroom.accountId)
+        this.publisherShowroomPage.accountId !== rl.publisherShowroom.accountId)
     ) {
       this.pageSwitcher.goTo(
-        () => this.addPublisherShowroomPage(newUrl.publisherShowroom.accountId),
+        () => this.addPublisherShowroomPage(rl.publisherShowroom.accountId),
         () => this.removePublisherShowroomPage(),
       );
-    } else if (newUrl.history && !this.historyPage) {
+    } else if (rl.history && !this.historyPage) {
       this.pageSwitcher.goTo(
         () => this.addHistoryPage(),
         () => this.removeHistoryPage(),
       );
-    } else if (newUrl.usage && !this.usagePage) {
+    } else if (rl.usage && !this.usagePage) {
       this.pageSwitcher.goTo(
         () => this.addUsagePage(),
         () => this.removeUsagePage(),
       );
-    } else if (newUrl.watchLater && !this.watchLaterPage) {
+    } else if (rl.watchLater && !this.watchLaterPage) {
       this.pageSwitcher.goTo(
         () => this.addWatchLaterPage(),
         () => this.removeWatchLaterPage(),
       );
     }
     if (
-      newUrl.home ||
-      newUrl.listRecentPremieres ||
-      newUrl.listTopRated ||
-      newUrl.search ||
-      newUrl.publisherShowroom ||
-      newUrl.history ||
-      newUrl.watchLater
+      rl.home ||
+      rl.listRecentPremieres ||
+      rl.listTopRated ||
+      rl.search ||
+      rl.publisherShowroom ||
+      rl.history ||
+      rl.watchLater
     ) {
-      this.lastListUrl = newUrl;
+      this.lastListRl = rl;
     }
     return this;
   }
@@ -271,12 +270,12 @@ export class ConsumerPage extends EventEmitter {
   private addHistoryPage(): void {
     this.historyPage = this.createHistoryPage()
       .on("viewUsage", () => {
-        this.newUrl({
+        this.pushRl({
           usage: {},
         });
       })
       .on("play", (seasonId, episodeId) => {
-        this.newUrl({
+        this.pushRl({
           play: {
             seasonId,
             episodeId,
@@ -295,7 +294,7 @@ export class ConsumerPage extends EventEmitter {
     this.listRecentPremieresPage = this.createListRecentPremieresPage().on(
       "showDetails",
       (seasonId) => {
-        this.newUrl({
+        this.pushRl({
           seasonDetails: {
             seasonId,
           },
@@ -314,7 +313,7 @@ export class ConsumerPage extends EventEmitter {
     this.listTopRatedPage = this.createListTopRatedPage().on(
       "showDetails",
       (seasonId) => {
-        this.newUrl({
+        this.pushRl({
           seasonDetails: {
             seasonId,
           },
@@ -332,7 +331,7 @@ export class ConsumerPage extends EventEmitter {
   private addMultiSectionPage(): void {
     this.multiSectionPage = this.createMultiSectionPage()
       .on("play", (seasonId, episodeId) => {
-        this.newUrl({
+        this.pushRl({
           play: {
             seasonId,
             episodeId,
@@ -340,24 +339,24 @@ export class ConsumerPage extends EventEmitter {
         });
       })
       .on("showDetails", (seasonId) => {
-        this.newUrl({
+        this.pushRl({
           seasonDetails: {
             seasonId,
           },
         });
       })
       .on("listWatchHistory", () => {
-        this.newUrl({
+        this.pushRl({
           history: {},
         });
       })
       .on("listRecentPremieres", () => {
-        this.newUrl({
+        this.pushRl({
           listRecentPremieres: {},
         });
       })
       .on("listTopRated", () => {
-        this.newUrl({
+        this.pushRl({
           listTopRated: {},
         });
       });
@@ -373,7 +372,7 @@ export class ConsumerPage extends EventEmitter {
     this.hideNavigationBar();
     this.playPage = this.createPlayPage(seasonId, episodeId)
       .on("play", (seasonId, episodeId) => {
-        this.newUrl({
+        this.pushRl({
           play: {
             seasonId,
             episodeId,
@@ -381,7 +380,7 @@ export class ConsumerPage extends EventEmitter {
         });
       })
       .on("showDetails", (seasonId) => {
-        this.newUrl({
+        this.pushRl({
           seasonDetails: {
             seasonId,
           },
@@ -400,7 +399,7 @@ export class ConsumerPage extends EventEmitter {
     this.publisherShowroomPage = this.createPublisherShowroomPage(
       publisherId,
     ).on("showDetails", (seasonId) => {
-      this.newUrl({
+      this.pushRl({
         seasonDetails: {
           seasonId,
         },
@@ -417,7 +416,7 @@ export class ConsumerPage extends EventEmitter {
   private addSearchPublishersPage(query: string): void {
     this.searchPublishersPage = this.createSearchPublishersPage(query)
       .on("search", (searchTarget, query) => {
-        this.newUrl({
+        this.pushRl({
           search: {
             searchTarget,
             query,
@@ -425,7 +424,7 @@ export class ConsumerPage extends EventEmitter {
         });
       })
       .on("showroom", (publisherId) => {
-        this.newUrl({
+        this.pushRl({
           publisherShowroom: {
             accountId: publisherId,
           },
@@ -442,7 +441,7 @@ export class ConsumerPage extends EventEmitter {
   private addSearchSeasonsPage(query: string): void {
     this.searchSeasonsPage = this.createSearchSeasonsPage(query)
       .on("search", (searchTarget, query) => {
-        this.newUrl({
+        this.pushRl({
           search: {
             searchTarget,
             query,
@@ -450,7 +449,7 @@ export class ConsumerPage extends EventEmitter {
         });
       })
       .on("showDetails", (seasonId) => {
-        this.newUrl({
+        this.pushRl({
           seasonDetails: {
             seasonId,
           },
@@ -467,10 +466,10 @@ export class ConsumerPage extends EventEmitter {
   private addSeasonDetailsPage(seasonId: string): void {
     this.seasonDetailsPage = this.createSeasonDetailsPage(seasonId)
       .on("back", () => {
-        this.newUrl(this.lastListUrl);
+        this.pushRl(this.lastListRl);
       })
       .on("play", (seasonId, episodeId) => {
-        this.newUrl({
+        this.pushRl({
           play: {
             seasonId,
             episodeId,
@@ -478,7 +477,7 @@ export class ConsumerPage extends EventEmitter {
         });
       })
       .on("showroom", (publisherId) => {
-        this.newUrl({
+        this.pushRl({
           publisherShowroom: {
             accountId: publisherId,
           },
@@ -506,7 +505,7 @@ export class ConsumerPage extends EventEmitter {
     this.watchLaterPage = this.createWatchLaterPage().on(
       "showDetails",
       (seasonId) => {
-        this.newUrl({
+        this.pushRl({
           seasonDetails: {
             seasonId,
           },
@@ -524,5 +523,6 @@ export class ConsumerPage extends EventEmitter {
   public remove(): void {
     this.navigationBar.val.remove();
     this.pageSwitcher.remove();
+    this.removeAllListeners();
   }
 }

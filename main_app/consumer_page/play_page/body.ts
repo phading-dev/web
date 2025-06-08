@@ -676,5 +676,6 @@ export class PlayPage extends EventEmitter {
     this.stopPlaying();
     this.player.val?.destroy();
     this.commentOverlaySwitcher.remove();
+    this.removeAllListeners();
   }
 }

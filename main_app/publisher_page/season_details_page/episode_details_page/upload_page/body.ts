@@ -120,13 +120,16 @@ export class UploadPage extends EventEmitter {
       this.episodeId,
     );
     this.appendBody(this.cancelUploadPage.body);
-    this.cancelUploadPage.on("restart", () => {
-      this.uploadingState = undefined;
-      this.checkUploadingState();
-    });
+    this.cancelUploadPage
+      .on("back", () => this.emit("back"))
+      .on("restart", () => {
+        this.uploadingState = undefined;
+        this.checkUploadingState();
+      });
   }
 
   public remove(): void {
     this.pageSwitcher.remove();
+    this.removeAllListeners();
   }
 }

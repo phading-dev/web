@@ -229,5 +229,6 @@ export class SeasonDetailsPage extends EventEmitter {
 
   public remove(): void {
     this.pageSwitcher.remove();
+    this.removeAllListeners();
   }
 }

@@ -1,5 +1,4 @@
 import path = require("path");
-import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
 import { normalizeBody } from "../../../common/normalize_body";
 import { setDesktopView } from "../../../common/view_port";
 import { CreateAccountPage } from "./body";
@@ -21,16 +20,14 @@ TEST_RUNNER.run({
   name: "CreateAccountPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "Consumer_NameTooLong_NameValid_EmailTooLong_EmailValid_CreateError_Created";
+      public name =
+        "Consumer_NameTooLong_NameValid_EmailTooLong_EmailValid_CreateError_Created";
       private cut: CreateAccountPage;
       public async execute() {
         // Prepare
         await setDesktopView();
         let serviceClientMock = new WebServiceClientMock();
-        this.cut = new CreateAccountPage(
-          LOCAL_SESSION_STORAGE,
-          serviceClientMock,
-        );
+        this.cut = new CreateAccountPage(serviceClientMock);
 
         // Execute
         document.body.append(this.cut.body);
@@ -143,20 +140,15 @@ TEST_RUNNER.run({
         serviceClientMock.response = {
           signedSession: "session 1",
         } as CreateAccountResponse;
-        let choose = false;
-        this.cut.on("choose", () => (choose = true));
+        let signedSession: string;
+        this.cut.on("choose", (session) => (signedSession = session));
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) => this.cut.once("chosen", resolve));
 
         // Verify
-        assertThat(choose, eq(true), "choose");
-        assertThat(
-          LOCAL_SESSION_STORAGE.read(),
-          eq("session 1"),
-          "stored session",
-        );
+        assertThat(signedSession, eq("session 1"), "signed session");
 
         // Prepare
         let back = false;
@@ -170,7 +162,6 @@ TEST_RUNNER.run({
       }
       public tearDown() {
         this.cut.remove();
-        LOCAL_SESSION_STORAGE.clear();
       }
     })(),
     new (class implements TestCase {
@@ -183,10 +174,7 @@ TEST_RUNNER.run({
         serviceClientMock.response = {
           signedSession: "session 1",
         } as CreateAccountResponse;
-        this.cut = new CreateAccountPage(
-          LOCAL_SESSION_STORAGE,
-          serviceClientMock,
-        );
+        this.cut = new CreateAccountPage(serviceClientMock);
 
         // Execute
         document.body.append(this.cut.body);
@@ -199,13 +187,18 @@ TEST_RUNNER.run({
           path.join(__dirname, "/create_account_page_publisher_diff.png"),
         );
 
+        // Prepare
+        let signedSession: string;
+        this.cut.on("choose", (session) => (signedSession = session));
+
         // Execute
         this.cut.naturalNameInput.val.value = "First Second";
         this.cut.naturalNameInput.val.dispatchChange();
         this.cut.emailInput.val.value = "me@gmail.com";
         this.cut.emailInput.val.dispatchChange();
-        // Wait for validation.
-        await new Promise<void>((resolve) => setTimeout(resolve));
+        await new Promise<void>((resolve) =>
+          this.cut.emailInput.val.once("validate", resolve),
+        );
         this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) => this.cut.once("chosen", resolve));
 
@@ -227,15 +220,10 @@ TEST_RUNNER.run({
           ),
           "request body",
         );
-        assertThat(
-          LOCAL_SESSION_STORAGE.read(),
-          eq("session 1"),
-          "stored session",
-        );
+        assertThat(signedSession, eq("session 1"), "signed session");
       }
       public tearDown() {
         this.cut.remove();
-        LOCAL_SESSION_STORAGE.clear();
       }
     })(),
   ],

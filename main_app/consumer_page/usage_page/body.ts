@@ -482,5 +482,6 @@ export class UsagePage extends EventEmitter {
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 }

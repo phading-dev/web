@@ -248,5 +248,6 @@ export class UpdateCoverImagePage extends EventEmitter {
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 }

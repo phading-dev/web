@@ -241,5 +241,6 @@ export class NewUploadPage extends EventEmitter {
 
   public remove() {
     this.body.remove();
+    this.removeAllListeners();
   }
 }

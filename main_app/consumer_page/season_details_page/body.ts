@@ -82,6 +82,7 @@ import {
 } from "@phading/product_service_interface/show/web/consumer/info";
 import { AccountSummary } from "@phading/user_service_interface/web/self/account";
 import { newGetAccountSummaryRequest } from "@phading/user_service_interface/web/third_person/client";
+import { buildUrl } from "@phading/web_interface/url_builder";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { TzDate } from "@selfage/tz_date";
@@ -99,14 +100,19 @@ export interface SeasonDetailsPage {
   on(event: "loaded", listener: () => void): this;
   on(event: "rated", listener: () => void): this;
   on(event: "watchedLater", listener: () => void): this;
-  on(event: "shareLinkCopied", listener: () => void): this;
+  on(event: "shareLinkCopied", listener: (url: string) => void): this;
   on(event: "prevEpisodesLoaded", listener: () => void): this;
   on(event: "nextEpisodesLoaded", listener: () => void): this;
 }
 
 export class SeasonDetailsPage extends EventEmitter {
   public static create(seasonId: string): SeasonDetailsPage {
-    return new SeasonDetailsPage(SERVICE_CLIENT, () => new Date(), seasonId);
+    return new SeasonDetailsPage(
+      window,
+      SERVICE_CLIENT,
+      () => new Date(),
+      seasonId,
+    );
   }
 
   private static INIT_PREV_LIMIT = 1;
@@ -139,6 +145,7 @@ export class SeasonDetailsPage extends EventEmitter {
   private nextIndexCursor: number;
 
   public constructor(
+    private window: Window,
     private serviceClient: WebServiceClient,
     private getNowDate: () => Date,
     public seasonId: string,
@@ -937,7 +944,15 @@ export class SeasonDetailsPage extends EventEmitter {
   }
 
   private async copyShareLink(): Promise<void> {
-    let url = window.location.href; // TODO: Use UrlBuilder.
+    let url = buildUrl(this.window.location.origin, {
+      main: {
+        consumer: {
+          seasonDetails: {
+            seasonId: this.seasonId,
+          },
+        },
+      },
+    });
     await navigator.clipboard.writeText(url);
     while (this.shareButton.val.lastChild) {
       this.shareButton.val.lastChild.remove();
@@ -952,11 +967,12 @@ export class SeasonDetailsPage extends EventEmitter {
       ),
       E.text(LOCALIZED_TEXT.shareLinkCopiedLabel),
     );
-    this.emit("shareLinkCopied");
+    this.emit("shareLinkCopied", url);
   }
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 }
 

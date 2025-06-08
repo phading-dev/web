@@ -302,5 +302,6 @@ export class UploadingPage extends EventEmitter {
     this.removed = true;
     this.chunkedUpload?.stop();
     this.body.remove();
+    this.removeAllListeners();
   }
 }

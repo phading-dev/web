@@ -4,7 +4,7 @@ import { normalizeBody } from "../../../common/normalize_body";
 import { setDesktopView } from "../../../common/view_port";
 import { ProfilePage } from "./body";
 import { InfoPageMock } from "./info_page/body_mock";
-import { UpdateAccountInfoPage } from "./update_account_info/body";
+import { UpdateAccountInfoPage } from "./update_account_info_page/body";
 import { UpdateAvatarPage } from "./update_avatar_page/body";
 import { UpdatePasswordPage } from "./update_password_page/body";
 import { UpdateRecoveryEmailPage } from "./update_recovery_email_page/body";

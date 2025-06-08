@@ -4,27 +4,74 @@ import path = require("path");
 import { normalizeBody } from "../../../../../common/normalize_body";
 import { setTabletView } from "../../../../../common/view_port";
 import { UploadPage } from "./body";
-import { CancelUploadPageMock } from "./cancel_upload_page/body_mock";
+import { CancelUploadPage } from "./cancel_upload_page/body";
+import { ChunkedUploadMock } from "./common/chunked_upload_mock";
 import { NewUploadPage } from "./new_upload_page/body";
 import { ResumeUploadPage } from "./resume_upload_page/body";
-import { UploadingPageMock } from "./uploading_page/body_mock";
+import { UploadingPage } from "./uploading_page/body";
+import {
+  MAX_MEDIA_CONTENT_LENGTH,
+  MAX_SUBTITLE_ZIP_CONTENT_LENGTH,
+} from "@phading/constants/video";
+import {
+  CANCEL_UPLOADING,
+  START_UPLOADING,
+  StartUploadingResponse,
+} from "@phading/product_service_interface/show/web/publisher/interface";
 import { ResumableUploadingState } from "@phading/video_service_interface/node/video_container";
 import { supplyFiles } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
+import { ClientRequestInterface } from "@selfage/service_descriptor/client_request_interface";
 import { assertThat, eq } from "@selfage/test_matcher";
+import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 normalizeBody();
 
+export class UploadPageServiceClientMock extends WebServiceClientMock {
+  public cancelResolveFn: () => void;
+  public cancelRejectFn: (error: Error) => void;
+
+  public async send(request: ClientRequestInterface<any>): Promise<any> {
+    if (request.descriptor === CANCEL_UPLOADING) {
+      await new Promise<void>((resolve, reject) => {
+        this.cancelResolveFn = resolve;
+        this.cancelRejectFn = reject;
+      });
+      return {};
+    } else if (request.descriptor === START_UPLOADING) {
+      let response: StartUploadingResponse = {
+        uploadSessionUrl: "https://example.com/upload",
+        byteOffset: 0,
+      };
+      return response;
+    }
+  }
+}
+
 function createUploadPage(
+  serviceClientMock: WebServiceClientMock,
   uploadingState?: ResumableUploadingState,
 ): UploadPage {
+  let nowDate = new Date("2023-01-01");
   return new UploadPage(
-    (error) => new NewUploadPage(() => new Date("2023-01-01"), error),
+    (error) => new NewUploadPage(() => nowDate, error),
     (error) => new ResumeUploadPage(error),
     (seasonId, episodeId, file, uploadingState) =>
-      new UploadingPageMock(seasonId, episodeId, file, uploadingState),
-    (seasonId, episodeId) => new CancelUploadPageMock(seasonId, episodeId),
+      new UploadingPage(
+        MAX_MEDIA_CONTENT_LENGTH,
+        MAX_SUBTITLE_ZIP_CONTENT_LENGTH,
+        (blob, resumeUrl, byteOffset) =>
+          new ChunkedUploadMock(blob, resumeUrl, byteOffset),
+        serviceClientMock,
+        () => nowDate,
+        seasonId,
+        episodeId,
+        file,
+        uploadingState,
+      ),
+    (seasonId, episodeId) =>
+      new CancelUploadPage(serviceClientMock, seasonId, episodeId, false),
     (...bodies) => document.body.append(...bodies),
     "season1",
     "episode1",
@@ -42,9 +89,10 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setTabletView();
+        let serviceClientMock = new UploadPageServiceClientMock();
 
         // Execute
-        this.cut = createUploadPage();
+        this.cut = createUploadPage(serviceClientMock);
 
         // Verify
         await asyncAssertScreenshot(
@@ -88,7 +136,7 @@ TEST_RUNNER.run({
         assertThat(back, eq(true), "back button 2");
 
         // Execute
-        (this.cut.uploadingPage as UploadingPageMock).complete();
+        (this.cut.uploadingPage.chunkedUpload as ChunkedUploadMock).complete();
 
         // Verify
         await new Promise((resolve) => this.cut.once("back", resolve));
@@ -104,7 +152,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        (this.cut.cancelUploadPage as CancelUploadPageMock).complete();
+        serviceClientMock.cancelResolveFn();
 
         // Verify
         await asyncAssertScreenshot(
@@ -121,13 +169,15 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name =
-        "TabletView_NewUpload_ReSelectDueToError";
+      public name = "TabletView_NewUpload_ReSelectDueToError";
       private cut: UploadPage;
       public async execute() {
         // Prepare
         await setTabletView();
-        this.cut = createUploadPage();
+        let serviceClientMock = new UploadPageServiceClientMock();
+        this.cut = createUploadPage(serviceClientMock);
+
+        // Execute
         await supplyFiles(
           () => this.cut.newUploadPage.fileDropZone.val.click(),
           "some_file.txt",
@@ -136,7 +186,10 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/upload_page_tablet_new_upload_error.png"),
-          path.join(__dirname, "/golden/upload_page_tablet_new_upload_error.png"),
+          path.join(
+            __dirname,
+            "/golden/upload_page_tablet_new_upload_error.png",
+          ),
           path.join(__dirname, "/upload_page_tablet_new_upload_error_diff.png"),
         );
       }
@@ -145,14 +198,16 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "TabletView_ResumeUpload_Back_Uploading_Cancelled";
+      public name =
+        "TabletView_ResumeUpload_Back_Uploading_BackDueToCancelFailed";
       private cut: UploadPage;
       public async execute() {
         // Prepare
         await setTabletView();
+        let serviceClientMock = new UploadPageServiceClientMock();
 
         // Execute
-        this.cut = createUploadPage({
+        this.cut = createUploadPage(serviceClientMock, {
           fileExt: "mp4",
           md5: "b90f9eda74d5732c55687eea65087bb2",
         });
@@ -191,20 +246,10 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.uploadingPage.cancelButton.val.click();
-        (this.cut.cancelUploadPage as CancelUploadPageMock).complete();
+        serviceClientMock.cancelRejectFn(new Error("Fake error"));
 
         // Verify
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/upload_page_tablet_resume_uploading_cancelled.png",
-          ),
-          path.join(__dirname, "/golden/upload_page_tablet_new_upload.png"),
-          path.join(
-            __dirname,
-            "/upload_page_tablet_resume_uploading_cancelled_diff.png",
-          ),
-        );
+        await new Promise((resolve) => this.cut.once("back", resolve));
       }
       public tearDown() {
         this.cut.remove();
@@ -216,9 +261,10 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setTabletView();
+        let serviceClientMock = new UploadPageServiceClientMock();
 
         // Execute
-        this.cut = createUploadPage({
+        this.cut = createUploadPage(serviceClientMock, {
           fileExt: "mp4",
           md5: "random_md5",
         });
@@ -242,7 +288,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.resumeUploadPage.cancelButton.val.click();
-        (this.cut.cancelUploadPage as CancelUploadPageMock).complete();
+        serviceClientMock.cancelResolveFn();
 
         // Verify
         await asyncAssertScreenshot(

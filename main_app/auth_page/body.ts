@@ -6,7 +6,7 @@ import { SignUpPage } from "./sign_up_page";
 import { AccountType } from "@phading/user_service_interface/account_type";
 
 export interface AuthPage {
-  on(event: "signedIn", listener: () => void): this;
+  on(event: "auth", listener: (signedSession: string) => void): this;
 }
 
 export class AuthPage extends EventEmitter {
@@ -54,7 +54,7 @@ export class AuthPage extends EventEmitter {
           () => this.signUpPage.remove(),
         ),
       )
-      .on("signedIn", () => this.emit("signedIn"));
+      .on("auth", (signedSession) => this.emit("auth", signedSession));
     this.appendBodiesFn(this.signInPage.body);
   }
 
@@ -66,11 +66,12 @@ export class AuthPage extends EventEmitter {
           () => this.signInPage.remove(),
         ),
       )
-      .on("signedUp", () => this.emit("signedIn"));
+      .on("auth", (signedSession) => this.emit("auth", signedSession));
     this.appendBodiesFn(this.signUpPage.body);
   }
 
   public remove(): void {
     this.pageSwitcher.remove();
+    this.removeAllListeners();
   }
 }

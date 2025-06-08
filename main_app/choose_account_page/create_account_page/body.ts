@@ -3,7 +3,6 @@ import { InputFormPage } from "../../../common/input_form_page/body";
 import { ValidationResult } from "../../../common/input_form_page/input_with_error_msg";
 import { RadioOptionInput } from "../../../common/input_form_page/option_input";
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
-import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { OptionPill } from "../../../common/option_pills";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
@@ -19,17 +18,16 @@ import {
 } from "@phading/user_service_interface/web/self/interface";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
-import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
 
 export interface CreateAccountPage {
   on(event: "back", listener: () => void): this;
-  on(event: "choose", listener: () => void): this;
+  on(event: "choose", listener: (signedSession: string) => void): this;
   on(event: "chosen", listener: () => void): this;
 }
 
 export class CreateAccountPage extends EventEmitter {
   public static create(): CreateAccountPage {
-    return new CreateAccountPage(LOCAL_SESSION_STORAGE, SERVICE_CLIENT);
+    return new CreateAccountPage(SERVICE_CLIENT);
   }
 
   public naturalNameInput = new Ref<TextInputWithErrorMsg>();
@@ -40,12 +38,9 @@ export class CreateAccountPage extends EventEmitter {
   public inputFormPage: InputFormPage<CreateAccountResponse>;
   private request: CreateAccountRequestBody = {};
 
-  public constructor(
-    private localSessionStorage: LocalSessionStorage,
-    private serviceClient: WebServiceClient,
-  ) {
+  public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.inputFormPage = new InputFormPage(
+    this.inputFormPage = new InputFormPage<CreateAccountResponse>(
       LOCALIZED_TEXT.createAccountTitle,
       [
         assign(
@@ -109,7 +104,9 @@ export class CreateAccountPage extends EventEmitter {
         () => this.createAccount(),
         (response, error) => this.postCreateAccount(response, error),
       )
-      .on("handlePrimarySuccess", () => this.emit("choose"))
+      .on("handlePrimarySuccess", (response) =>
+        this.emit("choose", response.signedSession),
+      )
       .on("primaryDone", () => this.emit("chosen"));
     this.naturalNameInput.val.validate();
     this.emailInput.val.validate();
@@ -161,7 +158,6 @@ export class CreateAccountPage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.createAccountError;
     } else {
-      this.localSessionStorage.save(response.signedSession);
       return "";
     }
   }
@@ -172,5 +168,6 @@ export class CreateAccountPage extends EventEmitter {
 
   public remove(): void {
     this.inputFormPage.remove();
+    this.removeAllListeners();
   }
 }

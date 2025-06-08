@@ -9,8 +9,8 @@ import { SearchPageMock } from "./search_page/body_mock";
 import { SeasonDetailsPageMock } from "./season_details_page/body_mock";
 import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import {
-  PUBLISHER_PAGE,
-  PublisherPage as PublisherPageUrl,
+  PUBLISHER_PAGE_RL,
+  PublisherPageRl,
 } from "@phading/web_interface/main/publisher/page";
 import { copyMessage } from "@selfage/message/copier";
 import { eqMessage } from "@selfage/message/test_matcher";
@@ -43,14 +43,14 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.cut = createPublisherPage();
-        let newUrl: PublisherPageUrl;
+        let rl: PublisherPageRl;
         this.cut.on(
-          "newUrl",
-          (url) => (newUrl = copyMessage(url, PUBLISHER_PAGE)),
+          "pushRl",
+          (rl_) => (rl = copyMessage(rl_, PUBLISHER_PAGE_RL)),
         );
 
         // Execute
-        this.cut.applyUrl();
+        this.cut.applyRl();
 
         // Verify
         assertThat(
@@ -74,16 +74,16 @@ TEST_RUNNER.run({
           "seasonDetailsPage.seasonId",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               seasonDetails: {
                 seasonId: "season1",
               },
             },
-            PUBLISHER_PAGE,
+            PUBLISHER_PAGE_RL,
           ),
-          "newUrl.seasonDetails",
+          "rl.seasonDetails",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/publisher_page_season_details.png"),
@@ -96,16 +96,16 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               list: {
                 seasonState: SeasonState.PUBLISHED,
               },
             },
-            PUBLISHER_PAGE,
+            PUBLISHER_PAGE_RL,
           ),
-          "newUrl.list back from season details",
+          "rl.list back from season details",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/publisher_page_back_from_season_details.png"),
@@ -126,16 +126,16 @@ TEST_RUNNER.run({
           "listPage.seasonState after listSeasons",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               list: {
                 seasonState: SeasonState.DRAFT,
               },
             },
-            PUBLISHER_PAGE,
+            PUBLISHER_PAGE_RL,
           ),
-          "newUrl.list after listSeasons",
+          "rl.list after listSeasons",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/publisher_page_list_draft.png"),
@@ -154,7 +154,7 @@ TEST_RUNNER.run({
         );
         assertThat(this.cut.searchPage.query, eq(""), "searchPage.query");
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               search: {
@@ -162,9 +162,9 @@ TEST_RUNNER.run({
                 query: "",
               },
             },
-            PUBLISHER_PAGE,
+            PUBLISHER_PAGE_RL,
           ),
-          "newUrl.search",
+          "rl.search",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/publisher_page_search.png"),
@@ -182,16 +182,16 @@ TEST_RUNNER.run({
           "seasonDetailsPage.seasonId after search",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               seasonDetails: {
                 seasonId: "season3",
               },
             },
-            PUBLISHER_PAGE,
+            PUBLISHER_PAGE_RL,
           ),
-          "newUrl.seasonDetails after search",
+          "rl.seasonDetails after search",
         );
         await asyncAssertScreenshot(
           path.join(
@@ -210,7 +210,7 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               search: {
@@ -218,9 +218,9 @@ TEST_RUNNER.run({
                 query: "",
               },
             },
-            PUBLISHER_PAGE,
+            PUBLISHER_PAGE_RL,
           ),
-          "newUrl.search back from season details after search",
+          "rl.search back from season details after search",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/publisher_page_back_from_season_details.png"),
@@ -246,7 +246,7 @@ TEST_RUNNER.run({
           "searchPage.query after searchSeasons",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               search: {
@@ -254,16 +254,13 @@ TEST_RUNNER.run({
                 query: "My Hero",
               },
             },
-            PUBLISHER_PAGE,
+            PUBLISHER_PAGE_RL,
           ),
-          "newUrl.search after searchSeasons",
+          "rl.search after searchSeasons",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/publisher_page_search_after_search.png"),
-          path.join(
-            __dirname,
-            "/golden/publisher_page_search_queries.png",
-          ),
+          path.join(__dirname, "/golden/publisher_page_search_queries.png"),
           path.join(__dirname, "/publisher_page_search_after_search_diff.png"),
         );
 
@@ -272,14 +269,14 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               create: {},
             },
-            PUBLISHER_PAGE,
+            PUBLISHER_PAGE_RL,
           ),
-          "newUrl.create",
+          "rl.create",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/publisher_page_create.png"),
@@ -297,16 +294,16 @@ TEST_RUNNER.run({
           "seasonDetailsPage.seasonId after create",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               seasonDetails: {
                 seasonId: "season2",
               },
             },
-            PUBLISHER_PAGE,
+            PUBLISHER_PAGE_RL,
           ),
-          "newUrl.seasonDetails",
+          "rl.seasonDetails",
         );
         await asyncAssertScreenshot(
           path.join(
@@ -325,7 +322,7 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               search: {
@@ -333,19 +330,16 @@ TEST_RUNNER.run({
                 query: "My Hero",
               },
             },
-            PUBLISHER_PAGE,
+            PUBLISHER_PAGE_RL,
           ),
-          "newUrl.search back from season details after create",
+          "rl.search back from season details after create",
         );
         await asyncAssertScreenshot(
           path.join(
             __dirname,
             "/publisher_page_back_from_season_details_after_create.png",
           ),
-          path.join(
-            __dirname,
-            "/golden/publisher_page_search_queries.png",
-          ),
+          path.join(__dirname, "/golden/publisher_page_search_queries.png"),
           path.join(
             __dirname,
             "/publisher_page_back_from_season_details_after_create_diff.png",
@@ -357,7 +351,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_Empty";
+      public name = "ApplyRl_Empty";
       private cut: PublisherPage;
       public async execute() {
         // Prepare
@@ -365,7 +359,7 @@ TEST_RUNNER.run({
         this.cut = createPublisherPage();
 
         // Execute
-        this.cut.applyUrl({});
+        this.cut.applyRl({});
 
         // Verify
         assertThat(Boolean(this.cut.listPage), eq(true), "listPage");
@@ -375,7 +369,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_InvalidSearch";
+      public name = "ApplyRl_InvalidSearch";
       private cut: PublisherPage;
       public async execute() {
         // Prepare
@@ -383,7 +377,7 @@ TEST_RUNNER.run({
         this.cut = createPublisherPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {},
         });
 
@@ -396,7 +390,7 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "ApplyUrl_ListPage_SameStateSamePage_DifferentStateDifferentPage";
+        "ApplyRl_ListPage_SameStateSamePage_DifferentStateDifferentPage";
       private cut: PublisherPage;
       public async execute() {
         // Prepare
@@ -404,7 +398,7 @@ TEST_RUNNER.run({
         this.cut = createPublisherPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           list: {
             seasonState: SeasonState.PUBLISHED,
           },
@@ -417,7 +411,7 @@ TEST_RUNNER.run({
         let page = this.cut.listPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           list: {
             seasonState: SeasonState.PUBLISHED,
           },
@@ -427,7 +421,7 @@ TEST_RUNNER.run({
         assertThat(this.cut.listPage, eq(page), "listPage unchanged");
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           list: {
             seasonState: SeasonState.DRAFT,
           },
@@ -446,7 +440,7 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "ApplyUrl_SearchPage_SameStateSamePage_DifferentStateDifferentPage";
+        "ApplyRl_SearchPage_SameStateSamePage_DifferentStateDifferentPage";
       private cut: PublisherPage;
       public async execute() {
         // Prepare
@@ -454,7 +448,7 @@ TEST_RUNNER.run({
         this.cut = createPublisherPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {
             seasonState: SeasonState.PUBLISHED,
           },
@@ -467,7 +461,7 @@ TEST_RUNNER.run({
         let page = this.cut.searchPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {
             seasonState: SeasonState.PUBLISHED,
             query: "",
@@ -478,7 +472,7 @@ TEST_RUNNER.run({
         assertThat(this.cut.searchPage, eq(page), "searchPage unchanged");
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {
             seasonState: SeasonState.DRAFT,
           },
@@ -492,7 +486,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {
             seasonState: SeasonState.DRAFT,
             query: "My Hero",
@@ -511,7 +505,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_CreatePage_SameUrlSamePage";
+      public name = "ApplyRl_CreatePage_SameRlSamePage";
       private cut: PublisherPage;
       public async execute() {
         // Prepare
@@ -519,7 +513,7 @@ TEST_RUNNER.run({
         this.cut = createPublisherPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           create: {},
         });
 
@@ -534,7 +528,7 @@ TEST_RUNNER.run({
         let page = this.cut.createSeasonPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           create: {},
         });
 
@@ -550,7 +544,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_SeasonDetailsPage_SameUrlSamePage";
+      public name = "ApplyRl_SeasonDetailsPage_SameRlSamePage";
       private cut: PublisherPage;
       public async execute() {
         // Prepare
@@ -558,7 +552,7 @@ TEST_RUNNER.run({
         this.cut = createPublisherPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           seasonDetails: {
             seasonId: "season1",
           },
@@ -575,7 +569,7 @@ TEST_RUNNER.run({
         let page = this.cut.seasonDetailsPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           seasonDetails: {
             seasonId: "season1",
           },

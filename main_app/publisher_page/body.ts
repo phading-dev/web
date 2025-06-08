@@ -21,12 +21,12 @@ import { ListPage } from "./list_page/body";
 import { SearchPage } from "./search_page/body";
 import { SeasonDetailsPage } from "./season_details_page/body";
 import { SeasonState } from "@phading/product_service_interface/show/season_state";
-import { PublisherPage as PublisherPageUrl } from "@phading/web_interface/main/publisher/page";
+import { PublisherPageRl } from "@phading/web_interface/main/publisher/page";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
 export interface PublisherPage {
-  on(event: "newUrl", listener: (url: PublisherPageUrl) => void): this;
+  on(event: "pushRl", listener: (rl: PublisherPageRl) => void): this;
   on(event: "goToAccount", listener: () => void): this;
 }
 
@@ -54,7 +54,7 @@ export class PublisherPage extends EventEmitter {
   public searchPage: SearchPage;
   public seasonDetailsPage: SeasonDetailsPage;
   public usagePage: HTMLDivElement;
-  private lastListUrl: PublisherPageUrl;
+  private lastListRl: PublisherPageRl;
 
   public constructor(
     private createCreateSeasonPage: typeof CreateSeasonPage.create,
@@ -95,14 +95,14 @@ export class PublisherPage extends EventEmitter {
       ),
     );
     this.listButton.val.addEventListener("click", () => {
-      this.newUrl({
+      this.pushRl({
         list: {
           seasonState: SeasonState.PUBLISHED,
         },
       });
     });
     this.searchButton.val.addEventListener("click", () => {
-      this.newUrl({
+      this.pushRl({
         search: {
           seasonState: SeasonState.PUBLISHED,
           query: "",
@@ -110,12 +110,12 @@ export class PublisherPage extends EventEmitter {
       });
     });
     this.createSeasonButton.val.addEventListener("click", () => {
-      this.newUrl({
+      this.pushRl({
         create: {},
       });
     });
     this.statsButton.val.addEventListener("click", () => {
-      this.newUrl({
+      this.pushRl({
         usage: {},
       });
     });
@@ -124,72 +124,71 @@ export class PublisherPage extends EventEmitter {
     );
   }
 
-  private newUrl(newUrl: PublisherPageUrl): void {
-    this.emit("newUrl", newUrl);
-    this.applyUrl(newUrl);
+  private pushRl(rl: PublisherPageRl): void {
+    this.emit("pushRl", rl);
+    this.applyRl(rl);
   }
 
-  public applyUrl(newUrl?: PublisherPageUrl): this {
-    if (!newUrl) {
-      newUrl = {};
+  public applyRl(rl?: PublisherPageRl): this {
+    if (!rl) {
+      rl = {};
     }
-    if (newUrl.search && !newUrl.search.seasonState) {
-      newUrl.search = undefined;
+    if (rl.search && !rl.search.seasonState) {
+      rl.search = undefined;
     }
     if (
-      !newUrl.create &&
-      !newUrl.list &&
-      !newUrl.search &&
-      !newUrl.seasonDetails &&
-      !newUrl.usage
+      !rl.create &&
+      !rl.list &&
+      !rl.search &&
+      !rl.seasonDetails &&
+      !rl.usage
     ) {
-      newUrl.list = {};
+      rl.list = {};
     }
-    if (newUrl.list && !newUrl.list.seasonState) {
-      newUrl.list.seasonState = SeasonState.PUBLISHED;
+    if (rl.list && !rl.list.seasonState) {
+      rl.list.seasonState = SeasonState.PUBLISHED;
     }
 
     if (
-      newUrl.list &&
-      (!this.listPage || this.listPage.seasonState !== newUrl.list.seasonState)
+      rl.list &&
+      (!this.listPage || this.listPage.seasonState !== rl.list.seasonState)
     ) {
       this.pageSwitcher.goTo(
-        () => this.addListPage(newUrl.list.seasonState),
+        () => this.addListPage(rl.list.seasonState),
         () => this.removeListPage(),
       );
     } else if (
-      newUrl.search &&
+      rl.search &&
       (!this.searchPage ||
-        this.searchPage.seasonState !== newUrl.search.seasonState ||
-        (this.searchPage.query ?? "") !== (newUrl.search.query ?? ""))
+        this.searchPage.seasonState !== rl.search.seasonState ||
+        (this.searchPage.query ?? "") !== (rl.search.query ?? ""))
     ) {
       this.pageSwitcher.goTo(
-        () =>
-          this.addSearchPage(newUrl.search.seasonState, newUrl.search.query),
+        () => this.addSearchPage(rl.search.seasonState, rl.search.query),
         () => this.removeSearchPage(),
       );
-    } else if (newUrl.create && !this.createSeasonPage) {
+    } else if (rl.create && !this.createSeasonPage) {
       this.pageSwitcher.goTo(
         () => this.addCreateSeasonPage(),
         () => this.removeCreateSeasonPage(),
       );
     } else if (
-      newUrl.seasonDetails &&
+      rl.seasonDetails &&
       (!this.seasonDetailsPage ||
-        this.seasonDetailsPage.seasonId !== newUrl.seasonDetails.seasonId)
+        this.seasonDetailsPage.seasonId !== rl.seasonDetails.seasonId)
     ) {
       this.pageSwitcher.goTo(
-        () => this.addSeasonDetailsPage(newUrl.seasonDetails.seasonId),
+        () => this.addSeasonDetailsPage(rl.seasonDetails.seasonId),
         () => this.removeSeasonDetailsPage(),
       );
-    } else if (newUrl.usage && !this.usagePage) {
+    } else if (rl.usage && !this.usagePage) {
       this.pageSwitcher.goTo(
         () => this.addUsagePage(),
         () => this.removeUsagePage(),
       );
     }
-    if (newUrl.list || newUrl.search) {
-      this.lastListUrl = newUrl;
+    if (rl.list || rl.search) {
+      this.lastListRl = rl;
     }
     return this;
   }
@@ -198,7 +197,7 @@ export class PublisherPage extends EventEmitter {
     this.createSeasonPage = this.createCreateSeasonPage().on(
       "showSeason",
       (seasonId: string) => {
-        this.newUrl({
+        this.pushRl({
           seasonDetails: {
             seasonId,
           },
@@ -216,14 +215,14 @@ export class PublisherPage extends EventEmitter {
   private addListPage(seasonState: SeasonState): void {
     this.listPage = this.createListPage(seasonState)
       .on("showSeason", (seasonId: string) => {
-        this.newUrl({
+        this.pushRl({
           seasonDetails: {
             seasonId,
           },
         });
       })
       .on("listSeasons", (seasonState) => {
-        this.newUrl({
+        this.pushRl({
           list: {
             seasonState,
           },
@@ -240,14 +239,14 @@ export class PublisherPage extends EventEmitter {
   private addSearchPage(seasonState: SeasonState, query: string): void {
     this.searchPage = this.createSearchPage(seasonState, query)
       .on("showSeason", (seasonId: string) => {
-        this.newUrl({
+        this.pushRl({
           seasonDetails: {
             seasonId,
           },
         });
       })
       .on("searchSeasons", (seasonState, query) => {
-        this.newUrl({
+        this.pushRl({
           search: {
             seasonState,
             query,
@@ -267,7 +266,7 @@ export class PublisherPage extends EventEmitter {
       this.appendBodies,
       seasonId,
     ).on("back", () => {
-      this.newUrl(this.lastListUrl);
+      this.pushRl(this.lastListRl);
     });
   }
 
@@ -294,5 +293,6 @@ export class PublisherPage extends EventEmitter {
   public remove(): void {
     this.navigationBar.val.remove();
     this.pageSwitcher.remove();
+    this.removeAllListeners();
   }
 }

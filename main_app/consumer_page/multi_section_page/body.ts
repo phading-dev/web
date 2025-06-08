@@ -163,5 +163,6 @@ export class MultiSectionPage extends EventEmitter {
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 }

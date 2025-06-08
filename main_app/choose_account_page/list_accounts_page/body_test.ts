@@ -1,28 +1,17 @@
-import userImage = require("./test_data/user_image.jpg");
+import userImage = require("../common/test_data/user_image.jpg");
 import path = require("path");
 import { LOCAL_SESSION_STORAGE } from "../../../common/local_session_storage";
 import { normalizeBody } from "../../../common/normalize_body";
-import {
-  setDesktopView,
-  setPhoneView,
-  setTabletView,
-} from "../../../common/view_port";
-import { AccountItem, AddAccountItem } from "./account_item";
+import { setDesktopView, setPhoneView } from "../../../common/view_port";
 import { ListAccountsPage } from "./body";
 import { AccountType } from "@phading/user_service_interface/account_type";
 import {
   LIST_ACCOUNTS,
   ListAccountsResponse,
   SWITCH_ACCOUNT,
-  SWITCH_ACCOUNT_REQUEST_BODY,
   SwitchAccountResponse,
 } from "@phading/user_service_interface/web/self/interface";
-import { eqMessage } from "@selfage/message/test_matcher";
-import {
-  mouseMove,
-  mouseWheel,
-  setViewport,
-} from "@selfage/puppeteer_test_executor_api";
+import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -34,13 +23,12 @@ TEST_RUNNER.run({
   name: "ListAccountsPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "Default_Scroll";
+      public name = "Default_Scroll_SwitchAccount_CreateAccount_SignOut";
       private cut: ListAccountsPage;
       public async execute() {
         // Prepare
         await setPhoneView();
         this.cut = new ListAccountsPage(
-          LOCAL_SESSION_STORAGE,
           new (class extends WebServiceClientMock {
             public async send(request: any): Promise<any> {
               return {
@@ -61,8 +49,6 @@ TEST_RUNNER.run({
               } as ListAccountsResponse;
             }
           })(),
-          AccountItem.create,
-          AddAccountItem.create,
         );
 
         // Execute
@@ -77,8 +63,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseMove(100, 100, 1);
-        await mouseWheel(0, 600);
+        window.scrollTo(0, document.body.scrollHeight);
 
         // Verify
         await asyncAssertScreenshot(
@@ -86,27 +71,70 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/list_accounts_page_scrolled.png"),
           path.join(__dirname, "/list_accounts_page_scrolled_diff.png"),
         );
+
+        // Prepare
+        let switchAccountId: string;
+        this.cut.on("switch", (accountId: string) => {
+          switchAccountId = accountId;
+        });
+
+        // Execute
+        this.cut.accountItems[0].click();
+
+        // Verify
+        assertThat(
+          switchAccountId,
+          eq("consumer 1"),
+          "switch to first consumer",
+        );
+
+        // Prepare
+        switchAccountId = undefined;
+
+        // Execute
+        this.cut.accountItems[1].click();
+
+        // Verify
+        assertThat(
+          switchAccountId,
+          eq("publisher 1"),
+          "switch to first publisher",
+        );
+
+        // Prepare
+        let createAccount = false;
+        this.cut.on("create", () => (createAccount = true));
+
+        // Execute
+        this.cut.createAccountButton.val.click();
+
+        // Verify
+        assertThat(createAccount, eq(true), "create account");
+
+        // Prepare
+        let signedOut = false;
+        this.cut.once("signOut", () => (signedOut = true));
+
+        // Execute
+        this.cut.signOutButton.val.click();
+
+        // Verify
+        assertThat(signedOut, eq(true), "sign out");
       }
       public async tearDown() {
-        await mouseMove(-1, -1, 1);
+        window.scrollTo(0, 0);
         this.cut.remove();
-        // Force reflow to reset scrolling.
-        document.body.clientHeight;
       }
     })(),
     new (class implements TestCase {
-      public name =
-        "MultipleAccountsWithPreSelectedAccount_ChooseConsumer_AddConsumer_ChoosePublisher_AddPublisher";
+      public name = "MultipleAccountsWithError";
       private cut: ListAccountsPage;
       public async execute() {
         // Prepare
         await setDesktopView();
-        let requestCaptured: any;
         this.cut = new ListAccountsPage(
-          LOCAL_SESSION_STORAGE,
           new (class extends WebServiceClientMock {
             public async send(request: any): Promise<any> {
-              requestCaptured = request;
               if (request.descriptor === LIST_ACCOUNTS) {
                 return {
                   accounts: [
@@ -162,9 +190,7 @@ TEST_RUNNER.run({
               }
             }
           })(),
-          AccountItem.create,
-          AddAccountItem.create,
-          "consumer 2",
+          "Failed to do something",
         );
 
         // Execute
@@ -173,89 +199,15 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/list_accounts_page_accounts.png"),
-          path.join(__dirname, "/golden/list_accounts_page_accounts.png"),
-          path.join(__dirname, "/list_accounts_page_accounts_diff.png"),
-        );
-
-        // Execute
-        this.cut.accountItems[1].click();
-        await new Promise<void>((resolve) => this.cut.once("choose", resolve));
-
-        // Verify
-        assertThat(
-          requestCaptured.body,
-          eqMessage(
-            {
-              accountId: "consumer 2",
-            },
-            SWITCH_ACCOUNT_REQUEST_BODY,
+          path.join(__dirname, "/list_accounts_page_accounts_and_error.png"),
+          path.join(
+            __dirname,
+            "/golden/list_accounts_page_accounts_and_error.png",
           ),
-          "switch to second consumer",
-        );
-        assertThat(
-          LOCAL_SESSION_STORAGE.read(),
-          eq("session 1"),
-          "stored consumer session",
-        );
-
-        // Prepare
-        let createAccount = false;
-        this.cut.on("createAccount", () => (createAccount = true));
-
-        // Execute
-        this.cut.addAccountItem.val.click();
-
-        // Verify
-        assertThat(createAccount, eq(true), "create account");
-      }
-      public tearDown() {
-        this.cut.remove();
-        LOCAL_SESSION_STORAGE.clear();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "PreSelectedAccountNotFound";
-      private cut: ListAccountsPage;
-      public async execute() {
-        // Prepare
-        await setTabletView();
-        this.cut = new ListAccountsPage(
-          LOCAL_SESSION_STORAGE,
-          new (class extends WebServiceClientMock {
-            public async send(request: any): Promise<any> {
-              if (request.descriptor === LIST_ACCOUNTS) {
-                return {
-                  accounts: [
-                    {
-                      accountId: "consumer 1",
-                      accountType: AccountType.CONSUMER,
-                      avatarSmallUrl: userImage,
-                      naturalName: "First Consumer",
-                    },
-                  ],
-                } as ListAccountsResponse;
-              } else if (request.descriptor === SWITCH_ACCOUNT) {
-                return {
-                  signedSession: "session 1",
-                } as SwitchAccountResponse;
-              }
-            }
-          })(),
-          AccountItem.create,
-          AddAccountItem.create,
-          "consumer 2",
-        );
-
-        // Execute
-        document.body.append(this.cut.body);
-        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/list_accounts_account_not_found.png"),
-          path.join(__dirname, "/golden/list_accounts_account_not_found.png"),
-          path.join(__dirname, "/list_accounts_account_not_found_diff.png"),
+          path.join(
+            __dirname,
+            "/list_accounts_page_accounts_and_error_diff.png",
+          ),
         );
       }
       public tearDown() {
@@ -270,7 +222,6 @@ TEST_RUNNER.run({
         // Prepare
         await setViewport(2200, 600);
         this.cut = new ListAccountsPage(
-          LOCAL_SESSION_STORAGE,
           new (class extends WebServiceClientMock {
             public async send(request: any): Promise<any> {
               return {
@@ -278,8 +229,6 @@ TEST_RUNNER.run({
               } as ListAccountsResponse;
             }
           })(),
-          AccountItem.create,
-          AddAccountItem.create,
         );
 
         // Execute
@@ -296,37 +245,6 @@ TEST_RUNNER.run({
       public tearDown() {
         this.cut.remove();
         LOCAL_SESSION_STORAGE.clear();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "SignOut";
-      private cut: ListAccountsPage;
-      public async execute() {
-        // Prepare
-        this.cut = new ListAccountsPage(
-          LOCAL_SESSION_STORAGE,
-          new (class extends WebServiceClientMock {
-            public async send(request: any): Promise<any> {
-              return {
-                accounts: [],
-              } as ListAccountsResponse;
-            }
-          })(),
-          AccountItem.create,
-          AddAccountItem.create,
-        );
-        let signedOut = false;
-        this.cut.once("signOut", () => (signedOut = true));
-
-        // Execute
-        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
-        this.cut.signOutButton.val.click();
-
-        // Verify
-        assertThat(signedOut, eq(true), "sign out button clicked");
-      }
-      public tearDown() {
-        this.cut.remove();
       }
     })(),
   ],

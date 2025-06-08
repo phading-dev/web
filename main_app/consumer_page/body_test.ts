@@ -15,8 +15,8 @@ import { SeasonDetailsPageMock } from "./season_details_page/body_mock";
 import { UsagePageMock } from "./usage_page/body_mock";
 import { WatchLaterPageMock } from "./watch_later_page/body_mock";
 import {
-  CONSUMER_PAGE,
-  ConsumerPage as ConsumerPageUrl,
+  CONSUMER_PAGE_RL,
+  ConsumerPageRl,
   SearchTarget,
 } from "@phading/web_interface/main/consumer/page";
 import { copyMessage } from "@selfage/message/copier";
@@ -56,13 +56,13 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.cut = createConsumerPage();
-        let newUrl: ConsumerPageUrl;
-        this.cut.on("newUrl", (url) => {
-          newUrl = copyMessage(url, CONSUMER_PAGE);
+        let rl: ConsumerPageRl;
+        this.cut.on("pushRl", (rl_) => {
+          rl = copyMessage(rl_, CONSUMER_PAGE_RL);
         });
 
         // Execute
-        this.cut.applyUrl();
+        this.cut.applyRl();
 
         // Verify
         await asyncAssertScreenshot(
@@ -86,7 +86,7 @@ TEST_RUNNER.run({
           "play.episodeId from home",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               play: {
@@ -94,7 +94,7 @@ TEST_RUNNER.run({
                 episodeId: "episode1",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "play from home",
         );
@@ -119,7 +119,7 @@ TEST_RUNNER.run({
           "play.episodeId from play",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               play: {
@@ -127,7 +127,7 @@ TEST_RUNNER.run({
                 episodeId: "episode2",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "play from play",
         );
@@ -147,14 +147,14 @@ TEST_RUNNER.run({
           "seasonDetails.seasonId from play",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               seasonDetails: {
                 seasonId: "season1",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "seasonDetails from play",
         );
@@ -179,7 +179,7 @@ TEST_RUNNER.run({
           "play.episodeId from seasonDetails",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               play: {
@@ -187,7 +187,7 @@ TEST_RUNNER.run({
                 episodeId: "episode3",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "play from seasonDetails",
         );
@@ -203,12 +203,12 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               home: {},
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "back to home from seasonDetails",
         );
@@ -228,14 +228,14 @@ TEST_RUNNER.run({
           "seasonDetails.seasonId from multiSectionPage",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               seasonDetails: {
                 seasonId: "season2",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "seasonDetails from multiSectionPage",
         );
@@ -250,12 +250,12 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               home: {},
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "back to home from seasonDetails again",
         );
@@ -270,12 +270,12 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               listRecentPremieres: {},
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "listRecentPremieres",
         );
@@ -298,14 +298,14 @@ TEST_RUNNER.run({
           "seasonDetails.seasonId from listRecentPremieres",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               seasonDetails: {
                 seasonId: "season3",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "seasonDetails from listRecentPremieres",
         );
@@ -320,12 +320,12 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               listRecentPremieres: {},
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "back to listRecentPremieres from seasonDetails",
         );
@@ -344,12 +344,12 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               listTopRated: {},
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "listTopRated",
         );
@@ -369,14 +369,14 @@ TEST_RUNNER.run({
           "seasonDetails.seasonId from listTopRated",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               seasonDetails: {
                 seasonId: "season4",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "seasonDetails from listTopRated",
         );
@@ -391,12 +391,12 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               listTopRated: {},
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "back to listTopRated from seasonDetails",
         );
@@ -412,12 +412,12 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               history: {},
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "history from home",
         );
@@ -438,25 +438,25 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.cut = createConsumerPage();
-        let newUrl: ConsumerPageUrl;
-        this.cut.on("newUrl", (url) => {
-          newUrl = copyMessage(url, CONSUMER_PAGE);
+        let rl: ConsumerPageRl;
+        this.cut.on("pushRl", (rl_) => {
+          rl = copyMessage(rl_, CONSUMER_PAGE_RL);
         });
-        this.cut.applyUrl();
+        this.cut.applyRl();
 
         // Execute
         this.cut.exploreButton.val.click();
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               search: {
                 searchTarget: SearchTarget.SEASON,
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "search",
         );
@@ -480,7 +480,7 @@ TEST_RUNNER.run({
           "searchSeasonsPage.query from search",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               search: {
@@ -488,7 +488,7 @@ TEST_RUNNER.run({
                 query: "some query",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "search seasons from search",
         );
@@ -508,14 +508,14 @@ TEST_RUNNER.run({
           "seasonDetails.seasonId from search",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               seasonDetails: {
                 seasonId: "season1",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "seasonDetails from search",
         );
@@ -530,7 +530,7 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               search: {
@@ -538,7 +538,7 @@ TEST_RUNNER.run({
                 query: "some query",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "back to search from seasonDetails",
         );
@@ -562,7 +562,7 @@ TEST_RUNNER.run({
           "searchPublishersPage.query from search",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               search: {
@@ -570,7 +570,7 @@ TEST_RUNNER.run({
                 query: "some publisher",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "search publishers from search",
         );
@@ -590,14 +590,14 @@ TEST_RUNNER.run({
           "publisherShowroomPage.accountId from search publishers",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               publisherShowroom: {
                 accountId: "publisher1",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "publisherShowroom from search publishers",
         );
@@ -617,14 +617,14 @@ TEST_RUNNER.run({
           "seasonDetails.seasonId from publisherShowroom",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               seasonDetails: {
                 seasonId: "season2",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "seasonDetails from publisherShowroom",
         );
@@ -639,14 +639,14 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               publisherShowroom: {
                 accountId: "publisher1",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "back to publisherShowroom from seasonDetails",
         );
@@ -676,7 +676,7 @@ TEST_RUNNER.run({
           "searchSeasonsPage.query from search publishers",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               search: {
@@ -684,7 +684,7 @@ TEST_RUNNER.run({
                 query: "some query",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "search seasons from search publishers",
         );
@@ -705,14 +705,14 @@ TEST_RUNNER.run({
           "publisherShowroomPage.accountId from seasonDetails",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               publisherShowroom: {
                 accountId: "publisher2",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "publisherShowroom from seasonDetails",
         );
@@ -733,23 +733,23 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.cut = createConsumerPage();
-        let newUrl: ConsumerPageUrl;
-        this.cut.on("newUrl", (url) => {
-          newUrl = copyMessage(url, CONSUMER_PAGE);
+        let rl: ConsumerPageRl;
+        this.cut.on("pushRl", (rl_) => {
+          rl = copyMessage(rl_, CONSUMER_PAGE_RL);
         });
-        this.cut.applyUrl();
+        this.cut.applyRl();
 
         // Execute
         this.cut.activityButton.val.click();
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               history: {},
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "history",
         );
@@ -770,7 +770,7 @@ TEST_RUNNER.run({
           "play.episodeId",
         );
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               play: {
@@ -778,7 +778,7 @@ TEST_RUNNER.run({
                 episodeId: "episode1",
               },
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "play",
         );
@@ -794,12 +794,12 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               history: {},
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "back to history from seasonDetails",
         );
@@ -814,12 +814,12 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          newUrl,
+          rl,
           eqMessage(
             {
               usage: {},
             },
-            CONSUMER_PAGE,
+            CONSUMER_PAGE_RL,
           ),
           "usage",
         );
@@ -834,7 +834,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_Empty";
+      public name = "ApplyRl_Empty";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -842,7 +842,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({});
+        this.cut.applyRl({});
 
         // Verify
         assertThat(
@@ -856,7 +856,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_InvalidSearch";
+      public name = "ApplyRl_InvalidSearch";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -864,7 +864,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {},
         });
 
@@ -880,7 +880,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_HomePage_SameUrlSamePage";
+      public name = "ApplyRl_HomePage_SameRlSamePage";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -888,7 +888,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           home: {},
         });
 
@@ -903,7 +903,7 @@ TEST_RUNNER.run({
         let page = this.cut.multiSectionPage;
 
         // Execute
-        this.cut.applyUrl({ home: {} });
+        this.cut.applyRl({ home: {} });
 
         // Verify
         assertThat(
@@ -917,7 +917,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_ListRecentPremieresPage_SameUrlSamePage";
+      public name = "ApplyRl_ListRecentPremieresPage_SameRlSamePage";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -925,7 +925,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           listRecentPremieres: {},
         });
 
@@ -940,7 +940,7 @@ TEST_RUNNER.run({
         let page = this.cut.listRecentPremieresPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           listRecentPremieres: {},
         });
 
@@ -956,7 +956,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_ListTopRatedPage_SameUrlSamePage";
+      public name = "ApplyRl_ListTopRatedPage_SameRlSamePage";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -964,7 +964,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           listTopRated: {},
         });
 
@@ -979,7 +979,7 @@ TEST_RUNNER.run({
         let page = this.cut.listTopRatedPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           listTopRated: {},
         });
 
@@ -996,7 +996,7 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "ApplyUrl_SearchSeasons_SameTargetSameQuerySamePage_DifferentQueryDifferentPage_DifferentTargetDifferentPage";
+        "ApplyRl_SearchSeasons_SameTargetSameQuerySamePage_DifferentQueryDifferentPage_DifferentTargetDifferentPage";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -1004,7 +1004,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {
             searchTarget: SearchTarget.SEASON,
             query: "My Hero Academia",
@@ -1022,7 +1022,7 @@ TEST_RUNNER.run({
         let page = this.cut.searchSeasonsPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {
             searchTarget: SearchTarget.SEASON,
             query: "My Hero Academia",
@@ -1037,7 +1037,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {
             searchTarget: SearchTarget.SEASON,
             query: "Attack on Titan",
@@ -1052,7 +1052,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {
             searchTarget: SearchTarget.PUBLISHER,
             query: "My Hero Academia",
@@ -1072,7 +1072,7 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "ApplyUrl_SearchPublisher_SameTargetSameQuerySamePage_DifferentQueryDifferentPage_DifferentTargetDifferentPage";
+        "ApplyRl_SearchPublisher_SameTargetSameQuerySamePage_DifferentQueryDifferentPage_DifferentTargetDifferentPage";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -1080,7 +1080,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {
             searchTarget: SearchTarget.PUBLISHER,
             query: "My Hero Academia",
@@ -1098,7 +1098,7 @@ TEST_RUNNER.run({
         let page = this.cut.searchPublishersPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {
             searchTarget: SearchTarget.PUBLISHER,
             query: "My Hero Academia",
@@ -1113,7 +1113,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {
             searchTarget: SearchTarget.PUBLISHER,
             query: "Attack on Titan",
@@ -1128,7 +1128,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           search: {
             searchTarget: SearchTarget.SEASON,
             query: "My Hero Academia",
@@ -1148,7 +1148,7 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "ApplyUrl_SeasonDetails_SameIdSamePage_DifferentIdDifferentPage";
+        "ApplyRl_SeasonDetails_SameIdSamePage_DifferentIdDifferentPage";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -1156,7 +1156,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           seasonDetails: {
             seasonId: "season1",
           },
@@ -1173,7 +1173,7 @@ TEST_RUNNER.run({
         let page = this.cut.seasonDetailsPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           seasonDetails: {
             seasonId: "season1",
           },
@@ -1187,7 +1187,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           seasonDetails: {
             seasonId: "season2",
           },
@@ -1205,7 +1205,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_Play_SameIdSamePage_DifferentIdDifferentPage";
+      public name = "ApplyRl_Play_SameIdSamePage_DifferentIdDifferentPage";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -1213,7 +1213,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           play: {
             seasonId: "season1",
             episodeId: "episode1",
@@ -1227,7 +1227,7 @@ TEST_RUNNER.run({
         let page = this.cut.playPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           play: {
             seasonId: "season1",
             episodeId: "episode1",
@@ -1238,7 +1238,7 @@ TEST_RUNNER.run({
         assertThat(this.cut.playPage, eq(page), "playPage is the same");
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           play: {
             seasonId: "season2",
             episodeId: "episode1",
@@ -1258,7 +1258,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           play: {
             seasonId: "season2",
             episodeId: "episode2",
@@ -1283,7 +1283,7 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "ApplyUrl_PublisherShowroom_SameIdSamePage_DifferentIdDifferentPage";
+        "ApplyRl_PublisherShowroom_SameIdSamePage_DifferentIdDifferentPage";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -1291,7 +1291,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           publisherShowroom: {
             accountId: "publisher1",
           },
@@ -1308,7 +1308,7 @@ TEST_RUNNER.run({
         let page = this.cut.publisherShowroomPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           publisherShowroom: {
             accountId: "publisher1",
           },
@@ -1322,7 +1322,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           publisherShowroom: {
             accountId: "publisher2",
           },
@@ -1340,7 +1340,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_HistoryPage_SameUrlSamePage";
+      public name = "ApplyRl_HistoryPage_SameRlSamePage";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -1348,7 +1348,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           history: {},
         });
 
@@ -1359,7 +1359,7 @@ TEST_RUNNER.run({
         let page = this.cut.historyPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           history: {},
         });
 
@@ -1371,7 +1371,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_UsagePage_SameUrlSamePage";
+      public name = "ApplyRl_UsagePage_SameRlSamePage";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -1379,7 +1379,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           usage: {},
         });
 
@@ -1390,7 +1390,7 @@ TEST_RUNNER.run({
         let page = this.cut.usagePage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           usage: {},
         });
 
@@ -1402,7 +1402,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "ApplyUrl_WatchLaterPage_SameUrlSamePage";
+      public name = "ApplyRl_WatchLaterPage_SameRlSamePage";
       private cut: ConsumerPage;
       public async execute() {
         // Prepare
@@ -1410,7 +1410,7 @@ TEST_RUNNER.run({
         this.cut = createConsumerPage();
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           watchLater: {},
         });
 
@@ -1425,7 +1425,7 @@ TEST_RUNNER.run({
         let page = this.cut.watchLaterPage;
 
         // Execute
-        this.cut.applyUrl({
+        this.cut.applyRl({
           watchLater: {},
         });
 

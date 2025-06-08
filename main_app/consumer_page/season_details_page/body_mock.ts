@@ -27,6 +27,7 @@ import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 export class SeasonDetailsPageMock extends SeasonDetailsPage {
   public constructor(getNowDate: () => Date, seasonId: string) {
     super(
+      undefined,
       new (class extends WebServiceClientMock {
         public async send(request: ClientRequestInterface<any>): Promise<any> {
           switch (request.descriptor) {

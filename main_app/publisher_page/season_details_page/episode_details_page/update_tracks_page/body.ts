@@ -328,6 +328,7 @@ export class VideoTrackEditor extends EventEmitter {
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 }
 
@@ -684,6 +685,7 @@ export class AudioTrackEditor extends EventEmitter {
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 }
 
@@ -950,6 +952,7 @@ export class SubtitleTrackEditor extends EventEmitter {
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 }
 
@@ -1341,5 +1344,6 @@ export class UpdateTracksPage extends EventEmitter {
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 }

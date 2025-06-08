@@ -2,7 +2,7 @@ import EventEmitter = require("events");
 import { AddBodiesFn } from "../../../common/add_bodies_fn";
 import { TabSwitcher } from "../../../common/page_navigator";
 import { InfoPage } from "./info_page/body";
-import { UpdateAccountInfoPage } from "./update_account_info/body";
+import { UpdateAccountInfoPage } from "./update_account_info_page/body";
 import { UpdateAvatarPage } from "./update_avatar_page/body";
 import { UpdatePasswordPage } from "./update_password_page/body";
 import { UpdateRecoveryEmailPage } from "./update_recovery_email_page/body";
@@ -134,5 +134,6 @@ export class ProfilePage extends EventEmitter {
 
   public remove(): void {
     this.pageSwitcher.remove();
+    this.removeAllListeners();
   }
 }

@@ -78,5 +78,6 @@ export class ResumeUploadPage extends EventEmitter {
 
   public remove() {
     this.body.remove();
+    this.removeAllListeners();
   }
 }

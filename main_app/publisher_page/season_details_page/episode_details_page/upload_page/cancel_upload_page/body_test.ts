@@ -24,14 +24,14 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
+
+        // Execute
         this.cut = new CancelUploadPage(
           serviceClientMock,
           "season1",
           "episode1",
           false,
         );
-
-        // Execute
         document.body.append(this.cut.body);
         await new Promise((resolve) => this.cut.once("restart", resolve));
 
@@ -57,6 +57,29 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/cancel_upload_page_tablet.png"),
           path.join(__dirname, "/cancel_upload_page_tablet_diff.png"),
         );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "CancelError";
+      public cut: CancelUploadPage;
+      public async execute() {
+        // Prepare
+        let serviceClientMock = new WebServiceClientMock();
+        serviceClientMock.error = new Error("Fake error");
+
+        // Execute
+        this.cut = new CancelUploadPage(
+          serviceClientMock,
+          "season1",
+          "episode1",
+          false,
+        );
+
+        // Verify
+        await new Promise((resolve) => this.cut.once("back", resolve));
       }
       public tearDown() {
         this.cut.remove();

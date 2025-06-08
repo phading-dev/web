@@ -14,21 +14,14 @@ export interface AccountItem {
 }
 
 export class AccountItem extends EventEmitter {
-  public static create(
-    account: AccountSummary,
-    highlight: boolean,
-  ): AccountItem {
-    return new AccountItem(account, highlight);
-  }
-
   public body: HTMLDivElement;
 
-  public constructor(account: AccountSummary, highlight: boolean) {
+  public constructor(account: AccountSummary) {
     super();
     this.body = E.div(
       {
         class: "account-item",
-        style: `width: ${ITEM_WIDTH}rem; height: ${ITEM_HEIGHT}rem; box-sizing: border-box; padding: 2rem 1rem 1rem 1rem; display: flex; flex-flow: column nowrap; justify-content: space-between; align-items: center; border-radius: ${ITEM_BORDER_RADIUS}rem; border: ${highlight ? .2 : .1}rem solid ${highlight ? SCHEME.primary1 : SCHEME.neutral1}; cursor: pointer;`,
+        style: `width: ${ITEM_WIDTH}rem; height: ${ITEM_HEIGHT}rem; box-sizing: border-box; padding: 2rem 1rem 1rem 1rem; display: flex; flex-flow: column nowrap; justify-content: space-between; align-items: center; border-radius: ${ITEM_BORDER_RADIUS}rem; border: .1rem solid ${SCHEME.neutral1}; cursor: pointer;`,
       },
       E.image({
         class: "account-item-avatar",
@@ -63,10 +56,6 @@ export interface AddAccountItem {
 }
 
 export class AddAccountItem extends EventEmitter {
-  public static create(): AddAccountItem {
-    return new AddAccountItem();
-  }
-
   public body: HTMLDivElement;
 
   public constructor() {

@@ -73,5 +73,6 @@ export class ListRecentPremieresPage extends EventEmitter {
   public remove(): void {
     this.body.remove();
     this.loadingSection.val.stopLoading();
+    this.removeAllListeners();
   }
 }
