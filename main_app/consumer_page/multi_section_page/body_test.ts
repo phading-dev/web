@@ -86,7 +86,6 @@ TEST_RUNNER.run({
                     {
                       seasonId: "season3",
                       name: "My Hero Academia",
-                      coverImageUrl: coverImage,
                       grade: 120,
                       ratingsCount: 4567,
                       averageRating: 4.8,
@@ -219,7 +218,6 @@ TEST_RUNNER.run({
                       season: {
                         seasonId: "season3",
                         name: "My Hero Academia",
-                        coverImageUrl: coverImage,
                         grade: 125,
                         ratingsCount: 4567,
                         averageRating: 4.8,
@@ -274,7 +272,6 @@ TEST_RUNNER.run({
                     {
                       seasonId: "season4",
                       name: "Demon Slayer",
-                      coverImageUrl: coverImage2,
                       grade: 100,
                       ratingsCount: 2345,
                       averageRating: 4.9,
@@ -305,7 +302,6 @@ TEST_RUNNER.run({
                     {
                       seasonId: "season7",
                       name: "Demon Slayer",
-                      coverImageUrl: coverImage2,
                       grade: 100,
                       ratingsCount: 2345,
                       averageRating: 4.9,

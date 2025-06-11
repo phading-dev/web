@@ -141,7 +141,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "OneEpisodeOnly";
+      public name = "OneEpisodeOnlyWithoutCoverImage";
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
@@ -160,7 +160,6 @@ TEST_RUNNER.run({
           {
             name: "Re-Zero: Starting Life in Another World",
             grade: 90,
-            coverImageUrl: coverImage,
             totalEpisodes: 1,
           },
         );

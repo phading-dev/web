@@ -21,6 +21,7 @@ import {
   PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
 } from "../../../../common/page_style";
 import { ScrollLoadingSection } from "../../../../common/scroll_loading_section";
+import { eCoverImage } from "../../../../common/season_cover_image";
 import {
   FONT_L,
   FONT_M,
@@ -134,21 +135,7 @@ export class InfoPage extends EventEmitter {
               assign(
                 this.coverImageButton,
                 eColumnBoxWithArrow(
-                  [
-                    seasonDetails.coverImageUrl
-                      ? E.image({
-                          class: "season-details-cover-image",
-                          style: `width: 100%; aspect-ratio: 2/3; object-fit: contain;`,
-                          src: seasonDetails.coverImageUrl,
-                        })
-                      : E.div(
-                          {
-                            class: "season-details-cover-image",
-                            style: `width: 100%; aspect-ratio: 2/3; display: flex; justify-content: center; align-items: center; text-align: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral1};`,
-                          },
-                          E.text(LOCALIZED_TEXT.seasonAddCoverImageLabel),
-                        ),
-                  ],
+                  [eCoverImage(`100%`, seasonDetails.coverImageUrl)],
                   {
                     customeStyle:
                       "margin-bottom: 2rem; align-self: center; width: 100%; max-width: 44rem; box-sizing: border-box;",

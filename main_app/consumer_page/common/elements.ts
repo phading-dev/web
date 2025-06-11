@@ -11,6 +11,7 @@ import {
   createCircularProgressIcon,
   createFilledStarIcon,
 } from "../../../common/icons";
+import { eCoverImage } from "../../../common/season_cover_image";
 import {
   AVATAR_M,
   FONT_M,
@@ -91,12 +92,7 @@ export function eSeasonItem(
       class: "season-item-info",
       style: `cursor: pointer; ${customStyle}`,
     },
-    E.image({
-      class: "season-item-cover-image",
-      style: `width: 100%; aspect-ratio: 2/3; object-fit: contain;`,
-      src: season.coverImageUrl,
-      alt: season.name,
-    }),
+    eCoverImage("100%", season.coverImageUrl),
     E.div({
       style: `height: .5rem;`,
     }),
@@ -173,12 +169,7 @@ export function eContinueEpisodeItem(
         class: "continue-episode-season-cover-image",
         style: `width: 30%; flex: 0 0 auto;`,
       },
-      E.image({
-        class: "continue-episode-season-cover-image",
-        style: `width: 100%; aspect-ratio: 2/3; object-fit: contain;`,
-        src: season.coverImageUrl,
-        alt: season.name,
-      }),
+      eCoverImage("100%", season.coverImageUrl),
     ),
     E.div({
       style: `width: 1rem;`,

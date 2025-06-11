@@ -15,6 +15,7 @@ import {
   PAGE_CENTER_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CENTER_CARD_STYLE,
 } from "../../../../common/page_style";
+import { eCoverImage } from "../../../../common/season_cover_image";
 import { FONT_L, FONT_M, FONT_S } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../common/elements";
@@ -126,17 +127,7 @@ export class UpdateCoverImagePage extends EventEmitter {
             class: "update-cover-image-preview",
             style: `width: 100%; max-width: 40.2rem; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral1};`,
           },
-          season.coverImageUrl
-            ? E.image({
-                style: `width: 100%; aspect-ratio: 2 / 3; object-fit: contain;`,
-                src: season.coverImageUrl,
-              })
-            : E.div(
-                {
-                  style: `width: 100%; aspect-ratio: 2 / 3; display: flex; justify-content: center; align-items: center; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.updateSeasonCoverImageNoPreview),
-              ),
+          eCoverImage(`100%`, season.coverImageUrl),
         ),
         E.div({
           style: `flex: 0 0 auto; height: 3rem;`,

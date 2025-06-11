@@ -993,7 +993,7 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "Desktop_Watched3rdEpisodeAndPriceIncreasingIn1Day_LoadPrevEpisodes_LoadNextEpisodes";
+        "Desktop_NoCoverImage_Watched3rdEpisodeAndPriceIncreasingIn1Day_LoadPrevEpisodes_LoadNextEpisodes";
       private cut: SeasonDetailsPage;
       public async execute() {
         // Prepare
@@ -1011,7 +1011,6 @@ TEST_RUNNER.run({
                     name: "Re-Zero Starting Life in Another World",
                     description:
                       "A thrilling journey through a fantasy world filled with challenges and mysteries.",
-                    coverImageUrl: coverImage,
                     averageRating: 0,
                     ratingsCount: 0,
                     grade: 1,

@@ -8,19 +8,19 @@ export let BOX_BORDER_RADIUS = 0.5; // rem
 export function eLabelAndText(label: string, value?: string): HTMLDivElement {
   return E.div(
     {
-      class: "text-value",
+      class: "label-and-text",
       style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
     },
     E.div(
       {
-        class: "text-value-label",
+        class: "label-and-text-label",
         style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
       },
       E.text(label),
     ),
     E.div(
       {
-        class: "text-value-value",
+        class: "label-and-text-value",
         style: `width: 100%; line-height: 2rem; font-size: ${FONT_M}rem; ${
           value ? "" : "height: 2rem;"
         } color: ${SCHEME.neutral0}; border-bottom: .1rem solid ${

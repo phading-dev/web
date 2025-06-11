@@ -79,7 +79,6 @@ TEST_RUNNER.run({
         let cut = eDraftSeasonItem(
           {
             name: "Re-Zero: Starting Life in Another World Season 1",
-            coverImageUrl: coverImage,
             lastChangeTimeMs: new Date("2024-12-23T12:00:00Z").getTime(),
             grade: 189,
           },

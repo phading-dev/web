@@ -15,6 +15,7 @@ import {
   createQuestionMarkIcon,
 } from "../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
+import { eCoverImage } from "../../../../common/season_cover_image";
 import {
   FONT_M,
   FONT_S,
@@ -143,11 +144,7 @@ export class InfoPanel extends EventEmitter {
             class: "info-panel-cover-image-container",
             style: `flex: 1 0 0; max-width: 10rem;`,
           },
-          E.image({
-            class: "info-panel-cover-image",
-            style: `width: 100%; aspect-ratio: 2/3; object-fit: contain;`,
-            src: this.seasonSummary.coverImageUrl,
-          }),
+          eCoverImage("100%", this.seasonSummary.coverImageUrl),
         ),
         E.div(
           {

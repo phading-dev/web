@@ -45,6 +45,7 @@ import {
   PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
 } from "../../../common/page_style";
 import { getRootFontSize } from "../../../common/root_font_size";
+import { eCoverImage } from "../../../common/season_cover_image";
 import {
   AVATAR_S,
   FONT_L,
@@ -230,11 +231,7 @@ export class SeasonDetailsPage extends EventEmitter {
               class: "season-details-cover-image",
               style: `flex: 1 0 0; min-width: 26rem;`,
             },
-            E.image({
-              class: "season-details-cover-image",
-              style: `width: 100%; aspect-ratio: 2/3; object-fit: contain;`,
-              src: seasonDetails.coverImageUrl,
-            }),
+            eCoverImage(`100%`, seasonDetails.coverImageUrl),
           ),
           E.div(
             {

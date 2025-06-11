@@ -105,11 +105,11 @@ export class MainApp extends EventEmitter {
     if (!this.rl) {
       this.rl = {};
     }
-    if (!capabilities.canConsume) {
+    if (!capabilities.canConsume && this.rl.consumer) {
       this.rl.consumer = undefined;
       this.emit("replaceRl", this.rl);
     }
-    if (!capabilities.canPublish) {
+    if (!capabilities.canPublish && this.rl.publisher) {
       this.rl.publisher = undefined;
       this.emit("replaceRl", this.rl);
     }

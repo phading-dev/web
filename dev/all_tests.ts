@@ -11,6 +11,7 @@ import "../common/hover_observer_test";
 import "../common/icon_button_test";
 import "../common/option_pills_test";
 import "../common/scroll_loading_section_test";
+import "../common/season_cover_image_test";
 import "../common/slider_test";
 import "../common/value_box_test";
 import "../main_app/account_page/payment_page/body_test";

@@ -85,7 +85,6 @@ TEST_RUNNER.run({
                         season: {
                           seasonId: "season1",
                           name: "Re:Zero -Starting Life in Another World-",
-                          coverImageUrl: coverImage,
                           grade: 180,
                           ratingsCount: 12345,
                           averageRating: 4,
@@ -127,7 +126,6 @@ TEST_RUNNER.run({
                         season: {
                           seasonId: "season2",
                           name: "Attack on Titan",
-                          coverImageUrl: coverImage2,
                           grade: 209,
                           ratingsCount: 54321,
                           averageRating: 5,

@@ -155,7 +155,6 @@ TEST_RUNNER.run({
             {
               seasonId: "season13",
               name: "Black Clover",
-              coverImageUrl: coverImage,
               grade: 9999,
               ratingsCount: 4321,
               averageRating: 4.2,
@@ -163,7 +162,6 @@ TEST_RUNNER.run({
             {
               seasonId: "season14",
               name: "Tokyo Ghoul",
-              coverImageUrl: coverImage2,
               grade: 9999,
               ratingsCount: 8765,
               averageRating: 4.3,

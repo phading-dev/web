@@ -156,7 +156,6 @@ TEST_RUNNER.run({
             {
               seasonId: "season5",
               name: "One Piece Season 1",
-              coverImageUrl: coverImage,
               totalPublishedEpisodes: 100,
               averageRating: 4.0,
               ratingsCount: 100000,

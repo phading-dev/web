@@ -11,13 +11,8 @@ import {
   PAGE_LARGE_TOP_DOWN_CARD_STYLE,
   PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
 } from "../../../common/page_style";
-import {
-  FONT_L,
-  FONT_M,
-  FONT_S,
-  FONT_WEIGHT_600,
-  ICON_M,
-} from "../../../common/sizes";
+import { eCoverImage } from "../../../common/season_cover_image";
+import { FONT_M, FONT_S, FONT_WEIGHT_600, ICON_M } from "../../../common/sizes";
 import { SeasonSummary } from "@phading/product_service_interface/show/web/publisher/summary";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -59,11 +54,7 @@ export function ePublishedSeasonItem(
         class: "published-season-item-cover-image",
         style: `width: 30%; max-width: 15rem; flex: 0 0 auto;`,
       },
-      E.image({
-        class: "published-season-cover-image",
-        style: `width: 100%; aspect-ratio: 2/3; object-fit: contain;`,
-        src: season.coverImageUrl,
-      }),
+      eCoverImage("100%", season.coverImageUrl),
     ),
     E.div(
       {
@@ -148,19 +139,7 @@ export function eDraftSeasonItem(
         class: "draft-season-item-cover-image",
         style: `width: 30%; max-width: 15rem; flex: 0 0 auto;`,
       },
-      season.coverImageUrl
-        ? E.image({
-            class: "draft-season-cover-image",
-            style: `width: 100%; aspect-ratio: 2/3; object-fit: contain;`,
-            src: season.coverImageUrl,
-          })
-        : E.div(
-            {
-              class: "draft-season-no-cover-image",
-              style: `width: 100%; aspect-ratio: 2/3; display: flex; align-items: center; justify-content: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral1}; text-align: center;`,
-            },
-            E.text(LOCALIZED_TEXT.noCoverImage),
-          ),
+      eCoverImage("100%", season.coverImageUrl),
     ),
     E.div(
       {

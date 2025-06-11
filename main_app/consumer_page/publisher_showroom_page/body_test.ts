@@ -77,7 +77,6 @@ TEST_RUNNER.run({
             {
               seasonId: "season4",
               name: "One Piece",
-              coverImageUrl: coverImage2,
               grade: 100,
               ratingsCount: 12345,
               averageRating: 4.7,
@@ -85,7 +84,6 @@ TEST_RUNNER.run({
             {
               seasonId: "season5",
               name: "Naruto",
-              coverImageUrl: coverImage,
               grade: 140,
               ratingsCount: 9876,
               averageRating: 4.6,

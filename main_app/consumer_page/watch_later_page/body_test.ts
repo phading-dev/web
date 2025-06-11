@@ -123,7 +123,6 @@ TEST_RUNNER.run({
                       grade: 299,
                       averageRating: 4.5,
                       ratingsCount: 95,
-                      coverImageUrl: coverImage,
                     },
                   } as GetSeasonSummaryResponse;
                 } else {
