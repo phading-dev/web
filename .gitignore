@@ -1,4 +1,7 @@
 node_modules/
+bin/
+dev/favicon.ico
+web_app_resources.yaml
 *.d.ts
 *.js
 *.tsbuildinfo

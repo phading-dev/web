@@ -1,0 +1,13 @@
+
+entries:
+  - source: ./main
+    output: ./index
+  - source: ../not_found
+    output: ./404
+  - source: ../empty
+    output: ./healthz
+  - source: ../empty
+    output: ./readiness
+extraAssets:
+  - from: ../favicon.ico
+    to: ./favicon.ico

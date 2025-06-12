@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-ui-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-ui-pod
+  template:
+    metadata:
+      labels:
+        app: web-ui-pod
+    spec:
+      serviceAccountName: web-ui-account
+      containers:
+      - name: web-ui-container
+        image: gcr.io/phading-dev/web-ui:latest
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: web-ui-neg-health-check
+spec:
+  healthCheck:
+    port: 8080
+    type: HTTP
+    requestPath: /healthz
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-ui
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+    beta.cloud.google.com/backend-config: '{"default": "web-ui-neg-health-check"}'
+spec:
+  selector:
+    app: web-ui-pod
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP

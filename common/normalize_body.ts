@@ -1,6 +1,12 @@
 import { SCHEME } from "./color_scheme";
 
 export function normalizeBody() {
+  document.querySelectorAll("meta[name=viewport]").forEach((el) => el.remove());
+  let viewPortMeta = document.createElement("meta");
+  viewPortMeta.name = "viewport";
+  viewPortMeta.content = "width=device-width, initial-scale=1";
+  document.head.appendChild(viewPortMeta);
+
   document.documentElement.style.width = "100%";
   document.documentElement.style.height = "100%";
   document.documentElement.style.backgroundColor = SCHEME.neutral3;
