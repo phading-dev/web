@@ -34,10 +34,6 @@ kubectl create serviceaccount ${ENV_VARS.serviceAccount} --namespace default
 - name: 'node:20.12.1'
   entrypoint: npx
   args: ['bundage', 'bwa', '-ec', '${env}/web_app_entries.yaml', '-o', 'server/bin']
-- name: 'gcr.io/cloud-builders/gcloud'
-  args: ['storage', 'cp', 'gs://${ENV_VARS.gcsSecretBucketName}/${ENV_VARS.sslCertFile}', 'server/${ENV_VARS.localCertFile}']
-- name: 'gcr.io/cloud-builders/gcloud'
-  args: ['storage', 'cp', 'gs://${ENV_VARS.gcsSecretBucketName}/${ENV_VARS.sslCertFile}', 'server/${ENV_VARS.localKeyFile}']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/${ENV_VARS.projectId}/${ENV_VARS.releaseServiceName}:latest', '-f', '${env}/Dockerfile', '.']
 - name: "gcr.io/cloud-builders/docker"
@@ -64,7 +60,7 @@ COPY server/ .
 RUN npm ci --omit=dev
 
 EXPOSE ${ENV_VARS.port}
-CMD ["npx", "http-server", "./bin", "--port", "${ENV_VARS.port}", "--gzip", "--no-dotfiles", "--utc", "--ssl", "--cert", "${ENV_VARS.localCertFile}", "--key", "${ENV_VARS.localKeyFile}"]
+CMD ["npx", "http-server", "./bin", "--port", "${ENV_VARS.port}", "--gzip", "--no-dotfiles", "--utc"]
 `;
   writeFileSync(`${env}/Dockerfile`, dockerTemplate);
 

@@ -5,10 +5,6 @@ steps:
 - name: 'node:20.12.1'
   entrypoint: npx
   args: ['bundage', 'bwa', '-ec', 'dev/web_app_entries.yaml', '-o', 'server/bin']
-- name: 'gcr.io/cloud-builders/gcloud'
-  args: ['storage', 'cp', 'gs://phading-dev-secrets/cert.pem', 'server/cert.pem']
-- name: 'gcr.io/cloud-builders/gcloud'
-  args: ['storage', 'cp', 'gs://phading-dev-secrets/cert.pem', 'server/key.pem']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/phading-dev/web-ui:latest', '-f', 'dev/Dockerfile', '.']
 - name: "gcr.io/cloud-builders/docker"
