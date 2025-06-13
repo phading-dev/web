@@ -35,9 +35,9 @@ kubectl create serviceaccount ${ENV_VARS.serviceAccount} --namespace default
   entrypoint: npx
   args: ['bundage', 'bwa', '-ec', '${env}/web_app_entries.yaml', '-o', 'server/bin']
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['storage', 'cp', 'gs://${ENV_VARS.gcsSecretBucketName}/${ENV_VARS.sslCertFile}', '${ENV_VARS.localCertFile}']
+  args: ['storage', 'cp', 'gs://${ENV_VARS.gcsSecretBucketName}/${ENV_VARS.sslCertFile}', 'server/${ENV_VARS.localCertFile}']
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['storage', 'cp', 'gs://${ENV_VARS.gcsSecretBucketName}/${ENV_VARS.sslCertFile}', '${ENV_VARS.localKeyFile}']
+  args: ['storage', 'cp', 'gs://${ENV_VARS.gcsSecretBucketName}/${ENV_VARS.sslCertFile}', 'server/${ENV_VARS.localKeyFile}']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/${ENV_VARS.projectId}/${ENV_VARS.releaseServiceName}:latest', '-f', '${env}/Dockerfile', '.']
 - name: "gcr.io/cloud-builders/docker"
