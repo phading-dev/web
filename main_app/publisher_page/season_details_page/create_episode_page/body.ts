@@ -64,7 +64,7 @@ export class CreateEpisodePage extends EventEmitter {
         (response, error) => this.postCreate(error),
       )
       .on("handlePrimarySuccess", (response) =>
-        this.emit("editEpisode", seasonId, response.episodeId),
+        this.emit("editEpisode", response.episodeId),
       )
       .on("primaryDone", () => this.emit("created"));
     this.nameInput.val.validate();

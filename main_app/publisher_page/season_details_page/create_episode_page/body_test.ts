@@ -96,10 +96,8 @@ TEST_RUNNER.run({
           episodeId: "episode1",
         };
         serviceClientMock.response = response;
-        let seasonId: string;
         let episodeId: string;
-        this.cut.on("editEpisode", (seasonId_, episodeId_) => {
-          seasonId = seasonId_;
+        this.cut.on("editEpisode", (episodeId_) => {
           episodeId = episodeId_;
         });
 
@@ -108,7 +106,6 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) => this.cut.once("created", resolve));
 
         // Verify
-        assertThat(seasonId, eq("season1"), "edit episode season");
         assertThat(episodeId, eq("episode1"), "edit episode");
         await asyncAssertScreenshot(
           path.join(__dirname, "/create_episode_page_create_success.png"),
