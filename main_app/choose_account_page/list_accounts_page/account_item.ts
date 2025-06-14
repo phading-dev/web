@@ -26,7 +26,7 @@ export class AccountItem extends EventEmitter {
       E.image({
         class: "account-item-avatar",
         style: `width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: 100%;`,
-        src: account.avatarSmallUrl,
+        src: account.avatarLargeUrl,
       }),
       E.div(
         {

@@ -74,13 +74,13 @@ TEST_RUNNER.run({
             {
               accountId: "consumer 1",
               accountType: AccountType.CONSUMER,
-              avatarSmallUrl: userImage,
+              avatarLargeUrl: userImage,
               naturalName: "First Consumer",
             },
             {
               accountId: "publisher 1",
               accountType: AccountType.PUBLISHER,
-              avatarSmallUrl: userImage,
+              avatarLargeUrl: userImage,
               naturalName: "First Publisher",
             },
           ],
@@ -161,13 +161,13 @@ TEST_RUNNER.run({
             {
               accountId: "consumer 1",
               accountType: AccountType.CONSUMER,
-              avatarSmallUrl: userImage,
+              avatarLargeUrl: userImage,
               naturalName: "First Consumer",
             },
             {
               accountId: "publisher 1",
               accountType: AccountType.PUBLISHER,
-              avatarSmallUrl: userImage,
+              avatarLargeUrl: userImage,
               naturalName: "First Publisher",
             },
           ],

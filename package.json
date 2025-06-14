@@ -53,7 +53,7 @@
     "@phading/play_activity_service_interface": "^1.0.10",
     "@phading/price_config": "^0.7.5",
     "@phading/product_service_interface": "^1.1.13",
-    "@phading/user_service_interface": "^1.2.8",
+    "@phading/user_service_interface": "^1.2.9",
     "@phading/user_session_service_interface": "^1.1.0",
     "@phading/video_service_interface": "^1.1.2",
     "@phading/web_interface": "^1.1.1",

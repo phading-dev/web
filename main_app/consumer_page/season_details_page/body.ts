@@ -81,7 +81,7 @@ import {
   Episode,
   SeasonDetails,
 } from "@phading/product_service_interface/show/web/consumer/info";
-import { AccountSummary } from "@phading/user_service_interface/web/self/account";
+import { AccountSummary } from "@phading/user_service_interface/web/third_person/account";
 import { newGetAccountSummaryRequest } from "@phading/user_service_interface/web/third_person/client";
 import { buildUrl } from "@phading/web_interface/url_builder";
 import { E } from "@selfage/element/factory";
