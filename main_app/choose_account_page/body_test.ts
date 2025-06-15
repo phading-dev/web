@@ -117,10 +117,10 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.createAccountPage.naturalNameInput.val.value = "New Consumer";
-        this.cut.createAccountPage.naturalNameInput.val.dispatchChange();
+        this.cut.createAccountPage.naturalNameInput.val.dispatchInput();
         this.cut.createAccountPage.emailInput.val.value =
           "new.consumer@example.com";
-        this.cut.createAccountPage.emailInput.val.dispatchChange();
+        this.cut.createAccountPage.emailInput.val.dispatchInput();
         await new Promise<void>((resolve) =>
           this.cut.createAccountPage.emailInput.val.once("validate", resolve),
         );

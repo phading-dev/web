@@ -42,7 +42,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.nameInput.val.value = Array(200).fill("a").join("");
-        this.cut.nameInput.val.dispatchChange();
+        this.cut.nameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -53,7 +53,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.nameInput.val.value = "";
-        this.cut.nameInput.val.dispatchChange();
+        this.cut.nameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -64,7 +64,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.nameInput.val.value = " Season 2 ";
-        this.cut.nameInput.val.dispatchChange();
+        this.cut.nameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -75,7 +75,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.descriptionInput.val.value = Array(1001).fill("b").join("");
-        this.cut.descriptionInput.val.dispatchChange();
+        this.cut.descriptionInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -92,7 +92,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.descriptionInput.val.value = " This is a description. ";
-        this.cut.descriptionInput.val.dispatchChange();
+        this.cut.descriptionInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(

@@ -78,7 +78,7 @@ TEST_RUNNER.run({
 
         // Execute
         input.value = "Joe";
-        input.dispatchChange();
+        input.dispatchInput();
 
         // Verify
         assertThat(inputValue, eq("Joe"), "input value");

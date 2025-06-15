@@ -40,15 +40,15 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.val.value = " First Second name ";
-        this.cut.naturalNameInput.val.dispatchChange();
+        this.cut.naturalNameInput.val.dispatchInput();
         this.cut.usernameInput.val.value = " my_username ";
-        this.cut.usernameInput.val.dispatchChange();
+        this.cut.usernameInput.val.dispatchInput();
         this.cut.passwordInput.val.value = "123123";
-        this.cut.passwordInput.val.dispatchChange();
+        this.cut.passwordInput.val.dispatchInput();
         this.cut.repeatPasswordInput.val.value = "123123";
-        this.cut.repeatPasswordInput.val.dispatchChange();
+        this.cut.repeatPasswordInput.val.dispatchInput();
         this.cut.emailInput.val.value = " me@gmail.com ";
-        this.cut.emailInput.val.dispatchChange();
+        this.cut.emailInput.val.dispatchInput();
         this.cut.publisherOption.val.click();
 
         // Verify
@@ -131,7 +131,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.usernameInput.val.value = "my_new_username";
-        this.cut.usernameInput.val.dispatchChange();
+        this.cut.usernameInput.val.dispatchInput();
         this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) => this.cut.once("auth", resolve));
 
@@ -179,7 +179,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.val.value = Array(120).fill("a").join("");
-        this.cut.naturalNameInput.val.dispatchChange();
+        this.cut.naturalNameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -196,7 +196,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.val.value = "";
-        this.cut.naturalNameInput.val.dispatchChange();
+        this.cut.naturalNameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -226,7 +226,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.usernameInput.val.value = Array(120).fill("a").join("");
-        this.cut.usernameInput.val.dispatchChange();
+        this.cut.usernameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -243,7 +243,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.usernameInput.val.value = "";
-        this.cut.usernameInput.val.dispatchChange();
+        this.cut.usernameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -270,7 +270,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.emailInput.val.value = Array(201).fill("a").join("");
-        this.cut.emailInput.val.dispatchChange();
+        this.cut.emailInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -281,7 +281,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.emailInput.val.value = "";
-        this.cut.emailInput.val.dispatchChange();
+        this.cut.emailInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -305,7 +305,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.passwordInput.val.value = Array(120).fill("a").join("");
-        this.cut.passwordInput.val.dispatchChange();
+        this.cut.passwordInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -322,7 +322,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.passwordInput.val.value = "";
-        this.cut.passwordInput.val.dispatchChange();
+        this.cut.passwordInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -347,11 +347,11 @@ TEST_RUNNER.run({
         this.cut = new SignUpPage(undefined, undefined);
         document.body.appendChild(this.cut.body);
         this.cut.passwordInput.val.value = "123123";
-        this.cut.passwordInput.val.dispatchChange();
+        this.cut.passwordInput.val.dispatchInput();
 
         // Execute
         this.cut.repeatPasswordInput.val.value = "1111";
-        this.cut.repeatPasswordInput.val.dispatchChange();
+        this.cut.repeatPasswordInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(

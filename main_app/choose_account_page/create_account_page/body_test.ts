@@ -41,7 +41,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.val.value = Array(120).fill("a").join("");
-        this.cut.naturalNameInput.val.dispatchChange();
+        this.cut.naturalNameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -61,9 +61,9 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.val.value = " First Second ";
-        this.cut.naturalNameInput.val.dispatchChange();
+        this.cut.naturalNameInput.val.dispatchInput();
         this.cut.emailInput.val.value = Array(201).fill("1").join("");
-        this.cut.emailInput.val.dispatchChange();
+        this.cut.emailInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -83,7 +83,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.emailInput.val.value = " me@gmail.com ";
-        this.cut.emailInput.val.dispatchChange();
+        this.cut.emailInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -193,9 +193,9 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.val.value = "First Second";
-        this.cut.naturalNameInput.val.dispatchChange();
+        this.cut.naturalNameInput.val.dispatchInput();
         this.cut.emailInput.val.value = "me@gmail.com";
-        this.cut.emailInput.val.dispatchChange();
+        this.cut.emailInput.val.dispatchInput();
         await new Promise<void>((resolve) =>
           this.cut.emailInput.val.once("validate", resolve),
         );

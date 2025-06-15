@@ -43,12 +43,13 @@ export class InputWithErrorMsg extends EventEmitter implements InputField {
     this.validateAndTakeFn = validateAndTakeFn;
 
     this.input.val?.addEventListener("keydown", (event) => this.keydown(event));
-    this.input.val?.addEventListener("change", () => this.validate());
-    this.textAreaInput.val?.addEventListener("change", () => this.validate());
+    this.input.val?.addEventListener("input", () => this.validate());
+    this.textAreaInput.val?.addEventListener("input", () => this.validate());
   }
 
   private keydown(event: KeyboardEvent): void {
     if (event.key === "Enter") {
+      event.preventDefault();
       this.emit("action");
     }
   }
@@ -98,8 +99,8 @@ export class InputWithErrorMsg extends EventEmitter implements InputField {
       this.textAreaInput.val.focus();
     }
   }
-  public dispatchChange(): void {
-    this.inputElement.dispatchEvent(new Event("change"));
+  public dispatchInput(): void {
+    this.inputElement.dispatchEvent(new Event("input"));
   }
   public dispatchEnter(): void {
     this.inputElement.dispatchEvent(

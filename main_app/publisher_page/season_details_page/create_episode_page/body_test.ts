@@ -40,7 +40,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.nameInput.val.value = Array(200).fill("a").join("");
-        this.cut.nameInput.val.dispatchChange();
+        this.cut.nameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -51,7 +51,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.nameInput.val.value = " Episode 1 ";
-        this.cut.nameInput.val.dispatchChange();
+        this.cut.nameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(

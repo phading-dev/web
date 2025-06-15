@@ -49,7 +49,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.newRecoveryEmailInput.val.value = createLongString(201);
-        this.cut.newRecoveryEmailInput.val.dispatchChange();
+        this.cut.newRecoveryEmailInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -69,9 +69,9 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.currentPasswordInput.val.value = "current password";
-        this.cut.currentPasswordInput.val.dispatchChange();
+        this.cut.currentPasswordInput.val.dispatchInput();
         this.cut.newRecoveryEmailInput.val.value = " new@gmail.com ";
-        this.cut.newRecoveryEmailInput.val.dispatchChange();
+        this.cut.newRecoveryEmailInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(

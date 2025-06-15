@@ -63,7 +63,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.value = "12345678901";
-        this.cut.dispatchChange();
+        this.cut.dispatchInput();
         await new Promise<void>((resolve) => this.cut.on("validate", resolve));
 
         // Verify
@@ -77,7 +77,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.value = "123456";
-        this.cut.dispatchChange();
+        this.cut.dispatchInput();
         await new Promise<void>((resolve) => this.cut.on("validate", resolve));
 
         // Verify
@@ -91,7 +91,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.value = "";
-        this.cut.dispatchChange();
+        this.cut.dispatchInput();
         await new Promise<void>((resolve) => this.cut.on("validate", resolve));
 
         // Verify

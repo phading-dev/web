@@ -56,7 +56,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.nextGradeInput.val.value = "0.9";
-        this.cut.nextGradeInput.val.dispatchChange();
+        this.cut.nextGradeInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -76,7 +76,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.nextGradeInput.val.value = "10000";
-        this.cut.nextGradeInput.val.dispatchChange();
+        this.cut.nextGradeInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -96,7 +96,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.nextGradeInput.val.value = "99.99";
-        this.cut.nextGradeInput.val.dispatchChange();
+        this.cut.nextGradeInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -113,9 +113,9 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.nextGradeInput.val.value = "100.12";
-        this.cut.nextGradeInput.val.dispatchChange();
+        this.cut.nextGradeInput.val.dispatchInput();
         this.cut.effectiveDateInput.val.value = "2023-10-02";
-        this.cut.effectiveDateInput.val.dispatchChange();
+        this.cut.effectiveDateInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -135,7 +135,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.effectiveDateInput.val.value = "2023-10-03";
-        this.cut.effectiveDateInput.val.dispatchChange();
+        this.cut.effectiveDateInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(

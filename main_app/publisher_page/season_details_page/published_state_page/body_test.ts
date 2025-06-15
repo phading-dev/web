@@ -41,7 +41,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.seasonIdInput.val.value = "1233333333333333";
-        this.cut.seasonIdInput.val.dispatchChange();
+        this.cut.seasonIdInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -53,7 +53,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut.seasonIdInput.val.value =
           "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
-        this.cut.seasonIdInput.val.dispatchChange();
+        this.cut.seasonIdInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(

@@ -39,11 +39,11 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.val.value = " First second ";
-        this.cut.naturalNameInput.val.dispatchChange();
+        this.cut.naturalNameInput.val.dispatchInput();
         this.cut.emailInput.val.value = " me@gmail.com ";
-        this.cut.emailInput.val.dispatchChange();
+        this.cut.emailInput.val.dispatchInput();
         this.cut.descriptionInput.val.value = " Some kind of description. ";
-        this.cut.descriptionInput.val.dispatchChange();
+        this.cut.descriptionInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -250,7 +250,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.val.value = Array(101).fill("1").join("");
-        this.cut.naturalNameInput.val.dispatchChange();
+        this.cut.naturalNameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -270,7 +270,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.naturalNameInput.val.value = "";
-        this.cut.naturalNameInput.val.dispatchChange();
+        this.cut.naturalNameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -305,7 +305,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.emailInput.val.value = Array(201).fill("1").join("");
-        this.cut.emailInput.val.dispatchChange();
+        this.cut.emailInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -340,7 +340,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.descriptionInput.val.value = Array(2001).fill("1").join("");
-        this.cut.descriptionInput.val.dispatchChange();
+        this.cut.descriptionInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(

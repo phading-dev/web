@@ -44,7 +44,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.gradeInput.val.value = "";
-        this.cut.gradeInput.val.dispatchChange();
+        this.cut.gradeInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -61,7 +61,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.gradeInput.val.value = "0.9";
-        this.cut.gradeInput.val.dispatchChange();
+        this.cut.gradeInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -78,7 +78,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.gradeInput.val.value = "10000";
-        this.cut.gradeInput.val.dispatchChange();
+        this.cut.gradeInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -95,7 +95,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.gradeInput.val.value = "9999";
-        this.cut.gradeInput.val.dispatchChange();
+        this.cut.gradeInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(

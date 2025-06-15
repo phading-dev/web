@@ -46,7 +46,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.newPasswordInput.val.value = createLongString(101);
-        this.cut.newPasswordInput.val.dispatchChange();
+        this.cut.newPasswordInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -60,9 +60,9 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.newPasswordInput.val.value = "a new password";
-        this.cut.newPasswordInput.val.dispatchChange();
+        this.cut.newPasswordInput.val.dispatchInput();
         this.cut.newPasswordRepeatInput.val.value = "some password";
-        this.cut.newPasswordRepeatInput.val.dispatchChange();
+        this.cut.newPasswordRepeatInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -79,9 +79,9 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.currentPasswordInput.val.value = "current password";
-        this.cut.currentPasswordInput.val.dispatchChange();
+        this.cut.currentPasswordInput.val.dispatchInput();
         this.cut.newPasswordRepeatInput.val.value = "a new password";
-        this.cut.newPasswordRepeatInput.val.dispatchChange();
+        this.cut.newPasswordRepeatInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(

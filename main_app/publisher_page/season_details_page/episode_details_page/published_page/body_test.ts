@@ -49,7 +49,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.premiereTimeInput.val.value = "2023-09-01T00:00";
-        this.cut.premiereTimeInput.val.dispatchChange();
+        this.cut.premiereTimeInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -60,7 +60,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.premiereTimeInput.val.value = "2023-10-03T00:00";
-        this.cut.premiereTimeInput.val.dispatchChange();
+        this.cut.premiereTimeInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(

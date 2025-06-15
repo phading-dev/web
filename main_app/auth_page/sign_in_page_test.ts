@@ -39,7 +39,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.usernameInput.val.value = " my_username ";
-        this.cut.usernameInput.val.dispatchChange();
+        this.cut.usernameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -50,7 +50,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.passwordInput.val.value = "123";
-        this.cut.passwordInput.val.dispatchChange();
+        this.cut.passwordInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
