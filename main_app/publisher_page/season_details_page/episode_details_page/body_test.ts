@@ -172,6 +172,16 @@ TEST_RUNNER.run({
           path.join(__dirname, "/episode_details_page_draft_diff.png"),
         );
 
+        // Prepare
+        let back = false;
+        this.cut.on("back", () => (back = true));
+
+        // Execute
+        this.cut.draftPage.emit("delete");
+
+        // Verify
+        assertThat(back, eq(true), "back after delete");
+
         // Execute
         this.cut.draftPage.emit("back");
 
@@ -260,8 +270,7 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let back = false;
-        this.cut.on("back", () => (back = true));
+        back = false;
 
         // Execute
         this.cut.infoPage.emit("back");

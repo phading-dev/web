@@ -174,14 +174,14 @@ export class SeasonDetailsPage extends EventEmitter {
   }
 
   private addDraftStatePage(): void {
-    this.draftStatePage = this.createDraftStatePage(this.seasonId).on(
-      "back",
-      () =>
+    this.draftStatePage = this.createDraftStatePage(this.seasonId)
+      .on("back", () =>
         this.pageSwitcher.goTo(
           () => this.addInfoPage(),
           () => this.infoPage.remove(),
         ),
-    );
+      )
+      .on("delete", () => this.emit("back"));
     this.appendBodies(this.draftStatePage.body);
   }
 

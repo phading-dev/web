@@ -117,7 +117,7 @@ TEST_RUNNER.run({
         assertThat(
           serviceClientMock.request.descriptor,
           eq(PUBLISH_EPISODE),
-          "RC 1",
+          "RC 2",
         );
         assertThat(
           serviceClientMock.request.body,
@@ -129,7 +129,7 @@ TEST_RUNNER.run({
             },
             PUBLISH_EPISODE_REQUEST_BODY,
           ),
-          "RC body 1",
+          "RC body 2",
         );
         assertThat(back, eq(true), "Back when done");
         await asyncAssertScreenshot(
@@ -201,15 +201,15 @@ TEST_RUNNER.run({
 
         // Prepare
         serviceClientMock.error = undefined;
-        let back = false;
-        this.cut.on("back", () => (back = true));
+        let deleted = false;
+        this.cut.on("delete", () => (deleted = true));
 
         // Execute
         this.cut.inputFormPage.clickSecondaryButton();
         await new Promise<void>((resolve) => this.cut.once("deleted", resolve));
 
         // Verify
-        assertThat(back, eq(true), "Back when delete done");
+        assertThat(deleted, eq(true), "Delete event");
         await asyncAssertScreenshot(
           path.join(__dirname, "/draft_page_tablet_delete_success.png"),
           path.join(__dirname, "/golden/draft_page_tablet_delete_success.png"),

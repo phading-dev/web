@@ -287,6 +287,15 @@ TEST_RUNNER.run({
           path.join(__dirname, "/season_details_page_draft_state_diff.png"),
         );
 
+        // Prepare
+        back = false;
+
+        // Execute
+        this.cut.draftStatePage.emit("delete");
+
+        // Verify
+        assertThat(back, eq(true), "back when deleted");
+
         // Execute
         this.cut.draftStatePage.emit("back");
 

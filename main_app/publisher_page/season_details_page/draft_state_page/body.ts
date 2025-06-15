@@ -15,6 +15,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface DraftStatePage {
   on(event: "back", listener: () => void): this;
+  on(event: "delete", listener: () => void): this;
   on(event: "deleted", listener: () => void): this;
 }
 
@@ -70,7 +71,7 @@ export class DraftStatePage extends EventEmitter {
         () => this.delete(),
         (response, error) => this.postDelete(error),
       )
-      .on("handlePrimarySuccess", () => this.emit("back"))
+      .on("handlePrimarySuccess", () => this.emit("delete"))
       .on("primaryDone", () => this.emit("deleted"));
     this.seasonIdInput.val.validate();
   }

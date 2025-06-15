@@ -93,15 +93,15 @@ TEST_RUNNER.run({
 
         // Prepare
         serviceClientMock.error = undefined;
-        let back = false;
-        this.cut.on("back", () => (back = true));
+        let deleted = false;
+        this.cut.on("delete", () => (deleted = true));
 
         // Execute
         this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) => this.cut.on("deleted", resolve));
 
         // Verify
-        assertThat(back, eq(true), "Back when deleted");
+        assertThat(deleted, eq(true), "Delete event");
         await asyncAssertScreenshot(
           path.join(__dirname, "/draft_state_page_deleted.png"),
           path.join(__dirname, "/golden/draft_state_page_valid.png"),
@@ -109,7 +109,8 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        back = false;
+        let back = false;
+        this.cut.on("back", () => (back = true));
 
         // Execute
         this.cut.inputFormPage.clickBackButton();

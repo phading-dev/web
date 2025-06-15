@@ -22,6 +22,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface DraftPage {
   on(event: "back", listener: () => void): this;
+  on(event: "delete", listener: () => void): this;
   on(event: "published", listener: () => void): this;
   on(event: "deleted", listener: () => void): this;
 }
@@ -112,7 +113,7 @@ export class DraftPage extends EventEmitter {
         () => this.delete(),
         (response, error) => this.postDelete(error),
       )
-      .on("handleSecondarySuccess", () => this.emit("back"))
+      .on("handleSecondarySuccess", () => this.emit("delete"))
       .on("secondaryDone", () => this.emit("deleted"));
     this.errorInput.val?.validate();
     this.premiereTimeInput.val.validate();

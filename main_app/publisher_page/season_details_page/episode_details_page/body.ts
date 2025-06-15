@@ -67,12 +67,14 @@ export class EpisodeDetailsPage extends EventEmitter {
       this.seasonId,
       this.episodeId,
       episode,
-    ).on("back", () =>
-      this.pageSwitcher.goTo(
-        () => this.addInfoPage(),
-        () => this.infoPage.remove(),
-      ),
-    );
+    )
+      .on("back", () =>
+        this.pageSwitcher.goTo(
+          () => this.addInfoPage(),
+          () => this.infoPage.remove(),
+        ),
+      )
+      .on("delete", () => this.emit("back"));
     this.appendBodies(this.draftPage.body);
   }
 
