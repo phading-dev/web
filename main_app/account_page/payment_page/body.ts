@@ -73,6 +73,7 @@ export class PaymentPage extends EventEmitter {
     this.load();
   }
 
+  // TODO: Handle when payment profile is being created.
   private async load(): Promise<void> {
     let response = await this.serviceClient.send(
       newGetPaymentProfileInfoRequest({}),

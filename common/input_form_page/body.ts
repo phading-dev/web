@@ -11,7 +11,7 @@ import {
   PAGE_MEDIUM_CENTER_CARD_STYLE,
 } from "../page_style";
 import { FONT_L, FONT_M } from "../sizes";
-import { InputWithErrorMsg } from "./input_with_error_msg";
+import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
@@ -54,7 +54,7 @@ export class InputFormPage<
   public constructor(
     title: string,
     lines: Array<HTMLElement>,
-    private inputs: Array<InputWithErrorMsg>,
+    private inputs: Array<InputField>,
     primaryButtonLabel: string,
     customStyle: string = "",
   ) {

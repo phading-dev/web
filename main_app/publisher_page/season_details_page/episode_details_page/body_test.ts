@@ -3,8 +3,8 @@ import path = require("path");
 import { normalizeBody } from "../../../../common/normalize_body";
 import { setTabletView } from "../../../../common/view_port";
 import { EpisodeDetailsPage } from "./body";
+import { DraftPage } from "./draft_page/body";
 import { InfoPageMock } from "./info_page/body_mock";
-import { PublishPage } from "./publish_page/body";
 import { PublishedPage } from "./published_page/body";
 import { UpdateIndexPage } from "./update_index_page/body";
 import { UpdateInfoPage } from "./update_info_page/body";
@@ -20,10 +20,16 @@ normalizeBody();
 
 function createEpisodeDetailsPage(nowDate: Date): EpisodeDetailsPage {
   return new EpisodeDetailsPage(
+    (seasonId, episodeId, episode) =>
+      new DraftPage(
+        undefined,
+        () => nowDate.getTime(),
+        seasonId,
+        episodeId,
+        episode,
+      ),
     (seasonId, episodeId) =>
       new InfoPageMock(() => nowDate, seasonId, episodeId),
-    (seasonId, episodeId) =>
-      new PublishPage(undefined, () => nowDate.getTime(), seasonId, episodeId),
     (seasonId, episodeId, episode) =>
       new PublishedPage(
         undefined,
@@ -146,29 +152,34 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          this.cut.publishPage.seasonId,
+          this.cut.draftPage.seasonId,
           eq("season1"),
-          "publishPage.seasonId",
+          "draftPage.seasonId",
         );
         assertThat(
-          this.cut.publishPage.episodeId,
+          this.cut.draftPage.episodeId,
           eq("episode1"),
-          "publishPage.episodeId",
+          "draftPage.episodeId",
+        );
+        assertThat(
+          this.cut.draftPage.episode.episodeName,
+          eq(episode.episodeName),
+          "draftPage.episode.episodeName",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/episode_details_page_publish.png"),
-          path.join(__dirname, "/golden/episode_details_page_publish.png"),
-          path.join(__dirname, "/episode_details_page_publish_diff.png"),
+          path.join(__dirname, "/episode_details_page_draft.png"),
+          path.join(__dirname, "/golden/episode_details_page_draft.png"),
+          path.join(__dirname, "/episode_details_page_draft_diff.png"),
         );
 
         // Execute
-        this.cut.publishPage.emit("back");
+        this.cut.draftPage.emit("back");
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/episode_details_page_publish_back.png"),
+          path.join(__dirname, "/episode_details_page_draft_back.png"),
           path.join(__dirname, "/golden/episode_details_page.png"),
-          path.join(__dirname, "/episode_details_page_publish_back_diff.png"),
+          path.join(__dirname, "/episode_details_page_draft_back_diff.png"),
         );
 
         // Execute

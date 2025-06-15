@@ -1,35 +1,52 @@
 import EventEmitter = require("events");
 import { InputFormPage } from "../../../../../common/input_form_page/body";
-import { ValidationResult } from "../../../../../common/input_form_page/input_with_error_msg";
+import { ErrorInput } from "../../../../../common/input_form_page/error_input";
+import { ValidationResult } from "../../../../../common/input_form_page/input_field";
 import { TextInputWithErrorMsg } from "../../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import { SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/elements";
-import { newPublishEpisodeRequest } from "@phading/product_service_interface/show/web/publisher/client";
+import { MAX_NUM_OF_PUBLISHED_EPISODES_PER_SEASON } from "@phading/constants/show";
 import {
+  newDeleteEpisodeRequest,
+  newPublishEpisodeRequest,
+} from "@phading/product_service_interface/show/web/publisher/client";
+import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
+import {
+  DeleteEpisodeResponse,
   PublishEpisodeRequestBody,
   PublishEpisodeResponse,
 } from "@phading/product_service_interface/show/web/publisher/interface";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
-export interface PublishPage {
+export interface DraftPage {
   on(event: "back", listener: () => void): this;
   on(event: "published", listener: () => void): this;
+  on(event: "deleted", listener: () => void): this;
 }
 
-export class PublishPage extends EventEmitter {
-  public static create(seasonId: string, episodeId: string): PublishPage {
-    return new PublishPage(
+export class DraftPage extends EventEmitter {
+  public static create(
+    seasonId: string,
+    episodeId: string,
+    episode: EpisodeDetails,
+  ): DraftPage {
+    return new DraftPage(
       SERVICE_CLIENT,
       () => Date.now(),
       seasonId,
       episodeId,
+      episode,
     );
   }
 
-  public inputFormPage: InputFormPage<PublishEpisodeResponse>;
+  public inputFormPage: InputFormPage<
+    PublishEpisodeResponse,
+    DeleteEpisodeResponse
+  >;
   public premiereTimeInput = new Ref<TextInputWithErrorMsg>();
+  public errorInput = new Ref<ErrorInput>();
   private request: PublishEpisodeRequestBody = {};
 
   public constructor(
@@ -37,17 +54,35 @@ export class PublishPage extends EventEmitter {
     private getNow: () => number,
     public seasonId: string,
     public episodeId: string,
+    public episode: EpisodeDetails,
   ) {
     super();
     this.request.seasonId = seasonId;
     this.request.episodeId = episodeId;
-    this.inputFormPage = new InputFormPage<PublishEpisodeResponse>(
-      LOCALIZED_TEXT.publishEpisodeTitle,
+
+    let errors = new Array<string>();
+    if (!episode.videoContainerCached) {
+      errors.push(LOCALIZED_TEXT.noVideoCommittedError);
+    }
+    if (
+      episode.totalPublishedEpisodes >= MAX_NUM_OF_PUBLISHED_EPISODES_PER_SEASON
+    ) {
+      errors.push(LOCALIZED_TEXT.reachedMaximumPublishedEpisodeError);
+    }
+
+    this.inputFormPage = new InputFormPage<
+      PublishEpisodeResponse,
+      DeleteEpisodeResponse
+    >(
+      LOCALIZED_TEXT.draftEpisodeTitle,
       [
+        ...(errors.length > 0
+          ? [assign(this.errorInput, new ErrorInput(errors.join(" "))).body]
+          : []),
         assign(
           this.premiereTimeInput,
           new TextInputWithErrorMsg(
-            `${LOCALIZED_TEXT.publishEpisodePremieresAtLabel[0]}${Intl.DateTimeFormat().resolvedOptions().timeZone}${LOCALIZED_TEXT.publishEpisodePremieresAtLabel[1]}`,
+            `${LOCALIZED_TEXT.draftEpisodePremieresAtLabel[0]}${Intl.DateTimeFormat().resolvedOptions().timeZone}${LOCALIZED_TEXT.draftEpisodePremieresAtLabel[1]}`,
             "",
             {
               type: "datetime-local",
@@ -57,7 +92,10 @@ export class PublishPage extends EventEmitter {
           ),
         ).body,
       ],
-      [this.premiereTimeInput.val],
+      [
+        ...(this.errorInput.val ? [this.errorInput.val] : []),
+        this.premiereTimeInput.val,
+      ],
       LOCALIZED_TEXT.publishButtonLabel,
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
@@ -68,7 +106,15 @@ export class PublishPage extends EventEmitter {
         (response, error) => this.postPublish(error),
       )
       .on("handlePrimarySuccess", () => this.emit("back"))
-      .on("primaryDone", () => this.emit("published"));
+      .on("primaryDone", () => this.emit("published"))
+      .addSecondaryButton(
+        LOCALIZED_TEXT.deleteButtonLabel,
+        () => this.delete(),
+        (response, error) => this.postDelete(error),
+      )
+      .on("handleSecondarySuccess", () => this.emit("back"))
+      .on("secondaryDone", () => this.emit("deleted"));
+    this.errorInput.val?.validate();
     this.premiereTimeInput.val.validate();
   }
 
@@ -98,6 +144,23 @@ export class PublishPage extends EventEmitter {
   private postPublish(error?: Error): string {
     if (error) {
       return LOCALIZED_TEXT.publishEpisodeGenericError;
+    } else {
+      return "";
+    }
+  }
+
+  private async delete(): Promise<DeleteEpisodeResponse> {
+    return this.serviceClient.send(
+      newDeleteEpisodeRequest({
+        seasonId: this.seasonId,
+        episodeId: this.episodeId,
+      }),
+    );
+  }
+
+  private postDelete(error?: Error): string {
+    if (error) {
+      return LOCALIZED_TEXT.deleteGenericError;
     } else {
       return "";
     }

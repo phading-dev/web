@@ -50,6 +50,7 @@ export class PayoutPage extends EventEmitter {
     this.load();
   }
 
+  // TODO: Handle when payout profile is being created.
   private async load() {
     let response = await this.serviceClient.send(
       newGetPayoutProfileInfoRequest({}),

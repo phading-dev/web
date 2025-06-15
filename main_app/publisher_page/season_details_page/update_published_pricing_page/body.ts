@@ -3,7 +3,7 @@ import { SCHEME } from "../../../../common/color_scheme";
 import { formatNegativeTimezoneOffset } from "../../../../common/formatter/date";
 import { formatShowPrice } from "../../../../common/formatter/price";
 import { InputFormPage } from "../../../../common/input_form_page/body";
-import { ValidationResult } from "../../../../common/input_form_page/input_with_error_msg";
+import { ValidationResult } from "../../../../common/input_form_page/input_field";
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { FONT_M } from "../../../../common/sizes";

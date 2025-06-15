@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { InputFormPage } from "../../common/input_form_page/body";
-import { ValidationResult } from "../../common/input_form_page/input_with_error_msg";
+import { ValidationResult } from "../../common/input_form_page/input_field";
 import { RadioOptionInput } from "../../common/input_form_page/option_input";
 import { TextInputWithErrorMsg } from "../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";

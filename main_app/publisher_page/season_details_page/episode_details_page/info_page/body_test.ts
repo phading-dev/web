@@ -24,7 +24,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "TabletView_InitialDraft_DesktopView_PhoneView_Back_EditName_Upload";
+        "TabletView_InitialDraft_DesktopView_PhoneView_Back_EditName_EditDraftState_Upload";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -111,6 +111,20 @@ TEST_RUNNER.run({
           editEpisode.episodeName,
           eq("The End of the Beginning and the Beginning of the End"),
           "editEpisode.episodeName",
+        );
+
+        // Prepare
+        let editDraftState: EpisodeDetails;
+        this.cut.on("editDraftState", (episode) => (editDraftState = episode));
+
+        // Execute
+        this.cut.episodeDraftStateButton.val.click();
+
+        // Verify
+        assertThat(
+          editDraftState.episodeName,
+          eq("The End of the Beginning and the Beginning of the End"),
+          "editDraftState.episodeName",
         );
 
         // Prepare
@@ -494,7 +508,7 @@ TEST_RUNNER.run({
         assertThat(
           editTracks.episodeName,
           eq("The End of the Beginning and the Beginning of the End"),
-          "editDraftState.episodeName",
+          "editTracks.episodeName",
         );
       }
       public tearDown() {
@@ -687,8 +701,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name =
-        "TabletView_CommittedFirstVersion_DesktopView_PhoneView_EditDraftState";
+      public name = "TabletView_CommittedFirstVersion_DesktopView_PhoneView";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -841,20 +854,6 @@ TEST_RUNNER.run({
             "/golden/info_page_phone_committed_scrolled.png",
           ),
           path.join(__dirname, "/info_page_phone_committed_scrolled_diff.png"),
-        );
-
-        // Prepare
-        let editDraftState: EpisodeDetails;
-        this.cut.on("editDraftState", (episode) => (editDraftState = episode));
-
-        // Execute
-        this.cut.episodeDraftStateButton.val.click();
-
-        // Verify
-        assertThat(
-          editDraftState.episodeName,
-          eq("The End of the Beginning and the Beginning of the End"),
-          "editDraftState.episodeName",
         );
       }
       public tearDown() {

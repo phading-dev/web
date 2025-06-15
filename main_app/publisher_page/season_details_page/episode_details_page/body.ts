@@ -1,8 +1,8 @@
 import EventEmitter = require("events");
 import { AddBodiesFn } from "../../../../common/add_bodies_fn";
 import { TabSwitcher } from "../../../../common/page_navigator";
+import { DraftPage } from "./draft_page/body";
 import { InfoPage } from "./info_page/body";
-import { PublishPage } from "./publish_page/body";
 import { PublishedPage } from "./published_page/body";
 import { UpdateIndexPage } from "./update_index_page/body";
 import { UpdateInfoPage } from "./update_info_page/body";
@@ -21,8 +21,8 @@ export class EpisodeDetailsPage extends EventEmitter {
     episodeId: string,
   ): EpisodeDetailsPage {
     return new EpisodeDetailsPage(
+      DraftPage.create,
       InfoPage.create,
-      PublishPage.create,
       PublishedPage.create,
       UpdateIndexPage.create,
       UpdateInfoPage.create,
@@ -35,8 +35,8 @@ export class EpisodeDetailsPage extends EventEmitter {
   }
 
   private pageSwitcher = new TabSwitcher();
+  public draftPage: DraftPage;
   public infoPage: InfoPage;
-  public publishPage: PublishPage;
   public publishedPage: PublishedPage;
   public updateIndexPage: UpdateIndexPage;
   public updateInfoPage: UpdateInfoPage;
@@ -44,8 +44,8 @@ export class EpisodeDetailsPage extends EventEmitter {
   public uploadPage: UploadPage;
 
   public constructor(
+    private createDraftPage: typeof DraftPage.create,
     private createInfoPage: typeof InfoPage.create,
-    private createPublishPage: typeof PublishPage.create,
     private createPublishedPage: typeof PublishedPage.create,
     private createUpdateIndexPage: typeof UpdateIndexPage.create,
     private createUpdateInfoPage: typeof UpdateInfoPage.create,
@@ -60,6 +60,20 @@ export class EpisodeDetailsPage extends EventEmitter {
       () => this.addInfoPage(),
       () => this.infoPage.remove(),
     );
+  }
+
+  private addDraftPage(episode: EpisodeDetails): void {
+    this.draftPage = this.createDraftPage(
+      this.seasonId,
+      this.episodeId,
+      episode,
+    ).on("back", () =>
+      this.pageSwitcher.goTo(
+        () => this.addInfoPage(),
+        () => this.infoPage.remove(),
+      ),
+    );
+    this.appendBodies(this.draftPage.body);
   }
 
   private addInfoPage(): void {
@@ -77,10 +91,10 @@ export class EpisodeDetailsPage extends EventEmitter {
           () => this.updateIndexPage.remove(),
         ),
       )
-      .on("editDraftState", () =>
+      .on("editDraftState", (episode) =>
         this.pageSwitcher.goTo(
-          () => this.addPublishPage(),
-          () => this.publishPage.remove(),
+          () => this.addDraftPage(episode),
+          () => this.draftPage.remove(),
         ),
       )
       .on("editPublishedState", (episode) =>
@@ -102,18 +116,6 @@ export class EpisodeDetailsPage extends EventEmitter {
         ),
       );
     this.appendBodies(this.infoPage.body);
-  }
-
-  private addPublishPage(): void {
-    this.publishPage = this.createPublishPage(this.seasonId, this.episodeId).on(
-      "back",
-      () =>
-        this.pageSwitcher.goTo(
-          () => this.addInfoPage(),
-          () => this.infoPage.remove(),
-        ),
-    );
-    this.appendBodies(this.publishPage.body);
   }
 
   private addPublishedPage(episode: EpisodeDetails): void {

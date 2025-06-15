@@ -1,20 +1,16 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
 import { FONT_S } from "../sizes";
+import { InputField, ValidationResult } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
-
-export interface ValidationResult {
-  valid: boolean;
-  errorMsg?: string;
-}
 
 export interface InputWithErrorMsg {
   on(event: "validate", listener: () => void): this;
   on(event: "action", listener: () => void): this;
 }
 
-export class InputWithErrorMsg extends EventEmitter {
+export class InputWithErrorMsg extends EventEmitter implements InputField {
   public body: HTMLElement;
   protected input = new Ref<HTMLInputElement>();
   protected textAreaInput = new Ref<HTMLTextAreaElement>();

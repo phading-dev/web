@@ -1,7 +1,8 @@
 import { SCHEME } from "../color_scheme";
 import { BASIC_INPUT_STYLE } from "../input_styles";
 import { FONT_M } from "../sizes";
-import { InputWithErrorMsg, ValidationResult } from "./input_with_error_msg";
+import { ValidationResult } from "./input_field";
+import { InputWithErrorMsg } from "./input_with_error_msg";
 import { E, ElementAttributeMap } from "@selfage/element/factory";
 
 export class TextAreaInputWithErrorMsg extends InputWithErrorMsg {

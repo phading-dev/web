@@ -10,9 +10,9 @@ export class EpisodeDetailsPageMock extends EpisodeDetailsPage {
     episodeId: string,
   ) {
     super(
+      undefined,
       (seasonId, episodeId) =>
         new InfoPageMock(getNowDate, seasonId, episodeId),
-      undefined,
       undefined,
       undefined,
       undefined,

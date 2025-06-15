@@ -181,10 +181,10 @@ export class InfoPage extends EventEmitter {
         E.div({
           style: `flex: 0 0 auto; height: 1rem;`,
         }),
-        this.eUploadFooter(episode),
-        ...this.eVideoContainerState(episode),
-        ...this.eVideoPlayer(episode),
-        ...this.eEditTracksButton(episode),
+        this.eUploadFooter(episode.videoContainer),
+        ...this.eVideoContainerState(episode.videoContainer),
+        ...this.eVideoPlayer(episode.videoUrl),
+        ...this.eEditTracksButton(episode.videoContainer),
         ...this.eStorageFee(episode.videoContainer),
       ),
     );
@@ -213,44 +213,41 @@ export class InfoPage extends EventEmitter {
   private eStateButton(episode: EpisodeDetails): HTMLDivElement {
     switch (episode.state) {
       case EpisodeState.DRAFT:
-        let clickable = Boolean(episode.videoContainerCached);
-        let ele = eColumnBoxWithArrow(
-          [
-            E.div(
-              {
-                class: "episode-details-episode-draft-state",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-              },
-              E.text(LOCALIZED_TEXT.seasonEpisodeStateLabel),
-            ),
-            E.div(
-              {
-                class: "episode-details-episode-draft-state-value",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-              },
-              E.text(LOCALIZED_TEXT.seasonEpisodeStateDraft),
-            ),
-            E.div(
-              {
-                class: "episode-details-episode-draft-state-footer",
-                style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
-              },
-              E.text(
-                !episode.videoContainerCached
-                  ? LOCALIZED_TEXT.seasonEpisodeStateNoVideoFooter
-                  : LOCALIZED_TEXT.seasonEpisodeStateDraftFooter,
+        return assign(
+          this.episodeDraftStateButton,
+          eColumnBoxWithArrow(
+            [
+              E.div(
+                {
+                  class: "episode-details-episode-draft-state",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeStateLabel),
               ),
-            ),
-          ],
-          {
-            clickable,
-            linesGap: 1,
-          },
+              E.div(
+                {
+                  class: "episode-details-episode-draft-state-value",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeStateDraft),
+              ),
+              E.div(
+                {
+                  class: "episode-details-episode-draft-state-footer",
+                  style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(
+                  !episode.videoContainerCached
+                    ? LOCALIZED_TEXT.seasonEpisodeStateNoVideoFooter
+                    : LOCALIZED_TEXT.seasonEpisodeStateDraftFooter,
+                ),
+              ),
+            ],
+            {
+              linesGap: 1,
+            },
+          ),
         );
-        if (clickable) {
-          this.episodeDraftStateButton.val = ele;
-        }
-        return ele;
       case EpisodeState.PUBLISHED:
         let premiered = episode.premiereTimeMs <= this.getNowDate().getTime();
         return assign(
@@ -287,32 +284,6 @@ export class InfoPage extends EventEmitter {
           ),
         );
     }
-  }
-
-  private eProcessingFailureText(failure: LastProcessingFailure): Text {
-    let texts = new Array<string>();
-    for (let reason of failure.reasons) {
-      switch (reason) {
-        case ProcessingFailureReason.MEDIA_FORMAT_INVALID:
-          texts.push(LOCALIZED_TEXT.seasonEpisodeMediaFormatInvalid);
-          break;
-        case ProcessingFailureReason.MEDIA_FORMAT_FAILURE:
-          texts.push(LOCALIZED_TEXT.seasonEpisodeMediaFormatFailure);
-          break;
-        case ProcessingFailureReason.VIDEO_CODEC_REQUIRES_H264:
-          texts.push(LOCALIZED_TEXT.seasonEpisodeVideoCodecRequiresH264);
-          break;
-        case ProcessingFailureReason.AUDIO_CODEC_REQUIRES_AAC:
-          texts.push(LOCALIZED_TEXT.seasonEpisodeAudioCodecRequiresAac);
-          break;
-        case ProcessingFailureReason.SUBTITLE_ZIP_FORMAT_INVALID:
-          texts.push(LOCALIZED_TEXT.seasonEpisodeSubtitleZipFormatInvalid);
-          break;
-        default:
-          throw new Error(`Not handled: ${ProcessingFailureReason[reason]}`);
-      }
-    }
-    return E.text(texts.join(" "));
   }
 
   private eUploadBox(videoContainer: VideoContainer): HTMLDivElement {
@@ -392,10 +363,10 @@ export class InfoPage extends EventEmitter {
     }
   }
 
-  private eUploadFooter(episode: EpisodeDetails): HTMLDivElement {
+  private eUploadFooter(videoContainer: VideoContainer): HTMLDivElement {
     if (
-      episode.videoContainer.lastProcessingFailure &&
-      episode.videoContainer.lastProcessingFailure.timeMs >
+      videoContainer.lastProcessingFailure &&
+      videoContainer.lastProcessingFailure.timeMs >
         this.getNowDate().getTime() -
           InfoPage.LASTING_TIME_TO_SHOW_PROCESSING_FAILURE_MS
     ) {
@@ -404,9 +375,7 @@ export class InfoPage extends EventEmitter {
           class: "episode-details-video-container-failures",
           style: `font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
         },
-        this.eProcessingFailureText(
-          episode.videoContainer.lastProcessingFailure,
-        ),
+        this.eProcessingFailureText(videoContainer.lastProcessingFailure),
       );
     } else {
       return E.div(
@@ -419,8 +388,36 @@ export class InfoPage extends EventEmitter {
     }
   }
 
-  private eVideoContainerState(episode: EpisodeDetails): Array<HTMLDivElement> {
-    if (episode.videoContainer.masterPlaylist.committing) {
+  private eProcessingFailureText(failure: LastProcessingFailure): Text {
+    let texts = new Array<string>();
+    for (let reason of failure.reasons) {
+      switch (reason) {
+        case ProcessingFailureReason.MEDIA_FORMAT_INVALID:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeMediaFormatInvalid);
+          break;
+        case ProcessingFailureReason.MEDIA_FORMAT_FAILURE:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeMediaFormatFailure);
+          break;
+        case ProcessingFailureReason.VIDEO_CODEC_REQUIRES_H264:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeVideoCodecRequiresH264);
+          break;
+        case ProcessingFailureReason.AUDIO_CODEC_REQUIRES_AAC:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeAudioCodecRequiresAac);
+          break;
+        case ProcessingFailureReason.SUBTITLE_ZIP_FORMAT_INVALID:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeSubtitleZipFormatInvalid);
+          break;
+        default:
+          throw new Error(`Not handled: ${ProcessingFailureReason[reason]}`);
+      }
+    }
+    return E.text(texts.join(" "));
+  }
+
+  private eVideoContainerState(
+    videoContainer: VideoContainer,
+  ): Array<HTMLDivElement> {
+    if (videoContainer.masterPlaylist.committing) {
       return [
         E.div(
           {
@@ -435,8 +432,8 @@ export class InfoPage extends EventEmitter {
     }
   }
 
-  private eVideoPlayer(episode: EpisodeDetails): Array<HTMLElement> {
-    if (!episode.videoUrl) {
+  private eVideoPlayer(videoUrl?: string): Array<HTMLElement> {
+    if (!videoUrl) {
       return [];
     }
     let video = E.video({
@@ -445,16 +442,18 @@ export class InfoPage extends EventEmitter {
       controls: "true",
     });
     let hls = new Hls();
-    hls.loadSource(episode.videoUrl);
+    hls.loadSource(videoUrl);
     hls.attachMedia(video);
     return [video];
   }
 
-  private eEditTracksButton(episode: EpisodeDetails): Array<HTMLDivElement> {
+  private eEditTracksButton(
+    videoContainer: VideoContainer,
+  ): Array<HTMLDivElement> {
     if (
-      episode.videoContainer.videos.length === 0 &&
-      episode.videoContainer.audios.length === 0 &&
-      episode.videoContainer.subtitles.length === 0
+      videoContainer.videos.length === 0 &&
+      videoContainer.audios.length === 0 &&
+      videoContainer.subtitles.length === 0
     ) {
       return [];
     }
@@ -463,7 +462,7 @@ export class InfoPage extends EventEmitter {
         this.editTracksButton,
         eColumnBoxWithArrow(
           [
-            ...(episode.videoContainer.videos.length === 0
+            ...(videoContainer.videos.length === 0
               ? []
               : [
                   E.div(
@@ -505,10 +504,10 @@ export class InfoPage extends EventEmitter {
                     ),
                   ),
                 ]),
-            ...episode.videoContainer.videos.map((videoTrack) =>
+            ...videoContainer.videos.map((videoTrack) =>
               this.eVideoTrack(videoTrack),
             ),
-            ...(episode.videoContainer.audios.length === 0
+            ...(videoContainer.audios.length === 0
               ? []
               : [
                   E.div(
@@ -546,10 +545,10 @@ export class InfoPage extends EventEmitter {
                     ),
                   ),
                 ]),
-            ...episode.videoContainer.audios.map((audioTrack) =>
+            ...videoContainer.audios.map((audioTrack) =>
               this.eAudioTrack(audioTrack),
             ),
-            ...(episode.videoContainer.subtitles.length === 0
+            ...(videoContainer.subtitles.length === 0
               ? []
               : [
                   E.div(
@@ -580,7 +579,7 @@ export class InfoPage extends EventEmitter {
                     ),
                   ),
                 ]),
-            ...episode.videoContainer.subtitles.map((subtitleTrack) =>
+            ...videoContainer.subtitles.map((subtitleTrack) =>
               this.eSubtitleTrack(subtitleTrack),
             ),
           ],

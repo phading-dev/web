@@ -949,14 +949,20 @@ export default class Text {
   get updateEpisodeIndexOutOfRangeError() {
     return `Index is out of range.`;
   }
-  get publishEpisodeTitle() {
-    return `Publish episode`;
+  get draftEpisodeTitle() {
+    return `Publish or delete episode`;
   }
-  get publishEpisodePremieresAtLabel() {
+  get draftEpisodePremieresAtLabel() {
     return [`Schedule premiere at (`, `, optional)`];
   }
   get premiereTimeInThePastError() {
     return `Premiere time cannot be in the past.`;
+  }
+  get noVideoCommittedError() {
+    return `No finalized video to publish.`;
+  }
+  get reachedMaximumPublishedEpisodeError() {
+    return `Too many published episodes in one season.`;
   }
   get publishButtonLabel() {
     return `Publish`;
