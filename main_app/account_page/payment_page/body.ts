@@ -38,6 +38,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 export interface PaymentPage {
   on(event: "retried", listener: () => void): this;
   on(event: "added", listener: () => void): this;
+  on(event: "loaded", listener: () => void): this;
   on(event: "listed", listener: () => void): this;
 }
 
@@ -73,11 +74,40 @@ export class PaymentPage extends EventEmitter {
     this.load();
   }
 
-  // TODO: Handle when payment profile is being created.
   private async load(): Promise<void> {
     let response = await this.serviceClient.send(
       newGetPaymentProfileInfoRequest({}),
     );
+    if (response.notAvailable) {
+      this.body.append(
+        E.div(
+          {
+            class: "payment-page-card",
+            style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
+          },
+          E.div(
+            {
+              class: "payment-page-status-title",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+            },
+            E.text(LOCALIZED_TEXT.paymentStatusTitle),
+          ),
+          E.div({
+            style: `height: 1rem;`,
+          }),
+          E.div(
+            {
+              class: "payment-page-not-available",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.paymentStatusNotAvailable),
+          ),
+        ),
+      );
+      this.emit("loaded");
+      return;
+    }
+
     let nowDate = TzDate.fromDate(
       this.getNowDate(),
       ENV_VARS.timezoneNegativeOffset,
@@ -250,6 +280,7 @@ export class PaymentPage extends EventEmitter {
       async () => this.startStripeSession(),
       (response, error) => this.postStartStripeSession(response, error),
     );
+    this.emit("loaded");
   }
 
   private getIcon(paymentProfileState: PaymentProfileState): SVGSVGElement {

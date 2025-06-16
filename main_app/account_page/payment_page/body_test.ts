@@ -43,10 +43,11 @@ TEST_RUNNER.run({
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {
               case GET_PAYMENT_PROFILE_INFO:
-                return {
+                let response: GetPaymentProfileInfoResponse = {
                   state: PaymentProfileState.HEALTHY,
                   paymentAfterMs: 0,
-                } as GetPaymentProfileInfoResponse;
+                };
+                return response;
               case LIST_PAYMENTS:
                 this.request = request;
                 return this.response;
@@ -61,7 +62,7 @@ TEST_RUNNER.run({
         this.cut = new PaymentPage(
           serviceClientMock,
           {} as any,
-          () => new Date("2025-04-05T08:00:00.000Z"),
+          () => new Date("2025-04-05"),
         );
 
         // Execute
@@ -190,11 +191,12 @@ TEST_RUNNER.run({
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {
               case GET_PAYMENT_PROFILE_INFO:
-                return {
+                let response: GetPaymentProfileInfoResponse = {
                   state: PaymentProfileState.HEALTHY,
                   // 2025-05-06
                   paymentAfterMs: 1746549117000,
-                } as GetPaymentProfileInfoResponse;
+                };
+                return response;
               case LIST_PAYMENTS:
                 return {
                   payments: [],
@@ -204,11 +206,10 @@ TEST_RUNNER.run({
             }
           }
         })();
-        // 2025-04-05
         this.cut = new PaymentPage(
           serviceClientMock,
           {} as any,
-          () => new Date(1743867646000),
+          () => new Date("2025-04-05"),
         );
 
         // Execute
@@ -243,9 +244,10 @@ TEST_RUNNER.run({
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {
               case GET_PAYMENT_PROFILE_INFO:
-                return {
+                let response: GetPaymentProfileInfoResponse = {
                   state: PaymentProfileState.WITH_FAILED_PAYMENTS,
-                } as GetPaymentProfileInfoResponse;
+                };
+                return response;
               case LIST_PAYMENTS:
                 return {
                   payments: [],
@@ -261,11 +263,10 @@ TEST_RUNNER.run({
             }
           }
         })();
-        // 2025-04-05
         this.cut = new PaymentPage(
           serviceClientMock,
           {} as any,
-          () => new Date(1743867646000),
+          () => new Date("2025-04-05"),
         );
 
         // Execute
@@ -359,7 +360,7 @@ TEST_RUNNER.run({
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {
               case GET_PAYMENT_PROFILE_INFO:
-                return {
+                let response: GetPaymentProfileInfoResponse = {
                   state: PaymentProfileState.HEALTHY,
                   paymentAfterMs: 0,
                   primaryPaymentMethod: {
@@ -370,7 +371,8 @@ TEST_RUNNER.run({
                       expYear: 2025,
                     },
                   },
-                } as GetPaymentProfileInfoResponse;
+                };
+                return response;
               case LIST_PAYMENTS:
                 return {
                   payments: [],
@@ -389,11 +391,10 @@ TEST_RUNNER.run({
         let windowMock = {
           location: {},
         } as any;
-        // 2025-04-05
         this.cut = new PaymentPage(
           serviceClientMock,
           windowMock,
-          () => new Date(1743867646000),
+          () => new Date("2025-04-05"),
         );
 
         // Execute
@@ -454,6 +455,49 @@ TEST_RUNNER.run({
           path.join(__dirname, "/payment_page_add_card_success.png"),
           path.join(__dirname, "/golden/payment_page_add_card_success.png"),
           path.join(__dirname, "/payment_page_add_card_success_diff.png"),
+        );
+      }
+      public async tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "PhoneView_PaymentProfileNotAvailable";
+      private cut: PaymentPage;
+      public async execute() {
+        // Prepare
+        await setPhoneView();
+        let serviceClientMock = new (class extends WebServiceClientMock {
+          public async send(request: any): Promise<any> {
+            switch (request.descriptor) {
+              case GET_PAYMENT_PROFILE_INFO:
+                let response: GetPaymentProfileInfoResponse = {
+                  notAvailable: true,
+                };
+                return response;
+              default:
+                throw new Error("Unexpected request");
+            }
+          }
+        })();
+        let windowMock = {
+          location: {},
+        } as any;
+        this.cut = new PaymentPage(
+          serviceClientMock,
+          windowMock,
+          () => new Date("2025-04-05"),
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise((resolve) => this.cut.once("loaded", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/payment_page_not_available.png"),
+          path.join(__dirname, "/golden/payment_page_not_available.png"),
+          path.join(__dirname, "/payment_page_not_available_diff.png"),
         );
       }
       public async tearDown() {

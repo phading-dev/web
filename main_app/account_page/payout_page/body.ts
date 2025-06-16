@@ -23,6 +23,7 @@ import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface PayoutPage {
+  on(event: "loaded", listener: () => void): this;
   on(event: "listed", listener: () => void): this;
 }
 
@@ -50,11 +51,40 @@ export class PayoutPage extends EventEmitter {
     this.load();
   }
 
-  // TODO: Handle when payout profile is being created.
   private async load() {
     let response = await this.serviceClient.send(
       newGetPayoutProfileInfoRequest({}),
     );
+    if (response.notAvailable) {
+      this.body.append(
+        E.div(
+          {
+            class: "payout-page-card",
+            style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
+          },
+          E.div(
+            {
+              class: "payout-page-status-title",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+            },
+            E.text(LOCALIZED_TEXT.payoutManagementTitle),
+          ),
+          E.div({
+            style: `height: 1rem;`,
+          }),
+          E.div(
+            {
+              class: "payout-page-not-available",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.payoutManagementNotAvailable),
+          ),
+        ),
+      );
+      this.emit("loaded");
+      return;
+    }
+
     let nowDate = TzDate.fromDate(
       this.getNowDate(),
       ENV_VARS.timezoneNegativeOffset,
@@ -125,6 +155,7 @@ export class PayoutPage extends EventEmitter {
 
     this.monthRangeInput.val.on("change", () => this.listPayouts());
     this.monthRangeInput.val.on("invalid", () => this.showInvalidRange());
+    this.emit("loaded");
   }
 
   private getPayoutManagementText(

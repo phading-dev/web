@@ -37,10 +37,11 @@ TEST_RUNNER.run({
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {
               case GET_PAYOUT_PROFILE_INFO:
-                return {
+                let response: GetPayoutProfileInfoResponse = {
                   connectedAccountLinkType: LinkType.ONBOARDING,
                   connectedAccountUrl: "https://stripe.com/onboarding",
-                } as GetPayoutProfileInfoResponse;
+                };
+                return response;
               case LIST_PAYOUTS:
                 this.request = request;
                 return this.response;
@@ -52,10 +53,9 @@ TEST_RUNNER.run({
         serviceClientMock.response = {
           payouts: [],
         } as ListPayoutsResponse;
-        // 2025-04-05T08:xx:xx.000Z
         this.cut = new PayoutPage(
           serviceClientMock,
-          () => new Date(1743867646000),
+          () => new Date("2025-04-05T08:00:00.000Z"),
         );
 
         // Execute
@@ -184,10 +184,11 @@ TEST_RUNNER.run({
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {
               case GET_PAYOUT_PROFILE_INFO:
-                return {
+                let response: GetPayoutProfileInfoResponse = {
                   connectedAccountLinkType: LinkType.LOGIN,
                   connectedAccountUrl: "https://stripe.com/login",
-                } as GetPayoutProfileInfoResponse;
+                };
+                return response;
               case LIST_PAYOUTS:
                 return {
                   payouts: [],
@@ -197,10 +198,9 @@ TEST_RUNNER.run({
             }
           }
         })();
-        // 2025-04-05T08:xx:xx.000Z
         this.cut = new PayoutPage(
           serviceClientMock,
-          () => new Date(1743867646000),
+          () => new Date("2025-04-05T08:00:00.000Z"),
         );
 
         // Execute
@@ -212,6 +212,45 @@ TEST_RUNNER.run({
           path.join(__dirname, "/payout_page_login_link.png"),
           path.join(__dirname, "/golden/payout_page_login_link.png"),
           path.join(__dirname, "/payout_page_login_link_diff.png"),
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "PayoutProfileNotAvailable";
+      private cut: PayoutPage;
+      public async execute() {
+        // Prepare
+        await setDesktopView();
+        let serviceClientMock = new (class extends WebServiceClientMock {
+          public async send(request: any): Promise<any> {
+            switch (request.descriptor) {
+              case GET_PAYOUT_PROFILE_INFO:
+                let response: GetPayoutProfileInfoResponse = {
+                  notAvailable: true,
+                };
+                return response;
+              default:
+                throw new Error("Unexpected request");
+            }
+          }
+        })();
+        this.cut = new PayoutPage(
+          serviceClientMock,
+          () => new Date("2025-04-05T08:00:00.000Z"),
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise((resolve) => this.cut.once("loaded", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/payout_page_not_available.png"),
+          path.join(__dirname, "/golden/payout_page_not_available.png"),
+          path.join(__dirname, "/payout_page_not_available_diff.png"),
         );
       }
       public tearDown() {

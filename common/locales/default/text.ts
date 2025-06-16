@@ -280,6 +280,9 @@ export default class Text {
   get paymentStatusTitle() {
     return `Payment status`;
   }
+  get paymentStatusNotAvailable() {
+    return `Payment status is not available yet. Please try again later.`;
+  }
   get paymentStatusHealthy() {
     return [`No overdue payments. Next payment, if any, is scheduled on `, `.`];
   }
@@ -345,6 +348,9 @@ export default class Text {
   }
   get payoutManagementTitle() {
     return `Manage payout`;
+  }
+  get payoutManagementNotAvailable() {
+    return `Payout management is not available yet. Please try again later.`;
   }
   get completeOnboardInStripe() {
     return [
