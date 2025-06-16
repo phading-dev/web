@@ -21,6 +21,7 @@ async function main() {
   let progressBytes = new Array<number>();
   let chunkedUpload = new ChunkedUpload(
     window,
+    window.location.origin,
     file,
     uploadSessionUrl,
     0,

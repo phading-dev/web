@@ -27,6 +27,7 @@ async function createUploadUrl(
       "Content-Length": 0,
       "X-Upload-Content-Type": "video/mp4",
       "X-Upload-Content-Length": contentLength,
+      "Origin": `http://localhost:${PORT}`,
     },
   });
   return response.headers.location;
@@ -37,7 +38,7 @@ TEST_RUNNER.run({
   environment: {
     setUp: () => {
       execSync(
-        `gcloud storage buckets create gs://${TEST_BUCKET_NAME} --project ${ENV_VARS.projectId} --location ${BUCKET_LOCATION}`,
+        `gcloud storage buckets create gs://${TEST_BUCKET_NAME} --project ${ENV_VARS.projectId} --location ${BUCKET_LOCATION} && gcloud storage buckets update gs://${TEST_BUCKET_NAME} --cors-file=${path.join(__dirname, "./test_data/cors.json")}`,
         {
           stdio: "inherit",
         },

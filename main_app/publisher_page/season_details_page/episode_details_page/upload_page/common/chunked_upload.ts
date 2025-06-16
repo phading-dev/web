@@ -57,17 +57,8 @@ export class ChunkedUpload extends EventEmitter {
         body: chunkBlob,
       });
       if (newOffset === this.blob.size) {
-        // Last chunk
-        try {
-          await responsePromise;
-        } catch (e) {
-          if (e.name === "TypeError") {
-            // Ignore the CORS error for the last chunk.
-            // This is a workaround for the CORS issue.
-          } else {
-            throw e;
-          }
-        }
+        // Last chunk.
+        await responsePromise;
       } else {
         let response = await responsePromise;
         if (response.status !== ChunkedUpload.INCOMPLETE_ERROR_CODE) {

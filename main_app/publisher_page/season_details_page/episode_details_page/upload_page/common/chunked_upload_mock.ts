@@ -5,7 +5,7 @@ export class ChunkedUploadMock extends ChunkedUpload {
   public rejectFn: (error: Error) => void;
 
   public constructor(blob: Blob, resumeUrl: string, byteOffset: number) {
-    super(undefined, blob, resumeUrl, byteOffset);
+    super(undefined, undefined, blob, resumeUrl, byteOffset);
   }
 
   public async upload(): Promise<void> {

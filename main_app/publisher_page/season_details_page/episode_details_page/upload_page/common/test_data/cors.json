@@ -1,0 +1,17 @@
+[
+  {
+    "maxAgeSeconds": 3600,
+    "method": [
+      "HEAD",
+      "PUT",
+      "OPTIONS"
+    ],
+    "origin": [
+      "http://localhost:8080"
+    ],
+    "responseHeader": [
+      "Content-Type",
+      "Content-Length"
+    ]
+  }
+]

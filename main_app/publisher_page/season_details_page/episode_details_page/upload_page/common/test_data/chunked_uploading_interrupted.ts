@@ -20,6 +20,7 @@ async function main() {
   // Execute
   let chunkedUpload = new ChunkedUpload(
     window,
+    window.location.origin,
     file,
     uploadSessionUrl,
     0,
