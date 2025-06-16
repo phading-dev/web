@@ -1,5 +1,6 @@
 import EventEmitter = require("events");
 import { HttpError } from "@selfage/http_error";
+import { ENV_VARS } from "../../../../../../env_vars";
 
 export interface ChunkedUpload {
   on(event: "progress", listener: (byteOffset: number) => void): this;
@@ -14,6 +15,7 @@ export class ChunkedUpload extends EventEmitter {
   ): ChunkedUpload {
     return new ChunkedUpload(
       window,
+      ENV_VARS.externalOrigin,
       blob,
       resumeUrl,
       byteOffset,
@@ -28,6 +30,7 @@ export class ChunkedUpload extends EventEmitter {
 
   public constructor(
     private window: Window,
+    private externalOrigin: string,
     public blob: Blob,
     public resumeUrl: string,
     public byteOffset: number,
@@ -48,6 +51,7 @@ export class ChunkedUpload extends EventEmitter {
         headers: {
           "Content-Length": `${newOffset - this.byteOffset}`,
           "Content-Range": `bytes ${this.byteOffset}-${newOffset - 1}/${this.blob.size}`,
+          "Origin": this.externalOrigin,
         },
         signal: this.abortController.signal,
         body: chunkBlob,
