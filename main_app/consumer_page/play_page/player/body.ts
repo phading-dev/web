@@ -560,7 +560,7 @@ export class Player extends EventEmitter {
       this.progressBarFiller.val.style.width = `0`;
     } else {
       let currentTime = this.video.val.currentTime;
-      let percentage = (currentTime / this.duration) * 100;
+      let percentage = Math.min(currentTime / this.duration, 1) * 100;
       this.progressBarFiller.val.style.width = `${percentage}%`;
       this.currentTimeText.val.textContent = formatSecondsAsHHMMSS(currentTime);
     }
