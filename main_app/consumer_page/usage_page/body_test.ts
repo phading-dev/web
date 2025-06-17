@@ -426,15 +426,15 @@ TEST_RUNNER.run({
         serviceClientMock.response = {
           readings: [
             {
-              month: "2023-11",
+              month: "2023-10",
               watchTimeSecGraded: 4313000000,
             },
             {
-              month: "2023-12",
+              month: "2023-11",
               watchTimeSecGraded: 98000000,
             },
             {
-              month: "2023-10",
+              month: "2023-09",
               watchTimeSecGraded: 342000000,
             },
           ],
@@ -453,8 +453,8 @@ TEST_RUNNER.run({
           serviceClientMock.request.body,
           eqMessage(
             {
-              startMonth: "2023-07",
-              endMonth: "2023-12",
+              startMonth: "2023-06",
+              endMonth: "2023-11",
             },
             LIST_METER_READINGS_PER_MONTH_REQUEST_BODY,
           ),
@@ -473,7 +473,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.monthRangeInput.val.startRangeInput.val.value = "2024-01";
+        this.cut.monthRangeInput.val.startRangeInput.val.value = "2023-12";
         this.cut.monthRangeInput.val.startRangeInput.val.dispatchEvent(
           new Event("change"),
         );
@@ -492,7 +492,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.monthRangeInput.val.endRangeInput.val.value = "2024-02";
+        this.cut.monthRangeInput.val.endRangeInput.val.value = "2024-01";
         this.cut.monthRangeInput.val.endRangeInput.val.dispatchEvent(
           new Event("change"),
         );
@@ -508,8 +508,8 @@ TEST_RUNNER.run({
           serviceClientMock.request.body,
           eqMessage(
             {
-              startMonth: "2024-01",
-              endMonth: "2024-02",
+              startMonth: "2023-12",
+              endMonth: "2024-01",
             },
             LIST_METER_READINGS_PER_MONTH_REQUEST_BODY,
           ),

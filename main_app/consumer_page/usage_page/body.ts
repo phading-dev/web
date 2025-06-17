@@ -1,10 +1,16 @@
 import { SCHEME } from "../../../common/color_scheme";
 import { DateRangeInput, DateType } from "../../../common/date_range_input";
-import { calculateEstimatedMoney, formatMoney } from "../../../common/formatter/price";
+import {
+  calculateEstimatedMoney,
+  formatMoney,
+} from "../../../common/formatter/price";
 import { formatWatchTimeSeconds } from "../../../common/formatter/quantity";
 import { DATE_INPUT_STYLE } from "../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { OptionPill, RadioOptionPillsGroup } from "../../../common/option_pills";
+import {
+  OptionPill,
+  RadioOptionPillsGroup,
+} from "../../../common/option_pills";
 import {
   PAGE_CENTER_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CENTER_CARD_STYLE,
@@ -43,7 +49,7 @@ export class UsagePage extends EventEmitter {
     return new UsagePage(SERVICE_CLIENT, () => new Date());
   }
 
-  private static INIT_MONTH = 5;
+  private static INIT_MONTH = 6;
   private static INIT_DAYS = 30;
 
   public body: HTMLDivElement;
@@ -178,7 +184,11 @@ export class UsagePage extends EventEmitter {
         .moveToFirstDayOfMonth()
         .addMonths(-UsagePage.INIT_MONTH)
         .toLocalMonthISOString(),
-      nowDate.toLocalMonthISOString(),
+      nowDate
+        .clone()
+        .moveToFirstDayOfMonth()
+        .addMonths(-1)
+        .toLocalMonthISOString(),
     );
     this.rangeTypeInput.setValue(RangeType.ONE_MONTH);
     this.setRangeTypeAndLoad(RangeType.ONE_MONTH);
@@ -187,7 +197,9 @@ export class UsagePage extends EventEmitter {
       this.setRangeTypeAndLoad(value),
     );
     this.oneDayInput.val.addEventListener("change", () => this.loadOneDay());
-    this.oneMonthInput.val.addEventListener("change", () => this.loadOneMonth());
+    this.oneMonthInput.val.addEventListener("change", () =>
+      this.loadOneMonth(),
+    );
     this.dayRangeInput.val.on("change", () => this.loadFromDayRange());
     this.dayRangeInput.val.on("invalid", () => this.showInvalidRange());
     this.monthRangeInput.val.on("change", () => this.loadFromMonthRange());
