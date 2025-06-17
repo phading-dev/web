@@ -2,6 +2,7 @@ import EventEmitter = require("events");
 import { FilledBlockingButton } from "../../../../common/blocking_button";
 import { SCHEME } from "../../../../common/color_scheme";
 import { FileDropZone } from "../../../../common/file_drop_zone";
+import { formatBytesShort } from "../../../../common/formatter/quantity";
 import {
   SimpleIconButton,
   createBackButton,
@@ -13,6 +14,7 @@ import {
 } from "../../../../common/page_style";
 import { AVATAR_M, AVATAR_S, FONT_L, FONT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
+import { MAX_AVATAR_SIZE } from "@phading/constants/account";
 import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
 import { newUploadAccountAvatarRequest } from "@phading/user_service_interface/web/self/client";
 import { E } from "@selfage/element/factory";
@@ -27,7 +29,7 @@ export interface UpdateAvatarPage {
 
 export class UpdateAvatarPage extends EventEmitter {
   public static create(account: AccountAndUser): UpdateAvatarPage {
-    return new UpdateAvatarPage(SERVICE_CLIENT, account);
+    return new UpdateAvatarPage(SERVICE_CLIENT, MAX_AVATAR_SIZE, account);
   }
 
   public body: HTMLDivElement;
@@ -43,6 +45,7 @@ export class UpdateAvatarPage extends EventEmitter {
 
   public constructor(
     private serviceClient: WebServiceClient,
+    private maxAvatarSize: number,
     account: AccountAndUser,
   ) {
     super();
@@ -184,6 +187,12 @@ export class UpdateAvatarPage extends EventEmitter {
 
     this.loadErrorText.val.style.visibility = "hidden";
     this.uploadButton.val.disable();
+    if (file.size > this.maxAvatarSize) {
+      this.loadErrorText.val.style.visibility = "visible";
+      this.loadErrorText.val.textContent = `${LOCALIZED_TEXT.fileSizeTooLarge[0]}${formatBytesShort(this.maxAvatarSize)}${LOCALIZED_TEXT.fileSizeTooLarge[1]}`;
+      return;
+    }
+
     let dataUrl: string;
     try {
       dataUrl = await new Promise<string>((resolve, reject) => {

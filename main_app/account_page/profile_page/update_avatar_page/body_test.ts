@@ -3,6 +3,7 @@ import path = require("path");
 import { normalizeBody } from "../../../../common/normalize_body";
 import { setTabletView } from "../../../../common/view_port";
 import { UpdateAvatarPage } from "./body";
+import { MAX_AVATAR_SIZE } from "@phading/constants/account";
 import { supplyFiles } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -22,7 +23,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        this.cut = new UpdateAvatarPage(serviceClientMock, {});
+        this.cut = new UpdateAvatarPage(serviceClientMock, MAX_AVATAR_SIZE, {});
 
         // Execute
         document.body.append(this.cut.body);
@@ -116,13 +117,13 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "WithImage";
+      public name = "WithImage_ChooseFileTooLarge";
       private cut: UpdateAvatarPage;
       public async execute() {
         // Prepare
         await setTabletView();
         let serviceClientMock = new WebServiceClientMock();
-        this.cut = new UpdateAvatarPage(serviceClientMock, {
+        this.cut = new UpdateAvatarPage(serviceClientMock, 3 * 1024, {
           avatarLargeUrl: wideImage,
         });
 
@@ -137,6 +138,16 @@ TEST_RUNNER.run({
           {
             fullPage: true,
           },
+        );
+
+        // Execute
+        await supplyFiles(() => this.cut.fileDropZone.val.click(), wideImage);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/update_avatar_page_file_too_large.png"),
+          path.join(__dirname, "/golden/update_avatar_page_file_too_large.png"),
+          path.join(__dirname, "/update_avatar_page_file_too_large_diff.png"),
         );
       }
       public tearDown() {
