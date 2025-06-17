@@ -71,6 +71,6 @@ export class ChunkedUpload extends EventEmitter {
   }
 
   public async stop(): Promise<void> {
-    this.abortController.abort();
+    this.abortController.abort(new Error("Upload stopped by user"));
   }
 }
