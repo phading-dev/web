@@ -396,6 +396,9 @@ export class Player extends EventEmitter {
     this.video.val.addEventListener("seeking", () => {
       this.emit("clearComments");
     });
+    if (this.autoPlay) {
+      this.video.val.autoplay = true;
+    }
 
     if (this.video.val.paused) {
       this.playButton.val.show();
@@ -510,9 +513,6 @@ export class Player extends EventEmitter {
     );
     this.video.val.currentTime = this.continueTimestampMs / 1000;
     this.updateProgressOnce();
-    if (this.autoPlay) {
-      this.video.val.play();
-    }
     this.emit("metadataLoaded");
   }
 
