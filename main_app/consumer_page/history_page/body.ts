@@ -15,7 +15,7 @@ import {
   eContinueEpisodeItemContainerRef,
   eFullItemsPage,
 } from "../common/elements";
-import { newListMeterReadingsPerMonthRequest } from "@phading/meter_service_interface/show/web/consumer/client";
+import { newListMeterReadingsPerDayRequest } from "@phading/meter_service_interface/show/web/consumer/client";
 import { newListWatchSessionsRequest } from "@phading/play_activity_service_interface/show/web/client";
 import { ProductID } from "@phading/price";
 import { newGetEpisodeWithSeasonSummaryRequest } from "@phading/product_service_interface/show/web/consumer/client";
@@ -58,20 +58,29 @@ export class HistoryPage extends EventEmitter {
   }
 
   private async loadEstimates(): Promise<void> {
-    let thisMonthStr = TzDate.fromDate(
+    let today = TzDate.fromDate(
       this.getNowDate(),
       ENV_VARS.timezoneNegativeOffset,
-    ).toLocalMonthISOString();
+    );
+    let startDate = today
+      .clone()
+      .moveToFirstDayOfMonth()
+      .toLocalDateISOString();
+    let endDate = today.clone().moveToLastDayOfMonth().toLocalDateISOString();
     let response = await this.serviceClient.send(
-      newListMeterReadingsPerMonthRequest({
-        startMonth: thisMonthStr,
-        endMonth: thisMonthStr,
+      newListMeterReadingsPerDayRequest({
+        startDate,
+        endDate,
       }),
     );
 
+    let thisMonthStr = today.toLocalMonthISOString();
     let { amount, price } = calculateEstimatedMoney(
       ProductID.SHOW,
-      response.readings[0]?.watchTimeSecGraded ?? 0,
+      response.readings.reduce(
+        (acc, reading) => acc + reading.watchTimeSecGraded,
+        0,
+      ),
       thisMonthStr,
     );
     this.body.append(

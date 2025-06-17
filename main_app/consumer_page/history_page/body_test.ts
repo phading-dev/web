@@ -10,8 +10,9 @@ import {
 } from "../../../common/view_port";
 import { HistoryPage } from "./body";
 import {
-  LIST_METER_READINGS_PER_MONTH,
-  ListMeterReadingsPerMonthResponse,
+  LIST_METER_READINGS_PER_DAY,
+  LIST_METER_READINGS_PER_DAY_REQUEST_BODY,
+  ListMeterReadingsPerDayResponse,
 } from "@phading/meter_service_interface/show/web/consumer/interface";
 import {
   LIST_WATCH_SESSIONS,
@@ -42,20 +43,31 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setTabletView();
+        let listMeterReadingsPerDayRequest: any;
         let serviceClientMock = new (class extends WebServiceClientMock {
           public async send(
             request: ClientRequestInterface<any>,
           ): Promise<any> {
             switch (request.descriptor) {
-              case LIST_METER_READINGS_PER_MONTH:
-                return {
+              case LIST_METER_READINGS_PER_DAY:
+                listMeterReadingsPerDayRequest = request;
+                let response: ListMeterReadingsPerDayResponse = {
                   readings: [
                     {
-                      month: "2023-10",
-                      watchTimeSecGraded: 123456789,
+                      date: "2023-10-01",
+                      watchTimeSecGraded: 12345678,
+                    },
+                    {
+                      date: "2023-10-05",
+                      watchTimeSecGraded: 22345678,
+                    },
+                    {
+                      date: "2023-10-30",
+                      watchTimeSecGraded: 32345678,
                     },
                   ],
-                } as ListMeterReadingsPerMonthResponse;
+                };
+                return response;
               case LIST_WATCH_SESSIONS:
                 this.request = request;
                 return this.response;
@@ -185,6 +197,17 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
+        assertThat(
+          listMeterReadingsPerDayRequest.body,
+          eqMessage(
+            {
+              startDate: "2023-10-01",
+              endDate: "2023-10-31",
+            },
+            LIST_METER_READINGS_PER_DAY_REQUEST_BODY,
+          ),
+          "ListMeterReadingsPerDayRequest",
+        );
         assertThat(
           serviceClientMock.request.body,
           eqMessage(
@@ -329,10 +352,11 @@ TEST_RUNNER.run({
             request: ClientRequestInterface<any>,
           ): Promise<any> {
             switch (request.descriptor) {
-              case LIST_METER_READINGS_PER_MONTH:
-                return {
+              case LIST_METER_READINGS_PER_DAY:
+                let response: ListMeterReadingsPerDayResponse = {
                   readings: [],
-                } as ListMeterReadingsPerMonthResponse;
+                };
+                return response;
               case LIST_WATCH_SESSIONS:
                 this.request = request;
                 return this.response;

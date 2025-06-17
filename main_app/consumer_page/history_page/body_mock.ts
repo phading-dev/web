@@ -1,8 +1,8 @@
 import coverImage = require("../common/test_data/cover_tall.jpg");
 import { HistoryPage } from "./body";
 import {
-  LIST_METER_READINGS_PER_MONTH,
-  ListMeterReadingsPerMonthResponse,
+  LIST_METER_READINGS_PER_DAY,
+  ListMeterReadingsPerDayResponse,
 } from "@phading/meter_service_interface/show/web/consumer/interface";
 import {
   LIST_WATCH_SESSIONS,
@@ -20,11 +20,11 @@ export class HistoryPageMock extends HistoryPage {
     super(
       new (class extends WebServiceClientMock {
         public async send(request: ClientRequestInterface<any>): Promise<any> {
-          if (request.descriptor === LIST_METER_READINGS_PER_MONTH) {
-            let response: ListMeterReadingsPerMonthResponse = {
+          if (request.descriptor === LIST_METER_READINGS_PER_DAY) {
+            let response: ListMeterReadingsPerDayResponse = {
               readings: [
                 {
-                  month: "2023-10",
+                  date: "2023-10-01",
                   watchTimeSecGraded: 123456789,
                 },
               ],
@@ -42,9 +42,7 @@ export class HistoryPageMock extends HistoryPage {
               ],
             };
             return response;
-          } else if (
-            request.descriptor === GET_EPISODE_WITH_SEASON_SUMMARY
-          ) {
+          } else if (request.descriptor === GET_EPISODE_WITH_SEASON_SUMMARY) {
             let response: GetEpisodeWithSeasonSummaryResponse = {
               summary: {
                 season: {
@@ -63,7 +61,7 @@ export class HistoryPageMock extends HistoryPage {
                   index: 1,
                   premiereTimeMs: new Date("2023-10-10T00:00:00Z").getTime(),
                   videoDurationSec: 1500,
-                }
+                },
               },
             };
             return response;
