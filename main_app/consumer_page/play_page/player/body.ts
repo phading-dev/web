@@ -375,7 +375,7 @@ export class Player extends EventEmitter {
       this.selectInitSubtitleTrack(),
     );
     this.video.val.addEventListener("loadedmetadata", () =>
-      this.setDurationAndStartPlaying(),
+      this.setDurationAndResume(),
     );
     this.video.val.addEventListener("playing", () => {
       this.isPlaying();
@@ -506,7 +506,7 @@ export class Player extends EventEmitter {
     this.hls.subtitleTrack = index;
   }
 
-  private setDurationAndStartPlaying(): void {
+  private setDurationAndResume(): void {
     this.duration = this.video.val.duration;
     this.durationText.val.textContent = formatSecondsAsHHMMSS(
       this.video.val.duration,
@@ -581,7 +581,8 @@ export class Player extends EventEmitter {
         this.video.val.buffered.start(i) <= currentTime &&
         this.video.val.buffered.end(i) >= currentTime
       ) {
-        let percentage = (this.video.val.buffered.end(i) / this.duration) * 100;
+        let percentage =
+          Math.min(this.video.val.buffered.end(i) / this.duration, 1) * 100;
         this.progressBarBuffer.val.style.width = `${percentage}%`;
         break;
       }
