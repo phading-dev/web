@@ -117,7 +117,7 @@ export class SignUpPage extends EventEmitter {
         assign(
           this.accountTypeInput,
           new RadioOptionInput(
-            LOCALIZED_TEXT.chooseUserTypeLabel,
+            LOCALIZED_TEXT.chooseAccountTypeLabel,
             "",
             [
               assign(

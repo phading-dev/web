@@ -88,8 +88,8 @@ export default class Text {
   get repeatPasswordLabel() {
     return `Confirm your password`;
   }
-  get chooseUserTypeLabel() {
-    return `Account type`;
+  get chooseAccountTypeLabel() {
+    return `Profile type`;
   }
   get userTypeConsumerLabel() {
     return `Viewer`;
@@ -143,22 +143,22 @@ export default class Text {
     return `Cancel`;
   }
   get createAccountTitle() {
-    return `Add an account`;
+    return `Create a new profile`;
   }
   get createAccountButtonLabel() {
-    return `Add`;
+    return `Create`;
   }
   get createAccountError() {
-    return `Failed to add a new account. Please try again later.`;
+    return `Failed to create a new profile. Please try again later.`;
   }
   get chooseAccount() {
-    return `Choose an account`;
+    return `Choose a profile`;
   }
   get accountNotFoundError() {
-    return `Requested account not found. Or you can sign out and sign in to other users.`;
+    return `Requested profile not found. Or you can sign out and sign in to other users.`;
   }
   get switchAccountFailedError() {
-    return `Failed to switch account. Please try again later.`;
+    return `Failed to switch profile. Please try again later.`;
   }
   get accountLabel() {
     return `Account`;
@@ -212,7 +212,7 @@ export default class Text {
     return `Update`;
   }
   get chooseAccountButtonLabel() {
-    return `Switch account`;
+    return `Switch profile`;
   }
   get signOutButtonLabel() {
     return `Sign out`;
@@ -299,7 +299,7 @@ export default class Text {
     return `Failed to retry payments. Please try again later.`;
   }
   get paymentStatusSuspended() {
-    return [`Your account is currently suspended. Please contact at `, `.`];
+    return [`Your profile is currently suspended. Please contact at `, `.`];
   }
   get paymentMethodTitle() {
     return `Payment method`;

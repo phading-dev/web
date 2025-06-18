@@ -78,7 +78,7 @@ TEST_RUNNER.run({
         let message = await new Promise<string>((resolve) =>
           this.cut.once("error", (message) => resolve(message)),
         );
-        assertThat(message, containStr("account not found"), "error message");
+        assertThat(message, containStr("profile not found"), "error message");
       }
       public tearDown() {
         this.cut.remove();
@@ -102,7 +102,7 @@ TEST_RUNNER.run({
         );
         assertThat(
           message,
-          containStr("Failed to switch account"),
+          containStr("Failed to switch profile"),
           "error message",
         );
       }

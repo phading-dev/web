@@ -70,7 +70,7 @@ export class CreateAccountPage extends EventEmitter {
         assign(
           this.accountTypeInput,
           new RadioOptionInput(
-            LOCALIZED_TEXT.chooseUserTypeLabel,
+            LOCALIZED_TEXT.chooseAccountTypeLabel,
             "",
             [
               assign(
