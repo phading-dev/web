@@ -3,6 +3,7 @@ import { SCHEME } from "../../../common/color_scheme";
 import { DateRangeInput, DateType } from "../../../common/date_range_input";
 import { formatMoney } from "../../../common/formatter/price";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import {
   PAGE_CENTER_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CENTER_CARD_STYLE,
@@ -46,7 +47,7 @@ export class PayoutPage extends EventEmitter {
     super();
     this.body = E.div({
       class: "payout-page",
-      style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
+      style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     });
     this.load();
   }

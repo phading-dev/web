@@ -19,6 +19,7 @@ import {
 } from "../../../../../common/icons";
 import { BASIC_INPUT_STYLE } from "../../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../../common/navigation_bar";
 import {
   PAGE_CENTER_CARD_BACKGROUND_STYLE,
   PAGE_LARGE_CENTER_CARD_STYLE,
@@ -32,7 +33,6 @@ import {
   ICON_M,
 } from "../../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../../common/web_service_client";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/elements";
 import {
   MAX_AUDIO_TRACK_NAME_LENGTH,
   MAX_SUBTITLE_TRACK_NAME_LENGTH,

@@ -4,8 +4,8 @@ import { ValidationResult } from "../../../../common/input_form_page/input_field
 import { TextAreaInputWithErrorMsg } from "../../../../common/input_form_page/text_area_input";
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../common/elements";
 import {
   MAX_EPISODE_NAME_LENGTH,
   MAX_SEASON_DESCRIPTION_LENGTH,

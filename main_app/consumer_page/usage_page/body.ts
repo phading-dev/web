@@ -7,6 +7,7 @@ import {
 import { formatWatchTimeSeconds } from "../../../common/formatter/quantity";
 import { DATE_INPUT_STYLE } from "../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import {
   OptionPill,
   RadioOptionPillsGroup,
@@ -18,7 +19,6 @@ import {
 import { FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../common/elements";
 import { MAX_DAY_RANGE, MAX_MONTH_RANGE } from "@phading/constants/meter";
 import {
   newListMeterReadingPerSeasonRequest,

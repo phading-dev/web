@@ -34,6 +34,7 @@ import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 
 export interface PaymentPage {
   on(event: "retried", listener: () => void): this;
@@ -69,7 +70,7 @@ export class PaymentPage extends EventEmitter {
     super();
     this.body = E.div({
       class: "payment-page",
-      style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
+      style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     });
     this.load();
   }

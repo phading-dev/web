@@ -16,6 +16,7 @@ import {
 import { createPlusIcon } from "../../../../common/icons";
 import { BASIC_INPUT_STYLE } from "../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
   PAGE_LARGE_TOP_DOWN_CARD_STYLE,
   PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
@@ -36,7 +37,6 @@ import {
 } from "../../../../common/value_box";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { ENV_VARS } from "../../../../env_vars";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../common/elements";
 import { MIN_GRADE_EFFECTIVE_GAP_DAY } from "@phading/constants/show";
 import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import {

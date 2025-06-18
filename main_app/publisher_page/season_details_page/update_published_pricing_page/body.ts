@@ -6,10 +6,10 @@ import { InputFormPage } from "../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../common/input_form_page/input_field";
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import { FONT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { ENV_VARS } from "../../../../env_vars";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../common/elements";
 import { eNewRateInputLabel } from "../common/elements";
 import {
   MAX_GRADE,

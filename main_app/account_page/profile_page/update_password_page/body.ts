@@ -3,6 +3,7 @@ import { InputFormPage } from "../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../common/input_form_page/input_field";
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { MAX_PASSWORD_LENGTH } from "@phading/constants/account";
 import { newUpdatePasswordRequest } from "@phading/user_service_interface/web/self/client";
@@ -87,6 +88,7 @@ export class UpdatePasswordPage extends EventEmitter {
         this.currentPasswordInput.val,
       ],
       LOCALIZED_TEXT.updateButtonLabel,
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .addPrimaryAction(

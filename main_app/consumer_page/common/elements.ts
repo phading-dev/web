@@ -11,6 +11,7 @@ import {
   createCircularProgressIcon,
   createFilledStarIcon,
 } from "../../../common/icons";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import { eCoverImage } from "../../../common/season_cover_image";
 import {
   AVATAR_M,
@@ -27,8 +28,6 @@ import {
 import { AccountDetails } from "@phading/user_service_interface/web/third_person/account";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
-
-export let PAGE_NAVIGATION_PADDING_BOTTOM = 7;
 
 export function eFullItemsPage(
   ...elements: Array<HTMLElement>

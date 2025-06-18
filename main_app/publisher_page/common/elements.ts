@@ -7,6 +7,7 @@ import {
 } from "../../../common/formatter/rating";
 import { createFilledStarIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import {
   PAGE_LARGE_TOP_DOWN_CARD_STYLE,
   PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
@@ -16,8 +17,6 @@ import { FONT_M, FONT_S, FONT_WEIGHT_600, ICON_M } from "../../../common/sizes";
 import { SeasonSummary } from "@phading/product_service_interface/show/web/publisher/summary";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
-
-export let PAGE_NAVIGATION_PADDING_BOTTOM = 7;
 
 export function eSeasonItemsPage(
   card: Ref<HTMLDivElement>,

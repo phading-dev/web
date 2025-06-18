@@ -4,6 +4,7 @@ import { ValidationResult } from "../../../../common/input_form_page/input_field
 import { TextAreaInputWithErrorMsg } from "../../../../common/input_form_page/text_area_input";
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import {
   MAX_DESCRIPTION_LENGTH,
@@ -86,6 +87,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
         this.descriptionInput.val,
       ],
       LOCALIZED_TEXT.updateButtonLabel,
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .addPrimaryAction(

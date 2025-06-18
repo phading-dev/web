@@ -3,12 +3,12 @@ import {
   SimpleIconButton,
   createBackButton,
 } from "../../../../../../common/icon_button";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../../../common/navigation_bar";
 import {
   PAGE_CENTER_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CENTER_CARD_STYLE,
 } from "../../../../../../common/page_style";
 import { FONT_L } from "../../../../../../common/sizes";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/elements";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 

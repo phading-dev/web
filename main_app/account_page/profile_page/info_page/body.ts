@@ -2,6 +2,7 @@ import EventEmitter = require("events");
 import { OUTLINE_BUTTON_STYLE } from "../../../../common/button_styles";
 import { SCHEME } from "../../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
   PAGE_LARGE_TOP_DOWN_CARD_STYLE,
   PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
@@ -70,7 +71,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "account-info-card",
-          style: `${PAGE_LARGE_TOP_DOWN_CARD_STYLE} padding: 2rem; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+          style: `${PAGE_LARGE_TOP_DOWN_CARD_STYLE} padding: 2rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap; gap: 2rem;`,
         },
         E.divRef(
           this.avatarContainer,

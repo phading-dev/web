@@ -8,6 +8,7 @@ import {
   createBackButton,
 } from "../../../../common/icon_button";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
   PAGE_CENTER_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CENTER_CARD_STYLE,
@@ -52,7 +53,7 @@ export class UpdateAvatarPage extends EventEmitter {
     this.body = E.div(
       {
         class: "update-avatar",
-        style: PAGE_CENTER_CARD_BACKGROUND_STYLE,
+        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       },
       E.div(
         {

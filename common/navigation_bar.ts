@@ -3,6 +3,8 @@ import { SCHEME } from "./color_scheme";
 import { FONT_S, ICON_XL } from "./sizes";
 import { E } from "@selfage/element/factory";
 
+export let PAGE_NAVIGATION_PADDING_BOTTOM = 7; // rem
+
 export function eNavigationItemRef(
   ref: Ref<HTMLDivElement>,
   icon: SVGSVGElement,

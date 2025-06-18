@@ -11,6 +11,7 @@ import {
   createBackButton,
 } from "../../../../common/icon_button";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
   PAGE_CENTER_CARD_BACKGROUND_STYLE,
   PAGE_MEDIUM_CENTER_CARD_STYLE,
@@ -18,7 +19,6 @@ import {
 import { eCoverImage } from "../../../../common/season_cover_image";
 import { FONT_L, FONT_M, FONT_S } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../common/elements";
 import {
   COVER_IMAGE_HEIGHT,
   COVER_IMAGE_WIDTH,

@@ -40,6 +40,7 @@ import {
   createStarIcon,
 } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import {
   PAGE_EX_LARGE_TOP_DOWN_CARD_STYLE,
   PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
@@ -62,7 +63,6 @@ import {
 import { BOX_BORDER_RADIUS, eRowBoxWithArrow } from "../../../common/value_box";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../common/elements";
 import {
   newAddToWatchLaterListRequest,
   newCheckInWatchLaterListRequest,
