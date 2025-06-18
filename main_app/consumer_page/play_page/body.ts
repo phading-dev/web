@@ -546,7 +546,6 @@ export class PlayPage extends EventEmitter {
 
   private playing = (): void => {
     let currentVideoTimeMs = this.player.val.getCurrentVideoTimeMs();
-    console.log("currentVideoTimeMs", currentVideoTimeMs);
     this.watchSessionTracker.update(currentVideoTimeMs);
     this.watchTimeMeter.update(currentVideoTimeMs);
     this.commentsPanel.val.setPinnedVideoTimeMs(currentVideoTimeMs);
