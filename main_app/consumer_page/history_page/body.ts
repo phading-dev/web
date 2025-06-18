@@ -46,7 +46,7 @@ export class HistoryPage extends EventEmitter {
   public estimatesCard = new Ref<HTMLDivElement>();
   private dateToContentContainer = new Map<string, Ref<HTMLDivElement>>();
   private loadingSection = new Ref<ScrollLoadingSection>();
-  private createdTimeCursor: number;
+  private updatedTimeCursor: number;
 
   public constructor(
     private serviceClient: WebServiceClient,
@@ -150,7 +150,7 @@ export class HistoryPage extends EventEmitter {
     let response = await this.serviceClient.send(
       newListWatchSessionsRequest({
         limit: HistoryPage.LIMIT,
-        createdTimeCursor: this.createdTimeCursor,
+        updatedTimeCursor: this.updatedTimeCursor,
       }),
     );
     let summaries = new Array<SeasonSummaryAndEpisode>(
@@ -179,24 +179,20 @@ export class HistoryPage extends EventEmitter {
         return;
       }
 
-      let dateStr = TzDate.fromTimestampMs(
-        session.createdTimeMs,
-        ENV_VARS.timezoneNegativeOffset,
-      ).toLocalDateISOString();
-      let contentContainer = this.dateToContentContainer.get(dateStr);
+      let contentContainer = this.dateToContentContainer.get(session.date);
       if (!contentContainer) {
         contentContainer = new Ref<HTMLDivElement>();
         this.loadingSection.val.body.before(
           E.div({
             style: `flex: 0 0 auto; height: 2rem;`,
           }),
-          eContainerTitle(dateStr),
+          eContainerTitle(session.date),
           E.div({
             style: `flex: 0 0 auto; height: 1rem;`,
           }),
           eContinueEpisodeItemContainerRef(contentContainer),
         );
-        this.dateToContentContainer.set(dateStr, contentContainer);
+        this.dateToContentContainer.set(session.date, contentContainer);
       }
       let item = eContinueEpisodeItem(
         summary.season,
@@ -208,8 +204,8 @@ export class HistoryPage extends EventEmitter {
       });
       contentContainer.val.append(item);
     });
-    this.createdTimeCursor = response.createdTimeCursor;
-    return Boolean(response.createdTimeCursor);
+    this.updatedTimeCursor = response.updatedTimeCursor;
+    return Boolean(response.updatedTimeCursor);
   }
 
   public remove(): void {

@@ -219,9 +219,7 @@ class PlayPageServiceClientMock extends WebServiceClientMock {
       }
       case WATCH_EPISODE: {
         this.watchEpisodeRequestBodies.push(request.body);
-        let response: WatchEpisodeResponse = {
-          watchSessionId: "watchSession1",
-        };
+        let response: WatchEpisodeResponse = {};
         return response;
       }
       case LIST_COMMENTS: {
@@ -773,11 +771,6 @@ TEST_RUNNER.run({
           "watchEpisodeRequestBodies.length",
         );
         assertThat(
-          serviceClientMock.watchEpisodeRequestBodies[0].watchSessionId,
-          eq(undefined),
-          "Watch session id",
-        );
-        assertThat(
           serviceClientMock.watchEpisodeRequestBodies[0].seasonId,
           eq("season1"),
           "Watch session season id",
@@ -791,11 +784,6 @@ TEST_RUNNER.run({
           serviceClientMock.watchEpisodeRequestBodies[0].watchedVideoTimeMs,
           eq(0),
           "Watch session video time",
-        );
-        assertThat(
-          serviceClientMock.watchEpisodeRequestBodies[1].watchSessionId,
-          eq("watchSession1"),
-          "Watch session id 2",
         );
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies[1].watchedVideoTimeMs,

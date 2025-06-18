@@ -164,29 +164,30 @@ TEST_RUNNER.run({
             }
           }
         })();
-        serviceClientMock.response = {
+        let response: ListWatchSessionsResponse = {
           sessions: [
             {
               seasonId: "season1",
               episodeId: "episode1",
+              date: "2023-10-11",
               latestWatchedVideoTimeMs: 1434000,
-              createdTimeMs: 1697018400000, // 2023-10-11T10:00:00Z
             },
             {
               seasonId: "season1",
               episodeId: "episode3", // Not found
+              date: "2023-10-10",
               latestWatchedVideoTimeMs: 3434000,
-              createdTimeMs: 1697007600000, // 2023-10-11T07:00:00Z
             },
             {
               seasonId: "season1",
               episodeId: "episode2",
+              date: "2023-10-10",
               latestWatchedVideoTimeMs: 3434000,
-              createdTimeMs: 1697007600000, // 2023-10-11T07:00:00Z
             },
           ],
-          createdTimeCursor: 1000,
-        } as ListWatchSessionsResponse;
+          updatedTimeCursor: 1000,
+        };
+        serviceClientMock.response = response;
         this.cut = new HistoryPage(
           serviceClientMock,
           () => new Date("2023-10-11"),
@@ -225,28 +226,29 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        serviceClientMock.response = {
+        response = {
           sessions: [
             {
               seasonId: "season3", // Not found
               episodeId: "episode1",
+              date: "2023-10-09",
               latestWatchedVideoTimeMs: 1234000,
-              createdTimeMs: 1696845600000, // 2023-10-09T10:00:00Z
             },
             {
               seasonId: "season2",
               episodeId: "episode1",
+              date: "2023-10-09",
               latestWatchedVideoTimeMs: 34000,
-              createdTimeMs: 1696852800000, // 2023-10-09T12:00:00Z
             },
             {
               seasonId: "season2",
               episodeId: "episode2",
+              date: "2023-10-09",
               latestWatchedVideoTimeMs: 234000,
-              createdTimeMs: 1696845600000, // 2023-10-09T10:00:00Z
             },
           ],
-        } as ListWatchSessionsResponse;
+        };
+        serviceClientMock.response = response;
 
         // Execute
         window.scrollTo(0, document.body.scrollHeight);
@@ -258,7 +260,7 @@ TEST_RUNNER.run({
           eqMessage(
             {
               limit: 10,
-              createdTimeCursor: 1000,
+              updatedTimeCursor: 1000,
             },
             LIST_WATCH_SESSIONS_REQUEST_BODY,
           ),

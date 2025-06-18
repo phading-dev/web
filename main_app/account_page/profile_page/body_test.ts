@@ -8,6 +8,7 @@ import { UpdateAccountInfoPage } from "./update_account_info_page/body";
 import { UpdateAvatarPage } from "./update_avatar_page/body";
 import { UpdatePasswordPage } from "./update_password_page/body";
 import { UpdateRecoveryEmailPage } from "./update_recovery_email_page/body";
+import { MAX_AVATAR_SIZE } from "@phading/constants/account";
 import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -35,7 +36,8 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new ProfilePage(
           () => new InfoPageMock(),
-          (account) => new UpdateAvatarPage(undefined, account),
+          (account) =>
+            new UpdateAvatarPage(undefined, MAX_AVATAR_SIZE, account),
           (account) => new UpdateAccountInfoPage(undefined, account),
           (username) => new UpdatePasswordPage(undefined, username),
           (username) => new UpdateRecoveryEmailPage(undefined, username),

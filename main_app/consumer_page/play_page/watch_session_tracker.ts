@@ -15,10 +15,8 @@ export class WatchSessionTracker {
     );
   }
 
-  private static IDLE_THRESHOLD_MS = 60 * 60 * 1000;
   private static SYNC_THROTTLE_INTERVAL_MS = 10 * 1000;
 
-  private watchSessionId: string;
   private lastSyncTimestampMs = 0;
 
   public constructor(
@@ -30,12 +28,6 @@ export class WatchSessionTracker {
 
   public async start(videoTimeMs: number): Promise<void> {
     let now = this.now();
-    if (
-      now - this.lastSyncTimestampMs >
-      WatchSessionTracker.IDLE_THRESHOLD_MS
-    ) {
-      this.watchSessionId = undefined;
-    }
     this.lastSyncTimestampMs = now;
     await this.sync(videoTimeMs);
   }
@@ -52,14 +44,12 @@ export class WatchSessionTracker {
   }
 
   private async sync(videoTimeMs: number): Promise<void> {
-    let response = await this.serviceClient.send(
+    await this.serviceClient.send(
       newWatchEpisodeRequest({
-        watchSessionId: this.watchSessionId,
         seasonId: this.seasonId,
         episodeId: this.episodeId,
         watchedVideoTimeMs: videoTimeMs,
       }),
     );
-    this.watchSessionId = response.watchSessionId;
   }
 }

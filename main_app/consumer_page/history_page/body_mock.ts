@@ -36,8 +36,8 @@ export class HistoryPageMock extends HistoryPage {
                 {
                   seasonId: "season1",
                   episodeId: "episode1",
+                  date: "2023-10-11",
                   latestWatchedVideoTimeMs: 0,
-                  createdTimeMs: new Date("2023-10-11T10:00:00Z").getTime(),
                 },
               ],
             };
