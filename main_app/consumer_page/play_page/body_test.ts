@@ -722,6 +722,13 @@ TEST_RUNNER.run({
               },
               GET_LATEST_WATCHED_VIDEO_TIME_OF_EPISODE_REQUEST_BODY,
             ),
+            eqMessage(
+              {
+                seasonId: "season1",
+                episodeId: "episode2",
+              },
+              GET_LATEST_WATCHED_VIDEO_TIME_OF_EPISODE_REQUEST_BODY,
+            ),
           ]),
           "GetLatestWatchedVideoTimeOfEpisodeRequestBodies",
         );
