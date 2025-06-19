@@ -35,6 +35,7 @@ export class MultiSectionPageMock extends MultiSectionPage {
                     index: 1,
                     premiereTimeMs: new Date("2023-10-10T00:00:00Z").getTime(),
                     videoDurationSec: 1500,
+                    canPlay: true,
                   },
                   continueTimeMs: 20000,
                 },

@@ -45,6 +45,7 @@ TEST_RUNNER.run({
             name: "Episode 2: The Continuation",
             premiereTimeMs: new Date("2024-01-08T08:00:00Z").getTime(),
             videoDurationSec: 24 * 60,
+            canPlay: true,
           },
         );
 
@@ -182,7 +183,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "NextEpisodeNotPremiered";
+      public name = "NextEpisodeCannotPlay";
       private container: HTMLDivElement;
       public async execute() {
         // Prepare
@@ -192,7 +193,7 @@ TEST_RUNNER.run({
         });
         document.body.append(this.container);
         let cut = new InfoPanel(
-          () => new Date("2024-02-01T08:00:00Z"),
+          () => new Date("2024-01-01T08:00:00Z"),
           "width: 100%;",
           {
             name: "Episode 1: The Beginning",
@@ -206,8 +207,9 @@ TEST_RUNNER.run({
           },
           {
             name: "Episode 2: The Continuation",
-            premiereTimeMs: new Date("2024-02-08T08:00:00Z").getTime(),
+            premiereTimeMs: new Date("2024-01-08T08:00:00Z").getTime(),
             videoDurationSec: 24 * 60,
+            canPlay: false,
           },
         );
 

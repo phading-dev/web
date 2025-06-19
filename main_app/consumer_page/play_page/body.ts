@@ -194,7 +194,9 @@ export class PlayPage extends EventEmitter {
             this.settings.videoSettings,
             videoUrl,
             watchedVideoTimeMs ?? 0,
-            nextEpisode?.episodeId,
+            nextEpisode && nextEpisode.canPlay
+              ? nextEpisode.episodeId
+              : undefined,
           ),
         ).elements,
       ),
@@ -336,7 +338,7 @@ export class PlayPage extends EventEmitter {
     );
     let nextEpisode = episodes.length > 0 ? episodes[0] : undefined;
     let nextEpisodeWatchedVideoTimeMs: number | undefined;
-    if (nextEpisode) {
+    if (nextEpisode && nextEpisode.canPlay) {
       let { watchedVideoTimeMs } = await this.serviceClient.send(
         newGetLatestWatchedVideoTimeOfEpisodeRequest({
           seasonId: this.seasonId,

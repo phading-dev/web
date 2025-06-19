@@ -249,7 +249,6 @@ export class InfoPage extends EventEmitter {
           ),
         );
       case EpisodeState.PUBLISHED:
-        let premiered = episode.premiereTimeMs <= this.getNowDate().getTime();
         return assign(
           this.episodePublishedStateButton,
           eColumnBoxWithArrow(
@@ -274,7 +273,7 @@ export class InfoPage extends EventEmitter {
                   style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(
-                  `${premiered ? LOCALIZED_TEXT.seasonHasPremieredAt : LOCALIZED_TEXT.seasonPremieresAt}${formatPremiereTimeLong(episode.premiereTimeMs)}`,
+                  `${episode.canPlay ? LOCALIZED_TEXT.seasonHasPremieredAt : LOCALIZED_TEXT.seasonPremieresAt}${formatPremiereTimeLong(episode.premiereTimeMs)}`,
                 ),
               ),
             ],

@@ -150,6 +150,7 @@ TEST_RUNNER.run({
                     resolution: "1920x1080",
                     videoDurationSec: 24 * 60,
                     premiereTimeMs: new Date("2024-01-01T00:00:00Z").getTime(),
+                    canPlay: true,
                   },
                   rewatching: false,
                 };
@@ -182,6 +183,7 @@ TEST_RUNNER.run({
                         premiereTimeMs: new Date(
                           "2024-01-01T00:00:00Z",
                         ).getTime(),
+                        canPlay: true,
                       },
                       {
                         episodeId: "episode2",
@@ -192,6 +194,7 @@ TEST_RUNNER.run({
                         premiereTimeMs: new Date(
                           "2024-01-08T08:00:00Z",
                         ).getTime(),
+                        canPlay: true,
                       },
                     ],
                   };
@@ -1042,6 +1045,7 @@ TEST_RUNNER.run({
                     resolution: "1920x1080",
                     videoDurationSec: 2 * 60 * 60 + 20 * 60 + 34,
                     premiereTimeMs: new Date("2024-01-01T00:00:00Z").getTime(),
+                    canPlay: true,
                   },
                   rewatching: false,
                 };
@@ -1074,6 +1078,7 @@ TEST_RUNNER.run({
                         premiereTimeMs: new Date(
                           "2024-01-01T00:00:00Z",
                         ).getTime(),
+                        canPlay: true,
                       },
                       {
                         episodeId: "episode4",
@@ -1084,6 +1089,7 @@ TEST_RUNNER.run({
                         premiereTimeMs: new Date(
                           "2024-01-08T08:00:00Z",
                         ).getTime(),
+                        canPlay: true,
                       },
                       {
                         episodeId: "episode5",
@@ -1094,6 +1100,7 @@ TEST_RUNNER.run({
                         premiereTimeMs: new Date(
                           "2024-01-15T08:00:00Z",
                         ).getTime(),
+                        canPlay: true,
                       },
                     ],
                     indexCursor: 5,
@@ -1123,6 +1130,7 @@ TEST_RUNNER.run({
                         premiereTimeMs: new Date(
                           "2024-01-08T08:00:00Z",
                         ).getTime(),
+                        canPlay: true,
                       },
                     ],
                     indexCursor: 2,
@@ -1243,6 +1251,7 @@ TEST_RUNNER.run({
                     resolution: "1920x1080",
                     videoDurationSec: 2 * 60 * 60 + 34,
                     premiereTimeMs: new Date("2024-01-01T00:00:00Z").getTime(),
+                    canPlay: true,
                   },
                 ],
               };
@@ -1314,6 +1323,7 @@ TEST_RUNNER.run({
                     resolution: "1920x1080",
                     videoDurationSec: 2 * 60 * 60 + 15 * 60 + 10,
                     premiereTimeMs: new Date("2024-02-10T10:00:00Z").getTime(),
+                    canPlay: false,
                   },
                 ],
               };
@@ -1403,6 +1413,7 @@ TEST_RUNNER.run({
                     resolution: "1920x1080",
                     videoDurationSec: 2 * 60 * 60 + 20 * 60 + 34,
                     premiereTimeMs: new Date("2024-01-01T00:00:00Z").getTime(),
+                    canPlay: true,
                   },
                   rewatching: true,
                 };
@@ -1422,6 +1433,7 @@ TEST_RUNNER.run({
                         premiereTimeMs: new Date(
                           "2024-01-01T00:00:00Z",
                         ).getTime(),
+                        canPlay: true,
                       },
                     ],
                   };
@@ -1498,7 +1510,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "Desktop_WaitingForTheOnlyEpisodeToPremiere";
+      public name = "Desktop_TheOnlyEpisodeCannotPlay";
       private cut: SeasonDetailsPage;
       public async execute() {
         // Prepare
@@ -1544,6 +1556,7 @@ TEST_RUNNER.run({
                     resolution: "1920x1080",
                     videoDurationSec: 2 * 60 * 60 + 20 * 60 + 34,
                     premiereTimeMs: new Date("2024-02-10T00:00:00Z").getTime(),
+                    canPlay: false,
                   },
                   rewatching: true,
                 };
@@ -1563,6 +1576,7 @@ TEST_RUNNER.run({
                         premiereTimeMs: new Date(
                           "2024-02-10T00:00:00Z",
                         ).getTime(),
+                        canPlay: false,
                       },
                     ],
                   };

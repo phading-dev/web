@@ -67,6 +67,7 @@ export class SeasonDetailsPageMock extends SeasonDetailsPage {
                   resolution: "1920x1080",
                   videoDurationSec: 24 * 60,
                   premiereTimeMs: new Date("2024-01-01T00:00:00Z").getTime(),
+                  canPlay: true,
                 },
                 rewatching: false,
               };
@@ -86,6 +87,7 @@ export class SeasonDetailsPageMock extends SeasonDetailsPage {
                       premiereTimeMs: new Date(
                         "2024-01-01T00:00:00Z",
                       ).getTime(),
+                      canPlay: true,
                     },
                     {
                       episodeId: "episode2",
@@ -96,6 +98,7 @@ export class SeasonDetailsPageMock extends SeasonDetailsPage {
                       premiereTimeMs: new Date(
                         "2024-01-08T08:00:00Z",
                       ).getTime(),
+                      canPlay: true,
                     },
                   ],
                 };

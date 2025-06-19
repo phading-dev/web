@@ -88,6 +88,7 @@ TEST_RUNNER.run({
                           episodeId: "episode1",
                           name: "Episode 1",
                           videoDurationSec: 3700,
+                          canPlay: true,
                         },
                       },
                     } as GetEpisodeWithSeasonSummaryResponse;
@@ -105,6 +106,7 @@ TEST_RUNNER.run({
                           episodeId: "episode2",
                           name: "Episode 2",
                           videoDurationSec: 3890,
+                          canPlay: true,
                         },
                       },
                     } as GetEpisodeWithSeasonSummaryResponse;
@@ -129,6 +131,7 @@ TEST_RUNNER.run({
                           episodeId: "episode1",
                           name: "The Fall of Shiganshina",
                           videoDurationSec: 2700,
+                          canPlay: true,
                         },
                       },
                     } as GetEpisodeWithSeasonSummaryResponse;
@@ -146,6 +149,25 @@ TEST_RUNNER.run({
                           episodeId: "episode2",
                           name: "The Beast Titan",
                           videoDurationSec: 2700,
+                          canPlay: true,
+                        },
+                      },
+                    } as GetEpisodeWithSeasonSummaryResponse;
+                  } else if (request.body.episodeId === "episode3") {
+                    return {
+                      summary: {
+                        season: {
+                          seasonId: "season2",
+                          name: "Attack on Titan",
+                          grade: 209,
+                          ratingsCount: 54321,
+                          averageRating: 5,
+                        },
+                        episode: {
+                          episodeId: "episode3",
+                          name: "The War Hammer Titan",
+                          videoDurationSec: 2700,
+                          canPlay: false,
                         },
                       },
                     } as GetEpisodeWithSeasonSummaryResponse;
@@ -229,8 +251,8 @@ TEST_RUNNER.run({
         response = {
           sessions: [
             {
-              seasonId: "season3", // Not found
-              episodeId: "episode1",
+              seasonId: "season2",
+              episodeId: "episode3", // Cannot play
               date: "2023-10-09",
               latestWatchedVideoTimeMs: 1234000,
             },

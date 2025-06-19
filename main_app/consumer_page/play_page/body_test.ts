@@ -109,6 +109,7 @@ let EPISODE_WITH_SEASON_SUMMARY_RESPONSE: GetEpisodeWithSeasonSummaryResponse =
         name: "Episode 1",
         index: 1,
         premiereTimeMs: new Date("2024-01-01T08:00:00Z").getTime(),
+        canPlay: true,
       },
     },
   };
@@ -120,6 +121,19 @@ let NEXT_EPISODE_RESPONSE: ListEpisodesResponse = {
       name: "Episode 2",
       videoDurationSec: 3600,
       premiereTimeMs: new Date("2024-01-08T08:00:00Z").getTime(),
+      canPlay: true,
+    },
+  ],
+};
+
+let NEXT_EPISODE_CANNOT_PLAY_RESPONSE: ListEpisodesResponse = {
+  episodes: [
+    {
+      episodeId: "episode2",
+      name: "Episode 2",
+      videoDurationSec: 3600,
+      premiereTimeMs: new Date("2024-01-08T08:00:00Z").getTime(),
+      canPlay: false,
     },
   ],
 };
@@ -667,6 +681,63 @@ TEST_RUNNER.run({
           path.join(__dirname, "/play_page_desktop_next_episode.png"),
           path.join(__dirname, "/golden/play_page_desktop_next_episode.png"),
           path.join(__dirname, "/play_page_desktop_next_episode_diff.png"),
+        );
+      }
+      public async tearDown() {
+        await mouseMove(-1, -1, 1);
+        this.cut.remove();
+      }
+    })(),
+    new (class {
+      public name = "WithNextEpisodeCannotPlay";
+      private cut: PlayPage;
+      public async execute() {
+        // Prepare
+        await setDesktopView();
+        let serviceClientMock = new PlayPageServiceClientMock();
+        serviceClientMock.listEpisodesResponse =
+          NEXT_EPISODE_CANNOT_PLAY_RESPONSE;
+        this.cut = createPlayPage(
+          serviceClientMock,
+          () => new Date("2024-02-01T08:00:00Z"),
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
+        await new Promise<void>((resolve) =>
+          this.cut.player.val.once("metadataLoaded", resolve),
+        );
+        this.cut.player.val.showInfoButton.val.click();
+        await mouseMove(100, 100, 1);
+
+        // Verify
+        assertThat(
+          serviceClientMock.getLatestWatchedVideoTimeOfEpisodeRequestBodies,
+          isUnorderedArray([
+            eqMessage(
+              {
+                seasonId: "season1",
+                episodeId: "episode1",
+              },
+              GET_LATEST_WATCHED_VIDEO_TIME_OF_EPISODE_REQUEST_BODY,
+            ),
+          ]),
+          "GetLatestWatchedVideoTimeOfEpisodeRequestBodies",
+        );
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/play_page_desktop_next_episode_not_premiered.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/play_page_desktop_next_episode_not_premiered.png",
+          ),
+          path.join(
+            __dirname,
+            "/play_page_desktop_next_episode_not_premiered_diff.png",
+          ),
         );
       }
       public async tearDown() {

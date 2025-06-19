@@ -863,7 +863,7 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "TabletView_PublishedWithFuturePremiere_EditIndex_EditPublishedState";
+        "TabletView_PublishedButCannotPlay_EditIndex_EditPublishedState";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -875,7 +875,8 @@ TEST_RUNNER.run({
             episodeName:
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.PUBLISHED,
-            premiereTimeMs: new Date("2023-10-02T00:00:00Z").getTime(),
+            premiereTimeMs: new Date("2023-10-01T00:00:00Z").getTime(),
+            canPlay: false,
             episodeIndex: 1,
             totalPublishedEpisodes: 12,
             videoContainerCached: {
@@ -985,7 +986,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "TabletView_PublishedWithPastPremiereAndPendingTracks";
+      public name = "TabletView_PublishedAndCanPlayAndPendingTracks";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -998,6 +999,7 @@ TEST_RUNNER.run({
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.PUBLISHED,
             premiereTimeMs: new Date("2023-10-01T00:00:00Z").getTime(),
+            canPlay: true,
             episodeIndex: 1,
             totalPublishedEpisodes: 12,
             videoContainerCached: {

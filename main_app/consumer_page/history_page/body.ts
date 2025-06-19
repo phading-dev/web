@@ -175,7 +175,7 @@ export class HistoryPage extends EventEmitter {
 
     response.sessions.forEach((session, i) => {
       let summary = summaries[i];
-      if (!summary) {
+      if (!summary || !summary.episode.canPlay) {
         return;
       }
 

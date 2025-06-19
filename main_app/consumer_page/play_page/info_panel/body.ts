@@ -199,7 +199,7 @@ export class InfoPanel extends EventEmitter {
     this.seasonInfoButton.val.addEventListener("click", () =>
       this.emit("showDetails"),
     );
-    if (this.nextEpisodeButton.val) {
+    if (this.nextEpisode && this.nextEpisode.canPlay) {
       this.nextEpisodeButton.val.addEventListener("click", () => {
         this.emit("play", this.nextEpisode.episodeId);
       });
@@ -210,8 +210,6 @@ export class InfoPanel extends EventEmitter {
     if (!this.nextEpisode) {
       return [];
     } else {
-      let hasPremiered =
-        this.nextEpisode.premiereTimeMs <= this.nowDate.getTime();
       let continueTimeMs = this.nextEpisodeWatchedTimeMs ?? 0;
       return [
         E.div(
@@ -228,14 +226,14 @@ export class InfoPanel extends EventEmitter {
           this.nextEpisodeButton,
           {
             class: "info-panel-next-episode",
-            style: `cursor: ${hasPremiered ? "pointer" : "default"}; border: .2rem solid ${hasPremiered ? SCHEME.primary1 : SCHEME.neutral2}; border-radius: .5rem; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem; padding: 1rem;`,
+            style: `cursor: ${this.nextEpisode.canPlay ? "pointer" : "default"}; border: .2rem solid ${this.nextEpisode.canPlay ? SCHEME.primary1 : SCHEME.neutral2}; border-radius: .5rem; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem; padding: 1rem;`,
           },
           E.div(
             {
               class: "info-panel-next-episode-icon",
               style: `flex: 0 0 auto; width: ${ICON_L}rem; height: ${ICON_L}rem;`,
             },
-            hasPremiered
+            this.nextEpisode.canPlay
               ? createPlayIcon(SCHEME.neutral1)
               : createClockIcon(SCHEME.neutral1),
           ),
@@ -251,7 +249,7 @@ export class InfoPanel extends EventEmitter {
               },
               E.text(this.nextEpisode.name),
             ),
-            hasPremiered
+            this.nextEpisode.canPlay
               ? E.div(
                   {
                     class: "info-panel-next-episode-progress-line",

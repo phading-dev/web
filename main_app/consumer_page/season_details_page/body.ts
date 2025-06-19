@@ -190,8 +190,6 @@ export class SeasonDetailsPage extends EventEmitter {
     this.prevIndexCursor = prevIndexCursor;
     this.nextIndexCursor = nextIndexCursor;
     let nowDate = this.getNowDate();
-    let continueEpisodePremiered =
-      continueEpisode.premiereTimeMs <= nowDate.getTime();
     let newPricingStartingText: string;
     if (
       seasonDetails.nextGrade &&
@@ -264,14 +262,14 @@ export class SeasonDetailsPage extends EventEmitter {
               this.continueEpisodeButton,
               {
                 class: "season-details-continue-episode",
-                style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 2rem; padding: 2rem; border-radius: 1rem; border: .2rem solid ${continueEpisodePremiered ? SCHEME.primary1 : SCHEME.neutral2}; cursor: ${continueEpisodePremiered ? "pointer" : "default"};`,
+                style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 2rem; padding: 2rem; border-radius: 1rem; border: .2rem solid ${continueEpisode.canPlay ? SCHEME.primary1 : SCHEME.neutral2}; cursor: ${continueEpisode.canPlay ? "pointer" : "default"};`,
               },
               E.div(
                 {
                   class: "season-details-continue-episode-icon",
                   style: `flex: 0 0 auto; width: ${ICON_XL}rem; height: ${ICON_XL}rem;`,
                 },
-                continueEpisodePremiered
+                continueEpisode.canPlay
                   ? rewatching
                     ? createReplayIcon(SCHEME.neutral1)
                     : createPlayIcon(SCHEME.neutral1)
@@ -295,7 +293,7 @@ export class SeasonDetailsPage extends EventEmitter {
                     style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
                   },
                   E.text(
-                    `${continueEpisodePremiered ? LOCALIZED_TEXT.episodePremieredOn + formatPremieredTime(continueEpisode.premiereTimeMs) : LOCALIZED_TEXT.episodePremieresAt + formatUpcomingPremiereTime(continueEpisode.premiereTimeMs)}`,
+                    `${continueEpisode.canPlay ? LOCALIZED_TEXT.episodePremieredOn + formatPremieredTime(continueEpisode.premiereTimeMs) : LOCALIZED_TEXT.episodePremieresAt + formatUpcomingPremiereTime(continueEpisode.premiereTimeMs)}`,
                   ),
                 ),
                 E.div(
@@ -556,7 +554,7 @@ export class SeasonDetailsPage extends EventEmitter {
     this.hideLoadMorePrevButtonIfNoMore();
     this.hideLoadMoreNextButtonIfNoMore();
 
-    if (continueEpisodePremiered) {
+    if (continueEpisode.canPlay) {
       this.continueEpisodeButton.val.addEventListener("click", () => {
         this.emit("play", this.seasonId, continueEpisode.episodeId);
       });
@@ -678,20 +676,19 @@ export class SeasonDetailsPage extends EventEmitter {
 
   private createEpisodeItem(episode: Episode): HTMLDivElement {
     let nowDate = this.getNowDate();
-    let hasPremiered = episode.premiereTimeMs <= nowDate.getTime();
     let progressIcon = new Ref<HTMLDivElement>();
     let continueAtText = new Ref<Text>();
     let body = E.div(
       {
         class: "season-details-episode-item",
-        style: `padding: 1rem 1.5rem; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: 1.5rem; align-items: center; cursor: ${hasPremiered ? "pointer" : "default"};`,
+        style: `padding: 1rem 1.5rem; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: 1.5rem; align-items: center; cursor: ${episode.canPlay ? "pointer" : "default"};`,
       },
       E.div(
         {
           class: "season-details-episode-item-icon",
           style: `flex: 0 0 auto; width: ${ICON_L}rem; height: ${ICON_L}rem;`,
         },
-        hasPremiered
+        episode.canPlay
           ? createPlayIcon(SCHEME.neutral1)
           : createClockIcon(SCHEME.neutral1),
       ),
@@ -707,7 +704,7 @@ export class SeasonDetailsPage extends EventEmitter {
           },
           E.text(episode.name),
         ),
-        hasPremiered
+        episode.canPlay
           ? E.div(
               {
                 class: "season-details-episode-progress-line",
@@ -747,7 +744,7 @@ export class SeasonDetailsPage extends EventEmitter {
       ),
     );
     this.episodeItems.push(body);
-    if (hasPremiered) {
+    if (episode.canPlay) {
       this.getContinueTimeMsForEpisode(
         episode.episodeId,
         episode.videoDurationSec,

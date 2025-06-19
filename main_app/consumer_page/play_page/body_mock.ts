@@ -59,6 +59,7 @@ let EPISODE_WITH_SEASON_SUMMARY_RESPONSE: GetEpisodeWithSeasonSummaryResponse =
         name: "Episode 1",
         index: 1,
         premiereTimeMs: new Date("2024-01-01T08:00:00Z").getTime(),
+        canPlay: true,
       },
     },
   };
