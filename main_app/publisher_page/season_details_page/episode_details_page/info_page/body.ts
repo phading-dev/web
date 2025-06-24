@@ -13,9 +13,9 @@ import { createUploadIcon } from "../../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../../common/navigation_bar";
 import {
-  PAGE_LARGE_TOP_DOWN_CARD_STYLE,
-  PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
-} from "../../../../../common/page_style";
+  PAGE_MAX_WIDTH_L,
+  ePageWithTopDownCard,
+} from "../../../../../common/page_elements";
 import {
   FONT_L,
   FONT_M,
@@ -74,6 +74,7 @@ export class InfoPage extends EventEmitter {
     12 * 60 * 60 * 1000;
 
   public body: HTMLElement;
+  private card = new Ref<HTMLDivElement>();
   public backButton = new Ref<SimpleIconButton>();
   public episodeNameButton = new Ref<HTMLDivElement>();
   public episodeIndexButton = new Ref<HTMLDivElement>();
@@ -89,10 +90,10 @@ export class InfoPage extends EventEmitter {
     public episodeId: string,
   ) {
     super();
-    this.body = E.div({
-      class: "episode-details-info-page",
-      style: PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
-    });
+    this.body = ePageWithTopDownCard(
+      this.card,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + 1}rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
+    );
     this.load();
   }
 
@@ -103,90 +104,84 @@ export class InfoPage extends EventEmitter {
         episodeId: this.episodeId,
       }),
     );
-    this.body.append(
+    this.card.val.append(
+      assign(this.backButton, createBackButton()).body,
       E.div(
         {
-          class: "episode-details-info-card",
-          style: `${PAGE_LARGE_TOP_DOWN_CARD_STYLE} padding: ${ICON_BUTTON_L + 1}rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap; position: relative;`,
+          class: "episode-details-info-card-season-title",
+          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
         },
-        assign(this.backButton, createBackButton()).body,
-        E.div(
-          {
-            class: "episode-details-info-card-season-title",
-            style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(`${episode.seasonName}`),
-        ),
-        E.div({
-          style: `flex: 0 0 auto; height: 2rem;`,
-        }),
-        assign(
-          this.episodeNameButton,
-          eColumnBoxWithArrow([
-            eLabelAndText(
-              LOCALIZED_TEXT.seasonEpisodeNameLabel,
-              episode.episodeName,
-            ),
-          ]),
-        ),
-        ...(episode.episodeIndex
-          ? [
-              assign(
-                this.episodeIndexButton,
-                eColumnBoxWithArrow(
-                  [
-                    E.div(
-                      {
-                        class: "episode-details-episode-index",
-                        style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                      },
-                      E.text(
-                        `${LOCALIZED_TEXT.seasonEpisodeIndex[0]}${episode.episodeIndex}${LOCALIZED_TEXT.seasonEpisodeIndex[1]}${episode.totalPublishedEpisodes}${LOCALIZED_TEXT.seasonEpisodeIndex[2]}`,
-                      ),
-                    ),
-                    E.div(
-                      {
-                        class: "episode-details-episode-index-footer",
-                        style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
-                      },
-                      E.text(LOCALIZED_TEXT.seasonEpisodeIndexFooter),
-                    ),
-                  ],
-                  {
-                    linesGap: 1,
-                    customeStyle: `margin-top: 2rem;`,
-                  },
-                ),
-              ),
-            ]
-          : []),
-        E.div({
-          style: `flex: 0 0 auto; height: 2rem;`,
-        }),
-        this.eStateButton(episode),
-        E.div({
-          style: `flex: 0 0 auto; height: 3rem;`,
-        }),
-        E.div(
-          {
-            class: "episode-details-video-container-title",
-            style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(LOCALIZED_TEXT.seasonEpisodeVideoTitle),
-        ),
-        E.div({
-          style: `flex: 0 0 auto; height: 2rem;`,
-        }),
-        this.eUploadBox(episode.videoContainer),
-        E.div({
-          style: `flex: 0 0 auto; height: 1rem;`,
-        }),
-        this.eUploadFooter(episode.videoContainer),
-        ...this.eVideoContainerState(episode.videoContainer),
-        ...this.eVideoPlayer(episode.videoUrl),
-        ...this.eEditTracksButton(episode.videoContainer),
-        ...this.eStorageFee(episode.videoContainer),
+        E.text(`${episode.seasonName}`),
       ),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      assign(
+        this.episodeNameButton,
+        eColumnBoxWithArrow([
+          eLabelAndText(
+            LOCALIZED_TEXT.seasonEpisodeNameLabel,
+            episode.episodeName,
+          ),
+        ]),
+      ),
+      ...(episode.episodeIndex
+        ? [
+            assign(
+              this.episodeIndexButton,
+              eColumnBoxWithArrow(
+                [
+                  E.div(
+                    {
+                      class: "episode-details-episode-index",
+                      style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                    },
+                    E.text(
+                      `${LOCALIZED_TEXT.seasonEpisodeIndex[0]}${episode.episodeIndex}${LOCALIZED_TEXT.seasonEpisodeIndex[1]}${episode.totalPublishedEpisodes}${LOCALIZED_TEXT.seasonEpisodeIndex[2]}`,
+                    ),
+                  ),
+                  E.div(
+                    {
+                      class: "episode-details-episode-index-footer",
+                      style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+                    },
+                    E.text(LOCALIZED_TEXT.seasonEpisodeIndexFooter),
+                  ),
+                ],
+                {
+                  linesGap: 1,
+                  customeStyle: `margin-top: 2rem;`,
+                },
+              ),
+            ),
+          ]
+        : []),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      this.eStateButton(episode),
+      E.div({
+        style: `flex: 0 0 auto; height: 3rem;`,
+      }),
+      E.div(
+        {
+          class: "episode-details-video-container-title",
+          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(LOCALIZED_TEXT.seasonEpisodeVideoTitle),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      this.eUploadBox(episode.videoContainer),
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+      this.eUploadFooter(episode.videoContainer),
+      ...this.eVideoContainerState(episode.videoContainer),
+      ...this.eVideoPlayer(episode.videoUrl),
+      ...this.eEditTracksButton(episode.videoContainer),
+      ...this.eStorageFee(episode.videoContainer),
     );
     this.backButton.val.on("action", () => this.emit("back"));
     this.episodeNameButton.val.addEventListener("click", () =>

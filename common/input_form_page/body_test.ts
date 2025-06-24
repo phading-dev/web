@@ -43,6 +43,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut = new InputFormPage<Response>(
+          "",
           "A title",
           [input.body],
           [input],
@@ -168,6 +169,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut = new InputFormPage<Response>(
+          "",
           "A title",
           [input.body],
           [input],
@@ -276,6 +278,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut = new InputFormPage<Response>(
+          "",
           "A title",
           [input.body],
           [input],
@@ -327,6 +330,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut = new InputFormPage<Response>(
+          "",
           "A title",
           inputs.map((input) => input.body),
           inputs,

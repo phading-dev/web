@@ -4,7 +4,7 @@ import { ValidationResult } from "../../../common/input_form_page/input_field";
 import { RadioOptionInput } from "../../../common/input_form_page/option_input";
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { OptionPill } from "../../../common/option_pills";
+import { OptionPill } from "../../../common/option_buttons";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
   MAX_EMAIL_LENGTH,
@@ -41,6 +41,7 @@ export class CreateAccountPage extends EventEmitter {
   public constructor(private serviceClient: WebServiceClient) {
     super();
     this.inputFormPage = new InputFormPage<CreateAccountResponse>(
+      "",
       LOCALIZED_TEXT.createAccountTitle,
       [
         assign(

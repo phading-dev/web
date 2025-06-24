@@ -196,21 +196,21 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let showDetailsId: string;
-        this.cut.on("showDetails", (id) => {
-          showDetailsId = id;
+        let viewDetailsId: string;
+        this.cut.on("viewDetails", (id) => {
+          viewDetailsId = id;
         });
 
         // Execute
         await mouseClick(100, 50);
 
         // Verify
-        assertThat(showDetailsId, eq("season8"), "showDetailsId");
+        assertThat(viewDetailsId, eq("season8"), "viewDetailsId");
 
         // Prepare
         let searchTarget: SearchTarget;
         let query: string;
-        this.cut.searchInput.val.on("search", (searchTarget_, query_) => {
+        this.cut.on("search", (searchTarget_, query_) => {
           searchTarget = searchTarget_;
           query = query_;
         });

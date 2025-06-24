@@ -65,6 +65,7 @@ export class PublishedPage extends EventEmitter {
       UpdateEpisodePremiereTimeResponse,
       UnpublishEpisodeResponse
     >(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       LOCALIZED_TEXT.publishedEpisodeTitle,
       [
         assign(
@@ -84,7 +85,6 @@ export class PublishedPage extends EventEmitter {
       ],
       [this.premiereTimeInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"))

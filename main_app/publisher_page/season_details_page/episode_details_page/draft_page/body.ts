@@ -75,6 +75,7 @@ export class DraftPage extends EventEmitter {
       PublishEpisodeResponse,
       DeleteEpisodeResponse
     >(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       LOCALIZED_TEXT.draftEpisodeTitle,
       [
         ...(errors.length > 0
@@ -98,7 +99,6 @@ export class DraftPage extends EventEmitter {
         this.premiereTimeInput.val,
       ],
       LOCALIZED_TEXT.publishButtonLabel,
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"))

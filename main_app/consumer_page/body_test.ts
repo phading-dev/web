@@ -30,7 +30,7 @@ normalizeBody();
 function createConsumerPage(): ConsumerPage {
   let nowDate = new Date("2023-10-10T00:00:00Z");
   return new ConsumerPage(
-    () => new HistoryPageMock(() => nowDate),
+    () => new HistoryPageMock(),
     () => new ListRecentPremieresPageMock(() => nowDate),
     () => new ListTopRatedPageMock(() => nowDate),
     () => new MultiSectionPageMock(() => nowDate),
@@ -138,7 +138,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.playPage.emit("showDetails", "season1");
+        this.cut.playPage.emit("viewDetails", "season1");
 
         // Verify
         assertThat(
@@ -198,7 +198,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.playPage.emit("showDetails", "season1");
+        this.cut.playPage.emit("viewDetails", "season1");
         this.cut.seasonDetailsPage.emit("back");
 
         // Verify
@@ -219,7 +219,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.multiSectionPage.emit("showDetails", "season2");
+        this.cut.multiSectionPage.emit("viewDetails", "season2");
 
         // Verify
         assertThat(
@@ -289,7 +289,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.listRecentPremieresPage.emit("showDetails", "season3");
+        this.cut.listRecentPremieresPage.emit("viewDetails", "season3");
 
         // Verify
         assertThat(
@@ -360,7 +360,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.listTopRatedPage.emit("showDetails", "season4");
+        this.cut.listTopRatedPage.emit("viewDetails", "season4");
 
         // Verify
         assertThat(
@@ -499,7 +499,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.searchSeasonsPage.emit("showDetails", "season1");
+        this.cut.searchSeasonsPage.emit("viewDetails", "season1");
 
         // Verify
         assertThat(
@@ -608,7 +608,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.publisherShowroomPage.emit("showDetails", "season2");
+        this.cut.publisherShowroomPage.emit("viewDetails", "season2");
 
         // Verify
         assertThat(
@@ -695,7 +695,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.searchSeasonsPage.emit("showDetails", "season3");
+        this.cut.searchSeasonsPage.emit("viewDetails", "season3");
         this.cut.seasonDetailsPage.emit("showroom", "publisher2");
 
         // Verify
@@ -789,7 +789,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.playPage.emit("showDetails", "season1");
+        this.cut.playPage.emit("viewDetails", "season1");
         this.cut.seasonDetailsPage.emit("back");
 
         // Verify

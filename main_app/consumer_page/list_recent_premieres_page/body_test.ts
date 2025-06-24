@@ -196,16 +196,16 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let showDetailsId: string;
-        this.cut.on("showDetails", (id) => {
-          showDetailsId = id;
+        let viewDetailsId: string;
+        this.cut.on("viewDetails", (id) => {
+          viewDetailsId = id;
         });
 
         // Execute
         await mouseClick(100, 50);
 
         // Verify
-        assertThat(showDetailsId, eq("season8"), "showDetailsId");
+        assertThat(viewDetailsId, eq("season8"), "viewDetailsId");
       }
       public async tearDown() {
         await mouseMove(-1, -1, 1);

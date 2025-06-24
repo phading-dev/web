@@ -4,9 +4,9 @@ import { SCHEME } from "../../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
-  PAGE_LARGE_TOP_DOWN_CARD_STYLE,
-  PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
-} from "../../../../common/page_style";
+  PAGE_MAX_WIDTH_L,
+  ePageWithTopDownCard,
+} from "../../../../common/page_elements";
 import { AVATAR_M, FONT_M } from "../../../../common/sizes";
 import {
   eColumnBoxWithArrow,
@@ -45,6 +45,7 @@ export class InfoPage extends EventEmitter {
   }
 
   public body: HTMLDivElement;
+  private card = new Ref<HTMLDivElement>();
   public avatarContainer = new Ref<HTMLDivElement>();
   private avatarUpdateHint = new Ref<HTMLDivElement>();
   public accountInfo = new Ref<HTMLDivElement>();
@@ -55,10 +56,10 @@ export class InfoPage extends EventEmitter {
 
   public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.body = E.div({
-      class: "account-info",
-      style: PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
-    });
+    this.body = ePageWithTopDownCard(
+      this.card,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: 2rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+    );
     this.load();
   }
 
@@ -67,102 +68,96 @@ export class InfoPage extends EventEmitter {
       newGetAccountAndUserRequest({}),
     );
 
-    this.body.append(
+    this.card.val.append(
+      E.divRef(
+        this.avatarContainer,
+        {
+          class: "account-info-avatar",
+          style: `align-self: center; position: relative; height: ${AVATAR_M}rem; width: ${AVATAR_M}rem; border-radius: ${AVATAR_M}rem; overflow: hidden; cursor: pointer;`,
+        },
+        E.image({
+          class: "account-info-avatar-image",
+          style: `height: 100%; width: 100%;`,
+          src: response.account.avatarLargeUrl,
+        }),
+        E.divRef(
+          this.avatarUpdateHint,
+          {
+            class: "account-info-avatar-update-hint-background",
+            style: `position: absolute; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; bottom: 0; left: 0; height: 0; width: 100%; transition: height .2s; overflow: hidden; background-color: ${SCHEME.neutral4Translucent};`,
+          },
+          E.div(
+            {
+              class: `account-info-avatar-update-hint-label`,
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.changeAvatarLabel),
+          ),
+        ),
+      ),
+      assign(
+        this.accountInfo,
+        eColumnBoxWithArrow([
+          eLabelAndText(
+            LOCALIZED_TEXT.naturalNameLabel,
+            response.account.naturalName,
+          ),
+          eLabelAndText(
+            LOCALIZED_TEXT.contactEmailLabel,
+            response.account.contactEmail,
+          ),
+          eLabelAndText(
+            LOCALIZED_TEXT.accountDescriptionLabel,
+            response.account.description,
+          ),
+        ]),
+      ),
+      eColumnBoxWithArrow(
+        [
+          eLabelAndText(
+            LOCALIZED_TEXT.usernameLabel,
+            response.account.username,
+          ),
+        ],
+        {
+          clickable: false,
+        },
+      ),
+      assign(
+        this.password,
+        eColumnBoxWithArrow([
+          eLabelAndText(LOCALIZED_TEXT.passwordLabel, "********"),
+        ]),
+      ),
+      assign(
+        this.recoveryEmail,
+        eColumnBoxWithArrow([
+          eLabelAndText(
+            LOCALIZED_TEXT.recoveryEmailLabel,
+            response.account.recoveryEmail,
+          ),
+        ]),
+      ),
       E.div(
         {
-          class: "account-info-card",
-          style: `${PAGE_LARGE_TOP_DOWN_CARD_STYLE} padding: 2rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+          class: "account-info-buttons",
+          style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: wrap row; justify-content: center; align-items: center; column-gap: 10rem; row-gap: 2rem;`,
         },
         E.divRef(
-          this.avatarContainer,
+          this.chooseAccountButton,
           {
-            class: "account-info-avatar",
-            style: `align-self: center; position: relative; height: ${AVATAR_M}rem; width: ${AVATAR_M}rem; border-radius: ${AVATAR_M}rem; overflow: hidden; cursor: pointer;`,
+            class: "account-info-switch-account",
+            style: `${OUTLINE_BUTTON_STYLE} color: ${SCHEME.neutral0}; border-color: ${SCHEME.neutral1};`,
           },
-          E.image({
-            class: "account-info-avatar-image",
-            style: `height: 100%; width: 100%;`,
-            src: response.account.avatarLargeUrl,
-          }),
-          E.divRef(
-            this.avatarUpdateHint,
-            {
-              class: "account-info-avatar-update-hint-background",
-              style: `position: absolute; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; bottom: 0; left: 0; height: 0; width: 100%; transition: height .2s; overflow: hidden; background-color: ${SCHEME.neutral4Translucent};`,
-            },
-            E.div(
-              {
-                class: `account-info-avatar-update-hint-label`,
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-              },
-              E.text(LOCALIZED_TEXT.changeAvatarLabel),
-            ),
-          ),
+          E.text(LOCALIZED_TEXT.chooseAccountButtonLabel),
         ),
-        assign(
-          this.accountInfo,
-          eColumnBoxWithArrow([
-            eLabelAndText(
-              LOCALIZED_TEXT.naturalNameLabel,
-              response.account.naturalName,
-            ),
-            eLabelAndText(
-              LOCALIZED_TEXT.contactEmailLabel,
-              response.account.contactEmail,
-            ),
-            eLabelAndText(
-              LOCALIZED_TEXT.accountDescriptionLabel,
-              response.account.description,
-            ),
-          ]),
-        ),
-        eColumnBoxWithArrow(
-          [
-            eLabelAndText(
-              LOCALIZED_TEXT.usernameLabel,
-              response.account.username,
-            ),
-          ],
+        E.divRef(
+          this.signOutButton,
           {
-            clickable: false,
+            class: "account-info-sign-out",
+            style: `${OUTLINE_BUTTON_STYLE} color: ${SCHEME.neutral0}; border-color: ${SCHEME.neutral1};`,
           },
-        ),
-        assign(
-          this.password,
-          eColumnBoxWithArrow([
-            eLabelAndText(LOCALIZED_TEXT.passwordLabel, "********"),
-          ]),
-        ),
-        assign(
-          this.recoveryEmail,
-          eColumnBoxWithArrow([
-            eLabelAndText(
-              LOCALIZED_TEXT.recoveryEmailLabel,
-              response.account.recoveryEmail,
-            ),
-          ]),
-        ),
-        E.div(
-          {
-            class: "account-info-buttons",
-            style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: wrap row; justify-content: center; align-items: center; column-gap: 10rem; row-gap: 2rem;`,
-          },
-          E.divRef(
-            this.chooseAccountButton,
-            {
-              class: "account-info-switch-account",
-              style: `${OUTLINE_BUTTON_STYLE} color: ${SCHEME.neutral0}; border-color: ${SCHEME.neutral1};`,
-            },
-            E.text(LOCALIZED_TEXT.chooseAccountButtonLabel),
-          ),
-          E.divRef(
-            this.signOutButton,
-            {
-              class: "account-info-sign-out",
-              style: `${OUTLINE_BUTTON_STYLE} color: ${SCHEME.neutral0}; border-color: ${SCHEME.neutral1};`,
-            },
-            E.text(LOCALIZED_TEXT.signOutButtonLabel),
-          ),
+          E.text(LOCALIZED_TEXT.signOutButtonLabel),
         ),
       ),
     );

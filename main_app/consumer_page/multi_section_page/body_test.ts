@@ -31,7 +31,7 @@ TEST_RUNNER.run({
   name: "MultiSectionPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "OneForEachSection_ClickToPlay_ClickToShowDetails";
+      public name = "OneForEachSection_ClickToPlay_ClickToviewDetails";
       private cut: MultiSectionPage;
       public async execute() {
         // Prepare
@@ -151,16 +151,16 @@ TEST_RUNNER.run({
         assertThat(playEpisodeId, eq("episode1"), "playEpisodeId");
 
         // Prepare
-        let showDetailsId: string;
-        this.cut.on("showDetails", (id) => {
-          showDetailsId = id;
+        let viewDetailsId: string;
+        this.cut.on("viewDetails", (id) => {
+          viewDetailsId = id;
         });
 
         // Execute
         await mouseClick(100, 450);
 
         // Verify
-        assertThat(showDetailsId, eq("season2"), "showDetailsId");
+        assertThat(viewDetailsId, eq("season2"), "viewDetailsId");
       }
       public async tearDown() {
         await mouseMove(-1, -1, 1);

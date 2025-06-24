@@ -6,7 +6,6 @@ import {
   createHistogramIcon,
   createListIcon,
   createPlusIcon,
-  createSearchIcon,
 } from "../../common/icons";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
 import {
@@ -14,7 +13,6 @@ import {
   eNavigationItemRef,
 } from "../../common/navigation_bar";
 import { TabSwitcher } from "../../common/page_navigator";
-import { PAGE_CENTER_CARD_BACKGROUND_STYLE } from "../../common/page_style";
 import { FONT_L } from "../../common/sizes";
 import { CreateSeasonPage } from "./create_season_page/body";
 import { ListPage } from "./list_page/body";
@@ -43,7 +41,6 @@ export class PublisherPage extends EventEmitter {
 
   private navigationBar = new Ref<HTMLDivElement>();
   public listButton = new Ref<HTMLDivElement>();
-  public searchButton = new Ref<HTMLDivElement>();
   public createSeasonButton = new Ref<HTMLDivElement>();
   public statsButton = new Ref<HTMLDivElement>();
   public accountButton = new Ref<HTMLDivElement>();
@@ -73,11 +70,6 @@ export class PublisherPage extends EventEmitter {
           LOCALIZED_TEXT.catalogLabel,
         ),
         eNavigationItemRef(
-          this.searchButton,
-          createSearchIcon(SCHEME.neutral1),
-          LOCALIZED_TEXT.searchLabel,
-        ),
-        eNavigationItemRef(
           this.createSeasonButton,
           createPlusIcon(SCHEME.neutral1),
           LOCALIZED_TEXT.createSeasonLabel,
@@ -98,14 +90,6 @@ export class PublisherPage extends EventEmitter {
       this.pushRl({
         list: {
           seasonState: SeasonState.PUBLISHED,
-        },
-      });
-    });
-    this.searchButton.val.addEventListener("click", () => {
-      this.pushRl({
-        search: {
-          seasonState: SeasonState.PUBLISHED,
-          query: "",
         },
       });
     });
@@ -133,7 +117,7 @@ export class PublisherPage extends EventEmitter {
     if (!rl) {
       rl = {};
     }
-    if (rl.search && !rl.search.seasonState) {
+    if (rl.search && (!rl.search.seasonState || !rl.search.query)) {
       rl.search = undefined;
     }
     if (
@@ -195,7 +179,7 @@ export class PublisherPage extends EventEmitter {
 
   private addCreateSeasonPage(): void {
     this.createSeasonPage = this.createCreateSeasonPage().on(
-      "showSeason",
+      "viewSeason",
       (seasonId: string) => {
         this.pushRl({
           seasonDetails: {
@@ -214,7 +198,7 @@ export class PublisherPage extends EventEmitter {
 
   private addListPage(seasonState: SeasonState): void {
     this.listPage = this.createListPage(seasonState)
-      .on("showSeason", (seasonId: string) => {
+      .on("viewSeason", (seasonId: string) => {
         this.pushRl({
           seasonDetails: {
             seasonId,
@@ -225,6 +209,14 @@ export class PublisherPage extends EventEmitter {
         this.pushRl({
           list: {
             seasonState,
+          },
+        });
+      })
+      .on("searchSeasons", (seasonState, query) => {
+        this.pushRl({
+          search: {
+            seasonState,
+            query,
           },
         });
       });
@@ -238,7 +230,7 @@ export class PublisherPage extends EventEmitter {
 
   private addSearchPage(seasonState: SeasonState, query: string): void {
     this.searchPage = this.createSearchPage(seasonState, query)
-      .on("showSeason", (seasonId: string) => {
+      .on("viewSeason", (seasonId: string) => {
         this.pushRl({
           seasonDetails: {
             seasonId,
@@ -250,6 +242,13 @@ export class PublisherPage extends EventEmitter {
           search: {
             seasonState,
             query,
+          },
+        });
+      })
+      .on("listSeasons", (seasonState) => {
+        this.pushRl({
+          list: {
+            seasonState,
           },
         });
       });
@@ -278,7 +277,7 @@ export class PublisherPage extends EventEmitter {
   private addUsagePage(): void {
     this.usagePage = E.div(
       {
-        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
+        style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
       },
       E.text("Upcoming"),
     );

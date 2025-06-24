@@ -21,9 +21,9 @@ import { BASIC_INPUT_STYLE } from "../../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../../common/navigation_bar";
 import {
-  PAGE_CENTER_CARD_BACKGROUND_STYLE,
-  PAGE_LARGE_CENTER_CARD_STYLE,
-} from "../../../../../common/page_style";
+  PAGE_MAX_WIDTH_L,
+  ePageWithCenterForm,
+} from "../../../../../common/page_elements";
 import {
   FONT_L,
   FONT_M,
@@ -599,6 +599,7 @@ export class AudioTrackEditor extends EventEmitter {
           ).body,
         ),
       );
+      this.nameInput.val.addEventListener("keydown", (event) => event.preventDefault());
       this.nameInput.val.addEventListener("input", () => this.changeName());
       this.isDefaultToggleButton.val.addEventListener("click", () =>
         this.toggleDefaultValue(),
@@ -883,6 +884,7 @@ export class SubtitleTrackEditor extends EventEmitter {
           ).body,
         ),
       );
+      this.nameInput.val.addEventListener("keydown", (event) => event.preventDefault());
       this.nameInput.val.addEventListener("input", () => this.changeName());
       this.dropStagingButton.val.on("action", () => this.dropStaging());
     }
@@ -996,192 +998,185 @@ export class UpdateTracksPage extends EventEmitter {
     public videoContainer: VideoContainer,
   ) {
     super();
-    this.body = E.div(
-      {
-        class: "update-tracks-page",
-        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      },
+    this.body = ePageWithCenterForm(
+      new Ref(),
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; display: flex; flex-flow: column nowrap;`,
+      assign(this.backButton, createBackButton()).body,
       E.div(
         {
-          class: "update-tracks-card",
-          style: `${PAGE_LARGE_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
+          class: "update-tracks-title",
+          style: `align-self: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
         },
-        assign(this.backButton, createBackButton()).body,
-        E.div(
-          {
-            class: "update-tracks-title",
-            style: `align-self: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(LOCALIZED_TEXT.updateTracksTitle),
-        ),
-        ...(videoContainer.videos.length === 0
-          ? []
-          : [
-              E.div(
-                {
-                  class: "update-tracks-videos-title",
-                  style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeVideoTracksTitle),
-              ),
-              E.div(
-                {
-                  class: "update-tracks-videos-header",
-                  style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: baseline;`,
-                },
-                E.div(
-                  {
-                    class: "update-tracks-video-state",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
-                ),
-                E.div({
-                  style: `flex: 1 0 auto; width: 1rem;`,
-                }),
-                E.div(
-                  {
-                    class: "update-tracks-video-duration-sec",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackVideoDurationLabel),
-                ),
-                E.div({
-                  style: `flex: 1 0 auto; width: 1rem;`,
-                }),
-                E.div(
-                  {
-                    class: "update-tracks-video-resolution",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackVideoResolutionLabel),
-                ),
-                E.div({
-                  style: `flex: 0 0 auto; width: ${1 + ICON_BUTTON_M}rem;`,
-                }),
-              ),
-            ]),
-        ...videoContainer.videos.map((videoTrack) =>
-          this.createVideoTrackEditor(videoTrack),
-        ),
-        ...(videoContainer.audios.length === 0
-          ? []
-          : [
-              E.div(
-                {
-                  class: "update-tracks-audio-tracks-title",
-                  style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeAudioTracksTitle),
-              ),
-              E.div(
-                {
-                  class: "update-tracks-audio-tracks-header",
-                  style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: baseline;`,
-                },
-                E.div(
-                  {
-                    class: "update-tracks-audio-state",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
-                ),
-                E.div({
-                  style: `flex: 1 0 auto; width: 1rem;`,
-                }),
-                E.div(
-                  {
-                    class: "update-tracks-audio-name-label",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
-                ),
-                E.div({
-                  style: `flex: 1 0 auto; width: 1rem;`,
-                }),
-                E.div(
-                  {
-                    class: "update-tracks-audio-default-label",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultLabel),
-                ),
-                E.div({
-                  style: `flex: 0 0 auto; width: ${1.5 + ICON_BUTTON_M * 2}rem;`,
-                }),
-              ),
-            ]),
-        ...videoContainer.audios.map((audioTrack) =>
-          this.createAudioTrackEditor(audioTrack),
-        ),
-        ...(videoContainer.subtitles.length === 0
-          ? []
-          : [
-              E.div(
-                {
-                  class: "update-tracks-subtitle-tracks-title",
-                  style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeSubtitleTracksTitle),
-              ),
-              E.div(
-                {
-                  class: "update-tracks-subtitle-tracks-header",
-                  style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: baseline;`,
-                },
-                E.div(
-                  {
-                    class: "update-tracks-subtitle-state",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
-                ),
-                E.div({
-                  style: `flex: 1 0 auto; width: 1rem;`,
-                }),
-                E.div(
-                  {
-                    class: "update-tracks-subtitle-name-label",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                  },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
-                ),
-                E.div({
-                  style: `flex: 1 0 auto; width: ${1.5 + ICON_BUTTON_M * 2}rem;`,
-                }),
-              ),
-            ]),
-        ...videoContainer.subtitles.map((subtitleTrack) =>
-          this.createSubtitleTrackEditor(subtitleTrack),
-        ),
-        E.div({
-          style: `flex: 0 0 auto; height: 3rem;`,
-        }),
-        E.div(
-          {
-            class: "update-tracks-video-actions",
-            style: `display: flex; flex-flow: row-reverse wrap; gap: 2rem; align-items: center;`,
-          },
-          assign(
-            this.commitStagingButton,
-            new FilledBlockingButton<CommitEpisodeStagingDataResponse>().append(
-              E.text(LOCALIZED_TEXT.commitTrackChangesButtonLabel),
+        E.text(LOCALIZED_TEXT.updateTracksTitle),
+      ),
+      ...(videoContainer.videos.length === 0
+        ? []
+        : [
+            E.div(
+              {
+                class: "update-tracks-videos-title",
+                style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
+              },
+              E.text(LOCALIZED_TEXT.seasonEpisodeVideoTracksTitle),
             ),
-          ).body,
-          assign(
-            this.saveStagingButton,
-            new TextBlockingButton<SaveEpisodeStagingDataResponse>().append(
-              E.text(LOCALIZED_TEXT.saveTrackChangesButtonLabel),
+            E.div(
+              {
+                class: "update-tracks-videos-header",
+                style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: baseline;`,
+              },
+              E.div(
+                {
+                  class: "update-tracks-video-state",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
+              ),
+              E.div({
+                style: `flex: 1 0 auto; width: 1rem;`,
+              }),
+              E.div(
+                {
+                  class: "update-tracks-video-duration-sec",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeTrackVideoDurationLabel),
+              ),
+              E.div({
+                style: `flex: 1 0 auto; width: 1rem;`,
+              }),
+              E.div(
+                {
+                  class: "update-tracks-video-resolution",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeTrackVideoResolutionLabel),
+              ),
+              E.div({
+                style: `flex: 0 0 auto; width: ${1 + ICON_BUTTON_M}rem;`,
+              }),
             ),
-          ).body,
-          E.divRef(
-            this.actionError,
-            {
-              class: "update-tracks-action-error",
-              style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
-            },
-            E.text("1"),
+          ]),
+      ...videoContainer.videos.map((videoTrack) =>
+        this.createVideoTrackEditor(videoTrack),
+      ),
+      ...(videoContainer.audios.length === 0
+        ? []
+        : [
+            E.div(
+              {
+                class: "update-tracks-audio-tracks-title",
+                style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
+              },
+              E.text(LOCALIZED_TEXT.seasonEpisodeAudioTracksTitle),
+            ),
+            E.div(
+              {
+                class: "update-tracks-audio-tracks-header",
+                style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: baseline;`,
+              },
+              E.div(
+                {
+                  class: "update-tracks-audio-state",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
+              ),
+              E.div({
+                style: `flex: 1 0 auto; width: 1rem;`,
+              }),
+              E.div(
+                {
+                  class: "update-tracks-audio-name-label",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
+              ),
+              E.div({
+                style: `flex: 1 0 auto; width: 1rem;`,
+              }),
+              E.div(
+                {
+                  class: "update-tracks-audio-default-label",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultLabel),
+              ),
+              E.div({
+                style: `flex: 0 0 auto; width: ${1.5 + ICON_BUTTON_M * 2}rem;`,
+              }),
+            ),
+          ]),
+      ...videoContainer.audios.map((audioTrack) =>
+        this.createAudioTrackEditor(audioTrack),
+      ),
+      ...(videoContainer.subtitles.length === 0
+        ? []
+        : [
+            E.div(
+              {
+                class: "update-tracks-subtitle-tracks-title",
+                style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
+              },
+              E.text(LOCALIZED_TEXT.seasonEpisodeSubtitleTracksTitle),
+            ),
+            E.div(
+              {
+                class: "update-tracks-subtitle-tracks-header",
+                style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: baseline;`,
+              },
+              E.div(
+                {
+                  class: "update-tracks-subtitle-state",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
+              ),
+              E.div({
+                style: `flex: 1 0 auto; width: 1rem;`,
+              }),
+              E.div(
+                {
+                  class: "update-tracks-subtitle-name-label",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
+              ),
+              E.div({
+                style: `flex: 1 0 auto; width: ${1.5 + ICON_BUTTON_M * 2}rem;`,
+              }),
+            ),
+          ]),
+      ...videoContainer.subtitles.map((subtitleTrack) =>
+        this.createSubtitleTrackEditor(subtitleTrack),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 3rem;`,
+      }),
+      E.div(
+        {
+          class: "update-tracks-video-actions",
+          style: `display: flex; flex-flow: row-reverse wrap; gap: 2rem; align-items: center;`,
+        },
+        assign(
+          this.commitStagingButton,
+          new FilledBlockingButton<CommitEpisodeStagingDataResponse>().append(
+            E.text(LOCALIZED_TEXT.commitTrackChangesButtonLabel),
           ),
+        ).body,
+        assign(
+          this.saveStagingButton,
+          new TextBlockingButton<SaveEpisodeStagingDataResponse>().append(
+            E.text(LOCALIZED_TEXT.saveTrackChangesButtonLabel),
+          ),
+        ).body,
+        E.divRef(
+          this.actionError,
+          {
+            class: "update-tracks-action-error",
+            style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
+          },
+          E.text("1"),
         ),
       ),
     );

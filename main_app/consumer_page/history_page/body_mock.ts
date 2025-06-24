@@ -16,7 +16,7 @@ import { ClientRequestInterface } from "@selfage/service_descriptor/client_reque
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 export class HistoryPageMock extends HistoryPage {
-  public constructor(getNowDate: () => Date) {
+  public constructor() {
     super(
       new (class extends WebServiceClientMock {
         public async send(request: ClientRequestInterface<any>): Promise<any> {
@@ -69,7 +69,6 @@ export class HistoryPageMock extends HistoryPage {
           }
         }
       })(),
-      getNowDate,
     );
   }
 }

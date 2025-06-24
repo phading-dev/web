@@ -42,6 +42,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
   ) {
     super();
     this.inputFormPage = new InputFormPage(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       LOCALIZED_TEXT.updateAccountInfo,
       [
         assign(
@@ -87,7 +88,6 @@ export class UpdateAccountInfoPage extends EventEmitter {
         this.descriptionInput.val,
       ],
       LOCALIZED_TEXT.updateButtonLabel,
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .addPrimaryAction(

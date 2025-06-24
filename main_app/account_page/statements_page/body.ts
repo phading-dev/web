@@ -6,10 +6,7 @@ import { formatQuantity } from "../../../common/formatter/quantity";
 import { createArrowIcon, createCornerIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
-import {
-  PAGE_CENTER_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CENTER_CARD_STYLE,
-} from "../../../common/page_style";
+import { ePageWithTopDownCard } from "../../../common/page_elements";
 import {
   FONT_M,
   FONT_WEIGHT_600,
@@ -61,46 +58,38 @@ export class StatementsPage extends EventEmitter {
     );
     let endMonth = nowDate.clone().moveToFirstDayOfMonth().addMonths(-1);
     let startMonth = endMonth.clone().addMonths(-StatementsPage.INIT_MONTHS);
-    this.body = E.div(
-      {
-        class: "statements-page",
-        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      },
+    this.body = ePageWithTopDownCard(
+      new Ref(),
+      `padding: 1rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
       E.div(
         {
-          class: "statements-page-card",
-          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
+          class: "statements-page-title",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
         },
-        E.div(
-          {
-            class: "statements-page-title",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-          },
-          E.text(
-            canEarn
-              ? LOCALIZED_TEXT.earningsStatementsTitle
-              : LOCALIZED_TEXT.billingStatementsTitle,
-          ),
+        E.text(
+          canEarn
+            ? LOCALIZED_TEXT.earningsStatementsTitle
+            : LOCALIZED_TEXT.billingStatementsTitle,
         ),
-        E.div({
-          style: `height: 1rem;`,
-        }),
-        assign(
-          this.monthRangeInput,
-          DateRangeInput.create(
-            DateType.MONTH,
-            MAX_MONTH_RANGE,
-            `width: 100%;`,
-          ).show(),
-        ).body,
-        E.div({
-          style: `height: 1.5rem;`,
-        }),
-        E.divRef(this.statementsList, {
-          class: "statements-page-list",
-          style: `display: flex; flex-flow: column nowrap; width: 100%; gap: 1rem;`,
-        }),
       ),
+      E.div({
+        style: `height: 1rem;`,
+      }),
+      assign(
+        this.monthRangeInput,
+        DateRangeInput.create(
+          DateType.MONTH,
+          MAX_MONTH_RANGE,
+          `width: 100%;`,
+        ).show(),
+      ).body,
+      E.div({
+        style: `height: 1.5rem;`,
+      }),
+      E.divRef(this.statementsList, {
+        class: "statements-page-list",
+        style: `display: flex; flex-flow: column nowrap; width: 100%; gap: 1rem;`,
+      }),
     );
     this.monthRangeInput.val.setValues(
       startMonth.toLocalMonthISOString(),
@@ -186,7 +175,7 @@ export class StatementsPage extends EventEmitter {
           statementLine,
           {
             class: "statements-page-statement",
-            style: `padding: 0 1rem; width: 100%; box-sizing: border-box; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem; cursor: pointer;`,
+            style: `width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem; cursor: pointer;`,
           },
           E.divRef(
             expandIcon,
@@ -223,7 +212,7 @@ export class StatementsPage extends EventEmitter {
           lineItemList,
           {
             class: "statements-page-line-item-list",
-            style: `padding: 1rem 1rem 0 2rem; width: 100%; box-sizing: border-box; flex-flow: column nowrap; gap: 1rem; transition: height .2s; overflow: hidden;`,
+            style: `padding: 1rem 0 0 1rem; width: 100%; box-sizing: border-box; flex-flow: column nowrap; gap: 1rem; transition: height .2s; overflow: hidden;`,
           },
           ...statement.items.map((item) => {
             return E.div(
@@ -234,7 +223,7 @@ export class StatementsPage extends EventEmitter {
               E.div(
                 {
                   class: "statements-page-line-item-leading-line",
-                  style: `height: ${ICON_XS}rem; padding: 0 0 .6rem 0;`,
+                  style: `height: ${ICON_XS}rem; padding-bottom: .6rem;`,
                 },
                 createCornerIcon(SCHEME.neutral1),
               ),

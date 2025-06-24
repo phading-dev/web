@@ -1,10 +1,8 @@
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
+import { eFullPage } from "../../../common/page_elements";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import {
-  eFullItemsPage,
-  eSeasonItem,
-  eSeasonItemContainerRef,
-} from "../common/elements";
+import { eSeasonItem, eSeasonItemContainerRef } from "../common/elements";
 import { SearchInput } from "../common/search_input";
 import { newSearchSeasonsRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { SearchTarget } from "@phading/web_interface/main/consumer/page";
@@ -18,7 +16,7 @@ export interface SearchSeasonsPage {
     event: "search",
     listener: (searchTarget: SearchTarget, query: string) => void,
   ): this;
-  on(event: "showDetails", listener: (seasonId: string) => void): this;
+  on(event: "viewDetails", listener: (seasonId: string) => void): this;
   on(event: "loaded", listener: () => void): this;
 }
 
@@ -42,7 +40,11 @@ export class SearchSeasonsPage extends EventEmitter {
     public query?: string,
   ) {
     super();
-    this.body = eFullItemsPage(
+    this.body = eFullPage(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
       assign(this.searchInput, new SearchInput(SearchTarget.SEASON, query))
         .body,
       E.div({
@@ -75,7 +77,7 @@ export class SearchSeasonsPage extends EventEmitter {
     response.seasons.forEach((season) => {
       let item = eSeasonItem(season, this.getNowDate());
       item.addEventListener("click", () => {
-        this.emit("showDetails", season.seasonId);
+        this.emit("viewDetails", season.seasonId);
       });
       this.contentContainer.val.append(item);
     });

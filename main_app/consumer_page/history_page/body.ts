@@ -1,32 +1,23 @@
-import { SCHEME } from "../../../common/color_scheme";
-import {
-  calculateEstimatedMoney,
-  formatMoney,
-} from "../../../common/formatter/price";
-import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
+import { eFullPage } from "../../../common/page_elements";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
-import { FONT_L, FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
-import { eBox } from "../../../common/value_box";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import { ENV_VARS } from "../../../env_vars";
 import {
   eContainerTitle,
   eContinueEpisodeItem,
   eContinueEpisodeItemContainerRef,
-  eFullItemsPage,
 } from "../common/elements";
-import { newListMeterReadingsPerDayRequest } from "@phading/meter_service_interface/show/web/consumer/client";
+import { ActivityTab, ActivityTabsOption } from "../common/tabs";
 import { newListWatchSessionsRequest } from "@phading/play_activity_service_interface/show/web/client";
-import { ProductID } from "@phading/price";
 import { newGetEpisodeWithSeasonSummaryRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { SeasonSummaryAndEpisode } from "@phading/product_service_interface/show/web/consumer/info";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
-import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
 
 export interface HistoryPage {
+  on(event: "viewWatchLater", listener: () => void): this;
   on(event: "viewUsage", listener: () => void): this;
   on(
     event: "play",
@@ -37,113 +28,39 @@ export interface HistoryPage {
 
 export class HistoryPage extends EventEmitter {
   public static create(): HistoryPage {
-    return new HistoryPage(SERVICE_CLIENT, () => new Date());
+    return new HistoryPage(SERVICE_CLIENT);
   }
 
   private static LIMIT = 10;
 
   public body: HTMLDivElement;
-  public estimatesCard = new Ref<HTMLDivElement>();
+  public tabs = new Ref<ActivityTabsOption>();
   private dateToContentContainer = new Map<string, Ref<HTMLDivElement>>();
   private loadingSection = new Ref<ScrollLoadingSection>();
   private updatedTimeCursor: number;
 
-  public constructor(
-    private serviceClient: WebServiceClient,
-    private getNowDate: () => Date,
-  ) {
+  public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.body = eFullItemsPage();
-    this.loadEstimates();
-  }
-
-  private async loadEstimates(): Promise<void> {
-    let today = TzDate.fromDate(
-      this.getNowDate(),
-      ENV_VARS.timezoneNegativeOffset,
-    );
-    let startDate = today
-      .clone()
-      .moveToFirstDayOfMonth()
-      .toLocalDateISOString();
-    let endDate = today.clone().moveToLastDayOfMonth().toLocalDateISOString();
-    let response = await this.serviceClient.send(
-      newListMeterReadingsPerDayRequest({
-        startDate,
-        endDate,
-      }),
-    );
-
-    let thisMonthStr = today.toLocalMonthISOString();
-    let { amount, price } = calculateEstimatedMoney(
-      ProductID.SHOW,
-      response.readings.reduce(
-        (acc, reading) => acc + reading.watchTimeSecGraded,
-        0,
-      ),
-      thisMonthStr,
-    );
-    this.body.append(
-      E.div(
-        {
-          class: "history-page-estimates-container",
-          style: `width: 100%; display: flex; flex-flow: row nowrap; justify-content: center;`,
-        },
-        assign(
-          this.estimatesCard,
-          eBox(
-            [
-              E.div(
-                {
-                  class: "history-page-estimates-title",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-                },
-                E.text(LOCALIZED_TEXT.estimatedChargeTitle),
-              ),
-              E.div(
-                {
-                  class: "history-page-estimates-amount",
-                  style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(formatMoney(amount, price.currency)),
-              ),
-              E.div(
-                {
-                  class: "history-page-estimates-month",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(
-                  `${LOCALIZED_TEXT.billingMonth[0]}${thisMonthStr}${LOCALIZED_TEXT.billingMonth[1]}`,
-                ),
-              ),
-              E.div(
-                {
-                  class: "history-page-estimates-view-details",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; align-self: flex-end;`,
-                },
-                E.text(`${LOCALIZED_TEXT.viewDetailedUsageLabel}`),
-              ),
-            ],
-            {
-              customeStyle: `flex: 1; max-width: 60rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; gap: 1rem;`,
-            },
-          ),
-        ),
-      ),
+    this.body = eFullPage(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       E.div({
-        style: `style: 0 0 auot; height: 2rem;`,
+        style: `flex: 0 0 auto; height: 1rem;`,
       }),
-      eContainerTitle(LOCALIZED_TEXT.watchHistoryTitle),
+      assign(this.tabs, new ActivityTabsOption()).body,
       assign(this.loadingSection, new ScrollLoadingSection()).body,
     );
+    this.tabs.val.setValue(ActivityTab.HISTORY).on("select", (tab) => {
+      switch (tab) {
+        case ActivityTab.WATCH_LATER:
+          this.emit("viewWatchLater");
+        case ActivityTab.USAGE:
+          this.emit("viewUsage");
+      }
+    });
     this.loadingSection.val
       .addLoadAction(() => this.load())
       .on("loaded", () => this.emit("loaded"))
       .load();
-
-    this.estimatesCard.val.addEventListener("click", () =>
-      this.emit("viewUsage"),
-    );
   }
 
   private async load(): Promise<boolean> {

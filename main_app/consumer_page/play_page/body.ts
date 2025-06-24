@@ -64,7 +64,7 @@ export enum Tab {
 }
 
 export interface PlayPage {
-  on(event: "showDetails", listener: (seasonId: string) => void): this;
+  on(event: "viewDetails", listener: (seasonId: string) => void): this;
   on(
     event: "play",
     listener: (seasonId: string, episodeId: string) => void,
@@ -306,10 +306,10 @@ export class PlayPage extends EventEmitter {
     this.player.val.on("play", (episodeId) =>
       this.emit("play", this.seasonId, episodeId),
     );
-    this.infoPanel.val.on("showDetails", () =>
-      this.emit("showDetails", this.seasonId),
+    this.infoPanel.val.on("viewDetails", () =>
+      this.emit("viewDetails", this.seasonId),
     );
-    this.player.val.on("back", () => this.emit("showDetails", this.seasonId));
+    this.player.val.on("back", () => this.emit("viewDetails", this.seasonId));
     this.player.val.on("saveSettings", () => this.saveSettings());
     this.player.val.on("goFullscreen", () => this.goFullscreen());
     this.player.val.on("exitFullscreen", () => this.exitFullscreen());

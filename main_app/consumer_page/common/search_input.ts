@@ -3,10 +3,7 @@ import { SimpleIconButton } from "../../../common/icon_button";
 import { createSearchIcon } from "../../../common/icons";
 import { BASIC_INPUT_STYLE } from "../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import {
-  OptionPill,
-  RadioOptionPillsGroup,
-} from "../../../common/option_pills";
+import { OptionPill, RadioOptionsGroup } from "../../../common/option_buttons";
 import { ICON_BUTTON_M, ICON_L } from "../../../common/sizes";
 import { SearchTarget } from "@phading/web_interface/main/consumer/page";
 import { E } from "@selfage/element/factory";
@@ -25,14 +22,14 @@ export class SearchInput extends EventEmitter {
   public searchActionButton = new Ref<SimpleIconButton>();
   public searchOptionSeason = new Ref<OptionPill<SearchTarget>>();
   public searchOptionPublisher = new Ref<OptionPill<SearchTarget>>();
-  private searchOptionGroup: RadioOptionPillsGroup<SearchTarget>;
+  private searchOptionsGroup: RadioOptionsGroup<SearchTarget>;
 
   public constructor(searchTarget: SearchTarget, query?: string) {
     super();
     this.body = E.div(
       {
         class: "search-input",
-        style: `display: flex; flex-flow: column nowrap;`,
+        style: `padding: 0 1rem; display: flex; flex-flow: column nowrap;`,
       },
       E.div(
         {
@@ -81,7 +78,7 @@ export class SearchInput extends EventEmitter {
       this.keydownSearchInput(event),
     );
     this.searchActionButton.val.on("action", () => this.executeSearch());
-    this.searchOptionGroup = new RadioOptionPillsGroup<SearchTarget>([
+    this.searchOptionsGroup = new RadioOptionsGroup<SearchTarget>([
       this.searchOptionSeason.val,
       this.searchOptionPublisher.val,
     ])
@@ -100,6 +97,6 @@ export class SearchInput extends EventEmitter {
     if (!query) {
       return;
     }
-    this.emit("search", this.searchOptionGroup.value, query);
+    this.emit("search", this.searchOptionsGroup.value, query);
   }
 }

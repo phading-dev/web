@@ -52,6 +52,7 @@ export class UpdateDraftPricingPage extends EventEmitter {
     this.request.seasonId = seasonId;
 
     this.inputFormPage = new InputFormPage(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       LOCALIZED_TEXT.updateSeasonPricingTitle,
       [
         assign(
@@ -82,7 +83,6 @@ export class UpdateDraftPricingPage extends EventEmitter {
       ],
       [this.gradeInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"))

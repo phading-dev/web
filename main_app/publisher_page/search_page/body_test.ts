@@ -20,49 +20,12 @@ import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 normalizeBody();
 
-class SearchInputTestCase implements TestCase {
-  public constructor(
-    public name: string,
-    private initSeasonState: SeasonState,
-    private initQuery: string,
-    private action: (cut: SearchPage) => void,
-    private expectedSeasonState: SeasonState,
-    private expectedQuery: string,
-  ) {}
-  public async execute() {
-    // Prepare
-    let serviceClientMock = new WebServiceClientMock();
-    serviceClientMock.response = {
-      seasons: [],
-    } as SearchSeasonsResponse;
-    let cut = new SearchPage(
-      serviceClientMock,
-      () => new Date("2024-12-23T12:00:00Z"),
-      this.initSeasonState,
-      this.initQuery,
-    );
-    let seasonState: SeasonState;
-    let query: string;
-    cut.on("searchSeasons", (seasonState_, query_) => {
-      seasonState = seasonState_;
-      query = query_;
-    });
-
-    // Execute
-    this.action(cut);
-
-    // Verify
-    assertThat(seasonState, eq(this.expectedSeasonState), "seasonState");
-    assertThat(query, eq(this.expectedQuery), "query");
-  }
-}
-
 TEST_RUNNER.run({
   name: "SearchPage",
   cases: [
     new (class implements TestCase {
       public name =
-        "TabletView_SearchPublishedSeasons_ScrolledToLoadMore_ScrolledToBottomAndNoMore";
+        "TabletView_SearchPublishedSeasons_ScrolledToLoadMore_ScrolledToBottomAndNoMore_ViewSeason_SearchSeasons_ListSeasons";
       private cut: SearchPage;
       public async execute() {
         // Prepare
@@ -217,7 +180,7 @@ TEST_RUNNER.run({
 
         // Prepare
         let seasonId: string;
-        this.cut.on("showSeason", (id) => {
+        this.cut.on("viewSeason", (id) => {
           seasonId = id;
         });
 
@@ -226,6 +189,33 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(seasonId, eq("season3"), "seasonId");
+
+        // Prepare
+        let searchState: SeasonState;
+        let searchQuery: string;
+        this.cut.on("searchSeasons", (state, query) => {
+          searchState = state;
+          searchQuery = query;
+        });
+
+        // Execute
+        this.cut.searchInput.val.emit("search", SeasonState.DRAFT, "other query");
+
+        // Verify
+        assertThat(searchState, eq(SeasonState.DRAFT), "searchState");
+        assertThat(searchQuery, eq("other query"), "searchQuery");
+
+        // Prepare
+        let listState: SeasonState;
+        this.cut.on("listSeasons", (state) => {
+          listState = state;
+        });
+
+        // Execute
+        this.cut.searchInput.val.emit("list", SeasonState.ARCHIVED);
+
+        // Verify
+        assertThat(listState, eq(SeasonState.ARCHIVED), "listState");
       }
       public async tearDown() {
         await mouseMove(-1, -1, 1);
@@ -362,18 +352,6 @@ TEST_RUNNER.run({
             "/search_page_tablet_draft_scrolled_bottom_diff.png",
           ),
         );
-
-        // Prepare
-        let seasonId: string;
-        this.cut.on("showSeason", (id) => {
-          seasonId = id;
-        });
-
-        // Execute
-        await mouseClick(100, 100);
-
-        // Verify
-        assertThat(seasonId, eq("season3"), "seasonId");
       }
       public async tearDown() {
         await mouseMove(-1, -1, 1);
@@ -552,102 +530,5 @@ TEST_RUNNER.run({
         this.cut.remove();
       }
     })(),
-    new (class implements TestCase {
-      public name = "TabletView_EmptyQuery";
-      private cut: SearchPage;
-      public async execute() {
-        // Prepare
-        await setTabletView();
-        this.cut = new SearchPage(
-          undefined,
-          () => new Date("2024-12-23T12:00:00Z"),
-          SeasonState.PUBLISHED,
-          "",
-        );
-
-        // Execute
-        document.body.append(this.cut.body);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/search_page_tablet_empty_query.png"),
-          path.join(__dirname, "/golden/search_page_tablet_empty_query.png"),
-          path.join(__dirname, "/search_page_tablet_empty_query_diff.png"),
-        );
-      }
-      public tearDown() {
-        this.cut.remove();
-      }
-    })(),
-    new SearchInputTestCase(
-      "SearchInput_Published_ValueAndEnter",
-      SeasonState.PUBLISHED,
-      "",
-      (cut) => {
-        cut.searchInput.val.value = "some query";
-        cut.searchInput.val.dispatchEvent(
-          new KeyboardEvent("keydown", { key: "Enter" }),
-        );
-      },
-      SeasonState.PUBLISHED,
-      "some query",
-    ),
-    new SearchInputTestCase(
-      "SearchInput_Draft_ClickButton",
-      SeasonState.DRAFT,
-      "",
-      (cut) => {
-        cut.searchInput.val.value = "some query";
-        cut.searchActionButton.val.click();
-      },
-      SeasonState.DRAFT,
-      "some query",
-    ),
-    new SearchInputTestCase(
-      "SearchInput_Archived_ClickButton",
-      SeasonState.ARCHIVED,
-      "",
-      (cut) => {
-        cut.searchInput.val.value = "some query";
-        cut.searchActionButton.val.click();
-      },
-      SeasonState.ARCHIVED,
-      "some query",
-    ),
-    new SearchInputTestCase(
-      "SearchInput_Published_EmptyQuery",
-      SeasonState.PUBLISHED,
-      "some query",
-      (cut) => {
-        cut.searchInput.val.value = "";
-        cut.searchActionButton.val.click();
-      },
-      undefined,
-      undefined,
-    ),
-    new SearchInputTestCase(
-      "SearchInput_Published_SwitchToArchived",
-      SeasonState.PUBLISHED,
-      "some query",
-      (cut) => cut.searchOptionArchived.val.click(),
-      SeasonState.ARCHIVED,
-      "some query",
-    ),
-    new SearchInputTestCase(
-      "SearchInput_Published_SwitchToDraft",
-      SeasonState.PUBLISHED,
-      "some query",
-      (cut) => cut.searchOptionDraft.val.click(),
-      SeasonState.DRAFT,
-      "some query",
-    ),
-    new SearchInputTestCase(
-      "SearchInput_Draft_SwitchToPublished",
-      SeasonState.DRAFT,
-      "some query",
-      (cut) => cut.searchOptionPublished.val.click(),
-      SeasonState.PUBLISHED,
-      "some query",
-    ),
   ],
 });

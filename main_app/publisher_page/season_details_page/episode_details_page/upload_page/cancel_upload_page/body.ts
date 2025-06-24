@@ -1,8 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../../../../common/color_scheme";
 import { createLoadingIcon } from "../../../../../../common/icons";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../../../common/navigation_bar";
-import { PAGE_CENTER_CARD_BACKGROUND_STYLE } from "../../../../../../common/page_style";
 import { ICON_XXL } from "../../../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../../../common/web_service_client";
 import { newCancelUploadingRequest } from "@phading/product_service_interface/show/web/publisher/client";
@@ -31,7 +29,7 @@ export class CancelUploadPage extends EventEmitter {
     this.body = E.div(
       {
         class: "cancel-upload-page",
-        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+        style: `width: 100%; height: 100%; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center;`,
       },
       E.div(
         {

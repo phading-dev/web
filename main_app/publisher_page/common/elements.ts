@@ -7,36 +7,10 @@ import {
 } from "../../../common/formatter/rating";
 import { createFilledStarIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
-import {
-  PAGE_LARGE_TOP_DOWN_CARD_STYLE,
-  PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
-} from "../../../common/page_style";
 import { eCoverImage } from "../../../common/season_cover_image";
 import { FONT_M, FONT_S, FONT_WEIGHT_600, ICON_M } from "../../../common/sizes";
 import { SeasonSummary } from "@phading/product_service_interface/show/web/publisher/summary";
 import { E } from "@selfage/element/factory";
-import { Ref } from "@selfage/ref";
-
-export function eSeasonItemsPage(
-  card: Ref<HTMLDivElement>,
-  ...elements: Array<HTMLElement>
-): HTMLDivElement {
-  return E.div(
-    {
-      class: "season-items-page",
-      style: PAGE_TOP_DOWN_CARD_BACKGROUND_STYLE,
-    },
-    E.divRef(
-      card,
-      {
-        class: "season-item-card",
-        style: `${PAGE_LARGE_TOP_DOWN_CARD_STYLE} padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem;`,
-      },
-      ...elements,
-    ),
-  );
-}
 
 export function ePublishedSeasonItem(
   season: SeasonSummary,
@@ -46,7 +20,7 @@ export function ePublishedSeasonItem(
   return E.div(
     {
       class: "published-season-item",
-      style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customStyle}`,
+      style: `margin: 0 1rem; cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customStyle}`,
     },
     E.div(
       {
@@ -131,7 +105,7 @@ export function eDraftSeasonItem(
   return E.div(
     {
       class: "draft-season-item",
-      style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customStyle}`,
+      style: `margin: 0 1rem; cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customStyle}`,
     },
     E.div(
       {
@@ -182,7 +156,7 @@ export function eArchivedSeasonItem(
   return E.div(
     {
       class: "archived-season-item-info",
-      style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: 1rem; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customStyle}`,
+      style: `margin: 0 1rem; display: flex; flex-flow: column nowrap; gap: 1rem; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customStyle}`,
     },
     E.div(
       {

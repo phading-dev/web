@@ -5,9 +5,9 @@ import {
 } from "../../../../../../common/icon_button";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../../../common/navigation_bar";
 import {
-  PAGE_CENTER_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CENTER_CARD_STYLE,
-} from "../../../../../../common/page_style";
+  PAGE_MAX_WIDTH_M,
+  ePageWithCenterForm,
+} from "../../../../../../common/page_elements";
 import { FONT_L } from "../../../../../../common/sizes";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -17,25 +17,18 @@ export function ePage(
   title: string,
   ...children: Array<HTMLElement>
 ): HTMLDivElement {
-  return E.div(
-    {
-      class: "upload-page",
-      style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-    },
+  return ePageWithCenterForm(
+    new Ref(),
+    `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    `max-width: ${PAGE_MAX_WIDTH_M}rem; display: flex; flex-flow: column nowrap;`,
+    assign(backButton, createBackButton(SCHEME.neutral1)).body,
     E.div(
       {
-        class: "upload-page-card",
-        style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
+        class: "upload-page-title",
+        style: `align-self: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; max-width: 80%;`,
       },
-      assign(backButton, createBackButton(SCHEME.neutral1)).body,
-      E.div(
-        {
-          class: "upload-page-title",
-          style: `align-self: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; max-width: 80%;`,
-        },
-        E.text(title),
-      ),
-      ...children,
+      E.text(title),
     ),
+    ...children,
   );
 }

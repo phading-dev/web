@@ -96,7 +96,7 @@ TEST_RUNNER.run({
           seasonId: "season1",
         } as CreateSeasonResponse;
         let seasonId: string;
-        this.cut.on("showSeason", (id) => {
+        this.cut.on("viewSeason", (id) => {
           seasonId = id;
         });
 

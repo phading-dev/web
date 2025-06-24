@@ -1718,7 +1718,7 @@ TEST_RUNNER.run({
     })(),
     new (class {
       public name =
-        "PlayNext_ShowSeasonDetails_GoFullscreen_ExitFullscreen_UpdateVolumeSaveSettings";
+        "PlayNext_ViewSeasonDetails_GoFullscreen_ExitFullscreen_UpdateVolumeSaveSettings";
       private cut: PlayPage;
       public async execute() {
         // Prepare
@@ -1760,9 +1760,9 @@ TEST_RUNNER.run({
         assertThat(playEpisodeId, eq("episode2"), "Play next episode id 2");
 
         // Prepare
-        let showDetailsSeasonId: string;
-        this.cut.on("showDetails", (seasonId) => {
-          showDetailsSeasonId = seasonId;
+        let viewDetailsSeasonId: string;
+        this.cut.on("viewDetails", (seasonId) => {
+          viewDetailsSeasonId = seasonId;
         });
 
         // Execute
@@ -1770,20 +1770,20 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(
-          showDetailsSeasonId,
+          viewDetailsSeasonId,
           eq("season1"),
           "show details season id when back",
         );
 
         // Prepare
-        showDetailsSeasonId = undefined;
+        viewDetailsSeasonId = undefined;
 
         // Execute
         this.cut.infoPanel.val.seasonInfoButton.val.click();
 
         // Verify
         assertThat(
-          showDetailsSeasonId,
+          viewDetailsSeasonId,
           eq("season1"),
           "show details season id",
         );

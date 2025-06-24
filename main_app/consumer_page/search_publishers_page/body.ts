@@ -1,10 +1,8 @@
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
+import { eFullPage } from "../../../common/page_elements";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import {
-  eFullItemsPage,
-  ePublisherItem,
-  ePublisherItemContainerRef,
-} from "../common/elements";
+import { ePublisherItem, ePublisherItemContainerRef } from "../common/elements";
 import { SearchInput } from "../common/search_input";
 import { newSearchPublishersRequest } from "@phading/user_service_interface/web/third_person/client";
 import { SearchTarget } from "@phading/web_interface/main/consumer/page";
@@ -41,7 +39,11 @@ export class SearchPublishersPage extends EventEmitter {
     public query: string,
   ) {
     super();
-    this.body = eFullItemsPage(
+    this.body = eFullPage(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
       assign(this.searchInput, new SearchInput(SearchTarget.PUBLISHER, query))
         .body,
       E.div({
@@ -54,9 +56,10 @@ export class SearchPublishersPage extends EventEmitter {
       this.emit("search", searchTarget, query),
     );
 
-    this.loadingSection.val.addLoadAction(() => this.load());
-    this.loadingSection.val.on("loaded", () => this.emit("loaded"));
-    this.loadingSection.val.load();
+    this.loadingSection.val
+      .addLoadAction(() => this.load())
+      .on("loaded", () => this.emit("loaded"))
+      .load();
   }
 
   private async load(): Promise<boolean> {

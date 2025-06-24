@@ -11,7 +11,6 @@ import {
   SWITCH_ACCOUNT,
   SwitchAccountResponse,
 } from "@phading/user_service_interface/web/self/interface";
-import { setViewport } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -44,6 +43,18 @@ TEST_RUNNER.run({
                     accountType: AccountType.PUBLISHER,
                     avatarLargeUrl: userImage,
                     naturalName: "First Publisher",
+                  },
+                  {
+                    accountId: "consumer 2",
+                    accountType: AccountType.CONSUMER,
+                    avatarLargeUrl: userImage,
+                    naturalName: "Second Consumer",
+                  },
+                  {
+                    accountId: "publisher 2",
+                    accountType: AccountType.PUBLISHER,
+                    avatarLargeUrl: userImage,
+                    naturalName: "Second Publisher",
                   },
                 ],
               } as ListAccountsResponse;
@@ -208,38 +219,6 @@ TEST_RUNNER.run({
             __dirname,
             "/list_accounts_page_accounts_and_error_diff.png",
           ),
-        );
-      }
-      public tearDown() {
-        this.cut.remove();
-        LOCAL_SESSION_STORAGE.clear();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "SuperWide";
-      private cut: ListAccountsPage;
-      public async execute() {
-        // Prepare
-        await setViewport(2200, 600);
-        this.cut = new ListAccountsPage(
-          new (class extends WebServiceClientMock {
-            public async send(request: any): Promise<any> {
-              return {
-                accounts: [],
-              } as ListAccountsResponse;
-            }
-          })(),
-        );
-
-        // Execute
-        document.body.append(this.cut.body);
-        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/list_accounts_page_wide.png"),
-          path.join(__dirname, "/golden/list_accounts_page_wide.png"),
-          path.join(__dirname, "/list_accounts_page_wide_diff.png"),
         );
       }
       public tearDown() {

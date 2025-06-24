@@ -2,7 +2,6 @@ import EventEmitter = require("events");
 import { SCHEME } from "../../../common/color_scheme";
 import { createLoadingIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { PAGE_CENTER_CARD_BACKGROUND_STYLE } from "../../../common/page_style";
 import { ICON_XXL } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { newSwitchAccountRequest } from "@phading/user_service_interface/web/self/client";
@@ -31,7 +30,7 @@ export class SwitchAccountPage extends EventEmitter {
     this.body = E.div(
       {
         class: "switching-account-page",
-        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE}`,
+        style: `width: 100%; height: 100%; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center;`,
       },
       E.div(
         {

@@ -4,7 +4,7 @@ import { ValidationResult } from "../../common/input_form_page/input_field";
 import { RadioOptionInput } from "../../common/input_form_page/option_input";
 import { TextInputWithErrorMsg } from "../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
-import { OptionPill } from "../../common/option_pills";
+import { OptionPill } from "../../common/option_buttons";
 import { SERVICE_CLIENT } from "../../common/web_service_client";
 import { SWITCH_TEXT_STYLE } from "./styles";
 import {
@@ -52,6 +52,7 @@ export class SignUpPage extends EventEmitter {
   ) {
     super();
     this.inputFormPage = new InputFormPage<SignUpResponse>(
+      "",
       LOCALIZED_TEXT.signUpTitle,
       [
         assign(

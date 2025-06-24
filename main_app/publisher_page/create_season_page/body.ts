@@ -15,7 +15,7 @@ import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface CreateSeasonPage {
-  on(event: "showSeason", listener: (seasonId: string) => void): this;
+  on(event: "viewSeason", listener: (seasonId: string) => void): this;
   on(event: "createDone", listener: () => void): this;
 }
 
@@ -31,6 +31,7 @@ export class CreateSeasonPage extends EventEmitter {
   public constructor(private serviceClient: WebServiceClient) {
     super();
     this.inputFormPage = new InputFormPage<CreateSeasonResponse>(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       LOCALIZED_TEXT.createSeasonTitle,
       [
         assign(
@@ -47,14 +48,13 @@ export class CreateSeasonPage extends EventEmitter {
       ],
       [this.seasonNameInput.val],
       LOCALIZED_TEXT.createButtonLabel,
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addPrimaryAction(
         () => this.create(),
         (response, error) => this.postCreate(response, error),
       )
       .on("handlePrimarySuccess", (response) =>
-        this.emit("showSeason", response.seasonId),
+        this.emit("viewSeason", response.seasonId),
       )
       .on("primaryDone", () => this.emit("createDone"));
     this.seasonNameInput.val.validate();

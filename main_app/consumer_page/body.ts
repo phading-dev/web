@@ -292,7 +292,7 @@ export class ConsumerPage extends EventEmitter {
 
   private addListRecentPremieresPage(): void {
     this.listRecentPremieresPage = this.createListRecentPremieresPage().on(
-      "showDetails",
+      "viewDetails",
       (seasonId) => {
         this.pushRl({
           seasonDetails: {
@@ -311,7 +311,7 @@ export class ConsumerPage extends EventEmitter {
 
   private addListTopRatedPage(): void {
     this.listTopRatedPage = this.createListTopRatedPage().on(
-      "showDetails",
+      "viewDetails",
       (seasonId) => {
         this.pushRl({
           seasonDetails: {
@@ -338,7 +338,7 @@ export class ConsumerPage extends EventEmitter {
           },
         });
       })
-      .on("showDetails", (seasonId) => {
+      .on("viewDetails", (seasonId) => {
         this.pushRl({
           seasonDetails: {
             seasonId,
@@ -379,7 +379,7 @@ export class ConsumerPage extends EventEmitter {
           },
         });
       })
-      .on("showDetails", (seasonId) => {
+      .on("viewDetails", (seasonId) => {
         this.pushRl({
           seasonDetails: {
             seasonId,
@@ -398,7 +398,7 @@ export class ConsumerPage extends EventEmitter {
   private addPublisherShowroomPage(publisherId: string): void {
     this.publisherShowroomPage = this.createPublisherShowroomPage(
       publisherId,
-    ).on("showDetails", (seasonId) => {
+    ).on("viewDetails", (seasonId) => {
       this.pushRl({
         seasonDetails: {
           seasonId,
@@ -448,7 +448,7 @@ export class ConsumerPage extends EventEmitter {
           },
         });
       })
-      .on("showDetails", (seasonId) => {
+      .on("viewDetails", (seasonId) => {
         this.pushRl({
           seasonDetails: {
             seasonId,
@@ -503,7 +503,7 @@ export class ConsumerPage extends EventEmitter {
 
   private addWatchLaterPage(): void {
     this.watchLaterPage = this.createWatchLaterPage().on(
-      "showDetails",
+      "viewDetails",
       (seasonId) => {
         this.pushRl({
           seasonDetails: {

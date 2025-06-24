@@ -8,17 +8,15 @@ import { formatWatchTimeSeconds } from "../../../common/formatter/quantity";
 import { DATE_INPUT_STYLE } from "../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
+import { OptionPill, RadioOptionsGroup } from "../../../common/option_buttons";
 import {
-  OptionPill,
-  RadioOptionPillsGroup,
-} from "../../../common/option_pills";
-import {
-  PAGE_CENTER_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CENTER_CARD_STYLE,
-} from "../../../common/page_style";
-import { FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
+  PAGE_MAX_WIDTH_L,
+  ePageWithTopDownCard,
+} from "../../../common/page_elements";
+import { FONT_M, FONT_S, FONT_WEIGHT_600 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
+import { ActivityTab, ActivityTabsOption } from "../common/tabs";
 import { MAX_DAY_RANGE, MAX_MONTH_RANGE } from "@phading/constants/meter";
 import {
   newListMeterReadingPerSeasonRequest,
@@ -41,6 +39,8 @@ export enum RangeType {
 }
 
 export interface UsagePage {
+  on(event: "viewHistory", listener: () => void): this;
+  on(event: "viewWatchLater", listener: () => void): this;
   on(event: "loaded", listener: (result: any) => void): this;
 }
 
@@ -53,16 +53,18 @@ export class UsagePage extends EventEmitter {
   private static INIT_DAYS = 30;
 
   public body: HTMLDivElement;
+  public tabs = new Ref<ActivityTabsOption>();
   public oneDayOption = new Ref<OptionPill<RangeType>>();
   public daysOption = new Ref<OptionPill<RangeType>>();
   public oneMonthOption = new Ref<OptionPill<RangeType>>();
   public monthsOption = new Ref<OptionPill<RangeType>>();
   public dayRangeInput = new Ref<DateRangeInput>();
   public monthRangeInput = new Ref<DateRangeInput>();
+  private updateFrequencyNote = new Ref<HTMLDivElement>();
   public oneDayInput = new Ref<HTMLInputElement>();
   public oneMonthInput = new Ref<HTMLInputElement>();
   private resultList = new Ref<HTMLDivElement>();
-  private rangeTypeInput: RadioOptionPillsGroup<RangeType>;
+  private rangeTypeInput: RadioOptionsGroup<RangeType>;
   private loadIndex = 0;
 
   public constructor(
@@ -74,110 +76,131 @@ export class UsagePage extends EventEmitter {
       this.getNowDate(),
       ENV_VARS.timezoneNegativeOffset,
     );
-    this.body = E.div(
-      {
-        class: "usage-page",
-        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      },
+    this.body = ePageWithTopDownCard(
+      new Ref<HTMLDivElement>(),
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem; display: flex; flex-flow: column nowrap;`,
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+      assign(this.tabs, new ActivityTabsOption()).body,
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
       E.div(
         {
-          class: "usage-page-card",
-          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
+          class: "usage-page-graunularity-pills",
+          style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: row wrap; justify-content: flex-end; align-items: center; gap: 1rem;`,
         },
         E.div(
           {
-            class: "usage-page-title",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
           },
-          E.text(LOCALIZED_TEXT.usageTitle),
+          assign(
+            this.oneDayOption,
+            new OptionPill(
+              LOCALIZED_TEXT.usageReportSelectOneDayLabel,
+              RangeType.ONE_DAY,
+            ),
+          ).body,
+          assign(
+            this.daysOption,
+            new OptionPill(
+              LOCALIZED_TEXT.usageReportSelectDaysLabel,
+              RangeType.DAYS,
+            ),
+          ).body,
         ),
         E.div(
           {
-            class: "usage-page-graunularity-pills",
-            style: `width: 100%; display: flex; flex-flow: row wrap; justify-content: flex-end; align-items: center; gap: 1rem;`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
           },
-          E.div(
-            {
-              style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
-            },
-            assign(
-              this.oneDayOption,
-              new OptionPill(
-                LOCALIZED_TEXT.usageReportSelectOneDayLabel,
-                RangeType.ONE_DAY,
-              ),
-            ).body,
-            assign(
-              this.daysOption,
-              new OptionPill(
-                LOCALIZED_TEXT.usageReportSelectDaysLabel,
-                RangeType.DAYS,
-              ),
-            ).body,
-          ),
-          E.div(
-            {
-              style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
-            },
-            assign(
-              this.oneMonthOption,
-              new OptionPill(
-                LOCALIZED_TEXT.usageReportSelectOneMonthLabel,
-                RangeType.ONE_MONTH,
-              ),
-            ).body,
-            assign(
-              this.monthsOption,
-              new OptionPill(
-                LOCALIZED_TEXT.usageReportSelectMonths,
-                RangeType.MONTHS,
-              ),
-            ).body,
-          ),
+          assign(
+            this.oneMonthOption,
+            new OptionPill(
+              LOCALIZED_TEXT.usageReportSelectOneMonthLabel,
+              RangeType.ONE_MONTH,
+            ),
+          ).body,
+          assign(
+            this.monthsOption,
+            new OptionPill(
+              LOCALIZED_TEXT.usageReportSelectMonths,
+              RangeType.MONTHS,
+            ),
+          ).body,
         ),
-        E.inputRef(this.oneDayInput, {
-          class: "usage-page-one-day-input",
-          style: `${DATE_INPUT_STYLE} align-self: flex-end;`,
-          type: "date",
-        }),
-        E.inputRef(this.oneMonthInput, {
-          class: "usage-page-one-month-input",
-          style: `${DATE_INPUT_STYLE} align-self: flex-end;`,
-          type: "month",
-        }),
-        assign(
-          this.dayRangeInput,
-          DateRangeInput.create(DateType.DAY, MAX_DAY_RANGE, `width: 100%;`),
-        ).body,
-        assign(
-          this.monthRangeInput,
-          DateRangeInput.create(
-            DateType.MONTH,
-            MAX_MONTH_RANGE,
-            `width: 100%;`,
-          ),
-        ).body,
-        E.divRef(this.resultList, {
-          class: "usage-page-result-list",
-          style: `display: flex; flex-flow: column nowrap; gap: 2rem;`,
-        }),
       ),
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+      E.inputRef(this.oneDayInput, {
+        class: "usage-page-one-day-input",
+        style: `${DATE_INPUT_STYLE} align-self: flex-end; margin: 0 2rem;`,
+        type: "date",
+      }),
+      E.inputRef(this.oneMonthInput, {
+        class: "usage-page-one-month-input",
+        style: `${DATE_INPUT_STYLE} align-self: flex-end; margin: 0 2rem;`,
+        type: "month",
+      }),
+      assign(
+        this.dayRangeInput,
+        DateRangeInput.create(
+          DateType.DAY,
+          MAX_DAY_RANGE,
+          `width: 100%; box-sizing: border-box; padding: 0 2rem;`,
+        ),
+      ).body,
+      assign(
+        this.monthRangeInput,
+        DateRangeInput.create(
+          DateType.MONTH,
+          MAX_MONTH_RANGE,
+          `width: 100%; box-sizing: border-box; padding: 0 2rem;`,
+        ),
+      ).body,
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+      E.divRef(this.updateFrequencyNote, {
+        class: "usage-update-frequency-note",
+        style: `align-self: flex-end; box-sizing: border-box; padding: 0 2rem; font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+      }),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      E.divRef(this.resultList, {
+        class: "usage-page-result-list",
+        style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: column nowrap; gap: 1.5rem;`,
+      }),
     );
-    this.rangeTypeInput = new RadioOptionPillsGroup([
-      this.oneDayOption.val,
-      this.daysOption.val,
-      this.oneMonthOption.val,
-      this.monthsOption.val,
-    ]);
+    this.tabs.val.setValue(ActivityTab.USAGE).on("select", (tab) => {
+      switch (tab) {
+        case ActivityTab.HISTORY:
+          this.emit("viewHistory");
+        case ActivityTab.WATCH_LATER:
+          this.emit("viewWatchLater");
+      }
+    });
+
     this.oneDayInput.val.value = nowDate
       .clone()
       .addDays(-1)
       .toLocalDateISOString();
-    this.oneMonthInput.val.value = nowDate.toLocalMonthISOString();
+    this.oneDayInput.val.addEventListener("change", () => this.loadOneDay());
+
     this.dayRangeInput.val.setValues(
       nowDate.clone().addDays(-UsagePage.INIT_DAYS).toLocalDateISOString(),
       nowDate.clone().addDays(-1).toLocalDateISOString(),
     );
+    this.dayRangeInput.val.on("change", () => this.loadFromDayRange());
+    this.dayRangeInput.val.on("invalid", () => this.showInvalidRange());
+
+    this.oneMonthInput.val.value = nowDate.toLocalMonthISOString();
+    this.oneMonthInput.val.addEventListener("change", () =>
+      this.loadOneMonth(),
+    );
+
     this.monthRangeInput.val.setValues(
       nowDate
         .clone()
@@ -190,20 +213,20 @@ export class UsagePage extends EventEmitter {
         .addMonths(-1)
         .toLocalMonthISOString(),
     );
+    this.monthRangeInput.val.on("change", () => this.loadFromMonthRange());
+    this.monthRangeInput.val.on("invalid", () => this.showInvalidRange());
+
+    this.rangeTypeInput = new RadioOptionsGroup([
+      this.oneDayOption.val,
+      this.daysOption.val,
+      this.oneMonthOption.val,
+      this.monthsOption.val,
+    ]);
     this.rangeTypeInput.setValue(RangeType.ONE_MONTH);
     this.setRangeTypeAndLoad(RangeType.ONE_MONTH);
-
     this.rangeTypeInput.on("select", (value) =>
       this.setRangeTypeAndLoad(value),
     );
-    this.oneDayInput.val.addEventListener("change", () => this.loadOneDay());
-    this.oneMonthInput.val.addEventListener("change", () =>
-      this.loadOneMonth(),
-    );
-    this.dayRangeInput.val.on("change", () => this.loadFromDayRange());
-    this.dayRangeInput.val.on("invalid", () => this.showInvalidRange());
-    this.monthRangeInput.val.on("change", () => this.loadFromMonthRange());
-    this.monthRangeInput.val.on("invalid", () => this.showInvalidRange());
   }
 
   private setRangeTypeAndLoad(value: RangeType): void {
@@ -214,18 +237,26 @@ export class UsagePage extends EventEmitter {
     switch (value) {
       case RangeType.ONE_DAY:
         this.oneDayInput.val.style.display = "block";
+        this.updateFrequencyNote.val.textContent =
+          LOCALIZED_TEXT.usageUpdateDaily;
         this.loadOneDay();
         break;
       case RangeType.ONE_MONTH:
         this.oneMonthInput.val.style.display = "block";
+        this.updateFrequencyNote.val.textContent =
+          LOCALIZED_TEXT.usageUpdateMonthly;
         this.loadOneMonth();
         break;
       case RangeType.DAYS:
         this.dayRangeInput.val.show();
+        this.updateFrequencyNote.val.textContent =
+          LOCALIZED_TEXT.usageUpdateDaily;
         this.loadFromDayRange();
         break;
       case RangeType.MONTHS:
         this.monthRangeInput.val.show();
+        this.updateFrequencyNote.val.textContent =
+          LOCALIZED_TEXT.usageUpdateMonthly;
         this.loadFromMonthRange();
         break;
     }

@@ -16,11 +16,11 @@ import {
   ListSeasonsResponse,
 } from "@phading/product_service_interface/show/web/publisher/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
+import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
-import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";
 
 normalizeBody();
 
@@ -29,7 +29,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "TabletView_ListPublishedSeasons_ScrolledToLoadMore_ScrolledToBottomAndNoMore_DesktopView_PhoneView_SelectDraft_SelectPublished_SelectArchived";
+        "TabletView_ListPublishedSeasons_ScrolledToLoadMore_ScrolledToBottomAndNoMore_DesktopView_PhoneView_ViewSeason_SearchSeasons_ListSeasons";
       private cut: ListPage;
       public async execute() {
         // Prepare
@@ -197,7 +197,7 @@ TEST_RUNNER.run({
 
         // Prepare
         let seasonId: string;
-        this.cut.on("showSeason", (id) => {
+        this.cut.on("viewSeason", (id) => {
           seasonId = id;
         });
 
@@ -208,34 +208,35 @@ TEST_RUNNER.run({
         assertThat(seasonId, eq("season4"), "seasonId");
 
         // Prepare
-        let state: SeasonState;
-        this.cut.on("listSeasons", (value) => {
-          state = value;
+        let searchState: SeasonState;
+        let searchQuery: string;
+        this.cut.on("searchSeasons", (state, query) => {
+          searchState = state;
+          searchQuery = query;
         });
 
         // Execute
-        this.cut.draftOption.val.click();
+        this.cut.searchInput.val.emit(
+          "search",
+          SeasonState.PUBLISHED,
+          "some query",
+        );
 
         // Verify
-        assertThat(state, eq(SeasonState.DRAFT), "list draft");
+        assertThat(searchState, eq(SeasonState.PUBLISHED), "list published");
+        assertThat(searchQuery, eq("some query"), "search query");
 
         // Prepare
-        state = undefined;
+        let listState: SeasonState;
+        this.cut.on("listSeasons", (state) => {
+          listState = state;
+        });
 
         // Execute
-        this.cut.publishedOption.val.click();
+        this.cut.searchInput.val.emit("list", SeasonState.PUBLISHED);
 
         // Verify
-        assertThat(state, eq(SeasonState.PUBLISHED), "list published");
-
-        // Prepare
-        state = undefined;
-
-        // Execute
-        this.cut.archivedOption.val.click();
-
-        // Verify
-        assertThat(state, eq(SeasonState.ARCHIVED), "list archived");
+        assertThat(listState, eq(SeasonState.PUBLISHED), "list published");
       }
       public async tearDown() {
         await mouseMove(-1, -1, 1);
@@ -391,7 +392,7 @@ TEST_RUNNER.run({
 
         // Prepare
         let seasonId: string;
-        this.cut.on("showSeason", (id) => {
+        this.cut.on("viewSeason", (id) => {
           seasonId = id;
         });
 

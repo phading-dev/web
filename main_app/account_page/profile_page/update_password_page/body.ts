@@ -37,6 +37,7 @@ export class UpdatePasswordPage extends EventEmitter {
   ) {
     super();
     this.inputFormPage = new InputFormPage(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       LOCALIZED_TEXT.updatePasswordTitle,
       [
         E.input({
@@ -88,7 +89,6 @@ export class UpdatePasswordPage extends EventEmitter {
         this.currentPasswordInput.val,
       ],
       LOCALIZED_TEXT.updateButtonLabel,
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .addPrimaryAction(

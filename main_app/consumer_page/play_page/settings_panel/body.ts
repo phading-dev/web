@@ -3,8 +3,8 @@ import { SCHEME } from "../../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import {
   OptionPill,
-  RadioOptionPillsGroup,
-} from "../../../../common/option_pills";
+  RadioOptionsGroup,
+} from "../../../../common/option_buttons";
 import { FONT_M, FONT_WEIGHT_600 } from "../../../../common/sizes";
 import {
   DENSITY_RANGE,
@@ -253,7 +253,7 @@ export class SettingsPanel extends EventEmitter {
     this.show();
 
     this.showOrHideDanmkauSettings(settings.commentOverlaySettings.style);
-    new RadioOptionPillsGroup([
+    new RadioOptionsGroup([
       this.commentOverlayDisabledOption.val,
       this.commentOverlaySideOption.val,
       this.commentOverlayDanmakuOption.val,
@@ -281,7 +281,7 @@ export class SettingsPanel extends EventEmitter {
       this.settings.commentOverlaySettings.danmakuSettings.density = value;
       this.emit("updateCommentOverlaySettings");
     });
-    new RadioOptionPillsGroup([
+    new RadioOptionsGroup([
       this.danmakuStackingRandomOption.val,
       this.danmakuStackingTopDownOption.val,
     ])
@@ -308,7 +308,7 @@ export class SettingsPanel extends EventEmitter {
     this.subtitleOptionsContainer.val.append(
       ...this.subtitleOptions.map((option) => option.body),
     );
-    new RadioOptionPillsGroup(this.subtitleOptions)
+    new RadioOptionsGroup(this.subtitleOptions)
       .setValue(initIndex)
       .on("select", (value) => {
         if (value === -1) {
@@ -333,7 +333,7 @@ export class SettingsPanel extends EventEmitter {
     this.audioOptionsContainer.val.append(
       ...this.audioOptions.map((option) => option.body),
     );
-    new RadioOptionPillsGroup(this.audioOptions)
+    new RadioOptionsGroup(this.audioOptions)
       .setValue(initIndex)
       .on("select", (value) => {
         this.settings.videoSettings.preferredAudioName = this.audios[value];

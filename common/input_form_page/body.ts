@@ -6,10 +6,7 @@ import {
   TextBlockingButton,
 } from "../blocking_button";
 import { SimpleIconButton, createBackButton } from "../icon_button";
-import {
-  PAGE_CENTER_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CENTER_CARD_STYLE,
-} from "../page_style";
+import { PAGE_MAX_WIDTH_M, ePageWithCenterForm } from "../page_elements";
 import { FONT_L, FONT_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
@@ -52,52 +49,44 @@ export class InputFormPage<
   ) => string;
 
   public constructor(
+    customPageStyle: string,
     title: string,
     lines: Array<HTMLElement>,
     private inputs: Array<InputField>,
     primaryButtonLabel: string,
-    customStyle: string = "",
   ) {
     super();
-    this.body = E.div(
-      {
-        class: "input-form",
-        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} ${customStyle}`,
-      },
-      E.formRef(
-        this.card,
+    this.body = ePageWithCenterForm(
+      this.card,
+      customPageStyle,
+      `max-width: ${PAGE_MAX_WIDTH_M}rem; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+      E.div(
         {
-          class: "input-form-card",
-          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap; gap: 2rem;`,
+          class: "input-form-title",
+          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; width: 80%; text-align: center; align-self: center;`,
         },
-        E.div(
-          {
-            class: "input-form-title",
-            style: `align-self: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; max-width: 80%;`,
-          },
-          E.text(title),
-        ),
-        ...lines,
-        E.divRef(
-          this.buttonsLine,
-          {
-            class: "input-form-buttons-line",
-            style: `width: 100%; display: flex; flex-flow: row-reverse wrap; justify-content: flex-start; align-items: center; gap: 2rem;`,
-          },
-          assign(
-            this.primaryButton,
-            new FilledBlockingButton<PrimaryResponse>().append(
-              E.text(primaryButtonLabel),
-            ),
-          ).body,
-          E.divRef(
-            this.actionError,
-            {
-              class: "input-form-action-error",
-              style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
-            },
-            E.text("1"),
+        E.text(title),
+      ),
+      ...lines,
+      E.divRef(
+        this.buttonsLine,
+        {
+          class: "input-form-buttons-line",
+          style: `width: 100%; display: flex; flex-flow: row-reverse wrap; justify-content: flex-start; align-items: center; gap: 2rem;`,
+        },
+        assign(
+          this.primaryButton,
+          new FilledBlockingButton<PrimaryResponse>().append(
+            E.text(primaryButtonLabel),
           ),
+        ).body,
+        E.divRef(
+          this.actionError,
+          {
+            class: "input-form-action-error",
+            style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
+          },
+          E.text("1"),
         ),
       ),
     );

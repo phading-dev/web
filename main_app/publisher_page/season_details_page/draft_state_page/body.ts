@@ -33,6 +33,7 @@ export class DraftStatePage extends EventEmitter {
   ) {
     super();
     this.inputFormPage = new InputFormPage<DeleteSeasonResponse>(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       LOCALIZED_TEXT.seasonDraftStateTitle,
       [
         E.div(
@@ -63,7 +64,6 @@ export class DraftStatePage extends EventEmitter {
       ],
       [this.seasonIdInput.val],
       LOCALIZED_TEXT.deleteButtonLabel,
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"))

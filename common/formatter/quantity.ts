@@ -4,7 +4,7 @@ let WATCH_TIME_SECONDS_FORMATTER = new Intl.NumberFormat([navigator.language], {
   unitDisplay: "short",
 });
 
-let STORAGE_GIB_FORMATTER = new Intl.NumberFormat([navigator.language], {
+let STORAGE_QUANTITY_FORMATTER = new Intl.NumberFormat([navigator.language], {
   maximumSignificantDigits: 3,
 });
 
@@ -24,15 +24,15 @@ export function formatBytesShort(bytes: number): string {
       value /= 1024; // MiB
       if (value >= 1024) {
         value /= 1024; // GiB
-        return `${STORAGE_GIB_FORMATTER.format(value)} GiB`;
+        return `${STORAGE_QUANTITY_FORMATTER.format(value)} GiB`;
       } else {
-        return `${STORAGE_GIB_FORMATTER.format(value)} MiB`;
+        return `${STORAGE_QUANTITY_FORMATTER.format(value)} MiB`;
       }
     } else {
-      return `${STORAGE_GIB_FORMATTER.format(value)} KiB`;
+      return `${STORAGE_QUANTITY_FORMATTER.format(value)} KiB`;
     }
   } else {
-    return `${STORAGE_GIB_FORMATTER.format(value)} B`;
+    return `${STORAGE_QUANTITY_FORMATTER.format(value)} B`;
   }
 }
 

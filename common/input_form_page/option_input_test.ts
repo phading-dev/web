@@ -1,7 +1,7 @@
 import path = require("path");
 import { SCHEME } from "../color_scheme";
 import { normalizeBody } from "../normalize_body";
-import { OptionPill } from "../option_pills";
+import { OptionPill } from "../option_buttons";
 import { setTabletView } from "../view_port";
 import { RadioOptionInput } from "./option_input";
 import { E } from "@selfage/element/factory";

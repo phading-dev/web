@@ -34,6 +34,7 @@ export class SignInPage extends EventEmitter {
   public constructor(private serviceClient: WebServiceClient) {
     super();
     this.inputFormPage = new InputFormPage<SignInResponse>(
+      "",
       LOCALIZED_TEXT.signInTitle,
       [
         assign(

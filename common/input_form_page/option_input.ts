@@ -1,11 +1,11 @@
 import { SCHEME } from "../color_scheme";
-import { OptionPill, RadioOptionPillsGroup } from "../option_pills";
+import { OptionPill, RadioOptionsGroup } from "../option_buttons";
 import { FONT_M } from "../sizes";
 import { E } from "@selfage/element/factory";
 
 export class RadioOptionInput<ValueType> {
   public body: HTMLDivElement;
-  private radioOptionPillsGroup: RadioOptionPillsGroup<ValueType>;
+  private radioOptionsGroup: RadioOptionsGroup<ValueType>;
 
   public constructor(
     label: string,
@@ -33,14 +33,14 @@ export class RadioOptionInput<ValueType> {
         ...options.map((option) => option.body),
       ),
     );
-    this.radioOptionPillsGroup = new RadioOptionPillsGroup(options).on(
+    this.radioOptionsGroup = new RadioOptionsGroup(options).on(
       "select",
       (value) => this.selectValueFn(value),
     );
   }
 
   public setValue(value: ValueType): this {
-    this.radioOptionPillsGroup.setValue(value);
+    this.radioOptionsGroup.setValue(value);
     this.selectValueFn(value);
     return this;
   }

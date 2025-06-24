@@ -155,7 +155,7 @@ export default class Text {
     return `Choose a profile`;
   }
   get accountNotFoundError() {
-    return `Requested profile not found. Or you can sign out and sign in to other users.`;
+    return `Requested profile not found. Or you can sign out and sign in to other accounts.`;
   }
   get switchAccountFailedError() {
     return `Failed to switch profile. Please try again later.`;
@@ -477,7 +477,7 @@ export default class Text {
     return `Watch history`;
   }
   get usageTitle() {
-    return `Usage estimates`;
+    return `Charge estimates`;
   }
   get usageReportSelectOneDayLabel() {
     return `One day`;
@@ -490,6 +490,12 @@ export default class Text {
   }
   get usageReportSelectMonths() {
     return `Months`;
+  }
+  get usageUpdateDaily() {
+    return `Updated daily`;
+  }
+  get usageUpdateMonthly() {
+    return `Updated monthly`;
   }
   get watchLaterTitle() {
     return `Watch later`;

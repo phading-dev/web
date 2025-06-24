@@ -11,7 +11,6 @@ import {
   createCircularProgressIcon,
   createFilledStarIcon,
 } from "../../../common/icons";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import { eCoverImage } from "../../../common/season_cover_image";
 import {
   AVATAR_M,
@@ -29,24 +28,12 @@ import { AccountDetails } from "@phading/user_service_interface/web/third_person
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
-export function eFullItemsPage(
-  ...elements: Array<HTMLElement>
-): HTMLDivElement {
-  return E.div(
-    {
-      class: "full-page",
-      style: `width: 100%; min-height: 100%; background-color: ${SCHEME.neutral4}; padding: 1rem 1rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 1rem; box-sizing: border-box; display: flex; flex-flow: column nowrap;`,
-    },
-    ...elements,
-  );
-}
-
 export function eSeasonItemContainerRef(
   ref: Ref<HTMLDivElement>,
 ): HTMLDivElement {
   return E.divRef(ref, {
     class: "season-item-container-content",
-    style: `width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(17.6rem, 1fr)); gap: 1rem;`,
+    style: `width: 100%; box-sizing: border-box; padding: 0 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(17.6rem, 1fr)); gap: 1rem;`,
   });
 }
 
@@ -54,7 +41,7 @@ export function eContainerTitle(title: string): HTMLDivElement {
   return E.div(
     {
       class: "container-title",
-      style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+      style: `padding: 0 1rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
     },
     E.text(title),
   );
@@ -68,7 +55,7 @@ export function eContainerTitleClickableRef(
     ref,
     {
       class: "container-title-clickable",
-      style: `cursor: pointer; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: .5rem;`,
+      style: `cursor: pointer; width: 100%; box-sizing: border-box; display: flex; flex-flow: row nowrap; align-items: center;`,
     },
     eContainerTitle(title),
     E.div(
@@ -148,7 +135,7 @@ export function eContinueEpisodeItemContainerRef(
 ): HTMLDivElement {
   return E.divRef(ref, {
     class: "continue-watching-content",
-    style: `width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr)); gap: 1rem;`,
+    style: `width: 100%; box-sizing: border-box; padding: 0 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr)); gap: 1rem;`,
   });
 }
 
@@ -227,7 +214,7 @@ export function ePublisherItemContainerRef(
 ): HTMLDivElement {
   return E.divRef(ref, {
     class: "publishers-content",
-    style: `width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr)); gap: 2rem;`,
+    style: `width: 100%; box-sizing: border-box; padding: 0 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr)); gap: 2rem;`,
   });
 }
 
@@ -283,7 +270,7 @@ export function ePublisherContextItem(
   return E.div(
     {
       class: "publisher-context-item-container",
-      style: `width: 100%; display: flex; flex-flow: row nowrap; justify-content: center; ${customStyle}`,
+      style: `width: 100%; box-sizing: border-box; padding: 0 1rem; display: flex; flex-flow: row nowrap; justify-content: center; ${customStyle}`,
     },
     E.div(
       {

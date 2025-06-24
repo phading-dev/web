@@ -13,9 +13,9 @@ import {
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
-  PAGE_CENTER_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CENTER_CARD_STYLE,
-} from "../../../../common/page_style";
+  PAGE_MAX_WIDTH_M,
+  ePageWithCenterForm,
+} from "../../../../common/page_elements";
 import { eCoverImage } from "../../../../common/season_cover_image";
 import { FONT_L, FONT_M, FONT_S } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
@@ -67,88 +67,81 @@ export class UpdateCoverImagePage extends EventEmitter {
     public season: SeasonDetails,
   ) {
     super();
-    this.body = E.div(
-      {
-        class: "update-cover-image-page",
-        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      },
+    this.body = ePageWithCenterForm(
+      new Ref<HTMLFormElement>(),
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+      `max-width: ${PAGE_MAX_WIDTH_M}rem; display: flex; flex-flow: column nowrap; align-items: center;`,
+      assign(this.backButton, createBackButton()).body,
       E.div(
         {
-          class: "update-cover-image-card",
-          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap; align-items: center;`,
+          class: "update-cover-image-title",
+          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; max-width: 80%;`,
         },
-        assign(this.backButton, createBackButton()).body,
-        E.div(
-          {
-            class: "update-cover-image-title",
-            style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; max-width: 80%;`,
-          },
-          E.text(LOCALIZED_TEXT.updateSeasonCoverImageTitle),
-        ),
+        E.text(LOCALIZED_TEXT.updateSeasonCoverImageTitle),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      assign(this.fileDropZone, new FileDropZone("width: 100%;")).body,
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      assign(
+        this.loadErrorMessage,
         E.div({
-          style: `flex: 0 0 auto; height: 2rem;`,
+          class: "update-cover-image-load-error-message",
+          style: `display: none; align-self: flex-start; margin-bottom: .5rem; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
         }),
-        assign(this.fileDropZone, new FileDropZone("width: 100%;")).body,
-        E.div({
-          style: `flex: 0 0 auto; height: 2rem;`,
-        }),
-        assign(
-          this.loadErrorMessage,
-          E.div({
-            class: "update-cover-image-load-error-message",
-            style: `display: none; align-self: flex-start; margin-bottom: .5rem; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
-          }),
+      ),
+      E.div(
+        {
+          class: "update-cover-image-instruction",
+          style: `align-self: flex-start; font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+        },
+        E.text(
+          `${LOCALIZED_TEXT.updateSeasonCoverImageInstruction[0]}${COVER_IMAGE_WIDTH}${LOCALIZED_TEXT.updateSeasonCoverImageInstruction[1]}${COVER_IMAGE_HEIGHT}${LOCALIZED_TEXT.updateSeasonCoverImageInstruction[2]}`,
         ),
-        E.div(
-          {
-            class: "update-cover-image-instruction",
-            style: `align-self: flex-start; font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
-          },
-          E.text(
-            `${LOCALIZED_TEXT.updateSeasonCoverImageInstruction[0]}${COVER_IMAGE_WIDTH}${LOCALIZED_TEXT.updateSeasonCoverImageInstruction[1]}${COVER_IMAGE_HEIGHT}${LOCALIZED_TEXT.updateSeasonCoverImageInstruction[2]}`,
-          ),
-        ),
-        E.div({
-          style: `flex: 0 0 auto; height: 3rem;`,
-        }),
-        E.div(
-          {
-            class: "update-cover-image-preview-title",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(LOCALIZED_TEXT.updateSeasonCoverImagePreviewTitle),
-        ),
-        E.div({
-          style: `flex: 0 0 auto; height: 2rem;`,
-        }),
-        E.divRef(
-          this.previewImage,
-          {
-            class: "update-cover-image-preview",
-            style: `width: 100%; max-width: 40.2rem; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral1};`,
-          },
-          eCoverImage(`100%`, season.coverImageUrl),
-        ),
-        E.div({
-          style: `flex: 0 0 auto; height: 3rem;`,
-        }),
-        assign(
-          this.submitButton,
-          new FilledBlockingButton<UploadCoverImageResponse>()
-            .append(E.text(LOCALIZED_TEXT.updateButtonLabel))
-            .disable(),
-        ).body,
-        E.div({
-          style: `flex: 0 0 auto; height: 1rem;`,
-        }),
-        E.divRef(
-          this.submitErrorMessage,
-          {
-            class: "update-cover-image-submit-error-message",
-            style: `visibility: hidden; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
-          },
-          E.text("1"),
-        ),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 3rem;`,
+      }),
+      E.div(
+        {
+          class: "update-cover-image-preview-title",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(LOCALIZED_TEXT.updateSeasonCoverImagePreviewTitle),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      E.divRef(
+        this.previewImage,
+        {
+          class: "update-cover-image-preview",
+          style: `width: 100%; max-width: 40.2rem; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral1};`,
+        },
+        eCoverImage(`100%`, season.coverImageUrl),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 3rem;`,
+      }),
+      assign(
+        this.submitButton,
+        new FilledBlockingButton<UploadCoverImageResponse>()
+          .append(E.text(LOCALIZED_TEXT.updateButtonLabel))
+          .disable(),
+      ).body,
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+      E.divRef(
+        this.submitErrorMessage,
+        {
+          class: "update-cover-image-submit-error-message",
+          style: `visibility: hidden; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
+        },
+        E.text("1"),
       ),
     );
     this.backButton.val.on("action", () => this.emit("back"));

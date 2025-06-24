@@ -10,9 +10,9 @@ import {
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
-  PAGE_CENTER_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CENTER_CARD_STYLE,
-} from "../../../../common/page_style";
+  PAGE_MAX_WIDTH_M,
+  ePageWithCenterForm,
+} from "../../../../common/page_elements";
 import { AVATAR_M, AVATAR_S, FONT_L, FONT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { MAX_AVATAR_SIZE } from "@phading/constants/account";
@@ -34,6 +34,7 @@ export class UpdateAvatarPage extends EventEmitter {
   }
 
   public body: HTMLDivElement;
+  private card = new Ref<HTMLFormElement>();
   public backButton = new Ref<SimpleIconButton>();
   public fileDropZone = new Ref<FileDropZone>();
   private loadErrorText = new Ref<HTMLDivElement>();
@@ -50,124 +51,117 @@ export class UpdateAvatarPage extends EventEmitter {
     account: AccountAndUser,
   ) {
     super();
-    this.body = E.div(
-      {
-        class: "update-avatar",
-        style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      },
+    this.body = ePageWithCenterForm(
+      this.card,
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+      `max-width: ${PAGE_MAX_WIDTH_M}rem; display: flex; flex-flow: column nowrap; align-items: center;`,
+      assign(this.backButton, createBackButton()).body,
       E.div(
         {
-          class: "update-avatar-card",
-          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap; align-items: center;`,
+          class: "update-avatar-title",
+          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
         },
-        assign(this.backButton, createBackButton()).body,
+        E.text(LOCALIZED_TEXT.updateAvatarTitle),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      assign(this.fileDropZone, new FileDropZone("width: 100%;")).body,
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+      E.divRef(
+        this.loadErrorText,
+        {
+          class: "update-avatar-image-load-error",
+          style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
+        },
+        E.text("1"),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      E.div(
+        {
+          class: "update-avatar-preview-label",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(LOCALIZED_TEXT.previewAvatarLabel),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      E.div(
+        {
+          class: "update-avatar-preview-line",
+          style: `display: flex; flex-flow: row nowrap; width: 100%; justify-content: center; align-items: flex-end; gap: 5rem;`,
+        },
         E.div(
           {
-            class: "update-avatar-title",
-            style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(LOCALIZED_TEXT.updateAvatarTitle),
-        ),
-        E.div({
-          style: `flex: 0 0 auto; height: 2rem;`,
-        }),
-        assign(this.fileDropZone, new FileDropZone("width: 100%;")).body,
-        E.div({
-          style: `flex: 0 0 auto; height: 1rem;`,
-        }),
-        E.divRef(
-          this.loadErrorText,
-          {
-            class: "update-avatar-image-load-error",
-            style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
-          },
-          E.text("1"),
-        ),
-        E.div({
-          style: `flex: 0 0 auto; height: 2rem;`,
-        }),
-        E.div(
-          {
-            class: "update-avatar-preview-label",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(LOCALIZED_TEXT.previewAvatarLabel),
-        ),
-        E.div({
-          style: `flex: 0 0 auto; height: 2rem;`,
-        }),
-        E.div(
-          {
-            class: "update-avatar-preview-line",
-            style: `display: flex; flex-flow: row nowrap; width: 100%; justify-content: center; align-items: flex-end; gap: 5rem;`,
+            class: "update-avatar-preview-medium-container",
+            style: `display: flex; flex-flow: column nowrap; align-items: center; gap: 2rem;`,
           },
           E.div(
             {
-              class: "update-avatar-preview-medium-container",
-              style: `display: flex; flex-flow: column nowrap; align-items: center; gap: 2rem;`,
+              class: "update-avatar-preview-medium-cap",
+              style: `position: relative; width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: ${AVATAR_M}rem; border: .1rem solid ${SCHEME.neutral1}; overflow: hidden;`,
             },
-            E.div(
-              {
-                class: "update-avatar-preview-medium-cap",
-                style: `position: relative; width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: ${AVATAR_M}rem; border: .1rem solid ${SCHEME.neutral1}; overflow: hidden;`,
-              },
-              E.imageRef(this.previewMediumImage, {
-                class: "update-avatar-preview-medium-image",
-                style: `width: 100%; height: 100%;`,
-              }),
-            ),
-            E.div(
-              {
-                class: "update-avatar-preview-medium-label",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-              },
-              E.text(`${AVATAR_M * 10} x ${AVATAR_M * 10}`),
-            ),
+            E.imageRef(this.previewMediumImage, {
+              class: "update-avatar-preview-medium-image",
+              style: `width: 100%; height: 100%;`,
+            }),
           ),
           E.div(
             {
-              class: "update-avatar-preview-large-container",
-              style: `display: flex; flex-flow: column nowrap; align-items: center; gap: 2rem;`,
+              class: "update-avatar-preview-medium-label",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
-            E.div(
-              {
-                class: "update-avatar-preview-small-cap",
-                style: `position: relative; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: ${AVATAR_S}rem; border: .1rem solid ${SCHEME.neutral1}; overflow: hidden;`,
-              },
-              E.imageRef(this.previewSmallImage, {
-                class: "change-avatar-preview-small-image",
-                style: `width: 100%; height: 100%;`,
-              }),
-            ),
-            E.div(
-              {
-                class: "update-avatar-preview-small-label",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-              },
-              E.text(`${AVATAR_S * 10} x ${AVATAR_S * 10}`),
-            ),
+            E.text(`${AVATAR_M * 10} x ${AVATAR_M * 10}`),
           ),
         ),
-        E.div({
-          style: `flex: 0 0 auto; height: 2rem;`,
-        }),
-        assign(
-          this.uploadButton,
-          new FilledBlockingButton("")
-            .append(E.text(LOCALIZED_TEXT.uploadAvatarLabel))
-            .disable(),
-        ).body,
-        E.div({
-          style: `flex: 0 0 auto; height: 1rem;`,
-        }),
-        E.divRef(
-          this.uploadStatusText,
+        E.div(
           {
-            class: "update-avatar-upload-status-text",
-            style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
+            class: "update-avatar-preview-large-container",
+            style: `display: flex; flex-flow: column nowrap; align-items: center; gap: 2rem;`,
           },
-          E.text("1"),
+          E.div(
+            {
+              class: "update-avatar-preview-small-cap",
+              style: `position: relative; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: ${AVATAR_S}rem; border: .1rem solid ${SCHEME.neutral1}; overflow: hidden;`,
+            },
+            E.imageRef(this.previewSmallImage, {
+              class: "change-avatar-preview-small-image",
+              style: `width: 100%; height: 100%;`,
+            }),
+          ),
+          E.div(
+            {
+              class: "update-avatar-preview-small-label",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(`${AVATAR_S * 10} x ${AVATAR_S * 10}`),
+          ),
         ),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      assign(
+        this.uploadButton,
+        new FilledBlockingButton("")
+          .append(E.text(LOCALIZED_TEXT.uploadAvatarLabel))
+          .disable(),
+      ).body,
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+      E.divRef(
+        this.uploadStatusText,
+        {
+          class: "update-avatar-upload-status-text",
+          style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
+        },
+        E.text("1"),
       ),
     );
     if (account.avatarLargeUrl) {

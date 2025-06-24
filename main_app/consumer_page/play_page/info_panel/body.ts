@@ -33,7 +33,7 @@ import { Ref } from "@selfage/ref";
 import { EventEmitter } from "events";
 
 export interface InfoPanel {
-  on(event: "showDetails", listener: () => void): this;
+  on(event: "viewDetails", listener: () => void): this;
   on(event: "play", listener: (episodeId: string) => void): this;
 }
 
@@ -197,7 +197,7 @@ export class InfoPanel extends EventEmitter {
       this.showMeteringExplained,
     );
     this.seasonInfoButton.val.addEventListener("click", () =>
-      this.emit("showDetails"),
+      this.emit("viewDetails"),
     );
     if (this.nextEpisode && this.nextEpisode.canPlay) {
       this.nextEpisodeButton.val.addEventListener("click", () => {

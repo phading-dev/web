@@ -12,10 +12,11 @@ import {
   createForbiddenIcon,
 } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import {
-  PAGE_CENTER_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CENTER_CARD_STYLE,
-} from "../../../common/page_style";
+  PAGE_MAX_WIDTH_L,
+  ePageWithTopDownCard,
+} from "../../../common/page_elements";
 import { FONT_M, FONT_WEIGHT_600, ICON_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
@@ -34,7 +35,6 @@ import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { TzDate } from "@selfage/tz_date";
 import { WebServiceClient } from "@selfage/web_service_client";
-import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 
 export interface PaymentPage {
   on(event: "retried", listener: () => void): this;
@@ -51,6 +51,7 @@ export class PaymentPage extends EventEmitter {
   private static INIT_MONTHS = 5;
 
   public body: HTMLDivElement;
+  private card = new Ref<HTMLDivElement>();
   public paymentStatusContent = new Ref<HTMLDivElement>();
   public retryPaymentsButton = new Ref<BlockingButton>();
   public retryPaymentsErrorMessage = new Ref<HTMLDivElement>();
@@ -68,10 +69,10 @@ export class PaymentPage extends EventEmitter {
     private getNowDate: () => Date,
   ) {
     super();
-    this.body = E.div({
-      class: "payment-page",
-      style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-    });
+    this.body = ePageWithTopDownCard(
+      this.card,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: 1rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
+    );
     this.load();
   }
 
@@ -80,47 +81,7 @@ export class PaymentPage extends EventEmitter {
       newGetPaymentProfileInfoRequest({}),
     );
     if (response.notAvailable) {
-      this.body.append(
-        E.div(
-          {
-            class: "payment-page-card",
-            style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
-          },
-          E.div(
-            {
-              class: "payment-page-status-title",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-            },
-            E.text(LOCALIZED_TEXT.paymentStatusTitle),
-          ),
-          E.div({
-            style: `height: 1rem;`,
-          }),
-          E.div(
-            {
-              class: "payment-page-not-available",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(LOCALIZED_TEXT.paymentStatusNotAvailable),
-          ),
-        ),
-      );
-      this.emit("loaded");
-      return;
-    }
-
-    let nowDate = TzDate.fromDate(
-      this.getNowDate(),
-      ENV_VARS.timezoneNegativeOffset,
-    );
-    let endMonth = nowDate.clone().moveToFirstDayOfMonth().addMonths(-1);
-    let startMonth = endMonth.clone().addMonths(-PaymentPage.INIT_MONTHS);
-    this.body.append(
-      E.div(
-        {
-          class: "payment-page-card",
-          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
-        },
+      this.card.val.append(
         E.div(
           {
             class: "payment-page-status-title",
@@ -133,135 +94,163 @@ export class PaymentPage extends EventEmitter {
         }),
         E.div(
           {
-            class: "payment-page-status-line",
-            style: `display: flex; flex-flow: row nowrap; gap: 1rem; align-items: center;`,
+            class: "payment-page-not-available",
+            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
-          E.div(
-            {
-              class: "payment-page-status-icon",
-              style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
-            },
-            this.getIcon(response.state),
-          ),
-          E.divRef(
-            this.paymentStatusContent,
-            {
-              class: "payment-page-status-content",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              this.getStatusText(
-                nowDate,
-                response.paymentAfterMs,
-                response.state,
-              ),
-            ),
-          ),
+          E.text(LOCALIZED_TEXT.paymentStatusNotAvailable),
         ),
-        ...(response.state === PaymentProfileState.WITH_FAILED_PAYMENTS
-          ? [
-              E.div({
-                style: `height: 1rem;`,
-              }),
-              E.div(
-                {
-                  class: "payment-page-retry-payments-line",
-                  style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: 1rem; align-items: center; justify-content: flex-start;`,
-                },
-                assign(
-                  this.retryPaymentsButton,
-                  new FilledBlockingButton("").append(
-                    E.text(LOCALIZED_TEXT.retryPaymentsLabel),
-                  ),
-                ).body,
-                E.divRef(
-                  this.retryPaymentsErrorMessage,
-                  {
-                    class: "payment-page-retry-payments-error-message",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
-                  },
-                  E.text("1"),
-                ),
-              ),
-            ]
-          : []),
-        E.div({
-          style: `height: 3rem;`,
-        }),
-        E.div(
-          {
-            class: "payment-page-payment-methods-title",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-          },
-          E.text(LOCALIZED_TEXT.paymentMethodTitle),
-        ),
-        E.div({
-          style: `height: 1rem;`,
-        }),
-        response.primaryPaymentMethod
-          ? new CardPaymentItem(
-              nowDate.toTimestampMs(),
-              response.primaryPaymentMethod,
-            ).body
-          : new AddCardPaymentItem().body,
-        E.div({
-          style: `height: 1.5rem;`,
-        }),
-        E.div(
-          {
-            class: "payment-page-add-payment-method-line",
-            style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: 1rem; align-items: center; justify-content: flex-start;`,
-          },
-          assign(
-            this.addPaymentMethodButton,
-            new FilledBlockingButton<CreateStripeSessionToAddPaymentMethodResponse>(
-              "",
-            ).append(
-              E.text(
-                response.primaryPaymentMethod
-                  ? LOCALIZED_TEXT.updateCardPaymentLabel
-                  : LOCALIZED_TEXT.addCardPaymentLabel,
-              ),
-            ),
-          ).body,
-          E.divRef(
-            this.addPaymentMethodErrorMessage,
-            {
-              class: "payment-page-add-payment-method-error-message",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
-            },
-            E.text("1"),
-          ),
-        ),
-        E.div({
-          style: `height: 3rem;`,
-        }),
-        E.div(
-          {
-            class: "payment-page-payment-activities-title",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-          },
-          E.text(LOCALIZED_TEXT.paymentActivitiesTitle),
-        ),
-        E.div({
-          style: `height: 1rem;`,
-        }),
-        assign(
-          this.monthRangeInput,
-          DateRangeInput.create(
-            DateType.MONTH,
-            MAX_MONTH_RANGE,
-            `width: 100%;`,
-          ).show(),
-        ).body,
-        E.div({
-          style: `height: 1.5rem;`,
-        }),
-        E.divRef(this.paymentActivityList, {
-          class: "payment-page-payment-activities-list",
-          style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
-        }),
+      );
+      this.emit("loaded");
+      return;
+    }
+
+    let nowDate = TzDate.fromDate(
+      this.getNowDate(),
+      ENV_VARS.timezoneNegativeOffset,
+    );
+    let endMonth = nowDate.clone().moveToFirstDayOfMonth().addMonths(-1);
+    let startMonth = endMonth.clone().addMonths(-PaymentPage.INIT_MONTHS);
+    this.card.val.append(
+      E.div(
+        {
+          class: "payment-page-status-title",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+        },
+        E.text(LOCALIZED_TEXT.paymentStatusTitle),
       ),
+      E.div({
+        style: `height: 1rem;`,
+      }),
+      E.div(
+        {
+          class: "payment-page-status-line",
+          style: `display: flex; flex-flow: row nowrap; gap: 1rem; align-items: center;`,
+        },
+        E.div(
+          {
+            class: "payment-page-status-icon",
+            style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
+          },
+          this.getIcon(response.state),
+        ),
+        E.divRef(
+          this.paymentStatusContent,
+          {
+            class: "payment-page-status-content",
+            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          },
+          E.text(
+            this.getStatusText(
+              nowDate,
+              response.paymentAfterMs,
+              response.state,
+            ),
+          ),
+        ),
+      ),
+      ...(response.state === PaymentProfileState.WITH_FAILED_PAYMENTS
+        ? [
+            E.div({
+              style: `height: 1rem;`,
+            }),
+            E.div(
+              {
+                class: "payment-page-retry-payments-line",
+                style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: 1rem; align-items: center; justify-content: flex-start;`,
+              },
+              assign(
+                this.retryPaymentsButton,
+                new FilledBlockingButton("").append(
+                  E.text(LOCALIZED_TEXT.retryPaymentsLabel),
+                ),
+              ).body,
+              E.divRef(
+                this.retryPaymentsErrorMessage,
+                {
+                  class: "payment-page-retry-payments-error-message",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
+                },
+                E.text("1"),
+              ),
+            ),
+          ]
+        : []),
+      E.div({
+        style: `height: 3rem;`,
+      }),
+      E.div(
+        {
+          class: "payment-page-payment-methods-title",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+        },
+        E.text(LOCALIZED_TEXT.paymentMethodTitle),
+      ),
+      E.div({
+        style: `height: 1rem;`,
+      }),
+      response.primaryPaymentMethod
+        ? new CardPaymentItem(
+            nowDate.toTimestampMs(),
+            response.primaryPaymentMethod,
+          ).body
+        : new AddCardPaymentItem().body,
+      E.div({
+        style: `height: 1.5rem;`,
+      }),
+      E.div(
+        {
+          class: "payment-page-add-payment-method-line",
+          style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: 1rem; align-items: center; justify-content: flex-start;`,
+        },
+        assign(
+          this.addPaymentMethodButton,
+          new FilledBlockingButton<CreateStripeSessionToAddPaymentMethodResponse>(
+            "",
+          ).append(
+            E.text(
+              response.primaryPaymentMethod
+                ? LOCALIZED_TEXT.updateCardPaymentLabel
+                : LOCALIZED_TEXT.addCardPaymentLabel,
+            ),
+          ),
+        ).body,
+        E.divRef(
+          this.addPaymentMethodErrorMessage,
+          {
+            class: "payment-page-add-payment-method-error-message",
+            style: `font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
+          },
+          E.text("1"),
+        ),
+      ),
+      E.div({
+        style: `height: 3rem;`,
+      }),
+      E.div(
+        {
+          class: "payment-page-payment-activities-title",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+        },
+        E.text(LOCALIZED_TEXT.paymentActivitiesTitle),
+      ),
+      E.div({
+        style: `height: 1rem;`,
+      }),
+      assign(
+        this.monthRangeInput,
+        DateRangeInput.create(
+          DateType.MONTH,
+          MAX_MONTH_RANGE,
+          `width: 100%;`,
+        ).show(),
+      ).body,
+      E.div({
+        style: `height: 1.5rem;`,
+      }),
+      E.divRef(this.paymentActivityList, {
+        class: "payment-page-payment-activities-list",
+        style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
+      }),
     );
     this.monthRangeInput.val.setValues(
       startMonth.toLocalMonthISOString(),
@@ -375,7 +364,7 @@ export class PaymentPage extends EventEmitter {
           E.div(
             {
               class: "payment-page-activity",
-              style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: row nowrap; gap: 1rem;`,
+              style: `width: 100%; box-sizing: border-box; display: flex; flex-flow: row nowrap; gap: 1rem;`,
             },
             E.div(
               {

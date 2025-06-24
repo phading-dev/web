@@ -1,7 +1,7 @@
 import path = require("path");
 import { SCHEME } from "./color_scheme";
 import { normalizeBody } from "./normalize_body";
-import { OptionPill, RadioOptionPillsGroup } from "./option_pills";
+import { OptionPill, OptionTab, RadioOptionsGroup } from "./option_buttons";
 import { setTabletView } from "./view_port";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -16,10 +16,10 @@ enum ValueType {
 }
 
 TEST_RUNNER.run({
-  name: "OptionPillsTest",
+  name: "OptionButtonsTest",
   cases: [
     new (class implements TestCase {
-      public name = "Default_ChooseTheSameOption_ChooseSecondOption";
+      public name = "OptionPills_ChooseTheSamePill_ChooseSecondPill";
       private container: HTMLDivElement;
       public async execute() {
         // Execute
@@ -34,7 +34,7 @@ TEST_RUNNER.run({
         // Execute
         this.container.append(walkOption.body, runOption.body);
         let selectedValue: ValueType;
-        let cut = new RadioOptionPillsGroup([walkOption, runOption]);
+        let cut = new RadioOptionsGroup([walkOption, runOption]);
         cut.on("select", (value) => {
           selectedValue = value;
         });
@@ -74,6 +74,69 @@ TEST_RUNNER.run({
           path.join(__dirname, "/option_pills_select_second.png"),
           path.join(__dirname, "/golden/option_pills_select_second.png"),
           path.join(__dirname, "/option_pills_select_second_diff.png"),
+          { fullPage: true },
+        );
+      }
+      public tearDown() {
+        this.container.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "OptionTabs_ChooseTheSameTab_ChooseSecondTab";
+      private container: HTMLDivElement;
+      public async execute() {
+        // Execute
+        await setTabletView();
+        this.container = E.div({
+          style: `width: 100%; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: row nowrap;`,
+        });
+        document.body.append(this.container);
+        let walkOption = new OptionTab("Walk", ValueType.WALK, "width: 10rem;");
+        let runOption = new OptionTab("Run", ValueType.RUN, "width: 10rem;");
+
+        // Execute
+        this.container.append(walkOption.body, runOption.body);
+        let selectedValue: ValueType;
+        let cut = new RadioOptionsGroup([walkOption, runOption]);
+        cut.on("select", (value) => {
+          selectedValue = value;
+        });
+        cut.setValue(ValueType.WALK);
+
+        // Verify
+        assertThat(selectedValue, eq(undefined), "no selected value");
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/option_tabs_default.png"),
+          path.join(__dirname, "/golden/option_tabs_default.png"),
+          path.join(__dirname, "/option_tabs_default_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        walkOption.click();
+
+        // Verify
+        assertThat(
+          selectedValue,
+          eq(undefined),
+          "not selecting the same value",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/option_tabs_same_option.png"),
+          path.join(__dirname, "/golden/option_tabs_default.png"),
+          path.join(__dirname, "/option_tabs_same_option_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        runOption.click();
+
+        // Verify
+        assertThat(selectedValue, eq(ValueType.RUN), "selected another value");
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/option_tabs_select_second.png"),
+          path.join(__dirname, "/golden/option_tabs_select_second.png"),
+          path.join(__dirname, "/option_tabs_select_second_diff.png"),
           { fullPage: true },
         );
       }

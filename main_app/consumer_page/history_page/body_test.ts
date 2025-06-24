@@ -10,11 +10,6 @@ import {
 } from "../../../common/view_port";
 import { HistoryPage } from "./body";
 import {
-  LIST_METER_READINGS_PER_DAY,
-  LIST_METER_READINGS_PER_DAY_REQUEST_BODY,
-  ListMeterReadingsPerDayResponse,
-} from "@phading/meter_service_interface/show/web/consumer/interface";
-import {
   LIST_WATCH_SESSIONS,
   LIST_WATCH_SESSIONS_REQUEST_BODY,
   ListWatchSessionsResponse,
@@ -43,31 +38,11 @@ TEST_RUNNER.run({
       public async execute() {
         // Prepare
         await setTabletView();
-        let listMeterReadingsPerDayRequest: any;
         let serviceClientMock = new (class extends WebServiceClientMock {
           public async send(
             request: ClientRequestInterface<any>,
           ): Promise<any> {
             switch (request.descriptor) {
-              case LIST_METER_READINGS_PER_DAY:
-                listMeterReadingsPerDayRequest = request;
-                let response: ListMeterReadingsPerDayResponse = {
-                  readings: [
-                    {
-                      date: "2023-10-01",
-                      watchTimeSecGraded: 12345678,
-                    },
-                    {
-                      date: "2023-10-05",
-                      watchTimeSecGraded: 22345678,
-                    },
-                    {
-                      date: "2023-10-30",
-                      watchTimeSecGraded: 32345678,
-                    },
-                  ],
-                };
-                return response;
               case LIST_WATCH_SESSIONS:
                 this.request = request;
                 return this.response;
@@ -210,37 +185,13 @@ TEST_RUNNER.run({
           updatedTimeCursor: 1000,
         };
         serviceClientMock.response = response;
-        this.cut = new HistoryPage(
-          serviceClientMock,
-          () => new Date("2023-10-11"),
-        );
+        this.cut = new HistoryPage(serviceClientMock);
 
         // Execute
         document.body.append(this.cut.body);
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
-        assertThat(
-          listMeterReadingsPerDayRequest.body,
-          eqMessage(
-            {
-              startDate: "2023-10-01",
-              endDate: "2023-10-31",
-            },
-            LIST_METER_READINGS_PER_DAY_REQUEST_BODY,
-          ),
-          "ListMeterReadingsPerDayRequest",
-        );
-        assertThat(
-          serviceClientMock.request.body,
-          eqMessage(
-            {
-              limit: 10,
-            },
-            LIST_WATCH_SESSIONS_REQUEST_BODY,
-          ),
-          "ListWatchSessionsRequest 1",
-        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/history_page_tablet.png"),
           path.join(__dirname, "/golden/history_page_tablet.png"),
@@ -334,13 +285,25 @@ TEST_RUNNER.run({
         );
 
         // Prepare
+        let viewWatchLaterCalled = false;
+        this.cut.on("viewWatchLater", () => {
+          viewWatchLaterCalled = true;
+        });
+
+        // Execute
+        this.cut.tabs.val.watchLaterTab.val.click();
+
+        // Verify
+        assertThat(viewWatchLaterCalled, eq(true), "viewWatchLater called");
+
+        // Prepare
         let viewUsageCalled = false;
         this.cut.on("viewUsage", () => {
           viewUsageCalled = true;
         });
 
         // Execute
-        this.cut.estimatesCard.val.click();
+        this.cut.tabs.val.usageTab.val.click();
 
         // Verify
         assertThat(viewUsageCalled, eq(true), "viewUsage called");
@@ -376,11 +339,6 @@ TEST_RUNNER.run({
             request: ClientRequestInterface<any>,
           ): Promise<any> {
             switch (request.descriptor) {
-              case LIST_METER_READINGS_PER_DAY:
-                let response: ListMeterReadingsPerDayResponse = {
-                  readings: [],
-                };
-                return response;
               case LIST_WATCH_SESSIONS:
                 this.request = request;
                 return this.response;
@@ -392,10 +350,7 @@ TEST_RUNNER.run({
         serviceClientMock.response = {
           sessions: [],
         } as ListWatchSessionsResponse;
-        this.cut = new HistoryPage(
-          serviceClientMock,
-          () => new Date("2023-10-11"),
-        );
+        this.cut = new HistoryPage(serviceClientMock);
 
         // Execute
         document.body.append(this.cut.body);

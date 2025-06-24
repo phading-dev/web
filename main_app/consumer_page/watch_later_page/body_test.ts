@@ -198,8 +198,32 @@ TEST_RUNNER.run({
         );
 
         // Prepare
+        let viewHistory = false;
+        this.cut.on("viewHistory", () => {
+          viewHistory = true;
+        });
+
+        // Execute
+        this.cut.tabs.val.watchHistoryTab.val.click();
+
+        // Verify
+        assertThat(viewHistory, eq(true), "View history");
+
+        // Prepare
+        let viewUsage = false;
+        this.cut.on("viewUsage", () => {
+          viewUsage = true;
+        });
+
+        // Execute
+        this.cut.tabs.val.usageTab.val.click();
+
+        // Verify
+        assertThat(viewUsage, eq(true), "View usage");
+
+        // Prepare
         let detailsId: string;
-        this.cut.on("showDetails", (seasonId) => {
+        this.cut.on("viewDetails", (seasonId) => {
           detailsId = seasonId;
         });
 

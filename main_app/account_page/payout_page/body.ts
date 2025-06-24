@@ -5,9 +5,9 @@ import { formatMoney } from "../../../common/formatter/price";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import {
-  PAGE_CENTER_CARD_BACKGROUND_STYLE,
-  PAGE_MEDIUM_CENTER_CARD_STYLE,
-} from "../../../common/page_style";
+  PAGE_MAX_WIDTH_L,
+  ePageWithTopDownCard,
+} from "../../../common/page_elements";
 import { FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
@@ -36,6 +36,7 @@ export class PayoutPage extends EventEmitter {
   private static INIT_MONTHS = 5;
 
   public body: HTMLDivElement;
+  private card = new Ref<HTMLDivElement>();
   public monthRangeInput = new Ref<DateRangeInput>();
   public payoutActivityList = new Ref<HTMLDivElement>();
   private listRequestIndex = 0;
@@ -45,10 +46,10 @@ export class PayoutPage extends EventEmitter {
     private getNowDate: () => Date,
   ) {
     super();
-    this.body = E.div({
-      class: "payout-page",
-      style: `${PAGE_CENTER_CARD_BACKGROUND_STYLE} padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-    });
+    this.body = ePageWithTopDownCard(
+      this.card,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: 1rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
+    );
     this.load();
   }
 
@@ -57,29 +58,23 @@ export class PayoutPage extends EventEmitter {
       newGetPayoutProfileInfoRequest({}),
     );
     if (response.notAvailable) {
-      this.body.append(
+      this.card.val.append(
         E.div(
           {
-            class: "payout-page-card",
-            style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
+            class: "payout-page-status-title",
+            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
           },
-          E.div(
-            {
-              class: "payout-page-status-title",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-            },
-            E.text(LOCALIZED_TEXT.payoutManagementTitle),
-          ),
-          E.div({
-            style: `height: 1rem;`,
-          }),
-          E.div(
-            {
-              class: "payout-page-not-available",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(LOCALIZED_TEXT.payoutManagementNotAvailable),
-          ),
+          E.text(LOCALIZED_TEXT.payoutManagementTitle),
+        ),
+        E.div({
+          style: `height: 1rem;`,
+        }),
+        E.div(
+          {
+            class: "payout-page-not-available",
+            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          },
+          E.text(LOCALIZED_TEXT.payoutManagementNotAvailable),
         ),
       );
       this.emit("loaded");
@@ -92,61 +87,55 @@ export class PayoutPage extends EventEmitter {
     );
     let endMonth = nowDate.clone().moveToFirstDayOfMonth().addMonths(-1);
     let startMonth = endMonth.clone().addMonths(-PayoutPage.INIT_MONTHS);
-    this.body.appendChild(
+    this.card.val.append(
       E.div(
         {
-          class: "payout-page-card",
-          style: `${PAGE_MEDIUM_CENTER_CARD_STYLE} display: flex; flex-flow: column nowrap;`,
+          class: "payout-page-payout-profile-title",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
         },
-        E.div(
-          {
-            class: "payout-page-payout-profile-title",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-          },
-          E.text(LOCALIZED_TEXT.payoutManagementTitle),
-        ),
-        E.div({
-          style: `height: 1rem;`,
-        }),
-        E.div(
-          {
-            class: "payout-page-link-info",
-            style: `color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem;`,
-          },
-          ...this.getPayoutManagementText(
-            response.connectedAccountLinkType,
-            response.connectedAccountUrl,
-          ),
-        ),
-        E.div({
-          style: `height: 3rem;`,
-        }),
-        E.div(
-          {
-            class: "payout-page-payout-activities-title",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-          },
-          E.text(LOCALIZED_TEXT.payoutActivitiesTitle),
-        ),
-        E.div({
-          style: `height: 1rem;`,
-        }),
-        assign(
-          this.monthRangeInput,
-          DateRangeInput.create(
-            DateType.MONTH,
-            MAX_MONTH_RANGE,
-            `width: 100%;`,
-          ).show(),
-        ).body,
-        E.div({
-          style: `height: 1.5rem;`,
-        }),
-        E.divRef(this.payoutActivityList, {
-          class: "payout-page-payout-activities-list",
-          style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
-        }),
+        E.text(LOCALIZED_TEXT.payoutManagementTitle),
       ),
+      E.div({
+        style: `height: 1rem;`,
+      }),
+      E.div(
+        {
+          class: "payout-page-link-info",
+          style: `color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem;`,
+        },
+        ...this.getPayoutManagementText(
+          response.connectedAccountLinkType,
+          response.connectedAccountUrl,
+        ),
+      ),
+      E.div({
+        style: `height: 3rem;`,
+      }),
+      E.div(
+        {
+          class: "payout-page-payout-activities-title",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+        },
+        E.text(LOCALIZED_TEXT.payoutActivitiesTitle),
+      ),
+      E.div({
+        style: `height: 1rem;`,
+      }),
+      assign(
+        this.monthRangeInput,
+        DateRangeInput.create(
+          DateType.MONTH,
+          MAX_MONTH_RANGE,
+          `width: 100%;`,
+        ).show(),
+      ).body,
+      E.div({
+        style: `height: 1.5rem;`,
+      }),
+      E.divRef(this.payoutActivityList, {
+        class: "payout-page-payout-activities-list",
+        style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
+      }),
     );
     this.monthRangeInput.val.setValues(
       startMonth.toLocalMonthISOString(),
@@ -250,7 +239,7 @@ export class PayoutPage extends EventEmitter {
           E.div(
             {
               class: "payout-page-activity",
-              style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: row wrap; gap: 1rem;`,
+              style: `width: 100%; box-sizing: border-box; display: flex; flex-flow: row wrap; gap: 1rem;`,
             },
             E.div(
               {

@@ -32,6 +32,7 @@ export class PublishedStatePage extends EventEmitter {
   ) {
     super();
     this.inputFormPage = new InputFormPage<ArchiveSeasonResponse>(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       LOCALIZED_TEXT.seasonPublishedStateTitle,
       [
         E.div(
@@ -62,7 +63,6 @@ export class PublishedStatePage extends EventEmitter {
       ],
       [this.seasonIdInput.val],
       LOCALIZED_TEXT.archiveButtonLabel,
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"))

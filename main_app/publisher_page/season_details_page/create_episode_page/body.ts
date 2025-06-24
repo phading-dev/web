@@ -39,6 +39,7 @@ export class CreateEpisodePage extends EventEmitter {
     super();
     this.request.seasonId = seasonId;
     this.inputFormPage = new InputFormPage<CreateEpisodeResponse>(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       LOCALIZED_TEXT.createEpisodeTitle,
       [
         assign(
@@ -55,7 +56,6 @@ export class CreateEpisodePage extends EventEmitter {
       ],
       [this.nameInput.val],
       LOCALIZED_TEXT.createButtonLabel,
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"))

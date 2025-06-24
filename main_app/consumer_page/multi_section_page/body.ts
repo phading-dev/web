@@ -1,11 +1,12 @@
 import EventEmitter = require("events");
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
+import { eFullPage } from "../../../common/page_elements";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
   eContainerTitleClickableRef,
   eContinueEpisodeItem,
   eContinueEpisodeItemContainerRef,
-  eFullItemsPage,
   eSeasonItem,
   eSeasonItemContainerRef,
 } from "../common/elements";
@@ -23,7 +24,7 @@ export interface MultiSectionPage {
     event: "play",
     listener: (seasonId: string, episodeId: string) => void,
   ): this;
-  on(event: "showDetails", listener: (seasonId: string) => void): this;
+  on(event: "viewDetails", listener: (seasonId: string) => void): this;
   on(event: "listWatchHistory", listener: () => void): this;
   on(event: "listRecentPremieres", listener: () => void): this;
   on(event: "listTopRated", listener: () => void): this;
@@ -47,7 +48,12 @@ export class MultiSectionPage extends EventEmitter {
     private getNowDate: () => Date,
   ) {
     super();
-    this.body = eFullItemsPage();
+    this.body = eFullPage(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+    );
     this.load();
   }
 
@@ -137,14 +143,14 @@ export class MultiSectionPage extends EventEmitter {
     recentPremiereSeasonsResponse.seasons.forEach((season) => {
       let item = eSeasonItem(season, this.getNowDate());
       item.addEventListener("click", () => {
-        this.emit("showDetails", season.seasonId);
+        this.emit("viewDetails", season.seasonId);
       });
       recentPremieresContent.val.append(item);
     });
     topRatedSeasonsResponse.seasons.forEach((season) => {
       let item = eSeasonItem(season, this.getNowDate());
       item.addEventListener("click", () => {
-        this.emit("showDetails", season.seasonId);
+        this.emit("viewDetails", season.seasonId);
       });
       topRatedContent.val.append(item);
     });

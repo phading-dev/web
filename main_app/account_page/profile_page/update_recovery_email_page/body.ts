@@ -37,6 +37,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
   ) {
     super();
     this.inputFormPage = new InputFormPage(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       LOCALIZED_TEXT.updateRecoveryEmailTitle,
       [
         E.input({
@@ -73,7 +74,6 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
       ],
       [this.newRecoveryEmailInput.val, this.currentPasswordInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .addPrimaryAction(

@@ -44,6 +44,7 @@ export class UpdateInfoPage extends EventEmitter {
     this.request.episodeId = episodeId;
 
     this.inputFormPage = new InputFormPage(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       LOCALIZED_TEXT.updateEpisodeInfoTitle,
       [
         assign(
@@ -61,7 +62,6 @@ export class UpdateInfoPage extends EventEmitter {
       ],
       [this.episodeNameInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"))

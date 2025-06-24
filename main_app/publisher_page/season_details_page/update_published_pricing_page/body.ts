@@ -81,6 +81,7 @@ export class UpdatePublishedPricingPage extends EventEmitter {
       UpdateNextSeasonGradeResponse,
       DeleteNextSeasonGradeResponse
     >(
+      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       LOCALIZED_TEXT.updateSeasonPricingTitle,
       [
         E.div(
@@ -133,7 +134,6 @@ export class UpdatePublishedPricingPage extends EventEmitter {
       ],
       [this.nextGradeInput.val, this.effectiveDateInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     )
       .addBackButton()
       .on("back", () => this.emit("back"));
