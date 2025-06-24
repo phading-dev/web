@@ -28,7 +28,7 @@ TEST_RUNNER.run({
   name: "WatchLaterPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "TabletView_Default_Scroll_Click";
+      public name = "TabletView_Default_Scroll_Click_ViewHistory_ViewUsage";
       private cut: WatchLaterPage;
       public async execute() {
         // Prepare

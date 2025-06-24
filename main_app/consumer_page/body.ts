@@ -274,6 +274,11 @@ export class ConsumerPage extends EventEmitter {
           usage: {},
         });
       })
+      .on("viewWatchLater", () => {
+        this.pushRl({
+          watchLater: {},
+        });
+      })
       .on("play", (seasonId, episodeId) => {
         this.pushRl({
           play: {
@@ -492,7 +497,17 @@ export class ConsumerPage extends EventEmitter {
   }
 
   private addUsagePage(): void {
-    this.usagePage = this.createUsagePage();
+    this.usagePage = this.createUsagePage()
+      .on("viewHistory", () => {
+        this.pushRl({
+          history: {},
+        });
+      })
+      .on("viewWatchLater", () => {
+        this.pushRl({
+          watchLater: {},
+        });
+      });
     this.appendBodies(this.usagePage.body);
   }
 
@@ -502,16 +517,24 @@ export class ConsumerPage extends EventEmitter {
   }
 
   private addWatchLaterPage(): void {
-    this.watchLaterPage = this.createWatchLaterPage().on(
-      "viewDetails",
-      (seasonId) => {
+    this.watchLaterPage = this.createWatchLaterPage()
+      .on("viewHistory", () => {
+        this.pushRl({
+          history: {},
+        });
+      })
+      .on("viewUsage", () => {
+        this.pushRl({
+          usage: {},
+        });
+      })
+      .on("viewDetails", (seasonId) => {
         this.pushRl({
           seasonDetails: {
             seasonId,
           },
         });
-      },
-    );
+      });
     this.appendBodies(this.watchLaterPage.body);
   }
 

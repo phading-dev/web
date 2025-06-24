@@ -520,5 +520,49 @@ TEST_RUNNER.run({
         this.cut.remove();
       }
     })(),
+    new (class implements TestCase {
+      public name = "ViewHistory_ViewWatchLater";
+      private cut: UsagePage;
+      public async execute() {
+        // Prepare
+        await setPhoneView();
+        let serviceClientMock = new WebServiceClientMock();
+        serviceClientMock.response = {
+          readings: [],
+        } as ListMeterReadingsPerDayResponse;
+        this.cut = new UsagePage(
+          serviceClientMock,
+          () => new Date("2023-12-20T08:00:00Z"),
+        );
+        document.body.append(this.cut.body);
+        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
+
+        let viewHistory = false;
+        this.cut.on("viewHistory", () => {
+          viewHistory = true;
+        });
+
+        // Execute
+        this.cut.tabs.val.watchHistoryTab.val.click();
+
+        // Verify
+        assertThat(viewHistory, eq(true), "View history");
+
+        // Prepare
+        let viewWatchLater = false;
+        this.cut.on("viewWatchLater", () => {
+          viewWatchLater = true;
+        });
+
+        // Execute
+        this.cut.tabs.val.watchLaterTab.val.click();
+
+        // Verify
+        assertThat(viewWatchLater, eq(true), "View watch later");
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
   ],
 });

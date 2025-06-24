@@ -33,7 +33,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "TabletView_LoadMore_ScrolledToBottom_DeskTopView_PhoneView_ClickEstimatesCard_ClickEpisode";
+        "TabletView_LoadMore_ScrolledToBottom_DeskTopView_PhoneView_ClickEstimatesCard_ClickEpisode_ViewWatchLater_ViewUsage_Play";
       private cut: HistoryPage;
       public async execute() {
         // Prepare

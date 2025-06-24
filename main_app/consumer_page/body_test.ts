@@ -828,6 +828,154 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/consumer_page_usage.png"),
           path.join(__dirname, "/consumer_page_usage_diff.png"),
         );
+
+        // Execute
+        this.cut.usagePage.emit("viewHistory");
+
+        // Verify
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              history: {},
+            },
+            CONSUMER_PAGE_RL,
+          ),
+          "history",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/consumer_page_history.png"),
+          path.join(__dirname, "/golden/consumer_page_history.png"),
+          path.join(__dirname, "/consumer_page_history_diff.png"),
+        );
+
+        // Execute
+        this.cut.historyPage.emit("viewWatchLater");
+
+        // Verify
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              watchLater: {},
+            },
+            CONSUMER_PAGE_RL,
+          ),
+          "watchLater",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/consumer_page_watch_later.png"),
+          path.join(__dirname, "/golden/consumer_page_watch_later.png"),
+          path.join(__dirname, "/consumer_page_watch_later_diff.png"),
+        );
+
+        // Execute
+        this.cut.watchLaterPage.emit("viewDetails", "season2");
+
+        // Verify
+        assertThat(
+          this.cut.seasonDetailsPage.seasonId,
+          eq("season2"),
+          "seasonDetails.seasonId from watchLater",
+        );
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              seasonDetails: {
+                seasonId: "season2",
+              },
+            },
+            CONSUMER_PAGE_RL,
+          ),
+          "seasonDetails from watchLater",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/consumer_page_season_details.png"),
+          path.join(__dirname, "/golden/consumer_page_season_details.png"),
+          path.join(__dirname, "/consumer_page_season_details_diff.png"),
+        );
+
+        // Execute
+        this.cut.seasonDetailsPage.emit("back");
+
+        // Verify
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              watchLater: {},
+            },
+            CONSUMER_PAGE_RL,
+          ),
+          "back to watchLater from seasonDetails",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/consumer_page_watch_later.png"),
+          path.join(__dirname, "/golden/consumer_page_watch_later.png"),
+          path.join(__dirname, "/consumer_page_watch_later_diff.png"),
+        );
+
+        // Execute
+        this.cut.watchLaterPage.emit("viewHistory");
+
+        // Verify
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              history: {},
+            },
+            CONSUMER_PAGE_RL,
+          ),
+          "history from watchLater",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/consumer_page_history.png"),
+          path.join(__dirname, "/golden/consumer_page_history.png"),
+          path.join(__dirname, "/consumer_page_history_diff.png"),
+        );
+
+        // Execute
+        this.cut.historyPage.emit("viewWatchLater");
+        this.cut.watchLaterPage.emit("viewUsage");
+
+        // Verify
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              usage: {},
+            },
+            CONSUMER_PAGE_RL,
+          ),
+          "usage from watchLater",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/consumer_page_usage.png"),
+          path.join(__dirname, "/golden/consumer_page_usage.png"),
+          path.join(__dirname, "/consumer_page_usage_diff.png"),
+        );
+
+        // Execute
+        this.cut.usagePage.emit("viewWatchLater");
+
+        // Verify
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              watchLater: {},
+            },
+            CONSUMER_PAGE_RL,
+          ),
+          "watchLater from usage",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/consumer_page_watch_later.png"),
+          path.join(__dirname, "/golden/consumer_page_watch_later.png"),
+          path.join(__dirname, "/consumer_page_watch_later_diff.png"),
+        );
       }
       public tearDown() {
         this.cut.remove();
