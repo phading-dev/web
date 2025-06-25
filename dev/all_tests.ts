@@ -81,6 +81,7 @@ import "../main_app/publisher_page/season_details_page/update_draft_pricing_page
 import "../main_app/publisher_page/season_details_page/update_info_page/body_test";
 import "../main_app/publisher_page/season_details_page/update_published_pricing_page/body_test";
 import "../main_app/publisher_page/season_details_page/body_test";
+import "../main_app/publisher_page/stats_page/body_test";
 import "../main_app/publisher_page/body_test";
 import "../main_app/body_test";
 import "../replace_primary_payment_method_action/action_test";

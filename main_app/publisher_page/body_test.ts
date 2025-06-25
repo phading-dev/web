@@ -7,6 +7,7 @@ import { CreateSeasonPage } from "./create_season_page/body";
 import { ListPageMock } from "./list_page/body_mock";
 import { SearchPageMock } from "./search_page/body_mock";
 import { SeasonDetailsPageMock } from "./season_details_page/body_mock";
+import { StatsPageMock } from "./stats_page/body_mock";
 import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import {
   PUBLISHER_PAGE_RL,
@@ -29,6 +30,7 @@ function createPublisherPage(): PublisherPage {
       new SearchPageMock(() => nowDate, seasonState, query),
     (appendBodies, seasonId) =>
       new SeasonDetailsPageMock(() => nowDate, appendBodies, seasonId),
+    () => new StatsPageMock(() => nowDate),
     (...bodies) => document.body.append(...bodies),
   );
 }
@@ -379,6 +381,27 @@ TEST_RUNNER.run({
             "/publisher_page_back_from_season_details_after_create_diff.png",
           ),
         );
+
+        // Execute
+        this.cut.statsButton.val.click();
+
+        // Verify
+        assertThat(rl, eqMessage({ usage: {} }, PUBLISHER_PAGE_RL), "rl.usage");
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/publisher_page_stats.png"),
+          path.join(__dirname, "/golden/publisher_page_stats.png"),
+          path.join(__dirname, "/publisher_page_stats_diff.png"),
+        );
+
+        // Prepare
+        let goToAccount = false;
+        this.cut.on("goToAccount", () => (goToAccount = true));
+
+        // Execute
+        this.cut.accountButton.val.click();
+
+        // Verify
+        assertThat(goToAccount, eq(true), "goToAccount");
       }
       public tearDown() {
         this.cut.remove();
@@ -629,6 +652,37 @@ TEST_RUNNER.run({
           eq(page),
           "seasonDetailsPage unchanged",
         );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "ApplyRl_StatsPage_SameRlSamePage";
+      private cut: PublisherPage;
+      public async execute() {
+        // Prepare
+        await setTabletView();
+        this.cut = createPublisherPage();
+
+        // Execute
+        this.cut.applyRl({
+          usage: {},
+        });
+
+        // Verify
+        assertThat(Boolean(this.cut.statsPage), eq(true), "statsPage");
+
+        // Prepare
+        let page = this.cut.statsPage;
+
+        // Execute
+        this.cut.applyRl({
+          usage: {},
+        });
+
+        // Verify
+        assertThat(this.cut.statsPage, eq(page), "statsPage unchanged");
       }
       public tearDown() {
         this.cut.remove();

@@ -11,6 +11,7 @@ export class PublisherPageMock extends PublisherPage {
       () => new ListPageMock(getNowDate, SeasonState.PUBLISHED),
       undefined,
       undefined,
+      undefined,
       appendBodies,
     );
   }

@@ -1,18 +1,14 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../common/color_scheme";
 import { DateRangeInput, DateType } from "../../../common/date_range_input";
-import { formatMoney } from "../../../common/formatter/price";
-import { formatQuantity } from "../../../common/formatter/quantity";
-import { createArrowIcon, createCornerIcon } from "../../../common/icons";
+import { ExpandableLineItems } from "../../../common/expandable_line_items";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
-import { ePageWithTopDownCard } from "../../../common/page_elements";
 import {
-  FONT_M,
-  FONT_WEIGHT_600,
-  ICON_S,
-  ICON_XS,
-} from "../../../common/sizes";
+  PAGE_MAX_WIDTH_L,
+  ePageWithTopDownCard,
+} from "../../../common/page_elements";
+import { FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
 import { newListTransactionStatementsRequest } from "@phading/commerce_service_interface/web/statements/client";
@@ -39,7 +35,7 @@ export class StatementsPage extends EventEmitter {
   public body: HTMLDivElement;
   public monthRangeInput = new Ref<DateRangeInput>();
   public statementsList = new Ref<HTMLDivElement>();
-  public statementLines = new Array<HTMLDivElement>();
+  public statementLines = new Array<ExpandableLineItems>();
   private listRequestIndex = 0;
   private positiveAmountType: AmountType;
 
@@ -60,7 +56,7 @@ export class StatementsPage extends EventEmitter {
     let startMonth = endMonth.clone().addMonths(-StatementsPage.INIT_MONTHS);
     this.body = ePageWithTopDownCard(
       new Ref(),
-      `padding: 1rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: 1rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
       E.div(
         {
           class: "statements-page-title",
@@ -120,6 +116,11 @@ export class StatementsPage extends EventEmitter {
   private async listStatements(): Promise<void> {
     this.listRequestIndex++;
     let currentIndex = this.listRequestIndex;
+    while (this.statementsList.val.lastElementChild) {
+      this.statementsList.val.lastElementChild.remove();
+    }
+    this.statementLines.length = 0;
+
     let { startRange, endRange } = this.monthRangeInput.val.getValues();
     let response = await this.serviceClient.send(
       newListTransactionStatementsRequest({
@@ -130,9 +131,6 @@ export class StatementsPage extends EventEmitter {
     if (currentIndex !== this.listRequestIndex) {
       // A new request has been made. Abort any changes.
       return;
-    }
-    while (this.statementsList.val.lastElementChild) {
-      this.statementsList.val.lastElementChild.remove();
     }
     if (response.statements.length === 0) {
       this.statementsList.val.append(
@@ -162,134 +160,23 @@ export class StatementsPage extends EventEmitter {
   }
 
   private createStatementLine(statement: TransactionStatement): void {
-    let statementLine = new Ref<HTMLDivElement>();
-    let expandIcon = new Ref<HTMLDivElement>();
-    let lineItemList = new Ref<HTMLDivElement>();
-    this.statementsList.val.append(
-      E.div(
-        {
-          class: "statements-page-statement-item-container",
-          style: `width: 100%; display: flex; flex-flow: column nowrap;`,
-        },
-        E.divRef(
-          statementLine,
-          {
-            class: "statements-page-statement",
-            style: `width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem; cursor: pointer;`,
-          },
-          E.divRef(
-            expandIcon,
-            {
-              class: "statements-page-expand-button",
-              style: `height: ${ICON_S}rem; transition: transform .2s;`,
-            },
-            createArrowIcon(SCHEME.neutral1),
-          ),
-          E.div(
-            {
-              class: "statements-page-month",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(statement.month),
-          ),
-          E.div(
-            {
-              class: "statements-page-amount",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 1 0 auto; text-align: end;`,
-            },
-            E.text(
-              formatMoney(
-                statement.totalAmount *
-                  (statement.totalAmountType === this.positiveAmountType
-                    ? 1
-                    : -1),
-                statement.currency,
-              ),
-            ),
-          ),
-        ),
-        E.divRef(
-          lineItemList,
-          {
-            class: "statements-page-line-item-list",
-            style: `padding: 1rem 0 0 1rem; width: 100%; box-sizing: border-box; flex-flow: column nowrap; gap: 1rem; transition: height .2s; overflow: hidden;`,
-          },
-          ...statement.items.map((item) => {
-            return E.div(
-              {
-                class: "statements-page-line-item",
-                style: `width: 100%; display: flex; flex-flow: row wrap; align-items: center; gap: 1rem;`,
-              },
-              E.div(
-                {
-                  class: "statements-page-line-item-leading-line",
-                  style: `height: ${ICON_XS}rem; padding-bottom: .6rem;`,
-                },
-                createCornerIcon(SCHEME.neutral1),
-              ),
-              E.div(
-                {
-                  class: "statements-page-line-item-product-id",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(ProductID[item.productID]),
-              ),
-              E.div(
-                {
-                  class: "statements-page-line-item-quantity",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 3 0 auto; text-align: end;`,
-                },
-                E.text(formatQuantity(item.quantity, item.unit)),
-              ),
-              E.div(
-                {
-                  class: "statements-page-line-item-amount",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 1 0 auto; text-align: end;`,
-                },
-                E.text(
-                  formatMoney(
-                    item.amount *
-                      (item.amountType === this.positiveAmountType ? 1 : -1),
-                    statement.currency,
-                  ),
-                ),
-              ),
-            );
-          }),
-        ),
-      ),
-    );
-    this.statementLines.push(statementLine.val);
-    this.hideLineItemList(expandIcon.val, lineItemList.val);
-
-    statementLine.val.addEventListener("click", () => {
-      if (lineItemList.val.style.display === "none") {
-        this.showLineItemList(expandIcon.val, lineItemList.val);
-      } else {
-        this.hideLineItemList(expandIcon.val, lineItemList.val);
-      }
+    let line = new ExpandableLineItems({
+      totalLabel: statement.month,
+      totalAmount:
+        statement.totalAmount *
+        (statement.totalAmountType === this.positiveAmountType ? 1 : -1),
+      totalAmountCurrency: statement.currency,
+      items: statement.items.map((item) => ({
+        label: ProductID[item.productID],
+        quantity: item.quantity,
+        unit: item.unit,
+        amount:
+          item.amount * (item.amountType === this.positiveAmountType ? 1 : -1),
+        currency: statement.currency,
+      })),
     });
-    lineItemList.val.addEventListener("transitionend", () => {
-      lineItemList.val.style.height = `auto`;
-    });
-  }
-
-  private showLineItemList(
-    expandIcon: HTMLDivElement,
-    lineItemList: HTMLDivElement,
-  ): void {
-    expandIcon.style.transform = "rotate(-90deg)";
-    lineItemList.style.display = "flex";
-    lineItemList.style.height = `${lineItemList.scrollHeight}px`;
-  }
-
-  private hideLineItemList(
-    expandIcon: HTMLDivElement,
-    lineItemList: HTMLDivElement,
-  ): void {
-    expandIcon.style.transform = "rotate(-180deg)";
-    lineItemList.style.display = "none";
-    lineItemList.style.height = "0px";
+    this.statementsList.val.append(line.body);
+    this.statementLines.push(line);
   }
 
   public remove(): void {

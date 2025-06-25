@@ -435,7 +435,7 @@ export default class Text {
     return `More`;
   }
   get interruptReasonNoConnectivity() {
-    return `Video stopped. No internet connection.`;
+    return `Video stopped. Please keep your internet connection while watching.`;
   }
   get pricingHourRateShortened() {
     return [``, ` / hr`];
@@ -461,40 +461,31 @@ export default class Text {
   get topRatedTitle() {
     return `Top rated`;
   }
-  get searchResultTitle() {
-    return [`Searching for "`, `"`];
-  }
-  get estimatedChargeTitle() {
-    return `Estimated charge`;
-  }
-  get billingMonth() {
-    return [`Current billing month is `, `.`];
-  }
-  get viewDetailedUsageLabel() {
-    return `View full breakdown >`;
-  }
   get watchHistoryTitle() {
     return `Watch history`;
   }
   get usageTitle() {
-    return `Charge estimates`;
+    return `Charges breakdown`;
   }
-  get usageReportSelectOneDayLabel() {
+  get statsTitle() {
+    return `Stats breakdown`;
+  }
+  get statsSelectOneDayLabel() {
     return `One day`;
   }
-  get usageReportSelectDaysLabel() {
+  get statsSelectDaysLabel() {
     return `Days`;
   }
-  get usageReportSelectOneMonthLabel() {
+  get statsSelectOneMonthLabel() {
     return `One month`;
   }
-  get usageReportSelectMonths() {
+  get statsSelectMonths() {
     return `Months`;
   }
-  get usageUpdateDaily() {
+  get statsUpdateDaily() {
     return `Updated daily`;
   }
-  get usageUpdateMonthly() {
+  get statsUpdateMonthly() {
     return `Updated monthly`;
   }
   get watchLaterTitle() {

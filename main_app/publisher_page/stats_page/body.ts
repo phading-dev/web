@@ -1,5 +1,6 @@
 import { SCHEME } from "../../../common/color_scheme";
 import { DateRangeInput, DateType } from "../../../common/date_range_input";
+import { ExpandableLineItems } from "../../../common/expandable_line_items";
 import {
   calculateEstimatedMoney,
   formatMoney,
@@ -13,16 +14,19 @@ import {
   PAGE_MAX_WIDTH_L,
   ePageWithTopDownCard,
 } from "../../../common/page_elements";
-import { FONT_M, FONT_S } from "../../../common/sizes";
+import { FONT_M, FONT_S, FONT_WEIGHT_600 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
-import { ActivityTab, ActivityTabsOption } from "../common/tabs";
 import { MAX_DAY_RANGE, MAX_MONTH_RANGE } from "@phading/constants/meter";
 import {
   newListMeterReadingPerSeasonRequest,
   newListMeterReadingsPerDayRequest,
   newListMeterReadingsPerMonthRequest,
-} from "@phading/meter_service_interface/show/web/consumer/client";
+} from "@phading/meter_service_interface/show/web/publisher/client";
+import {
+  MeterReadingPerDay,
+  MeterReadingPerMonth,
+} from "@phading/meter_service_interface/show/web/publisher/meter_reading";
 import { ProductID } from "@phading/price";
 import { newGetSeasonNameRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { E } from "@selfage/element/factory";
@@ -38,22 +42,19 @@ export enum RangeType {
   MONTHS = 4,
 }
 
-export interface UsagePage {
-  on(event: "viewHistory", listener: () => void): this;
-  on(event: "viewWatchLater", listener: () => void): this;
+export interface StatsPage {
   on(event: "loaded", listener: (result: any) => void): this;
 }
 
-export class UsagePage extends EventEmitter {
-  public static create(): UsagePage {
-    return new UsagePage(SERVICE_CLIENT, () => new Date());
+export class StatsPage extends EventEmitter {
+  public static create(): StatsPage {
+    return new StatsPage(SERVICE_CLIENT, () => new Date());
   }
 
   private static INIT_MONTH = 6;
   private static INIT_DAYS = 30;
 
   public body: HTMLDivElement;
-  public tabs = new Ref<ActivityTabsOption>();
   public oneDayOption = new Ref<OptionPill<RangeType>>();
   public daysOption = new Ref<OptionPill<RangeType>>();
   public oneMonthOption = new Ref<OptionPill<RangeType>>();
@@ -65,6 +66,7 @@ export class UsagePage extends EventEmitter {
   public oneMonthInput = new Ref<HTMLInputElement>();
   private resultList = new Ref<HTMLDivElement>();
   private rangeTypeInput: RadioOptionsGroup<RangeType>;
+  public lines = new Array<ExpandableLineItems>();
   private loadIndex = 0;
 
   public constructor(
@@ -82,13 +84,19 @@ export class UsagePage extends EventEmitter {
       E.div({
         style: `flex: 0 0 auto; height: 1rem;`,
       }),
-      assign(this.tabs, new ActivityTabsOption()).body,
+      E.div(
+        {
+          class: "stats-page-title",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600}; padding: 0 2rem;`,
+        },
+        E.text(LOCALIZED_TEXT.statsTitle),
+      ),
       E.div({
         style: `flex: 0 0 auto; height: 2rem;`,
       }),
       E.div(
         {
-          class: "usage-page-graunularity-pills",
+          class: "stats-page-graunularity-pills",
           style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: row wrap; justify-content: flex-end; align-items: center; gap: 1rem;`,
         },
         E.div(
@@ -128,12 +136,12 @@ export class UsagePage extends EventEmitter {
         style: `flex: 0 0 auto; height: 1rem;`,
       }),
       E.inputRef(this.oneDayInput, {
-        class: "usage-page-one-day-input",
+        class: "stats-page-one-day-input",
         style: `${DATE_INPUT_STYLE} align-self: flex-end; margin: 0 2rem;`,
         type: "date",
       }),
       E.inputRef(this.oneMonthInput, {
-        class: "usage-page-one-month-input",
+        class: "stats-page-one-month-input",
         style: `${DATE_INPUT_STYLE} align-self: flex-end; margin: 0 2rem;`,
         type: "month",
       }),
@@ -164,18 +172,10 @@ export class UsagePage extends EventEmitter {
         style: `flex: 0 0 auto; height: 2rem;`,
       }),
       E.divRef(this.resultList, {
-        class: "usage-page-result-list",
+        class: "stats-page-result-list",
         style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: column nowrap; gap: 1.5rem;`,
       }),
     );
-    this.tabs.val.setValue(ActivityTab.USAGE).on("select", (tab) => {
-      switch (tab) {
-        case ActivityTab.HISTORY:
-          this.emit("viewHistory");
-        case ActivityTab.WATCH_LATER:
-          this.emit("viewWatchLater");
-      }
-    });
 
     this.oneDayInput.val.value = nowDate
       .clone()
@@ -184,7 +184,7 @@ export class UsagePage extends EventEmitter {
     this.oneDayInput.val.addEventListener("change", () => this.loadOneDay());
 
     this.dayRangeInput.val.setValues(
-      nowDate.clone().addDays(-UsagePage.INIT_DAYS).toLocalDateISOString(),
+      nowDate.clone().addDays(-StatsPage.INIT_DAYS).toLocalDateISOString(),
       nowDate.clone().addDays(-1).toLocalDateISOString(),
     );
     this.dayRangeInput.val.on("change", () => this.loadFromDayRange());
@@ -199,7 +199,7 @@ export class UsagePage extends EventEmitter {
       nowDate
         .clone()
         .moveToFirstDayOfMonth()
-        .addMonths(-UsagePage.INIT_MONTH)
+        .addMonths(-StatsPage.INIT_MONTH)
         .toLocalMonthISOString(),
       nowDate
         .clone()
@@ -228,9 +228,6 @@ export class UsagePage extends EventEmitter {
     this.oneMonthInput.val.style.display = "none";
     this.dayRangeInput.val.hide();
     this.monthRangeInput.val.hide();
-    while (this.resultList.val.lastElementChild) {
-      this.resultList.val.lastElementChild.remove();
-    }
     switch (value) {
       case RangeType.ONE_DAY:
         this.oneDayInput.val.style.display = "block";
@@ -295,6 +292,10 @@ export class UsagePage extends EventEmitter {
   private async loadReadingsPerSeason(date: TzDate): Promise<void> {
     this.loadIndex++;
     let currentLoadIndex = this.loadIndex;
+    while (this.resultList.val.lastElementChild) {
+      this.resultList.val.lastElementChild.remove();
+    }
+
     let response = await this.serviceClient.send(
       newListMeterReadingPerSeasonRequest({
         date: date.toLocalDateISOString(),
@@ -343,6 +344,8 @@ export class UsagePage extends EventEmitter {
     while (this.resultList.val.lastElementChild) {
       this.resultList.val.lastElementChild.remove();
     }
+    this.lines.length = 0;
+
     let response = await this.serviceClient.send(
       newListMeterReadingsPerDayRequest({
         startDate: startDate.toLocalDateISOString(),
@@ -353,18 +356,23 @@ export class UsagePage extends EventEmitter {
       // Abort if the load index has changed.
       return;
     }
-    let dateToWatchTimeGraded = new Map<string, number>();
+    let dateToReadings = new Map<string, MeterReadingPerDay>();
     response.readings.forEach((reading) => {
-      dateToWatchTimeGraded.set(reading.date, reading.watchTimeSecGraded);
+      dateToReadings.set(reading.date, reading);
     });
     for (
       let iDate = startDate.clone();
       iDate.toTimestampMs() <= endDate.toTimestampMs();
       iDate.addDays(1)
     ) {
-      this.renderTwoColumns(
+      this.renderCollapsibleItems(
         iDate.toLocalDateISOString(),
-        dateToWatchTimeGraded.get(iDate.toLocalDateISOString()) ?? 0,
+        dateToReadings.get(iDate.toLocalDateISOString())?.watchTimeSecGraded ??
+          0,
+        (dateToReadings.get(iDate.toLocalDateISOString())?.uploadedKb ?? 0) /
+          1024,
+        (dateToReadings.get(iDate.toLocalDateISOString())?.storageMbm ?? 0) /
+          60,
         iDate.toLocalMonthISOString(),
       );
     }
@@ -379,6 +387,8 @@ export class UsagePage extends EventEmitter {
     while (this.resultList.val.lastElementChild) {
       this.resultList.val.lastElementChild.remove();
     }
+    this.lines.length = 0;
+
     let response = await this.serviceClient.send(
       newListMeterReadingsPerMonthRequest({
         startMonth: startMonth.toLocalMonthISOString(),
@@ -389,18 +399,23 @@ export class UsagePage extends EventEmitter {
       // Abort if the load index has changed.
       return;
     }
-    let monthToWatchTimeGraded = new Map<string, number>();
+    let monthToWatchTimeGraded = new Map<string, MeterReadingPerMonth>();
     response.readings.forEach((reading) => {
-      monthToWatchTimeGraded.set(reading.month, reading.watchTimeSecGraded);
+      monthToWatchTimeGraded.set(reading.month, reading);
     });
     for (
       let iMonth = startMonth.clone();
       iMonth.toTimestampMs() <= endMonth.toTimestampMs();
       iMonth.addMonths(1)
     ) {
-      this.renderTwoColumns(
+      this.renderCollapsibleItems(
         iMonth.toLocalMonthISOString(),
-        monthToWatchTimeGraded.get(iMonth.toLocalMonthISOString()) ?? 0,
+        monthToWatchTimeGraded.get(iMonth.toLocalMonthISOString())
+          ?.watchTimeSecGraded ?? 0,
+        monthToWatchTimeGraded.get(iMonth.toLocalMonthISOString())
+          ?.uploadedMb ?? 0,
+        monthToWatchTimeGraded.get(iMonth.toLocalMonthISOString())
+          ?.storageMbh ?? 0,
         iMonth.toLocalMonthISOString(),
       );
     }
@@ -413,7 +428,7 @@ export class UsagePage extends EventEmitter {
     monthStr: string,
   ): void {
     let { amount, price } = calculateEstimatedMoney(
-      ProductID.SHOW,
+      ProductID.SHOW_CREDIT,
       watchTimeSecGraded,
       monthStr,
     );
@@ -421,7 +436,7 @@ export class UsagePage extends EventEmitter {
       E.div(
         {
           class: "usage-page-three-columns-item",
-          style: `display: flex; flex-flow: row nowrap; align-items: flex-start; justify-content: space-between; gap: 1rem;`,
+          style: `display: flex; flex-flow: row nowrap; align-items: flex-start;`,
         },
         E.div(
           {
@@ -430,6 +445,9 @@ export class UsagePage extends EventEmitter {
           },
           E.text(name),
         ),
+        E.div({
+          style: `flex: 1 0 auto; width: 1rem;`,
+        }),
         E.div(
           {
             class: "usage-page-three-columns-money",
@@ -437,6 +455,9 @@ export class UsagePage extends EventEmitter {
           },
           E.text(formatMoney(amount, price.currency)),
         ),
+        E.div({
+          style: `flex: 1 0 auto; width: 1rem;`,
+        }),
         E.div(
           {
             class: "usage-page-three-columns-seconds",
@@ -448,44 +469,56 @@ export class UsagePage extends EventEmitter {
     );
   }
 
-  private renderTwoColumns(
+  private renderCollapsibleItems(
     label: string,
     watchTimeSecGraded: number,
+    uploadedMb: number,
+    storageMbh: number,
     monthStr: string,
   ): void {
-    let { amount, price } = calculateEstimatedMoney(
-      ProductID.SHOW,
-      watchTimeSecGraded,
+    let { amount: showCreditAmount, price: showCreditPrice } =
+      calculateEstimatedMoney(
+        ProductID.SHOW_CREDIT,
+        watchTimeSecGraded,
+        monthStr,
+      );
+    let { amount: uploadAmount, price: uploadPrice } = calculateEstimatedMoney(
+      ProductID.UPLOAD,
+      uploadedMb,
       monthStr,
     );
-    this.resultList.val.append(
-      E.div(
+    let { amount: storageAmount, price: storagePrice } =
+      calculateEstimatedMoney(ProductID.STORAGE, storageMbh, monthStr);
+    let line = new ExpandableLineItems({
+      totalLabel: label,
+      totalAmount: showCreditAmount - uploadAmount - storageAmount,
+      totalAmountCurrency: showCreditPrice.currency,
+      items: [
         {
-          class: "usage-page-two-columns-item",
-          style: `display: flex; flex-flow: row nowrap; align-items: flex-start;`,
+          label: ProductID[ProductID.SHOW_CREDIT],
+          amount: showCreditAmount,
+          currency: showCreditPrice.currency,
+          quantity: watchTimeSecGraded,
+          unit: showCreditPrice.unit,
         },
-        E.div(
-          {
-            class: "usage-page-two-columns-label",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(label),
-        ),
-        E.div({
-          style: `flex: 1 0 auto; width: 1rem;`,
-        }),
-        E.div(
-          {
-            class: "usage-page-two-columns-value",
-            style: `height: 2rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(formatMoney(amount, price.currency)),
-        ),
-        E.div({
-          style: `flex: 1 0 0;`,
-        }),
-      ),
-    );
+        {
+          label: ProductID[ProductID.UPLOAD],
+          amount: -uploadAmount,
+          currency: uploadPrice.currency,
+          quantity: uploadedMb,
+          unit: uploadPrice.unit,
+        },
+        {
+          label: ProductID[ProductID.STORAGE],
+          amount: -storageAmount,
+          currency: storagePrice.currency,
+          quantity: storageMbh,
+          unit: storagePrice.unit,
+        },
+      ],
+    });
+    this.lines.push(line);
+    this.resultList.val.append(line.body);
   }
 
   public showInvalidRange(): void {
@@ -496,7 +529,7 @@ export class UsagePage extends EventEmitter {
     this.resultList.val.append(
       E.div(
         {
-          class: "usage-page-invalid-range",
+          class: "stats-page-invalid-range",
           style: `width: 100%; text-align: center; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(LOCALIZED_TEXT.invaliRange),

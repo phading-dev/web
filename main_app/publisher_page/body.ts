@@ -13,14 +13,13 @@ import {
   eNavigationItemRef,
 } from "../../common/navigation_bar";
 import { TabSwitcher } from "../../common/page_navigator";
-import { FONT_L } from "../../common/sizes";
 import { CreateSeasonPage } from "./create_season_page/body";
 import { ListPage } from "./list_page/body";
 import { SearchPage } from "./search_page/body";
 import { SeasonDetailsPage } from "./season_details_page/body";
+import { StatsPage } from "./stats_page/body";
 import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import { PublisherPageRl } from "@phading/web_interface/main/publisher/page";
-import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
 export interface PublisherPage {
@@ -35,6 +34,7 @@ export class PublisherPage extends EventEmitter {
       ListPage.create,
       SearchPage.create,
       SeasonDetailsPage.create,
+      StatsPage.create,
       appendBodies,
     );
   }
@@ -50,7 +50,7 @@ export class PublisherPage extends EventEmitter {
   public listPage: ListPage;
   public searchPage: SearchPage;
   public seasonDetailsPage: SeasonDetailsPage;
-  public usagePage: HTMLDivElement;
+  public statsPage: StatsPage;
   private lastListRl: PublisherPageRl;
 
   public constructor(
@@ -58,6 +58,7 @@ export class PublisherPage extends EventEmitter {
     private createListPage: typeof ListPage.create,
     private createSearchPage: typeof SearchPage.create,
     private createSeasonDetailsPage: typeof SeasonDetailsPage.create,
+    private createStatsPage: typeof StatsPage.create,
     private appendBodies: AddBodiesFn,
   ) {
     super();
@@ -165,10 +166,10 @@ export class PublisherPage extends EventEmitter {
         () => this.addSeasonDetailsPage(rl.seasonDetails.seasonId),
         () => this.removeSeasonDetailsPage(),
       );
-    } else if (rl.usage && !this.usagePage) {
+    } else if (rl.usage && !this.statsPage) {
       this.pageSwitcher.goTo(
-        () => this.addUsagePage(),
-        () => this.removeUsagePage(),
+        () => this.addStatsPage(),
+        () => this.removeStatsPage(),
       );
     }
     if (rl.list || rl.search) {
@@ -274,19 +275,14 @@ export class PublisherPage extends EventEmitter {
     this.seasonDetailsPage = undefined;
   }
 
-  private addUsagePage(): void {
-    this.usagePage = E.div(
-      {
-        style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
-      },
-      E.text("Upcoming"),
-    );
-    this.appendBodies(this.usagePage);
+  private addStatsPage(): void {
+    this.statsPage = this.createStatsPage();
+    this.appendBodies(this.statsPage.body);
   }
 
-  private removeUsagePage(): void {
-    this.usagePage.remove();
-    this.usagePage = undefined;
+  private removeStatsPage(): void {
+    this.statsPage.remove();
+    this.statsPage = undefined;
   }
 
   public remove(): void {
