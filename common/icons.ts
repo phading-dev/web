@@ -1011,7 +1011,10 @@ export function createDashedCircleIcon(
     let endY = centerY - Math.cos(endAngle) * radius;
     svg.append(
       E.path({
-        stroke: i < numberOfHighlightedSegments ? mainColor : backgroundColor,
+        stroke:
+          i < numberOfSegments - numberOfHighlightedSegments
+            ? backgroundColor
+            : mainColor,
         d: `M${startX},${startY} A${radius},${radius} 0 0 1 ${endX},${endY}`,
       }),
     );

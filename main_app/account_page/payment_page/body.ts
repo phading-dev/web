@@ -90,7 +90,7 @@ export class PaymentPage extends EventEmitter {
           E.text(LOCALIZED_TEXT.paymentStatusTitle),
         ),
         E.div({
-          style: `height: 1rem;`,
+          style: `flex: 0 0 auto; height: 1rem;`,
         }),
         E.div(
           {
@@ -119,7 +119,7 @@ export class PaymentPage extends EventEmitter {
         E.text(LOCALIZED_TEXT.paymentStatusTitle),
       ),
       E.div({
-        style: `height: 1rem;`,
+        style: `flex: 0 0 auto; height: 1rem;`,
       }),
       E.div(
         {
@@ -151,7 +151,7 @@ export class PaymentPage extends EventEmitter {
       ...(response.state === PaymentProfileState.WITH_FAILED_PAYMENTS
         ? [
             E.div({
-              style: `height: 1rem;`,
+              style: `flex: 0 0 auto; height: 1rem;`,
             }),
             E.div(
               {
@@ -176,7 +176,7 @@ export class PaymentPage extends EventEmitter {
           ]
         : []),
       E.div({
-        style: `height: 3rem;`,
+        style: `flex: 0 0 auto; height: 3rem;`,
       }),
       E.div(
         {
@@ -186,7 +186,7 @@ export class PaymentPage extends EventEmitter {
         E.text(LOCALIZED_TEXT.paymentMethodTitle),
       ),
       E.div({
-        style: `height: 1rem;`,
+        style: `flex: 0 0 auto; height: 1rem;`,
       }),
       response.primaryPaymentMethod
         ? new CardPaymentItem(
@@ -195,7 +195,7 @@ export class PaymentPage extends EventEmitter {
           ).body
         : new AddCardPaymentItem().body,
       E.div({
-        style: `height: 1.5rem;`,
+        style: `flex: 0 0 auto; height: 1.5rem;`,
       }),
       E.div(
         {
@@ -224,7 +224,7 @@ export class PaymentPage extends EventEmitter {
         ),
       ),
       E.div({
-        style: `height: 3rem;`,
+        style: `flex: 0 0 auto; height: 3rem;`,
       }),
       E.div(
         {
@@ -234,7 +234,7 @@ export class PaymentPage extends EventEmitter {
         E.text(LOCALIZED_TEXT.paymentActivitiesTitle),
       ),
       E.div({
-        style: `height: 1rem;`,
+        style: `flex: 0 0 auto; height: 1rem;`,
       }),
       assign(
         this.monthRangeInput,
@@ -245,7 +245,7 @@ export class PaymentPage extends EventEmitter {
         ).show(),
       ).body,
       E.div({
-        style: `height: 1.5rem;`,
+        style: `flex: 0 0 auto; height: 1.5rem;`,
       }),
       E.divRef(this.paymentActivityList, {
         class: "payment-page-payment-activities-list",

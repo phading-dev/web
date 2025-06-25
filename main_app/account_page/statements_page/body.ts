@@ -69,7 +69,7 @@ export class StatementsPage extends EventEmitter {
         ),
       ),
       E.div({
-        style: `height: 1rem;`,
+        style: `flex: 0 0 auto; height: 1rem;`,
       }),
       assign(
         this.monthRangeInput,
@@ -80,7 +80,7 @@ export class StatementsPage extends EventEmitter {
         ).show(),
       ).body,
       E.div({
-        style: `height: 1.5rem;`,
+        style: `flex: 0 0 auto; height: 1.5rem;`,
       }),
       E.divRef(this.statementsList, {
         class: "statements-page-list",

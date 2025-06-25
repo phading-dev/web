@@ -67,7 +67,7 @@ export class PayoutPage extends EventEmitter {
           E.text(LOCALIZED_TEXT.payoutManagementTitle),
         ),
         E.div({
-          style: `height: 1rem;`,
+          style: `flex: 0 0 auto; height: 1rem;`,
         }),
         E.div(
           {
@@ -96,7 +96,7 @@ export class PayoutPage extends EventEmitter {
         E.text(LOCALIZED_TEXT.payoutManagementTitle),
       ),
       E.div({
-        style: `height: 1rem;`,
+        style: `flex: 0 0 auto; height: 1rem;`,
       }),
       E.div(
         {
@@ -109,7 +109,7 @@ export class PayoutPage extends EventEmitter {
         ),
       ),
       E.div({
-        style: `height: 3rem;`,
+        style: `flex: 0 0 auto; height: 3rem;`,
       }),
       E.div(
         {
@@ -119,7 +119,7 @@ export class PayoutPage extends EventEmitter {
         E.text(LOCALIZED_TEXT.payoutActivitiesTitle),
       ),
       E.div({
-        style: `height: 1rem;`,
+        style: `flex: 0 0 auto; height: 1rem;`,
       }),
       assign(
         this.monthRangeInput,
@@ -130,7 +130,7 @@ export class PayoutPage extends EventEmitter {
         ).show(),
       ).body,
       E.div({
-        style: `height: 1.5rem;`,
+        style: `flex: 0 0 auto; height: 1.5rem;`,
       }),
       E.divRef(this.payoutActivityList, {
         class: "payout-page-payout-activities-list",

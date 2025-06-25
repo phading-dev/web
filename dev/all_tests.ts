@@ -24,6 +24,7 @@ import "../main_app/account_page/profile_page/update_password_page/body_test";
 import "../main_app/account_page/profile_page/update_recovery_email_page/body_test";
 import "../main_app/account_page/profile_page/body_test";
 import "../main_app/account_page/statements_page/body_test";
+import "../main_app/account_page/body_test";
 import "../main_app/auth_page/body_test";
 import "../main_app/auth_page/sign_in_page_test";
 import "../main_app/auth_page/sign_up_page_test";
