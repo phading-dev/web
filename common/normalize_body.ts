@@ -15,6 +15,7 @@ export function normalizeBody() {
   document.body.style.fontFamily = "sans-serif";
   document.body.style.width = "100%";
   document.body.style.height = "100%";
+  document.body.style.overflow = "auto";
 
   window.removeEventListener("resize", setRootFontSize);
   setRootFontSize();
