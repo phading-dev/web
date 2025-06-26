@@ -461,11 +461,8 @@ export class Player extends EventEmitter {
     this.resizeObserver.observe(this.controlsContainer.val);
 
     this.hideControls();
-    this.controlsContainer.val.addEventListener("pointerenter", () =>
-      this.showControls(),
-    );
-    this.controlsContainer.val.addEventListener("pointermove", () =>
-      this.showControls(),
+    this.controlsContainer.val.addEventListener("pointermove", () => 
+      this.showControls()
     );
     this.controlsContainer.val.addEventListener("pointerdown", (event) =>
       this.toggleControls(event),
