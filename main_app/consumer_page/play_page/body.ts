@@ -662,7 +662,7 @@ export class PlayPage extends EventEmitter {
 
   private goFullscreen(): void {
     if (!document.fullscreenElement) {
-      this.body.requestFullscreen();
+      document.body.requestFullscreen();
     }
   }
 
