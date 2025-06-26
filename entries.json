@@ -1,6 +1,0 @@
-{
-  "entries": [{
-    "source": "./consumer/main",
-    "output": "./consumer/main_bundled"
-  }]
-}

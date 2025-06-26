@@ -565,7 +565,7 @@ TEST_RUNNER.run({
                   fontSize: 20,
                   danmakuSettings: {
                     density: 100,
-                    speed: 200,
+                    speed: 150,
                     stackingMethod: StackingMethod.RANDOM,
                   },
                 },
@@ -608,7 +608,7 @@ TEST_RUNNER.run({
                   fontSize: 20,
                   danmakuSettings: {
                     density: 100,
-                    speed: 200,
+                    speed: 150,
                     stackingMethod: StackingMethod.RANDOM,
                   },
                 },
@@ -1265,7 +1265,7 @@ TEST_RUNNER.run({
                   fontSize: 20,
                   danmakuSettings: {
                     density: 100,
-                    speed: 200,
+                    speed: 150,
                     stackingMethod: StackingMethod.RANDOM,
                   },
                 },
@@ -1830,7 +1830,7 @@ TEST_RUNNER.run({
                   fontSize: 20,
                   danmakuSettings: {
                     density: 100,
-                    speed: 200,
+                    speed: 150,
                     stackingMethod: StackingMethod.RANDOM,
                   },
                 },

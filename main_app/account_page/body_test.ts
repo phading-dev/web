@@ -32,7 +32,7 @@ function createAccountPage(canEarn: boolean) {
 }
 
 TEST_RUNNER.run({
-  name: "PublisherPageTest",
+  name: "AccountPageTest",
   cases: [
     new (class implements TestCase {
       public name = "NavigationCanNotEarn_Home_ChooseAccount_SignOut";
@@ -262,6 +262,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(Boolean(this.cut.profilePage), eq(true), "profile");
       }
+      public tearDown() {
+        this.cut.remove();
+      }
     })(),
     new (class implements TestCase {
       public name = "ApplyRl_InvalidPayoutRl";
@@ -283,6 +286,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(replaceRl, eqMessage({}, ACCOUNT_PAGE_RL), "replaceRl");
         assertThat(Boolean(this.cut.profilePage), eq(true), "profile");
+      }
+      public tearDown() {
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
@@ -312,6 +318,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(this.cut.profilePage, eq(page), "profile page unchanged");
       }
+      public tearDown() {
+        this.cut.remove();
+      }
     })(),
     new (class implements TestCase {
       public name = "ApplyRl_PaymentPage_SameRlSamePage";
@@ -340,6 +349,9 @@ TEST_RUNNER.run({
         // Verify
         assertThat(this.cut.paymentPage, eq(page), "payment page unchanged");
       }
+      public tearDown() {
+        this.cut.remove();
+      }
     })(),
     new (class implements TestCase {
       public name = "ApplyRl_PayoutPage_SameRlSamePage";
@@ -367,6 +379,9 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(this.cut.payoutPage, eq(page), "payout page unchanged");
+      }
+      public tearDown() {
+        this.cut.remove();
       }
     })(),
     new (class implements TestCase {
@@ -399,6 +414,9 @@ TEST_RUNNER.run({
           eq(page),
           "statements page unchanged",
         );
+      }
+      public tearDown() {
+        this.cut.remove();
       }
     })(),
   ],
