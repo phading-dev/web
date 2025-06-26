@@ -604,7 +604,7 @@ export class AudioTrackEditor extends EventEmitter {
           event.preventDefault();
         }
       });
-      this.nameInput.val.addEventListener("input", () => this.changeName());
+      this.nameInput.val.addEventListener("change", () => this.changeName());
       this.isDefaultToggleButton.val.addEventListener("click", () =>
         this.toggleDefaultValue(),
       );
@@ -893,7 +893,7 @@ export class SubtitleTrackEditor extends EventEmitter {
           event.preventDefault();
         }
       });
-      this.nameInput.val.addEventListener("input", () => this.changeName());
+      this.nameInput.val.addEventListener("change", () => this.changeName());
       this.dropStagingButton.val.on("action", () => this.dropStaging());
     }
     if (this.subtitleTrack.staging?.toAdd && !newStaging?.toAdd) {

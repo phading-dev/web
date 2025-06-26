@@ -766,6 +766,7 @@ export class Player extends EventEmitter {
 
   private hideControls(): void {
     this.controlsContainer.val.style.opacity = `0`;
+    this.window.clearTimeout(this.hideTimeoutId);
   }
 
   private toggleControls(event: PointerEvent): void {
@@ -773,7 +774,6 @@ export class Player extends EventEmitter {
       event.target === this.centerControlsContainer.val &&
       this.controlsContainer.val.style.opacity === `1`
     ) {
-      this.window.clearTimeout(this.hideTimeoutId);
       this.hideControls();
     } else {
       this.showControls();

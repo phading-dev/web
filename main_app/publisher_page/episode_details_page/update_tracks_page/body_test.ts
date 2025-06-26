@@ -285,13 +285,13 @@ TEST_RUNNER.run({
           .fill("a")
           .join("");
         this.cut.audioTrackEditors[2].nameInput.val.dispatchEvent(
-          new Event("input"),
+          new Event("change"),
         );
         this.cut.audioTrackEditors[2].isDefaultToggleButton.val.click();
         this.cut.audioTrackEditors[3].dropStagingButton.val.click();
         this.cut.audioTrackEditors[4].nameInput.val.value = " Italian - 2 ";
         this.cut.audioTrackEditors[4].nameInput.val.dispatchEvent(
-          new Event("input"),
+          new Event("change"),
         );
         this.cut.audioTrackEditors[4].isDefaultToggleButton.val.click();
         this.cut.audioTrackEditors[5].dropStagingButton.val.click();
@@ -305,12 +305,12 @@ TEST_RUNNER.run({
           .fill("b")
           .join("");
         this.cut.subtitleTrackEditors[2].nameInput.val.dispatchEvent(
-          new Event("input"),
+          new Event("change"),
         );
         this.cut.subtitleTrackEditors[3].dropStagingButton.val.click();
         this.cut.subtitleTrackEditors[4].nameInput.val.value = " Italian - 3 ";
         this.cut.subtitleTrackEditors[4].nameInput.val.dispatchEvent(
-          new Event("input"),
+          new Event("change"),
         );
         this.cut.subtitleTrackEditors[5].dropStagingButton.val.click();
         this.cut.subtitleTrackEditors[6].dropStagingButton.val.click();
