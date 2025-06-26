@@ -599,9 +599,11 @@ export class AudioTrackEditor extends EventEmitter {
           ).body,
         ),
       );
-      this.nameInput.val.addEventListener("keydown", (event) =>
-        event.preventDefault(),
-      );
+      this.nameInput.val.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+        }
+      });
       this.nameInput.val.addEventListener("input", () => this.changeName());
       this.isDefaultToggleButton.val.addEventListener("click", () =>
         this.toggleDefaultValue(),
@@ -886,9 +888,11 @@ export class SubtitleTrackEditor extends EventEmitter {
           ).body,
         ),
       );
-      this.nameInput.val.addEventListener("keydown", (event) =>
-        event.preventDefault(),
-      );
+      this.nameInput.val.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+        }
+      });
       this.nameInput.val.addEventListener("input", () => this.changeName());
       this.dropStagingButton.val.on("action", () => this.dropStaging());
     }
