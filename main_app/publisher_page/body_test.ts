@@ -4,6 +4,7 @@ import { normalizeBody } from "../../common/normalize_body";
 import { setTabletView } from "../../common/view_port";
 import { PublisherPage } from "./body";
 import { CreateSeasonPage } from "./create_season_page/body";
+import { EpisodeDetailsPageMock } from "./episode_details_page/body_mock";
 import { ListPageMock } from "./list_page/body_mock";
 import { SearchPageMock } from "./search_page/body_mock";
 import { SeasonDetailsPageMock } from "./season_details_page/body_mock";
@@ -25,6 +26,13 @@ function createPublisherPage(): PublisherPage {
   let nowDate = new Date("2023-10-10T00:00:00Z");
   return new PublisherPage(
     () => new CreateSeasonPage(undefined),
+    (appendBodies, seasonId, episodeId) =>
+      new EpisodeDetailsPageMock(
+        () => nowDate,
+        appendBodies,
+        seasonId,
+        episodeId,
+      ),
     (seasonState) => new ListPageMock(() => nowDate, seasonState),
     (seasonState, query) =>
       new SearchPageMock(() => nowDate, seasonState, query),
@@ -91,6 +99,72 @@ TEST_RUNNER.run({
           path.join(__dirname, "/publisher_page_season_details.png"),
           path.join(__dirname, "/golden/publisher_page_season_details.png"),
           path.join(__dirname, "/publisher_page_season_details_diff.png"),
+        );
+
+        // Execute
+        this.cut.seasonDetailsPage.emit("viewEpisode", "season1", "episode1");
+
+        // Verify
+        assertThat(
+          this.cut.episodeDetailsPage.seasonId,
+          eq("season1"),
+          "episodeDetailsPage.seasonId",
+        );
+        assertThat(
+          this.cut.episodeDetailsPage.episodeId,
+          eq("episode1"),
+          "episodeDetailsPage.episodeId",
+        );
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              episodeDetails: {
+                seasonId: "season1",
+                episodeId: "episode1",
+              },
+            },
+            PUBLISHER_PAGE_RL,
+          ),
+          "rl.episodeDetails",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/publisher_page_episode_details.png"),
+          path.join(__dirname, "/golden/publisher_page_episode_details.png"),
+          path.join(__dirname, "/publisher_page_episode_details_diff.png"),
+        );
+
+        // Execute
+        this.cut.episodeDetailsPage.emit("viewSeason", "season2");
+
+        // Verify
+        assertThat(
+          this.cut.seasonDetailsPage.seasonId,
+          eq("season2"),
+          "seasonDetailsPage.seasonId from episodeDetails",
+        );
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              seasonDetails: {
+                seasonId: "season2",
+              },
+            },
+            PUBLISHER_PAGE_RL,
+          ),
+          "rl.seasonDetails from episodeDetails",
+        );
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/publisher_page_season_details_from_episode.png",
+          ),
+          path.join(__dirname, "/golden/publisher_page_season_details.png"),
+          path.join(
+            __dirname,
+            "/publisher_page_season_details_from_episode_diff.png",
+          ),
         );
 
         // Execute
@@ -386,7 +460,7 @@ TEST_RUNNER.run({
         this.cut.statsButton.val.click();
 
         // Verify
-        assertThat(rl, eqMessage({ usage: {} }, PUBLISHER_PAGE_RL), "rl.usage");
+        assertThat(rl, eqMessage({ stats: {} }, PUBLISHER_PAGE_RL), "rl.stats");
         await asyncAssertScreenshot(
           path.join(__dirname, "/publisher_page_stats.png"),
           path.join(__dirname, "/golden/publisher_page_stats.png"),
@@ -658,6 +732,82 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
+      public name =
+        "ApplyRl_EpisodeDetailsPage_SameRlSamePage_DifferentIdDifferentPage";
+      private cut: PublisherPage;
+      public async execute() {
+        // Prepare
+        await setTabletView();
+        this.cut = createPublisherPage();
+
+        // Execute
+        this.cut.applyRl({
+          episodeDetails: {
+            seasonId: "season1",
+            episodeId: "episode1",
+          },
+        });
+
+        // Verify
+        assertThat(
+          Boolean(this.cut.episodeDetailsPage),
+          eq(true),
+          "episodeDetailsPage",
+        );
+
+        // Prepare
+        let page = this.cut.episodeDetailsPage;
+
+        // Execute
+        this.cut.applyRl({
+          episodeDetails: {
+            seasonId: "season1",
+            episodeId: "episode1",
+          },
+        });
+
+        // Verify
+        assertThat(
+          this.cut.episodeDetailsPage,
+          eq(page),
+          "episodeDetailsPage unchanged",
+        );
+
+        // Execute
+        this.cut.applyRl({
+          episodeDetails: {
+            seasonId: "season1",
+            episodeId: "episode2",
+          },
+        });
+
+        // Verify
+        assertThat(
+          this.cut.episodeDetailsPage.episodeId,
+          eq("episode2"),
+          "episodeDetailsPage episodeId changed to episode2",
+        );
+
+        // Execute
+        this.cut.applyRl({
+          episodeDetails: {
+            seasonId: "season2",
+            episodeId: "episode2",
+          },
+        });
+
+        // Verify
+        assertThat(
+          this.cut.episodeDetailsPage.seasonId,
+          eq("season2"),
+          "episodeDetailsPage seasonId changed to season2",
+        );
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
       public name = "ApplyRl_StatsPage_SameRlSamePage";
       private cut: PublisherPage;
       public async execute() {
@@ -667,7 +817,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.applyRl({
-          usage: {},
+          stats: {},
         });
 
         // Verify
@@ -678,7 +828,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.applyRl({
-          usage: {},
+          stats: {},
         });
 
         // Verify

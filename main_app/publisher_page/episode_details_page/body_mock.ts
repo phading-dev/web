@@ -1,17 +1,18 @@
 import { AddBodiesFn } from "../../../common/add_bodies_fn";
-import { SeasonDetailsPage } from "./body";
+import { EpisodeDetailsPage } from "./body";
 import { InfoPageMock } from "./info_page/body_mock";
 
-export class SeasonDetailsPageMock extends SeasonDetailsPage {
+export class EpisodeDetailsPageMock extends EpisodeDetailsPage {
   public constructor(
     getNowDate: () => Date,
     appendBodies: AddBodiesFn,
     seasonId: string,
+    episodeId: string,
   ) {
     super(
-      (seasonId: string) => new InfoPageMock(getNowDate, seasonId),
       undefined,
-      undefined,
+      (seasonId, episodeId) =>
+        new InfoPageMock(getNowDate, seasonId, episodeId),
       undefined,
       undefined,
       undefined,
@@ -19,6 +20,7 @@ export class SeasonDetailsPageMock extends SeasonDetailsPage {
       undefined,
       appendBodies,
       seasonId,
+      episodeId,
     );
   }
 }

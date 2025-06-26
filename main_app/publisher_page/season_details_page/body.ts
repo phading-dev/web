@@ -3,7 +3,6 @@ import { AddBodiesFn } from "../../../common/add_bodies_fn";
 import { TabSwitcher } from "../../../common/page_navigator";
 import { CreateEpisodePage } from "./create_episode_page/body";
 import { DraftStatePage } from "./draft_state_page/body";
-import { EpisodeDetailsPage } from "./episode_details_page/body";
 import { InfoPage } from "./info_page/body";
 import { PublishedStatePage } from "./published_state_page/body";
 import { UpdateCoverImagePage } from "./update_cover_image_page/body";
@@ -13,6 +12,10 @@ import { UpdatePublishedPricingPage } from "./update_published_pricing_page/body
 import { SeasonDetails } from "@phading/product_service_interface/show/web/publisher/details";
 
 export interface SeasonDetailsPage {
+  on(
+    event: "viewEpisode",
+    listener: (seasonId: string, episodeId: string) => void,
+  ): this;
   on(event: "back", listener: () => void): this;
 }
 
@@ -30,7 +33,6 @@ export class SeasonDetailsPage extends EventEmitter {
       DraftStatePage.create,
       PublishedStatePage.create,
       CreateEpisodePage.create,
-      EpisodeDetailsPage.create,
       appendBodies,
       seasonId,
     );
@@ -45,7 +47,6 @@ export class SeasonDetailsPage extends EventEmitter {
   public draftStatePage: DraftStatePage;
   public publishedStatePage: PublishedStatePage;
   public createEpisodePage: CreateEpisodePage;
-  public episodeDetailsPage: EpisodeDetailsPage;
 
   public constructor(
     private createInfoPage: typeof InfoPage.create,
@@ -56,7 +57,6 @@ export class SeasonDetailsPage extends EventEmitter {
     private createDraftStatePage: typeof DraftStatePage.create,
     private createPublishedStatePage: typeof PublishedStatePage.create,
     private createCreateEpisodePage: typeof CreateEpisodePage.create,
-    private createEpisodeDetailsPage: typeof EpisodeDetailsPage.create,
     private appendBodies: AddBodiesFn,
     public seasonId: string,
   ) {
@@ -112,11 +112,8 @@ export class SeasonDetailsPage extends EventEmitter {
           () => this.createEpisodePage.remove(),
         ),
       )
-      .on("editEpisode", (episodeId) =>
-        this.pageSwitcher.goTo(
-          () => this.addEpisodeDetailsPage(episodeId),
-          () => this.episodeDetailsPage.remove(),
-        ),
+      .on("viewEpisode", (episodeId) =>
+        this.emit("viewEpisode", this.seasonId, episodeId),
       );
     this.appendBodies(this.infoPage.body);
   }
@@ -206,25 +203,9 @@ export class SeasonDetailsPage extends EventEmitter {
         ),
       )
       .on("editEpisode", (episodeId) =>
-        this.pageSwitcher.goTo(
-          () => this.addEpisodeDetailsPage(episodeId),
-          () => this.episodeDetailsPage.remove(),
-        ),
+        this.emit("viewEpisode", this.seasonId, episodeId),
       );
     this.appendBodies(this.createEpisodePage.body);
-  }
-
-  private addEpisodeDetailsPage(episodeId: string): void {
-    this.episodeDetailsPage = this.createEpisodeDetailsPage(
-      this.appendBodies,
-      this.seasonId,
-      episodeId,
-    ).on("back", () =>
-      this.pageSwitcher.goTo(
-        () => this.addInfoPage(),
-        () => this.infoPage.remove(),
-      ),
-    );
   }
 
   public remove(): void {

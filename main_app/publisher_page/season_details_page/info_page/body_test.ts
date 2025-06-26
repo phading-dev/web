@@ -552,7 +552,7 @@ TEST_RUNNER.run({
 
         // Prepare
         let episodeIdCaptured: string;
-        this.cut.on("editEpisode", (episodeId: string) => {
+        this.cut.on("viewEpisode", (episodeId: string) => {
           episodeIdCaptured = episodeId;
         });
 

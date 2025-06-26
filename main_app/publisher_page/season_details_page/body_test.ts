@@ -5,7 +5,6 @@ import { setTabletView } from "../../../common/view_port";
 import { SeasonDetailsPage } from "./body";
 import { CreateEpisodePage } from "./create_episode_page/body";
 import { DraftStatePage } from "./draft_state_page/body";
-import { EpisodeDetailsPageMock } from "./episode_details_page/body_mock";
 import { InfoPageMock } from "./info_page/body_mock";
 import { PublishedStatePage } from "./published_state_page/body";
 import { UpdateCoverImagePage } from "./update_cover_image_page/body";
@@ -73,13 +72,6 @@ TEST_RUNNER.run({
           (seasonId) => new DraftStatePage(undefined, seasonId),
           (seasonId) => new PublishedStatePage(undefined, seasonId),
           (seasonId) => new CreateEpisodePage(undefined, seasonId),
-          (appendBodes, seasonId, episodeId) =>
-            new EpisodeDetailsPageMock(
-              () => nowDate,
-              appendBodes,
-              seasonId,
-              episodeId,
-            ),
           (...bodies) => document.body.append(...bodies),
           "season1",
         );
@@ -380,40 +372,27 @@ TEST_RUNNER.run({
           ),
         );
 
+        // Prepare
+        let seasonId: string;
+        let episodeId: string;
+        this.cut.on("viewEpisode", (seasonId_, episodeId_) => {
+          seasonId = seasonId_;
+          episodeId = episodeId_;
+        });
+
         // Execute
-        this.cut.infoPage.emit("editEpisode", "episode1");
+        this.cut.infoPage.emit("viewEpisode", "episode1");
 
         // Verify
         assertThat(
-          this.cut.episodeDetailsPage.seasonId,
+          seasonId,
           eq("season1"),
-          "episodeDetailsPage.seasonId",
+          "viewEpisode seasonId",
         );
         assertThat(
-          this.cut.episodeDetailsPage.episodeId,
+          episodeId,
           eq("episode1"),
-          "episodeDetailsPage.episodeId",
-        );
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/season_details_page_episode_details.png"),
-          path.join(
-            __dirname,
-            "/golden/season_details_page_episode_details.png",
-          ),
-          path.join(__dirname, "/season_details_page_episode_details_diff.png"),
-        );
-
-        // Execute
-        this.cut.episodeDetailsPage.emit("back");
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/season_details_page_back_from_episode.png"),
-          path.join(__dirname, "/golden/season_details_page_default.png"),
-          path.join(
-            __dirname,
-            "/season_details_page_back_from_episode_diff.png",
-          ),
+          "viewEpisode episodeId",
         );
       }
       public tearDown() {

@@ -66,7 +66,7 @@ export interface InfoPage {
   on(event: "editSeasonDraftState", listener: () => void): this;
   on(event: "editSeasonPublishedState", listener: () => void): this;
   on(event: "createDraftEpisode", listener: () => void): this;
-  on(event: "editEpisode", listener: (episodeId: string) => void): this;
+  on(event: "viewEpisode", listener: (episodeId: string) => void): this;
   on(event: "loaded", listener: () => void): this;
   on(event: "loadedPublishedEpisodes", listener: () => void): this;
 }
@@ -449,7 +449,7 @@ export class InfoPage extends EventEmitter {
     );
     this.draftEpisodeElements.push(body);
     body.addEventListener("click", () =>
-      this.emit("editEpisode", episode.episodeId),
+      this.emit("viewEpisode", episode.episodeId),
     );
     return body;
   }
@@ -526,7 +526,7 @@ export class InfoPage extends EventEmitter {
       ),
     );
     body.addEventListener("click", () =>
-      this.emit("editEpisode", episode.episodeId),
+      this.emit("viewEpisode", episode.episodeId),
     );
     this.publishedEpisodeElements.push(body);
     return body;

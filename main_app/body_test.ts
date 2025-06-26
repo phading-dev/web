@@ -290,7 +290,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.publisherPage.emit("pushRl", {
-          usage: {},
+          stats: {},
         } as PublisherPageRl);
 
         // Verify
@@ -300,13 +300,13 @@ TEST_RUNNER.run({
             eqMessage(
               {
                 publisher: {
-                  usage: {},
+                  stats: {},
                 },
               },
               MAIN_APP_RL,
             ),
           ]),
-          "new rl publisher usage",
+          "new rl publisher stats",
         );
 
         // Prepare
@@ -751,7 +751,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.publisherPage.emit("pushRl", {
-          usage: {},
+          stats: {},
         } as PublisherPageRl);
 
         // Verify
@@ -761,13 +761,13 @@ TEST_RUNNER.run({
             eqMessage(
               {
                 publisher: {
-                  usage: {},
+                  stats: {},
                 },
               },
               MAIN_APP_RL,
             ),
           ]),
-          "new rl publisher usage",
+          "new rl publisher stats",
         );
       }
       public tearDown() {

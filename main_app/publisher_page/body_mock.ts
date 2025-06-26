@@ -8,6 +8,7 @@ export class PublisherPageMock extends PublisherPage {
   public constructor(getNowDate: () => Date, appendBodies: AddBodiesFn) {
     super(
       () => new CreateSeasonPage(undefined),
+      undefined,
       () => new ListPageMock(getNowDate, SeasonState.PUBLISHED),
       undefined,
       undefined,

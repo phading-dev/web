@@ -14,6 +14,7 @@ import {
 } from "../../common/navigation_bar";
 import { TabSwitcher } from "../../common/page_navigator";
 import { CreateSeasonPage } from "./create_season_page/body";
+import { EpisodeDetailsPage } from "./episode_details_page/body";
 import { ListPage } from "./list_page/body";
 import { SearchPage } from "./search_page/body";
 import { SeasonDetailsPage } from "./season_details_page/body";
@@ -31,6 +32,7 @@ export class PublisherPage extends EventEmitter {
   public static create(appendBodies: AddBodiesFn): PublisherPage {
     return new PublisherPage(
       CreateSeasonPage.create,
+      EpisodeDetailsPage.create,
       ListPage.create,
       SearchPage.create,
       SeasonDetailsPage.create,
@@ -47,6 +49,7 @@ export class PublisherPage extends EventEmitter {
 
   private pageSwitcher = new TabSwitcher();
   public createSeasonPage: CreateSeasonPage;
+  public episodeDetailsPage: EpisodeDetailsPage;
   public listPage: ListPage;
   public searchPage: SearchPage;
   public seasonDetailsPage: SeasonDetailsPage;
@@ -55,6 +58,7 @@ export class PublisherPage extends EventEmitter {
 
   public constructor(
     private createCreateSeasonPage: typeof CreateSeasonPage.create,
+    private createEpisodeDetailsPage: typeof EpisodeDetailsPage.create,
     private createListPage: typeof ListPage.create,
     private createSearchPage: typeof SearchPage.create,
     private createSeasonDetailsPage: typeof SeasonDetailsPage.create,
@@ -101,7 +105,7 @@ export class PublisherPage extends EventEmitter {
     });
     this.statsButton.val.addEventListener("click", () => {
       this.pushRl({
-        usage: {},
+        stats: {},
       });
     });
     this.accountButton.val.addEventListener("click", () =>
@@ -126,7 +130,8 @@ export class PublisherPage extends EventEmitter {
       !rl.list &&
       !rl.search &&
       !rl.seasonDetails &&
-      !rl.usage
+      !rl.episodeDetails &&
+      !rl.stats
     ) {
       rl.list = {};
     }
@@ -166,7 +171,21 @@ export class PublisherPage extends EventEmitter {
         () => this.addSeasonDetailsPage(rl.seasonDetails.seasonId),
         () => this.removeSeasonDetailsPage(),
       );
-    } else if (rl.usage && !this.statsPage) {
+    } else if (
+      rl.episodeDetails &&
+      (!this.episodeDetailsPage ||
+        this.episodeDetailsPage.seasonId !== rl.episodeDetails.seasonId ||
+        this.episodeDetailsPage.episodeId !== rl.episodeDetails.episodeId)
+    ) {
+      this.pageSwitcher.goTo(
+        () =>
+          this.addEpisodeDetailsPage(
+            rl.episodeDetails.seasonId,
+            rl.episodeDetails.episodeId,
+          ),
+        () => this.removeEpisodeDetailsPage(),
+      );
+    } else if (rl.stats && !this.statsPage) {
       this.pageSwitcher.goTo(
         () => this.addStatsPage(),
         () => this.removeStatsPage(),
@@ -195,6 +214,25 @@ export class PublisherPage extends EventEmitter {
   private removeCreateSeasonPage(): void {
     this.createSeasonPage.remove();
     this.createSeasonPage = undefined;
+  }
+
+  private addEpisodeDetailsPage(seasonId: string, episodeId: string): void {
+    this.episodeDetailsPage = this.createEpisodeDetailsPage(
+      this.appendBodies,
+      seasonId,
+      episodeId,
+    ).on("viewSeason", (seasonId) =>
+      this.pushRl({
+        seasonDetails: {
+          seasonId,
+        },
+      }),
+    );
+  }
+
+  private removeEpisodeDetailsPage(): void {
+    this.episodeDetailsPage.remove();
+    this.episodeDetailsPage = undefined;
   }
 
   private addListPage(seasonState: SeasonState): void {
@@ -265,9 +303,18 @@ export class PublisherPage extends EventEmitter {
     this.seasonDetailsPage = this.createSeasonDetailsPage(
       this.appendBodies,
       seasonId,
-    ).on("back", () => {
-      this.pushRl(this.lastListRl);
-    });
+    )
+      .on("back", () => {
+        this.pushRl(this.lastListRl);
+      })
+      .on("viewEpisode", (seasonId, episodeId) =>
+        this.pushRl({
+          episodeDetails: {
+            seasonId,
+            episodeId,
+          },
+        }),
+      );
   }
 
   private removeSeasonDetailsPage(): void {
