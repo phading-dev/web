@@ -87,6 +87,7 @@ export class Player extends EventEmitter {
   private static SKIP_STEP_SEC = 10;
   private static DELAY_TO_HIDE_CONTROLS_MS = 2000;
   private static LAYOUT_BREAKPOINT = 60; // rem
+  private static MOVE_SENSITIVITY_THRESHOLD = 15; // px
 
   public elements: Array<HTMLElement>;
   public video = new Ref<HTMLVideoElement>();
@@ -123,7 +124,9 @@ export class Player extends EventEmitter {
   private isSeeking = false;
   private playbackSpeedIndex = 0;
   private resizeObserver: ResizeObserver;
-  private hideTimeoutId: number;
+  private hideControlsTimeoutId: number;
+  private toggledHiddenPosX: number;
+  private toggledHiddenPosY: number;
 
   public constructor(
     private window: Window,
@@ -461,8 +464,8 @@ export class Player extends EventEmitter {
     this.resizeObserver.observe(this.controlsContainer.val);
 
     this.hideControls();
-    this.controlsContainer.val.addEventListener("pointermove", () => 
-      this.showControls()
+    this.controlsContainer.val.addEventListener("pointermove", (event) =>
+      this.moveToShowControls(event),
     );
     this.controlsContainer.val.addEventListener("pointerdown", (event) =>
       this.toggleControls(event),
@@ -755,10 +758,27 @@ export class Player extends EventEmitter {
     this.emit("saveSettings");
   }
 
+  private moveToShowControls(event: PointerEvent): void {
+    if (
+      this.toggledHiddenPosX === undefined ||
+      this.toggledHiddenPosY === undefined
+    ) {
+      this.showControls();
+    } else if (
+      Math.abs(event.clientX - this.toggledHiddenPosX) +
+        Math.abs(event.clientY - this.toggledHiddenPosY) >
+      Player.MOVE_SENSITIVITY_THRESHOLD
+    ) {
+      this.showControls();
+      this.toggledHiddenPosX = undefined;
+      this.toggledHiddenPosY = undefined;
+    }
+  }
+
   private showControls(): void {
     this.controlsContainer.val.style.opacity = `1`;
-    this.window.clearTimeout(this.hideTimeoutId);
-    this.hideTimeoutId = this.window.setTimeout(
+    this.window.clearTimeout(this.hideControlsTimeoutId);
+    this.hideControlsTimeoutId = this.window.setTimeout(
       () => this.hideControls(),
       Player.DELAY_TO_HIDE_CONTROLS_MS,
     );
@@ -766,7 +786,7 @@ export class Player extends EventEmitter {
 
   private hideControls(): void {
     this.controlsContainer.val.style.opacity = `0`;
-    this.window.clearTimeout(this.hideTimeoutId);
+    this.window.clearTimeout(this.hideControlsTimeoutId);
   }
 
   private toggleControls(event: PointerEvent): void {
@@ -774,6 +794,8 @@ export class Player extends EventEmitter {
       event.target === this.centerControlsContainer.val &&
       this.controlsContainer.val.style.opacity === `1`
     ) {
+      this.toggledHiddenPosX = event.clientX;
+      this.toggledHiddenPosY = event.clientY;
       this.hideControls();
     } else {
       this.showControls();

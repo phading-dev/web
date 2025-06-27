@@ -40,7 +40,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "DesktopView_TabletView_PhoneView_BreakpointView_WaitForFadeOut_ToggleShow_ToggleHide_NotToggle";
+        "DesktopView_TabletView_PhoneView_BreakpointView_WaitForFadeOut_ToggleShow_NotToggle_ToggleHide_TouchShow_TouchMoveShow_TouchHide";
       private container: HTMLDivElement;
       private cut: Player;
       public async execute() {
@@ -117,7 +117,7 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "./player_phone_view_faded_out.png"),
-          path.join(__dirname, "./golden/player_phone_view_faded_out.png"),
+          path.join(__dirname, "./golden/player_phone_view_hidden_controls.png"),
           path.join(__dirname, "./player_phone_view_faded_out_diff.png"),
         );
 
@@ -133,17 +133,6 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await mouseDown();
-        await mouseUp();
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "./player_phone_view_toggled_hide.png"),
-          path.join(__dirname, "./golden/player_phone_view_faded_out.png"),
-          path.join(__dirname, "./player_phone_view_toggled_hide_diff.png"),
-        );
-
-        // Execute
         await mouseMove(10, 10, 1);
         await mouseDown();
         await mouseUp();
@@ -154,10 +143,61 @@ TEST_RUNNER.run({
           path.join(__dirname, "./golden/player_phone_view.png"),
           path.join(__dirname, "./player_phone_view_not_toggled_diff.png"),
         );
+
+        // Execute
+        await mouseMove(10, 100, 1);
+        await mouseDown();
+        await mouseUp();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "./player_phone_view_toggled_hide.png"),
+          path.join(__dirname, "./golden/player_phone_view_hidden_controls.png"),
+          path.join(__dirname, "./player_phone_view_toggled_hide_diff.png"),
+        );
+
+        // Execute
+        await touchStart(10, 100);
+        await touchEnd();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "./player_phone_view_touched_show.png"),
+          path.join(__dirname, "./golden/player_phone_view.png"),
+          path.join(__dirname, "./player_phone_view_touched_show_diff.png"),
+        );
+
+        // Execute
+        await touchStart(10, 100);
+        await touchMove(20, 110);
+        await touchEnd();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "./player_phone_view_touched_move_show.png"),
+          path.join(__dirname, "./golden/player_phone_view.png"),
+          path.join(__dirname, "./player_phone_view_touched_move_show_diff.png"),
+        );
+
+        // Execute
+        await touchStart(10, 100);
+        await touchMove(15, 110);
+        await touchEnd();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "./player_phone_view_touched_hide.png"),
+          path.join(__dirname, "./golden/player_phone_view_hidden_controls.png"),
+          path.join(__dirname, "./player_phone_view_touched_hide_diff.png"),
+        );
+
       }
       public async tearDown() {
         await forceMouseUp();
         await mouseMove(-1, -1, 1);
+        try {
+          await touchEnd();
+        } catch (e) {}
         this.container.remove();
         this.cut.destroy();
       }
