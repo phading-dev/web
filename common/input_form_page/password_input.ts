@@ -3,7 +3,7 @@ import { SCHEME } from "../color_scheme";
 import { SimpleIconButton } from "../icon_button";
 import { createEyeIcon, createEyeSlashIcon } from "../icons";
 import { COMMON_BASIC_INPUT_STYLE } from "../input_styles";
-import { FONT_M, FONT_S, ICON_BUTTON_M, ICON_M } from "../sizes";
+import { FONT_M, FONT_S, ICON_BUTTON_M, ICON_L } from "../sizes";
 import { InputField, ValidationResult } from "./input_field";
 import { E, ElementAttributeMap } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -64,7 +64,7 @@ export class PasswordInputWithErrorMsg
             this.showPasswordButton,
             new SimpleIconButton(
               ICON_BUTTON_M,
-              ICON_M,
+              ICON_L,
               createEyeIcon(SCHEME.neutral1),
             ),
           ).body,
@@ -72,7 +72,7 @@ export class PasswordInputWithErrorMsg
             this.hidePasswordButton,
             new SimpleIconButton(
               ICON_BUTTON_M,
-              ICON_M,
+              ICON_L,
               createEyeSlashIcon(SCHEME.neutral1),
             ),
           ).body,

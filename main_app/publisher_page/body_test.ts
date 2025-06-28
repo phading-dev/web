@@ -184,11 +184,14 @@ TEST_RUNNER.run({
           "rl.list back from season details",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/publisher_page_back_from_season_details.png"),
+          path.join(
+            __dirname,
+            "/publisher_page_list_back_from_season_details.png",
+          ),
           path.join(__dirname, "/golden/publisher_page_list_published.png"),
           path.join(
             __dirname,
-            "/publisher_page_back_from_season_details_diff.png",
+            "/publisher_page_list_back_from_season_details_diff.png",
           ),
         );
 
@@ -307,11 +310,14 @@ TEST_RUNNER.run({
           "rl.search back from season details after search",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/publisher_page_back_from_season_details.png"),
+          path.join(
+            __dirname,
+            "/publisher_page_search_back_from_season_details.png",
+          ),
           path.join(__dirname, "/golden/publisher_page_search.png"),
           path.join(
             __dirname,
-            "/publisher_page_back_from_season_details_diff.png",
+            "/publisher_page_search_back_from_season_details_diff.png",
           ),
         );
 
@@ -447,12 +453,12 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/publisher_page_back_from_season_details_after_create.png",
+            "/publisher_page_list_archived_back_from_season_details_after_create.png",
           ),
           path.join(__dirname, "/golden/publisher_page_list_archived.png"),
           path.join(
             __dirname,
-            "/publisher_page_back_from_season_details_after_create_diff.png",
+            "/publisher_page_list_archived_back_from_season_details_after_create_diff.png",
           ),
         );
 
