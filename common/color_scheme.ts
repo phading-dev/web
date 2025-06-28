@@ -23,6 +23,9 @@ let GREEN_40 = "rgb(0,204,0)";
 let YELLOW_50 = "rgb(255,255,0)";
 
 export class DarkScheme {
+  get name() {
+    return `dark`;
+  }
   get logoOrange() {
     return ORANGE_60;
   }
@@ -94,6 +97,9 @@ export class DarkScheme {
 }
 
 export class LightScheme {
+  get name() {
+    return `light`;
+  }
   get logoOrange() {
     return ORANGE_60;
   }
