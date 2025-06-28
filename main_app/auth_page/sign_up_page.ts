@@ -1,10 +1,13 @@
 import EventEmitter = require("events");
+import { SCHEME } from "../../common/color_scheme";
+import { createBrandIcon } from "../../common/icons";
 import { InputFormPage } from "../../common/input_form_page/body";
 import { ValidationResult } from "../../common/input_form_page/input_field";
 import { RadioOptionInput } from "../../common/input_form_page/option_input";
 import { TextInputWithErrorMsg } from "../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
 import { OptionPill } from "../../common/option_buttons";
+import { FONT_L, FONT_WEIGHT_600 } from "../../common/sizes";
 import { SERVICE_CLIENT } from "../../common/web_service_client";
 import { SWITCH_TEXT_STYLE } from "./styles";
 import {
@@ -34,6 +37,7 @@ export class SignUpPage extends EventEmitter {
     return new SignUpPage(SERVICE_CLIENT, initAccountType);
   }
 
+  private subtitle = new Ref<HTMLDivElement>();
   public naturalNameInput = new Ref<TextInputWithErrorMsg>();
   public usernameInput = new Ref<TextInputWithErrorMsg>();
   public emailInput = new Ref<TextInputWithErrorMsg>();
@@ -53,8 +57,15 @@ export class SignUpPage extends EventEmitter {
     super();
     this.inputFormPage = new InputFormPage<SignUpResponse>(
       "",
-      LOCALIZED_TEXT.signUpTitle,
       [
+        createBrandIcon(),
+        assign(
+          this.subtitle,
+          E.div({
+            class: "sign-up-subtitle",
+            style: `align-self: center; text-align: center; font-size: ${FONT_L}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+          }),
+        ),
         assign(
           this.naturalNameInput,
           new TextInputWithErrorMsg(
@@ -138,9 +149,7 @@ export class SignUpPage extends EventEmitter {
                 ),
               ),
             ],
-            (value) => {
-              this.request.accountType = value;
-            },
+            (value) => this.changeAccountType(value),
           ),
         ).body,
         E.divRef(
@@ -253,6 +262,15 @@ export class SignUpPage extends EventEmitter {
       };
     } else {
       return { valid: true };
+    }
+  }
+
+  private changeAccountType(value: AccountType): void {
+    this.request.accountType = value;
+    if (value === AccountType.CONSUMER) {
+      this.subtitle.val.textContent = LOCALIZED_TEXT.signUpViewerSubtitle;
+    } else if (value === AccountType.PUBLISHER) {
+      this.subtitle.val.textContent = LOCALIZED_TEXT.signUpPublisherSubtitle;
     }
   }
 

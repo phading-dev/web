@@ -4,7 +4,7 @@ import { SCHEME } from "../../common/color_scheme";
 import {
   createAccountIcon,
   createHistoryIcon,
-  createHomeIcon,
+  createLogoIcon,
   createSearchIcon,
 } from "../../common/icons";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
@@ -93,7 +93,7 @@ export class ConsumerPage extends EventEmitter {
         this.navigationBar,
         eNavigationItemRef(
           this.homeButton,
-          createHomeIcon(SCHEME.neutral1),
+          createLogoIcon(SCHEME.logoBlue),
           LOCALIZED_TEXT.homeLabel,
         ),
         eNavigationItemRef(

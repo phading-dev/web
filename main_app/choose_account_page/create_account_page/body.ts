@@ -5,6 +5,7 @@ import { RadioOptionInput } from "../../../common/input_form_page/option_input";
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { OptionPill } from "../../../common/option_buttons";
+import { eFormTitle } from "../../../common/page_elements";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
   MAX_EMAIL_LENGTH,
@@ -42,8 +43,8 @@ export class CreateAccountPage extends EventEmitter {
     super();
     this.inputFormPage = new InputFormPage<CreateAccountResponse>(
       "",
-      LOCALIZED_TEXT.createAccountTitle,
       [
+        eFormTitle(LOCALIZED_TEXT.createAccountTitle),
         assign(
           this.naturalNameInput,
           new TextInputWithErrorMsg(

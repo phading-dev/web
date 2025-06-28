@@ -4,6 +4,7 @@ import { ValidationResult } from "../../../common/input_form_page/input_field";
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
+import { eFormTitle } from "../../../common/page_elements";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { MAX_SEASON_NAME_LENGTH } from "@phading/constants/show";
 import { newCreateSeasonRequest } from "@phading/product_service_interface/show/web/publisher/client";
@@ -32,8 +33,8 @@ export class CreateSeasonPage extends EventEmitter {
     super();
     this.inputFormPage = new InputFormPage<CreateSeasonResponse>(
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      LOCALIZED_TEXT.createSeasonTitle,
       [
+        eFormTitle(LOCALIZED_TEXT.createSeasonTitle),
         assign(
           this.seasonNameInput,
           new TextInputWithErrorMsg(

@@ -1,8 +1,10 @@
 import EventEmitter = require("events");
+import { createBrandIcon } from "../../common/icons";
 import { InputFormPage } from "../../common/input_form_page/body";
 import { ValidationResult } from "../../common/input_form_page/input_field";
 import { TextInputWithErrorMsg } from "../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
+import { eFormTitle } from "../../common/page_elements";
 import { SERVICE_CLIENT } from "../../common/web_service_client";
 import { SWITCH_TEXT_STYLE } from "./styles";
 import { newSignInRequest } from "@phading/user_service_interface/web/self/client";
@@ -35,8 +37,9 @@ export class SignInPage extends EventEmitter {
     super();
     this.inputFormPage = new InputFormPage<SignInResponse>(
       "",
-      LOCALIZED_TEXT.signInTitle,
       [
+        createBrandIcon(),
+        eFormTitle(LOCALIZED_TEXT.signInTitle),
         assign(
           this.usernameInput,
           new TextInputWithErrorMsg(

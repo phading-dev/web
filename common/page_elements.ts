@@ -1,4 +1,5 @@
 import { SCHEME } from "./color_scheme";
+import { FONT_L } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
@@ -26,6 +27,16 @@ export function ePageWithCenterForm(
       },
       ...children,
     ),
+  );
+}
+
+export function eFormTitle(text: string): HTMLDivElement {
+  return E.div(
+    {
+      class: "input-form-title",
+      style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; width: 80%; text-align: center; align-self: center;`,
+    },
+    E.text(text),
   );
 }
 

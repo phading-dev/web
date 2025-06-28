@@ -22,10 +22,10 @@ import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
   PAGE_MAX_WIDTH_L,
+  eFormTitle,
   ePageWithCenterForm,
 } from "../../../../common/page_elements";
 import {
-  FONT_L,
   FONT_M,
   FONT_WEIGHT_600,
   ICON_BUTTON_M,
@@ -1011,13 +1011,7 @@ export class UpdateTracksPage extends EventEmitter {
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       `max-width: ${PAGE_MAX_WIDTH_L}rem; display: flex; flex-flow: column nowrap;`,
       assign(this.backButton, createBackButton()).body,
-      E.div(
-        {
-          class: "update-tracks-title",
-          style: `align-self: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
-        },
-        E.text(LOCALIZED_TEXT.updateTracksTitle),
-      ),
+      eFormTitle(LOCALIZED_TEXT.updateTracksTitle),
       ...(videoContainer.videos.length === 0
         ? []
         : [

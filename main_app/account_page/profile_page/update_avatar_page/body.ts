@@ -11,9 +11,10 @@ import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
   PAGE_MAX_WIDTH_M,
+  eFormTitle,
   ePageWithCenterForm,
 } from "../../../../common/page_elements";
-import { AVATAR_M, AVATAR_S, FONT_L, FONT_M } from "../../../../common/sizes";
+import { AVATAR_M, AVATAR_S, FONT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { MAX_AVATAR_SIZE } from "@phading/constants/account";
 import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
@@ -56,13 +57,7 @@ export class UpdateAvatarPage extends EventEmitter {
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       `max-width: ${PAGE_MAX_WIDTH_M}rem; display: flex; flex-flow: column nowrap; align-items: center;`,
       assign(this.backButton, createBackButton()).body,
-      E.div(
-        {
-          class: "update-avatar-title",
-          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
-        },
-        E.text(LOCALIZED_TEXT.updateAvatarTitle),
-      ),
+      eFormTitle(LOCALIZED_TEXT.updateAvatarTitle),
       E.div({
         style: `flex: 0 0 auto; height: 2rem;`,
       }),

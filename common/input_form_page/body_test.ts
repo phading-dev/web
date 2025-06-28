@@ -1,5 +1,6 @@
 import path = require("path");
 import { normalizeBody } from "../normalize_body";
+import { eFormTitle } from "../page_elements";
 import { setDesktopView, setPhoneView, setTabletView } from "../view_port";
 import { InputFormPage } from "./body";
 import { TextInputWithErrorMsg } from "./text_input";
@@ -44,8 +45,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new InputFormPage<Response>(
           "",
-          "A title",
-          [input.body],
+          [eFormTitle("A title"), input.body],
           [input],
           "Update",
         ).addPrimaryAction(
@@ -170,8 +170,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new InputFormPage<Response>(
           "",
-          "A title",
-          [input.body],
+          [eFormTitle("A title"), input.body],
           [input],
           "Update",
         )
@@ -279,8 +278,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new InputFormPage<Response>(
           "",
-          "A title",
-          [input.body],
+          [eFormTitle("A title"), input.body],
           [input],
           "Update",
         ).addBackButton();
@@ -331,8 +329,7 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new InputFormPage<Response>(
           "",
-          "A title",
-          inputs.map((input) => input.body),
+          [eFormTitle("A title"), ...inputs.map((input) => input.body)],
           inputs,
           "Update",
         );

@@ -1,6 +1,6 @@
 import path = require("path");
 import { normalizeBody } from "../../common/normalize_body";
-import { setDesktopView } from "../../common/view_port";
+import { setDesktopView, setPhoneView } from "../../common/view_port";
 import { SignUpPage } from "./sign_up_page";
 import { AccountType } from "@phading/user_service_interface/account_type";
 import {
@@ -24,7 +24,7 @@ TEST_RUNNER.run({
       private cut: SignUpPage;
       public async execute() {
         // Prepare
-        await setDesktopView();
+        await setPhoneView();
         let webServiceClientMock = new WebServiceClientMock();
 
         // Execute
@@ -33,9 +33,19 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/sign_up_page_render.png"),
-          path.join(__dirname, "/golden/sign_up_page_render.png"),
-          path.join(__dirname, "/sign_up_page_render_diff.png"),
+          path.join(__dirname, "/sign_up_page_phone_render.png"),
+          path.join(__dirname, "/golden/sign_up_page_phone_render.png"),
+          path.join(__dirname, "/sign_up_page_phone_render_diff.png"),
+        );
+
+        // Execute
+        await setDesktopView();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/sign_up_page_desktop_render.png"),
+          path.join(__dirname, "/golden/sign_up_page_desktop_render.png"),
+          path.join(__dirname, "/sign_up_page_desktop_render_diff.png"),
         );
 
         // Execute
@@ -151,7 +161,7 @@ TEST_RUNNER.run({
       private cut: SignUpPage;
       public async execute() {
         // Prepare
-        await setDesktopView();
+        await setPhoneView();
 
         // Execute
         this.cut = new SignUpPage(undefined, AccountType.PUBLISHER);
@@ -159,9 +169,19 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/sign_up_page_publisher.png"),
-          path.join(__dirname, "/golden/sign_up_page_publisher.png"),
-          path.join(__dirname, "/sign_up_page_publisher_diff.png"),
+          path.join(__dirname, "/sign_up_page_phone_publisher.png"),
+          path.join(__dirname, "/golden/sign_up_page_phone_publisher.png"),
+          path.join(__dirname, "/sign_up_page_phone_publisher_diff.png"),
+        );
+
+        // Execute
+        await setDesktopView();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/sign_up_page_desktop_publisher.png"),
+          path.join(__dirname, "/golden/sign_up_page_desktop_publisher.png"),
+          path.join(__dirname, "/sign_up_page_desktop_publisher_diff.png"),
         );
       }
       public tearDown() {

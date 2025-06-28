@@ -7,7 +7,7 @@ import {
 } from "../blocking_button";
 import { SimpleIconButton, createBackButton } from "../icon_button";
 import { PAGE_MAX_WIDTH_M, ePageWithCenterForm } from "../page_elements";
-import { FONT_L, FONT_M } from "../sizes";
+import { FONT_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -50,7 +50,6 @@ export class InputFormPage<
 
   public constructor(
     customPageStyle: string,
-    title: string,
     lines: Array<HTMLElement>,
     private inputs: Array<InputField>,
     primaryButtonLabel: string,
@@ -60,13 +59,6 @@ export class InputFormPage<
       this.card,
       customPageStyle,
       `max-width: ${PAGE_MAX_WIDTH_M}rem; display: flex; flex-flow: column nowrap; gap: 2rem;`,
-      E.div(
-        {
-          class: "input-form-title",
-          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; width: 80%; text-align: center; align-self: center;`,
-        },
-        E.text(title),
-      ),
       ...lines,
       E.divRef(
         this.buttonsLine,

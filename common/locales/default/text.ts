@@ -58,6 +58,12 @@ export default class Text {
       `) are calculated and paid out.`, // TODO: Mention within X days.
     ];
   }
+  get signUpViewerSubtitle() {
+    return `Why overpay for subscriptions? Make every second count.`;
+  }
+  get signUpPublisherSubtitle() {
+    return `Stop selling your work short. Be your own publisher.`;
+  }
   get signUpTitle() {
     return `Create your new account`;
   }

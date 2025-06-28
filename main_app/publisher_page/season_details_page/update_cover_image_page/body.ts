@@ -14,10 +14,11 @@ import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
   PAGE_MAX_WIDTH_M,
+  eFormTitle,
   ePageWithCenterForm,
 } from "../../../../common/page_elements";
 import { eCoverImage } from "../../../../common/season_cover_image";
-import { FONT_L, FONT_M, FONT_S } from "../../../../common/sizes";
+import { FONT_M, FONT_S } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import {
   COVER_IMAGE_HEIGHT,
@@ -72,13 +73,7 @@ export class UpdateCoverImagePage extends EventEmitter {
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       `max-width: ${PAGE_MAX_WIDTH_M}rem; display: flex; flex-flow: column nowrap; align-items: center;`,
       assign(this.backButton, createBackButton()).body,
-      E.div(
-        {
-          class: "update-cover-image-title",
-          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; max-width: 80%;`,
-        },
-        E.text(LOCALIZED_TEXT.updateSeasonCoverImageTitle),
-      ),
+      eFormTitle(LOCALIZED_TEXT.updateSeasonCoverImageTitle),
       E.div({
         style: `flex: 0 0 auto; height: 2rem;`,
       }),
