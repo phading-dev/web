@@ -4,6 +4,7 @@ import { createBrandIcon } from "../../common/icons";
 import { InputFormPage } from "../../common/input_form_page/body";
 import { ValidationResult } from "../../common/input_form_page/input_field";
 import { RadioOptionInput } from "../../common/input_form_page/option_input";
+import { PasswordInputWithErrorMsg } from "../../common/input_form_page/password_input";
 import { TextInputWithErrorMsg } from "../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
 import { OptionPill } from "../../common/option_buttons";
@@ -41,8 +42,8 @@ export class SignUpPage extends EventEmitter {
   public naturalNameInput = new Ref<TextInputWithErrorMsg>();
   public usernameInput = new Ref<TextInputWithErrorMsg>();
   public emailInput = new Ref<TextInputWithErrorMsg>();
-  public passwordInput = new Ref<TextInputWithErrorMsg>();
-  public repeatPasswordInput = new Ref<TextInputWithErrorMsg>();
+  public passwordInput = new Ref<PasswordInputWithErrorMsg>();
+  public repeatPasswordInput = new Ref<PasswordInputWithErrorMsg>();
   public consumerOption = new Ref<OptionPill<AccountType>>();
   public publisherOption = new Ref<OptionPill<AccountType>>();
   private accountTypeInput = new Ref<RadioOptionInput<AccountType>>();
@@ -104,11 +105,10 @@ export class SignUpPage extends EventEmitter {
         ).body,
         assign(
           this.passwordInput,
-          new TextInputWithErrorMsg(
+          new PasswordInputWithErrorMsg(
             LOCALIZED_TEXT.passwordLabel,
             "",
             {
-              type: "password",
               autocomplete: "new-password",
             },
             (value) => this.validateOrTakePasswordInput(value),
@@ -116,11 +116,10 @@ export class SignUpPage extends EventEmitter {
         ).body,
         assign(
           this.repeatPasswordInput,
-          new TextInputWithErrorMsg(
+          new PasswordInputWithErrorMsg(
             LOCALIZED_TEXT.repeatPasswordLabel,
             "",
             {
-              type: "password",
               autocomplete: "new-password",
             },
             (value) => this.validateRepeatPasswordInput(value),

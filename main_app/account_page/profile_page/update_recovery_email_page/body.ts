@@ -1,6 +1,7 @@
 import EventEmitter = require("events");
 import { InputFormPage } from "../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../common/input_form_page/input_field";
+import { PasswordInputWithErrorMsg } from "../../../../common/input_form_page/password_input";
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
@@ -29,7 +30,7 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
 
   public inputFormPage: InputFormPage<UpdateRecoveryEmailResponse>;
   public newRecoveryEmailInput = new Ref<TextInputWithErrorMsg>();
-  public currentPasswordInput = new Ref<TextInputWithErrorMsg>();
+  public currentPasswordInput = new Ref<PasswordInputWithErrorMsg>();
   private request: UpdateRecoveryEmailRequestBody = {};
 
   public constructor(
@@ -62,11 +63,10 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
         ).body,
         assign(
           this.currentPasswordInput,
-          new TextInputWithErrorMsg(
+          new PasswordInputWithErrorMsg(
             LOCALIZED_TEXT.currentPasswordLabel,
             "",
             {
-              type: "password",
               autocomplete: "current-password",
             },
             (value) => this.validateOrTakeCurrentPassword(value),

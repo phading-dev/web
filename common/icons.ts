@@ -1150,3 +1150,29 @@ export function createSwitchIcon(color: string): SVGSVGElement {
     }),
   );
 }
+
+export function createEyeIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "eye-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 2;`,
+      viewBox: ".5 .5 23 23",
+    },
+    E.path({
+      d: `M12,4C7.02944,4,2.5,8.02944,1.5,12C2.5,15.9706,7.02944,20,12,20C16.9706,20,21.5,15.9706,22.5,12C21.5,8.02944,16.9706,4,12,4z M12,18C9.23858,18,7,15.7614,7,13C7,10.2386,9.23858,8,12,8C14.7614,8,17,10.2386,17,13C17,15.7614,14.7614,18,12,18z M12 10 C10.3431 10 9 11.3431 9 13 C9 14.6569 10.3431 16 12 16 C13.6569 16 15 14.6569 15 13 C15 11.3431 13.6569 10 12 10z`,
+    }),
+  );
+}
+
+export function createEyeSlashIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "eye-slash-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 2;`,
+      viewBox: ".5 .5 23 23",
+    },
+    E.path({
+      d: `M12,4C7.02944,4,2.5,8.02944,1.5,12C2.5,15.9706,7.02944,20,12,20C16.9706,20,21.5,15.9706,22.5,12C21.5,8.02944,16.9706,4,12,4z M12 18 C9.23858 18 7 15.7614 7 13 C7 10.2386 9.23858 8 12 8 C14.7614 8 17 10.2386 17 13 C17 15.7614 14.7614 18 12 18z M12 10 C10.3431 10 9 11.3431 9 13 C9 14.6569 10.3431 16 12 16 C13.6569 16 15 14.6569 15 13 C15 11.3431 13.6569 10 12 10z M2,2L22,22`,
+    }),
+  );
+}

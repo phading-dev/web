@@ -7,7 +7,7 @@ import { SCHEME } from "../../../../common/color_scheme";
 import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
 import { BASIC_INPUT_STYLE } from "../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
-import { FONT_M, LINE_HEIGHT_XXL } from "../../../../common/sizes";
+import { FONT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { CommentWithAuthor } from "../common/comment_with_author";
 import { CommentEntry } from "./comment_entry";
@@ -71,7 +71,7 @@ export class CommentsPanel extends EventEmitter {
         ),
         E.inputRef(this.commentInput, {
           class: "comments-panel-input",
-          style: `${BASIC_INPUT_STYLE} flex: 1 0 0; line-height: ${LINE_HEIGHT_XXL}rem;`,
+          style: `${BASIC_INPUT_STYLE} flex: 1 0 0;`,
           placeholder: LOCALIZED_TEXT.commentInputPlaceholder,
         }),
         assign(

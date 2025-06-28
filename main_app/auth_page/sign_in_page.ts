@@ -2,6 +2,7 @@ import EventEmitter = require("events");
 import { createBrandIcon } from "../../common/icons";
 import { InputFormPage } from "../../common/input_form_page/body";
 import { ValidationResult } from "../../common/input_form_page/input_field";
+import { PasswordInputWithErrorMsg } from "../../common/input_form_page/password_input";
 import { TextInputWithErrorMsg } from "../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
 import { eFormTitle } from "../../common/page_elements";
@@ -28,7 +29,7 @@ export class SignInPage extends EventEmitter {
   }
 
   public usernameInput = new Ref<TextInputWithErrorMsg>();
-  public passwordInput = new Ref<TextInputWithErrorMsg>();
+  public passwordInput = new Ref<PasswordInputWithErrorMsg>();
   public switchToSignUpButton = new Ref<HTMLDivElement>();
   public inputFormPage: InputFormPage<SignInResponse>;
   private request: SignInRequestBody = {};
@@ -54,11 +55,10 @@ export class SignInPage extends EventEmitter {
         ).body,
         assign(
           this.passwordInput,
-          new TextInputWithErrorMsg(
+          new PasswordInputWithErrorMsg(
             LOCALIZED_TEXT.passwordLabel,
             "",
             {
-              type: "password",
               autocomplete: "current-password",
             },
             (value) => this.validateOrTakePasswordInput(value),

@@ -209,7 +209,7 @@ export default class Text {
     return `Archived`;
   }
   get searchTargetSeasonLabel() {
-    return `Videos`;
+    return `Content`;
   }
   get searchTargetPublisherLabel() {
     return `Publishers`;

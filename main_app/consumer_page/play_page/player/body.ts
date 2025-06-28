@@ -395,10 +395,10 @@ export class Player extends EventEmitter {
     this.video.val.addEventListener("progress", () =>
       this.updateBufferProgress(),
     );
-    this.video.val.addEventListener("ended", () => this.emit("clearComments"));
-    this.video.val.addEventListener("seeking", () => {
-      this.emit("clearComments");
-    });
+    // this.video.val.addEventListener("ended", () => this.emit("clearComments"));
+    this.video.val.addEventListener("seeking", () =>
+      this.emit("clearComments"),
+    );
     if (this.autoPlay) {
       this.video.val.autoplay = true;
     }

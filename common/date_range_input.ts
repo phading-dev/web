@@ -45,7 +45,7 @@ export class DateRangeInput extends EventEmitter {
     this.body = E.div(
       {
         class: "date-range-inputs",
-        style: `flex-flow: row wrap; align-items: center; justify-content: flex-end; column-gap: 2rem; row-gap: 1rem; ${customStyle}`,
+        style: `flex-flow: row wrap; align-items: center; justify-content: flex-end; column-gap: 2rem; row-gap: .5rem; ${customStyle}`,
       },
       E.div(
         {

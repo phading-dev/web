@@ -445,7 +445,7 @@ TEST_RUNNER.run({
         this.cut.applyRl();
 
         // Execute
-        this.cut.exploreButton.val.click();
+        this.cut.searchButton.val.click();
 
         // Verify
         assertThat(
@@ -657,7 +657,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.exploreButton.val.click();
+        this.cut.searchButton.val.click();
         this.cut.searchSeasonsPage.emit(
           "search",
           SearchTarget.PUBLISHER,

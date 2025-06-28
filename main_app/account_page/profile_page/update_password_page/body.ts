@@ -1,7 +1,7 @@
 import EventEmitter = require("events");
 import { InputFormPage } from "../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../common/input_form_page/input_field";
-import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
+import { PasswordInputWithErrorMsg } from "../../../../common/input_form_page/password_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import { eFormTitle } from "../../../../common/page_elements";
@@ -27,9 +27,9 @@ export class UpdatePasswordPage extends EventEmitter {
   }
 
   public inputFormPage: InputFormPage<UpdatePasswordResponse>;
-  public newPasswordInput = new Ref<TextInputWithErrorMsg>();
-  public newPasswordRepeatInput = new Ref<TextInputWithErrorMsg>();
-  public currentPasswordInput = new Ref<TextInputWithErrorMsg>();
+  public newPasswordInput = new Ref<PasswordInputWithErrorMsg>();
+  public newPasswordRepeatInput = new Ref<PasswordInputWithErrorMsg>();
+  public currentPasswordInput = new Ref<PasswordInputWithErrorMsg>();
   private request: UpdatePasswordRequestBody = {};
 
   public constructor(
@@ -49,11 +49,10 @@ export class UpdatePasswordPage extends EventEmitter {
         }),
         assign(
           this.newPasswordInput,
-          new TextInputWithErrorMsg(
+          new PasswordInputWithErrorMsg(
             LOCALIZED_TEXT.newPasswordLabel,
             "",
             {
-              type: "password",
               autocomplete: "new-password",
             },
             (value) => this.validateOrTakeNewPassword(value),
@@ -61,11 +60,10 @@ export class UpdatePasswordPage extends EventEmitter {
         ).body,
         assign(
           this.newPasswordRepeatInput,
-          new TextInputWithErrorMsg(
+          new PasswordInputWithErrorMsg(
             LOCALIZED_TEXT.repeatNewPasswordLabel,
             "",
             {
-              type: "password",
               autocomplete: "new-password",
             },
             (value) => this.validateNewPasswordRepeat(value),
@@ -73,11 +71,10 @@ export class UpdatePasswordPage extends EventEmitter {
         ).body,
         assign(
           this.currentPasswordInput,
-          new TextInputWithErrorMsg(
+          new PasswordInputWithErrorMsg(
             LOCALIZED_TEXT.currentPasswordLabel,
             "",
             {
-              type: "password",
               autocomplete: "current-password",
             },
             (value) => this.validateOrTakeCurrentPassword(value),

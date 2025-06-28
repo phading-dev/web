@@ -55,7 +55,7 @@ export class ConsumerPage extends EventEmitter {
 
   private navigationBar = new Ref<HTMLDivElement>();
   public homeButton = new Ref<HTMLDivElement>();
-  public exploreButton = new Ref<HTMLDivElement>();
+  public searchButton = new Ref<HTMLDivElement>();
   public activityButton = new Ref<HTMLDivElement>();
   public accountButton = new Ref<HTMLDivElement>();
 
@@ -97,9 +97,9 @@ export class ConsumerPage extends EventEmitter {
           LOCALIZED_TEXT.homeLabel,
         ),
         eNavigationItemRef(
-          this.exploreButton,
+          this.searchButton,
           createSearchIcon(SCHEME.neutral1),
-          LOCALIZED_TEXT.exploreLabel,
+          LOCALIZED_TEXT.searchLabel,
         ),
         eNavigationItemRef(
           this.activityButton,
@@ -120,7 +120,7 @@ export class ConsumerPage extends EventEmitter {
         home: {},
       });
     });
-    this.exploreButton.val.addEventListener("click", () => {
+    this.searchButton.val.addEventListener("click", () => {
       this.pushRl({
         search: {
           searchTarget: SearchTarget.SEASON,
