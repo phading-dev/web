@@ -6,7 +6,7 @@ import {
   formatMoney,
 } from "../../../common/formatter/price";
 import { formatWatchTimeSeconds } from "../../../common/formatter/quantity";
-import { DATE_INPUT_STYLE } from "../../../common/input_styles";
+import { BASIC_INPUT_STYLE } from "../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import { OptionPill, RadioOptionsGroup } from "../../../common/option_buttons";
@@ -14,7 +14,12 @@ import {
   PAGE_MAX_WIDTH_L,
   ePageWithTopDownCard,
 } from "../../../common/page_elements";
-import { FONT_M, FONT_S, FONT_WEIGHT_600 } from "../../../common/sizes";
+import {
+  DATE_INPUT_WIDTH,
+  FONT_M,
+  FONT_S,
+  FONT_WEIGHT_600,
+} from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
 import { MAX_DAY_RANGE, MAX_MONTH_RANGE } from "@phading/constants/meter";
@@ -137,12 +142,12 @@ export class StatsPage extends EventEmitter {
       }),
       E.inputRef(this.oneDayInput, {
         class: "stats-page-one-day-input",
-        style: `${DATE_INPUT_STYLE} align-self: flex-end; margin: 0 2rem;`,
+        style: `${BASIC_INPUT_STYLE} width: ${DATE_INPUT_WIDTH}rem; align-self: flex-end; margin: 0 2rem;`,
         type: "date",
       }),
       E.inputRef(this.oneMonthInput, {
         class: "stats-page-one-month-input",
-        style: `${DATE_INPUT_STYLE} align-self: flex-end; margin: 0 2rem;`,
+        style: `${BASIC_INPUT_STYLE} width: ${DATE_INPUT_WIDTH}rem; align-self: flex-end; margin: 0 2rem;`,
         type: "month",
       }),
       assign(

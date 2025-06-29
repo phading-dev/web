@@ -22,3 +22,6 @@ export let ICON_XXL = 3.2; // rem
 export let ICON_BUTTON_M = 3; // rem
 export let ICON_BUTTON_L = 4; // rem
 export let ICON_BUTTON_XL = 5; // rem
+
+export let DATE_INPUT_WIDTH = 15; // rem
+export let DATETIME_INPUT_WIDTH = 20; // rem
