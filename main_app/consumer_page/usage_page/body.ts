@@ -228,9 +228,6 @@ export class UsagePage extends EventEmitter {
     this.oneMonthInput.val.style.display = "none";
     this.dayRangeInput.val.hide();
     this.monthRangeInput.val.hide();
-    while (this.resultList.val.lastElementChild) {
-      this.resultList.val.lastElementChild.remove();
-    }
     switch (value) {
       case RangeType.ONE_DAY:
         this.oneDayInput.val.style.display = "block";
@@ -295,6 +292,9 @@ export class UsagePage extends EventEmitter {
   private async loadReadingsPerSeason(date: TzDate): Promise<void> {
     this.loadIndex++;
     let currentLoadIndex = this.loadIndex;
+    while (this.resultList.val.lastElementChild) {
+      this.resultList.val.lastElementChild.remove();
+    }
     let response = await this.serviceClient.send(
       newListMeterReadingPerSeasonRequest({
         date: date.toLocalDateISOString(),
