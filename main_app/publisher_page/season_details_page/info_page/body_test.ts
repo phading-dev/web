@@ -437,7 +437,7 @@ TEST_RUNNER.run({
         document.body.append(this.cut.body);
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
         // Somehow need to await again for the body to be fully loaded
-        await new Promise((resolve) => setTimeout(resolve));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         window.scrollTo(0, document.body.scrollHeight);
 
         // Verify

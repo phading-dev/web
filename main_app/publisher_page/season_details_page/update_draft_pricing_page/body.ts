@@ -1,6 +1,9 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../../common/color_scheme";
-import { formatShowPrice } from "../../../../common/formatter/price";
+import {
+  formatShowCreditPrice,
+  formatShowPrice,
+} from "../../../../common/formatter/price";
 import { InputFormPage } from "../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../common/input_form_page/input_field";
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
@@ -41,6 +44,7 @@ export class UpdateDraftPricingPage extends EventEmitter {
   public inputFormPage: InputFormPage<UpdateSeasonGradeResponse>;
   public gradeInput = new Ref<TextInputWithErrorMsg>();
   public pricingPreview = new Ref<Text>();
+  public netPricingPreview = new Ref<Text>();
   private request: UpdateSeasonGradeRequestBody = {};
 
   public constructor(
@@ -72,13 +76,24 @@ export class UpdateDraftPricingPage extends EventEmitter {
         ).body,
         E.div(
           {
-            class: "update-draft-pricing-preview",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            class: "update-draft-pricing-preview-line",
+            style: `display: flex; flex-flow: row wrap; column-gap: 2rem; row-gap: 1rem;`,
           },
-          E.text(LOCALIZED_TEXT.seasonNewRateLabel),
-          E.textRef(
-            this.pricingPreview,
-            formatShowPrice(grade, this.getNowDate()),
+          E.div(
+            {
+              class: "update-draft-pricing-new-rate",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.seasonNewRateLabel),
+            E.textRef(this.pricingPreview),
+          ),
+          E.div(
+            {
+              class: "update-draft-pricing-net-rate",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.seasonNewNetRateLabel),
+            E.textRef(this.netPricingPreview),
           ),
         ),
       ],
@@ -117,6 +132,10 @@ export class UpdateDraftPricingPage extends EventEmitter {
       };
     } else {
       this.pricingPreview.val.textContent = formatShowPrice(
+        grade,
+        this.getNowDate(),
+      );
+      this.netPricingPreview.val.textContent = formatShowCreditPrice(
         grade,
         this.getNowDate(),
       );

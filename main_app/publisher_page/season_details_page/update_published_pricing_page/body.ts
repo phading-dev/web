@@ -1,7 +1,10 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../../common/color_scheme";
 import { formatNegativeTimezoneOffset } from "../../../../common/formatter/date";
-import { formatShowPrice } from "../../../../common/formatter/price";
+import {
+  formatShowCreditPrice,
+  formatShowPrice,
+} from "../../../../common/formatter/price";
 import { InputFormPage } from "../../../../common/input_form_page/body";
 import { ValidationResult } from "../../../../common/input_form_page/input_field";
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
@@ -58,6 +61,7 @@ export class UpdatePublishedPricingPage extends EventEmitter {
   >;
   public nextGradeInput = new Ref<TextInputWithErrorMsg>();
   public pricingPreview = new Ref<Text>();
+  public netPricingPreview = new Ref<Text>();
   public effectiveDateInput = new Ref<TextInputWithErrorMsg>();
   private minDateStr: string;
   private request: UpdateNextSeasonGradeRequestBody = {};
@@ -110,13 +114,30 @@ export class UpdatePublishedPricingPage extends EventEmitter {
         ).body,
         E.div(
           {
-            class: "update-published-pricing-preview",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            class: "update-published-pricing-preview-line",
+            style: `display: flex; flex-flow: row wrap; column-gap: 2rem; row-gap: 1rem;`,
           },
-          E.text(LOCALIZED_TEXT.seasonNewRateLabel),
-          E.textRef(
-            this.pricingPreview,
-            formatShowPrice(nextGrade?.grade ?? 0, this.getNowDate()),
+          E.div(
+            {
+              class: "update-published-pricing-new-rate",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.seasonNewRateLabel),
+            E.textRef(
+              this.pricingPreview,
+              formatShowPrice(nextGrade?.grade ?? 0, this.getNowDate()),
+            ),
+          ),
+          E.div(
+            {
+              class: "update-published-pricing-net-rate",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.seasonNewNetRateLabel),
+            E.textRef(
+              this.netPricingPreview,
+              formatShowCreditPrice(nextGrade?.grade ?? 0, this.getNowDate()),
+            ),
           ),
         ),
         assign(
@@ -185,6 +206,10 @@ export class UpdatePublishedPricingPage extends EventEmitter {
       };
     } else {
       this.pricingPreview.val.textContent = formatShowPrice(
+        grade,
+        this.getNowDate(),
+      );
+      this.netPricingPreview.val.textContent = formatShowCreditPrice(
         grade,
         this.getNowDate(),
       );
