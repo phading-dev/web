@@ -150,7 +150,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "DesktopView_SwitchToOneDay_ChangeOneDay";
+      public name = "DesktopView_SwitchToOneDay_ChangeOneDayWithEmptyReadings";
       private cut: UsagePage;
       public async execute() {
         // Prepare
@@ -239,6 +239,11 @@ TEST_RUNNER.run({
           path.join(__dirname, "/usage_page_desktop_one_day_default_diff.png"),
         );
 
+        // Prepare
+        serviceClientMock.response = {
+          readings: [],
+        } as ListMeterReadingPerSeasonResponse;
+
         // Execute
         this.cut.oneDayInput.val.value = "2020-08-31";
         this.cut.oneDayInput.val.dispatchEvent(new Event("change"));
@@ -259,6 +264,11 @@ TEST_RUNNER.run({
             LIST_METER_READING_PER_SEASON_REQUEST_BODY,
           ),
           "One day input change RC body",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/usage_page_desktop_one_day_empty.png"),
+          path.join(__dirname, "/golden/usage_page_desktop_one_day_empty.png"),
+          path.join(__dirname, "/usage_page_desktop_one_day_empty_diff.png"),
         );
       }
       public tearDown() {

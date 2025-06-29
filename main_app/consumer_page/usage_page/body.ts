@@ -324,14 +324,26 @@ export class UsagePage extends EventEmitter {
       return;
     }
 
-    response.readings.forEach((reading, i) => {
-      this.renderThreeColumns(
-        labels[i],
-        reading.watchTimeSec,
-        reading.watchTimeSecGraded,
-        date.toLocalMonthISOString(),
+    if (response.readings.length === 0) {
+      this.resultList.val.append(
+        E.div(
+          {
+            class: "usage-page-no-activities",
+            style: `width: 100%; text-align: center; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          },
+          E.text(LOCALIZED_TEXT.noActivities),
+        ),
       );
-    });
+    } else {
+      response.readings.forEach((reading, i) => {
+        this.renderThreeColumns(
+          labels[i],
+          reading.watchTimeSec,
+          reading.watchTimeSecGraded,
+          date.toLocalMonthISOString(),
+        );
+      });
+    }
   }
 
   private async loadReadingsPerDay(
