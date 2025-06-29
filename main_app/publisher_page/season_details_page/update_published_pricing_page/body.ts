@@ -91,11 +91,26 @@ export class UpdatePublishedPricingPage extends EventEmitter {
         eFormTitle(LOCALIZED_TEXT.updateSeasonPricingTitle),
         E.div(
           {
-            class: "update-published-pricing-current-rate",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            class: "update-published-pricing-preview-line",
+            style: `display: flex; flex-flow: row wrap; column-gap: 2rem; row-gap: 1rem;`,
           },
-          E.text(
-            `${LOCALIZED_TEXT.currentRate}${formatShowPrice(grade, this.getNowDate())}`,
+          E.div(
+            {
+              class: "update-published-pricing-current-rate",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(
+              `${LOCALIZED_TEXT.seasonCurrentRateLabel}${formatShowPrice(grade, this.getNowDate())}`,
+            ),
+          ),
+          E.div(
+            {
+              class: "update-published-pricing-current-net-rate",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(
+              `${LOCALIZED_TEXT.seasonNetRateLabel}${formatShowCreditPrice(grade, this.getNowDate())}`,
+            ),
           ),
         ),
         assign(
@@ -130,7 +145,7 @@ export class UpdatePublishedPricingPage extends EventEmitter {
           ),
           E.div(
             {
-              class: "update-published-pricing-net-rate",
+              class: "update-published-pricing-new-net-rate",
               style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.seasonNewNetRateLabel),

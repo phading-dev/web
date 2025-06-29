@@ -1,7 +1,7 @@
 import "../../../../dev/env";
 import path = require("path");
 import { normalizeBody } from "../../../../common/normalize_body";
-import { setTabletView } from "../../../../common/view_port";
+import { setPhoneView, setTabletView } from "../../../../common/view_port";
 import { UpdateDraftPricingPage } from "./body";
 import {
   UPDATE_SEASON_GRADE,
@@ -23,7 +23,7 @@ TEST_RUNNER.run({
       private cut: UpdateDraftPricingPage;
       public async execute() {
         // Prepare
-        await setTabletView();
+        await setPhoneView();
         let serviceClientMock = new WebServiceClientMock();
         this.cut = new UpdateDraftPricingPage(
           serviceClientMock,
@@ -34,6 +34,22 @@ TEST_RUNNER.run({
 
         // Execute
         document.body.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/update_draft_pricing_phone_page_default.png"),
+          path.join(
+            __dirname,
+            "/golden/update_draft_pricing_phone_page_default.png",
+          ),
+          path.join(
+            __dirname,
+            "/update_draft_pricing_phone_page_default_diff.png",
+          ),
+        );
+
+        // Execute
+        await setTabletView();
 
         // Verify
         await asyncAssertScreenshot(

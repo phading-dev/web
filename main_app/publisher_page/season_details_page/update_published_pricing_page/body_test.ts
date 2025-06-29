@@ -1,7 +1,7 @@
 import "../../../../dev/env";
 import path = require("path");
 import { normalizeBody } from "../../../../common/normalize_body";
-import { setTabletView } from "../../../../common/view_port";
+import { setPhoneView, setTabletView } from "../../../../common/view_port";
 import { UpdatePublishedPricingPage } from "./body";
 import {
   DELETE_NEXT_SEASON_GRADE,
@@ -22,11 +22,11 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "NoNextGrade_RateNonPositive_RateTooLarge_RateSameAsBefore_NewRateValid_EffectiveDateTooSoon_EffectiveDateValid_UpdateError_Updated_Back";
+        "NoNextGrade_PhoneView_TabletView_RateNonPositive_RateTooLarge_RateSameAsBefore_NewRateValid_EffectiveDateTooSoon_EffectiveDateValid_UpdateError_Updated_Back";
       private cut: UpdatePublishedPricingPage;
       public async execute() {
         // Prepare
-        await setTabletView();
+        await setPhoneView();
         let serviceClientMock = new WebServiceClientMock();
         this.cut = new UpdatePublishedPricingPage(
           serviceClientMock,
@@ -37,6 +37,25 @@ TEST_RUNNER.run({
 
         // Execute
         document.body.append(this.cut.body);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/update_published_pricing_page_phone_no_next_grade.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/update_published_pricing_page_phone_no_next_grade.png",
+          ),
+          path.join(
+            __dirname,
+            "/update_published_pricing_page_phone_no_next_grade_diff.png",
+          ),
+        );
+
+        // Execute
+        await setTabletView();
 
         // Verify
         await asyncAssertScreenshot(
