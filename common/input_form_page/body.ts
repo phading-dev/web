@@ -186,6 +186,7 @@ export class InputFormPage<
 
   public remove(): void {
     this.body.remove();
+    this.removeAllListeners();
   }
 
   // For testing purposes

@@ -6,8 +6,9 @@ import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_i
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import { eFormTitle } from "../../../../common/page_elements";
-import { FONT_M } from "../../../../common/sizes";
+import { FONT_M, FONT_WEIGHT_600 } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
+import { MIN_GRADE_EFFECTIVE_GAP_DAY } from "@phading/constants/show";
 import { newDeleteSeasonRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import { DeleteSeasonResponse } from "@phading/product_service_interface/show/web/publisher/interface";
 import { E } from "@selfage/element/factory";
@@ -49,7 +50,23 @@ export class DraftStatePage extends EventEmitter {
             class: "draft-state-page-description",
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
-          E.text(LOCALIZED_TEXT.seasonDraftStateDescription),
+          E.text(LOCALIZED_TEXT.seasonDraftStateDescription[0]),
+          E.div(
+            {
+              style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+            },
+            E.text(
+              `${MIN_GRADE_EFFECTIVE_GAP_DAY}${LOCALIZED_TEXT.seasonDraftStateDescription[1]}`,
+            ),
+          ),
+          E.text(LOCALIZED_TEXT.seasonDraftStateDescription[2]),
+          E.div(
+            {
+              style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+            },
+            E.text(LOCALIZED_TEXT.seasonDraftStateDescription[3]),
+          ),
+          E.text(LOCALIZED_TEXT.seasonDraftStateDescription[4]),
         ),
         assign(
           this.seasonIdInput,

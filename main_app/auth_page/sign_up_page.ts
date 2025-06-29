@@ -292,6 +292,7 @@ export class SignUpPage extends EventEmitter {
   }
 
   public remove(): void {
-    this.inputFormPage.removeAllListeners().remove();
+    this.inputFormPage.remove();
+    this.removeAllListeners();
   }
 }

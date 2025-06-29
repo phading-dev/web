@@ -17,18 +17,14 @@ import {
   GetSeasonResponse,
   LIST_DRAFT_EPISODES,
   LIST_DRAFT_EPISODES_REQUEST_BODY,
-  LIST_PUBLISHED_EPISODES,
-  LIST_PUBLISHED_EPISODES_REQUEST_BODY,
   ListDraftEpisodesRequestBody,
   ListDraftEpisodesResponse,
-  ListPublishedEpisodesRequestBody,
-  ListPublishedEpisodesResponse,
 } from "@phading/product_service_interface/show/web/publisher/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { ClientRequestInterface } from "@selfage/service_descriptor/client_request_interface";
-import { assertThat, eq, isArray } from "@selfage/test_matcher";
+import { assertThat, eq } from "@selfage/test_matcher";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 normalizeBody();
@@ -38,9 +34,6 @@ class InfoPageServiceClientMock extends WebServiceClientMock {
   public getSeasonResponse: GetSeasonResponse;
   public listDraftEpisodesRequest: ListDraftEpisodesRequestBody;
   public listDraftEpisodesResponse: ListDraftEpisodesResponse;
-  public listPublishedEpisodesRequests =
-    new Array<ListPublishedEpisodesRequestBody>();
-  public listPublishedEpisodesResponse: ListPublishedEpisodesResponse;
 
   public async send(request: ClientRequestInterface<any>): Promise<any> {
     switch (request.descriptor) {
@@ -50,9 +43,6 @@ class InfoPageServiceClientMock extends WebServiceClientMock {
       case LIST_DRAFT_EPISODES:
         this.listDraftEpisodesRequest = request.body;
         return this.listDraftEpisodesResponse;
-      case LIST_PUBLISHED_EPISODES:
-        this.listPublishedEpisodesRequests.push(request.body);
-        return this.listPublishedEpisodesResponse;
       default:
         throw new Error(`Unknown request: ${request.descriptor.name}`);
     }
@@ -64,7 +54,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "TabletView_DraftSeasonWithoutEpisodes_DesktopView_PhoneView_EditCoverImage_EditSeasonInfo_EditSeasonPricing_EditSeasonState_CreateDraftEpisode_Back";
+        "TabletView_DraftSeasonWithoutEpisodes_DesktopView_PhoneView_EditCoverImage_EditSeasonInfo_EditSeasonPricing_CreateDraftEpisode_ViewEpisodes_EditSeasonState_Back";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -120,9 +110,6 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/info_page_tablet_empty_draft.png"),
           path.join(__dirname, "/info_page_tablet_empty_draft_diff.png"),
         );
-
-        // Prepare
-        serviceClientMock.listPublishedEpisodesRequests.length = 0;
 
         // Execute
         window.scrollTo(0, document.body.scrollHeight);
@@ -235,6 +222,27 @@ TEST_RUNNER.run({
         );
 
         // Prepare
+        let createDraftEpisode = false;
+        this.cut.on("createDraftEpisode", () => (createDraftEpisode = true));
+
+        // Execute
+        this.cut.createDraftEpisodeButton.val.click();
+
+        // Verify
+        assertThat(createDraftEpisode, eq(true), "Create draft episode");
+
+        // Prepare
+        this.cut.on("viewEpisodes", (season) => {
+          seasonCaptured = season;
+        });
+
+        // Execute
+        this.cut.episodesListButton.val.click();
+
+        // Verify
+        assertThat(seasonCaptured.grade, eq(1), "View episodes season grade");
+
+        // Prepare
         let editSeasonDraftState = false;
         this.cut.on(
           "editSeasonDraftState",
@@ -246,16 +254,6 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(editSeasonDraftState, eq(true), "Edit season draft state");
-
-        // Prepare
-        let createDraftEpisode = false;
-        this.cut.on("createDraftEpisode", () => (createDraftEpisode = true));
-
-        // Execute
-        this.cut.createDraftEpisodeButton.val.click();
-
-        // Verify
-        assertThat(createDraftEpisode, eq(true), "Create draft episode");
 
         // Prepare
         let back = false;
@@ -274,7 +272,7 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "TabletView_PublishedSeasonWithDraftEpisodes_ScrolledToLoadMorePublishedEpisodes_DesktopView_PhoneView_ReloadPublishedEpisodesFromNewCursor_EditSeasonPricing_EditSeasonState_EditDraftEpisode_EditPublishedEpisode";
+        "TabletView_PublishedSeasonWithDraftEpisodes_DesktopView_PhoneView_EditSeasonPricing_EditSeasonState";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -297,42 +295,11 @@ TEST_RUNNER.run({
           episodes: [
             {
               episodeId: "episode1",
-              name: "Episode 1",
             },
             {
               episodeId: "episode2",
-              name: "Episode 2",
             },
           ],
-        };
-        serviceClientMock.listPublishedEpisodesResponse = {
-          episodes: [
-            {
-              episodeId: "episode10",
-              name: "Episode 10",
-              index: 10,
-              videoContainer: {
-                durationSec: 3600,
-              },
-            },
-            {
-              episodeId: "episode9",
-              name: "Episode 9",
-              index: 9,
-              videoContainer: {
-                durationSec: 3700,
-              },
-            },
-            {
-              episodeId: "episode8",
-              name: "Episode 8",
-              index: 8,
-              videoContainer: {
-                durationSec: 3800,
-              },
-            },
-          ],
-          indexCursor: 8,
         };
         this.cut = new InfoPage(
           serviceClientMock,
@@ -342,25 +309,9 @@ TEST_RUNNER.run({
 
         // Execute
         document.body.append(this.cut.body);
-        await new Promise<void>((resolve) =>
-          this.cut.once("loadedPublishedEpisodes", resolve),
-        );
+        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
 
         // Verify
-        assertThat(
-          serviceClientMock.listPublishedEpisodesRequests,
-          isArray([
-            eqMessage(
-              {
-                seasonId: "season1",
-                limit: 10,
-                next: false,
-              },
-              LIST_PUBLISHED_EPISODES_REQUEST_BODY,
-            ),
-          ]),
-          "ListPublishedEpisodesRequestBody",
-        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/info_page_tablet_published.png"),
           path.join(__dirname, "/golden/info_page_tablet_published.png"),
@@ -368,7 +319,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        window.scrollTo(0, 500);
+        window.scrollTo(0, document.body.scrollHeight);
 
         // Verify
         await asyncAssertScreenshot(
@@ -378,66 +329,6 @@ TEST_RUNNER.run({
             "/golden/info_page_tablet_published_scrolled.png",
           ),
           path.join(__dirname, "/info_page_tablet_published_scrolled_diff.png"),
-        );
-
-        // Prepare
-        serviceClientMock.listPublishedEpisodesRequests.length = 0;
-        serviceClientMock.listPublishedEpisodesResponse = {
-          episodes: [
-            {
-              episodeId: "episode7",
-              name: "Episode 7",
-              index: 7,
-              videoContainer: {
-                durationSec: 3900,
-              },
-            },
-            {
-              episodeId: "episode6",
-              name: "Episode 6",
-              index: 6,
-              videoContainer: {
-                durationSec: 3600,
-              },
-            },
-          ],
-        };
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-        await new Promise<void>((resolve) =>
-          this.cut.once("loadedPublishedEpisodes", resolve),
-        );
-
-        // Verify
-        assertThat(
-          serviceClientMock.listPublishedEpisodesRequests,
-          isArray([
-            eqMessage(
-              {
-                seasonId: "season1",
-                indexCursor: 8,
-                limit: 10,
-                next: false,
-              },
-              LIST_PUBLISHED_EPISODES_REQUEST_BODY,
-            ),
-          ]),
-          "ListPublishedEpisodesRequestBody 2",
-        );
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/info_page_tablet_published_scrolled_with_more.png",
-          ),
-          path.join(
-            __dirname,
-            "/golden/info_page_tablet_published_scrolled_with_more.png",
-          ),
-          path.join(
-            __dirname,
-            "/info_page_tablet_published_scrolled_with_more_diff.png",
-          ),
         );
 
         // Prepare
@@ -472,52 +363,6 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        serviceClientMock.listPublishedEpisodesRequests.length = 0;
-        serviceClientMock.listPublishedEpisodesResponse = {
-          episodes: [
-            {
-              episodeId: "episode5",
-              name: "Episode 5",
-              index: 5,
-              videoContainer: {
-                durationSec: 4000,
-              },
-            },
-          ],
-        };
-
-        // Execute
-        this.cut.listPublishedEpisodeIndexCursorInput.val.value = "5";
-        this.cut.listPublishedEpisodeIndexCursorInput.val.dispatchEvent(
-          new Event("change"),
-        );
-
-        // Verify
-        assertThat(
-          serviceClientMock.listPublishedEpisodesRequests,
-          isArray([
-            eqMessage(
-              {
-                seasonId: "season1",
-                indexCursor: 6,
-                limit: 10,
-                next: false,
-              },
-              LIST_PUBLISHED_EPISODES_REQUEST_BODY,
-            ),
-          ]),
-          "ListPublishedEpisodesRequestBody 3",
-        );
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_phone_published_reloaded.png"),
-          path.join(
-            __dirname,
-            "/golden/info_page_phone_published_reloaded.png",
-          ),
-          path.join(__dirname, "/info_page_phone_published_reloaded_diff.png"),
-        );
-
-        // Prepare
         let seasonCaptured: SeasonDetails;
         this.cut.on("editSeasonPublishedPricing", (season) => {
           seasonCaptured = season;
@@ -549,31 +394,6 @@ TEST_RUNNER.run({
           eq(true),
           "Edit season published state",
         );
-
-        // Prepare
-        let episodeIdCaptured: string;
-        this.cut.on("viewEpisode", (episodeId: string) => {
-          episodeIdCaptured = episodeId;
-        });
-
-        // Execute
-        this.cut.draftEpisodeElements[0].click();
-
-        // Verify
-        assertThat(episodeIdCaptured, eq("episode1"), "Edit draft episode id");
-
-        // Prepare
-        episodeIdCaptured = undefined;
-
-        // Execute
-        this.cut.publishedEpisodeElements[0].click();
-
-        // Verify
-        assertThat(
-          episodeIdCaptured,
-          eq("episode5"),
-          "Edit published episode id",
-        );
       }
       public tearDown() {
         window.scrollTo(0, 0);
@@ -581,7 +401,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "TabletView_NextGrade";
+      public name = "TabletView_NextGrade_PhoneView";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -607,9 +427,6 @@ TEST_RUNNER.run({
         serviceClientMock.listDraftEpisodesResponse = {
           episodes: [],
         };
-        serviceClientMock.listPublishedEpisodesResponse = {
-          episodes: [],
-        };
         this.cut = new InfoPage(
           serviceClientMock,
           () => new Date("2024-12-23T08:00:00Z"),
@@ -618,10 +435,10 @@ TEST_RUNNER.run({
 
         // Execute
         document.body.append(this.cut.body);
-        await new Promise<void>((resolve) =>
-          this.cut.once("loadedPublishedEpisodes", resolve),
-        );
-        window.scrollTo(0, 500);
+        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
+        // Somehow need to await again for the body to be fully loaded
+        await new Promise((resolve) => setTimeout(resolve));
+        window.scrollTo(0, document.body.scrollHeight);
 
         // Verify
         await asyncAssertScreenshot(
@@ -629,8 +446,20 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/info_page_tablet_next_grade.png"),
           path.join(__dirname, "/info_page_tablet_next_grade_diff.png"),
         );
+
+        // Execute
+        await setPhoneView();
+        window.scrollTo(0, document.body.scrollHeight);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/info_page_phone_next_grade.png"),
+          path.join(__dirname, "/golden/info_page_phone_next_grade.png"),
+          path.join(__dirname, "/info_page_phone_next_grade_diff.png"),
+        );
       }
       public tearDown() {
+        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),
@@ -654,9 +483,6 @@ TEST_RUNNER.run({
           },
         };
         serviceClientMock.listDraftEpisodesResponse = {
-          episodes: [],
-        };
-        serviceClientMock.listPublishedEpisodesResponse = {
           episodes: [],
         };
         this.cut = new InfoPage(

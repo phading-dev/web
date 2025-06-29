@@ -103,6 +103,37 @@ export function calculateEstimatedShowMoneyAndFormat(
   return formatMoney(amount, price.currency);
 }
 
+export function formatShowCreditPrice(showGrade: number, date: Date): string {
+  let month = TzDate.fromDate(
+    date,
+    ENV_VARS.timezoneNegativeOffset,
+  ).toLocalMonthISOString();
+  let quantityHourInSeconds = 3600;
+  let { amount, price } = calculateEstimatedMoney(
+    ProductID.SHOW_CREDIT,
+    showGrade * quantityHourInSeconds,
+    month,
+  );
+  return `${LOCALIZED_TEXT.pricingHourRate[0]}${formatAsCent(amount, price.currency)}${LOCALIZED_TEXT.pricingHourRate[1]}`;
+}
+
+export function calculateEstimatedShowCreditMoneyAndFormat(
+  showGrade: number,
+  seconds: number,
+  date: Date,
+): string {
+  let month = TzDate.fromDate(
+    date,
+    ENV_VARS.timezoneNegativeOffset,
+  ).toLocalMonthISOString();
+  let { amount, price } = calculateEstimatedMoney(
+    ProductID.SHOW_CREDIT,
+    showGrade * seconds,
+    month,
+  );
+  return formatMoney(amount, price.currency);
+}
+
 export function formatStoragePrice(date: Date): string {
   let month = TzDate.fromDate(
     date,

@@ -620,11 +620,11 @@ export default class Text {
   get seasonAddCoverImageLabel() {
     return `Add cover image`;
   }
-  get seasonPricingLabel() {
-    return `Pricing`;
-  }
   get seasonCurrentRateLabel() {
     return `Current rate: `;
+  }
+  get seasonNetRateLabel() {
+    return `Net earnings rate: `;
   }
   get seasonDraftPricingFooter() {
     return `Before publishing, you can change the rate anytime.`;
@@ -641,11 +641,14 @@ export default class Text {
   get seasonNewRateLabel() {
     return `New rate: `;
   }
+  get seasonNewNetRateLabel() {
+    return `New net rate: `;
+  }
   get seasonNewRateEffectiveDateLabel() {
     return `Effective date: `;
   }
   get seasonStateLabel() {
-    return `State`;
+    return `State: `;
   }
   get seasonStateDraftLabel() {
     return `Draft`;
@@ -672,10 +675,16 @@ export default class Text {
     return [``, ` draft episodes`];
   }
   get seasonCreateDraftEpisodeLabel() {
-    return `Add a draft episode`;
+    return `Add a new episode`;
   }
   get seasonEpisodeDuration() {
     return `Duration: `;
+  }
+  get seasonEpisodeEarnings() {
+    return `Total: `;
+  }
+  get seasonEpisodeNetEarnings() {
+    return `Net total: `;
   }
   get seasonTotalPublishedEpisodes() {
     return [``, ` published episodes`];
@@ -1065,7 +1074,13 @@ export default class Text {
     return `Draft state`;
   }
   get seasonDraftStateDescription() {
-    return `Once published, the season itself cannot be unpublished and can only be archived. Episodes can be unpublished individually until the last one.`;
+    return [
+      `Once published, the pricing can only be adjusted with a `,
+      `-day notice`,
+      `. And the season itself `,
+      `cannot be unpublished`,
+      ` and can only be archived. Episodes can be unpublished individually until the last one.`,
+    ];
   }
   get seasonDeleteInstruction() {
     return [

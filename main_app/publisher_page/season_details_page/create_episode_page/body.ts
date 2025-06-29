@@ -18,7 +18,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 export interface CreateEpisodePage {
   on(event: "back", listener: () => void): this;
   on(
-    event: "editEpisode",
+    event: "viewEpisode",
     listener: (seasonId: string, episodeId: string) => void,
   ): this;
   on(event: "created", listener: () => void): this;
@@ -65,7 +65,7 @@ export class CreateEpisodePage extends EventEmitter {
         (response, error) => this.postCreate(error),
       )
       .on("handlePrimarySuccess", (response) =>
-        this.emit("editEpisode", response.episodeId),
+        this.emit("viewEpisode", response.episodeId),
       )
       .on("primaryDone", () => this.emit("created"));
     this.nameInput.val.validate();

@@ -3,6 +3,7 @@ import { AddBodiesFn } from "../../../common/add_bodies_fn";
 import { TabSwitcher } from "../../../common/page_navigator";
 import { CreateEpisodePage } from "./create_episode_page/body";
 import { DraftStatePage } from "./draft_state_page/body";
+import { EpisodesListPage } from "./episodes_list_page/body";
 import { InfoPage } from "./info_page/body";
 import { PublishedStatePage } from "./published_state_page/body";
 import { UpdateCoverImagePage } from "./update_cover_image_page/body";
@@ -26,6 +27,7 @@ export class SeasonDetailsPage extends EventEmitter {
   ): SeasonDetailsPage {
     return new SeasonDetailsPage(
       InfoPage.create,
+      EpisodesListPage.create,
       UpdateCoverImagePage.create,
       UpdateInfoPage.create,
       UpdateDraftPricingPage.create,
@@ -40,6 +42,7 @@ export class SeasonDetailsPage extends EventEmitter {
 
   private pageSwitcher = new TabSwitcher();
   public infoPage: InfoPage;
+  public episodesListPage: EpisodesListPage;
   public updateCoverImagePage: UpdateCoverImagePage;
   public updateInfoPage: UpdateInfoPage;
   public updateDraftPricingPage: UpdateDraftPricingPage;
@@ -50,6 +53,7 @@ export class SeasonDetailsPage extends EventEmitter {
 
   public constructor(
     private createInfoPage: typeof InfoPage.create,
+    private createEpisodesListPage: typeof EpisodesListPage.create,
     private createUpdateCoverImagePage: typeof UpdateCoverImagePage.create,
     private createUpdateInfoPage: typeof UpdateInfoPage.create,
     private createUpdateDraftPricingPage: typeof UpdateDraftPricingPage.create,
@@ -112,10 +116,27 @@ export class SeasonDetailsPage extends EventEmitter {
           () => this.createEpisodePage.remove(),
         ),
       )
+      .on("viewEpisodes", (season) =>
+        this.pageSwitcher.goTo(
+          () => this.addEpisodesListPage(season),
+          () => this.episodesListPage.remove(),
+        ),
+      );
+    this.appendBodies(this.infoPage.body);
+  }
+
+  private addEpisodesListPage(season: SeasonDetails): void {
+    this.episodesListPage = this.createEpisodesListPage(this.seasonId, season)
+      .on("back", () =>
+        this.pageSwitcher.goTo(
+          () => this.addInfoPage(),
+          () => this.infoPage.remove(),
+        ),
+      )
       .on("viewEpisode", (episodeId) =>
         this.emit("viewEpisode", this.seasonId, episodeId),
       );
-    this.appendBodies(this.infoPage.body);
+    this.appendBodies(this.episodesListPage.body);
   }
 
   private addUpdateCoverImagePage(season: SeasonDetails): void {
@@ -202,7 +223,7 @@ export class SeasonDetailsPage extends EventEmitter {
           () => this.infoPage.remove(),
         ),
       )
-      .on("editEpisode", (episodeId) =>
+      .on("viewEpisode", (episodeId) =>
         this.emit("viewEpisode", this.seasonId, episodeId),
       );
     this.appendBodies(this.createEpisodePage.body);

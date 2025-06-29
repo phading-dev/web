@@ -97,7 +97,7 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         let episodeId: string;
-        this.cut.on("editEpisode", (episodeId_) => {
+        this.cut.on("viewEpisode", (episodeId_) => {
           episodeId = episodeId_;
         });
 
