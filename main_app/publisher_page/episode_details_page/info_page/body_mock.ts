@@ -11,6 +11,7 @@ export class InfoPageMock extends InfoPage {
     episodeId: string,
   ) {
     super(
+      window,
       new (class extends WebServiceClientMock {
         public async send(request: ClientRequestInterface<any>): Promise<any> {
           this.request = request;

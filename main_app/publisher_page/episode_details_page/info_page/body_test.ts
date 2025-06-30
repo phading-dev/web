@@ -24,7 +24,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "TabletView_InitialDraft_DesktopView_PhoneView_Back_EditName_EditDraftState_Upload";
+        "TabletView_InitialDraft_DesktopView_PhoneView_Back_EditName_Upload_EditDraftState";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -50,6 +50,7 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         this.cut = new InfoPage(
+          {} as any,
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
           "season1",
@@ -104,7 +105,7 @@ TEST_RUNNER.run({
         this.cut.on("editName", (episode) => (editEpisode = episode));
 
         // Execute
-        this.cut.episodeNameButton.val.click();
+        this.cut.editNameButton.val.click();
 
         // Verify
         assertThat(
@@ -114,31 +115,31 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let editDraftState: EpisodeDetails;
-        this.cut.on("editDraftState", (episode) => (editDraftState = episode));
-
-        // Execute
-        this.cut.episodeDraftStateButton.val.click();
-
-        // Verify
-        assertThat(
-          editDraftState.episodeName,
-          eq("The End of the Beginning and the Beginning of the End"),
-          "editDraftState.episodeName",
-        );
-
-        // Prepare
         let upload: EpisodeDetails;
         this.cut.on("upload", (episode) => (upload = episode));
 
         // Execute
-        this.cut.episodeUploadButton.val.click();
+        this.cut.uploadButton.val.click();
 
         // Verify
         assertThat(
           upload.episodeName,
           eq("The End of the Beginning and the Beginning of the End"),
           "upload.episodeName",
+        );
+
+        // Prepare
+        let editDraftState: EpisodeDetails;
+        this.cut.on("editDraftState", (episode) => (editDraftState = episode));
+
+        // Execute
+        this.cut.editDraftStateButton.val.click();
+
+        // Verify
+        assertThat(
+          editDraftState.episodeName,
+          eq("The End of the Beginning and the Beginning of the End"),
+          "editDraftState.episodeName",
         );
       }
       public tearDown() {
@@ -175,6 +176,7 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         this.cut = new InfoPage(
+          {} as any,
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
           "season1",
@@ -199,7 +201,7 @@ TEST_RUNNER.run({
         this.cut.on("upload", (episode) => (upload = episode));
 
         // Execute
-        this.cut.episodeUploadButton.val.click();
+        this.cut.uploadButton.val.click();
 
         // Verify
         assertThat(
@@ -213,7 +215,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "TabletView_MediaFormatting";
+      public name = "TabletView_MediaFormatting_RefreshProcessing";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -241,7 +243,15 @@ TEST_RUNNER.run({
           },
         };
         serviceClientMock.response = response;
+        let reloaded = false;
         this.cut = new InfoPage(
+          {
+            location: {
+              reload: () => {
+                reloaded = true;
+              },
+            },
+          } as any,
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
           "season1",
@@ -260,6 +270,12 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/info_page_tablet_draft_formatting.png"),
           path.join(__dirname, "/info_page_tablet_draft_formatting_diff.png"),
         );
+
+        // Execute
+        this.cut.refreshProcessingButton.val.click();
+
+        // Verify
+        assertThat(reloaded, eq(true), "reloaded");
       }
       public tearDown() {
         this.cut.remove();
@@ -295,6 +311,7 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         this.cut = new InfoPage(
+          {} as any,
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
           "season1",
@@ -361,6 +378,7 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         this.cut = new InfoPage(
+          {} as any,
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
           "season1",
@@ -453,6 +471,7 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         this.cut = new InfoPage(
+          {} as any,
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
           "season1",
@@ -517,7 +536,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "TabletView_CommittingFirstVersion";
+      public name = "TabletView_CommittingFirstVersion_RefreshVideoContainer";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -565,7 +584,15 @@ TEST_RUNNER.run({
           },
         };
         serviceClientMock.response = response;
+        let reloaded = false;
         this.cut = new InfoPage(
+          {
+            location: {
+              reload: () => {
+                reloaded = true;
+              },
+            },
+          } as any,
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
           "season1",
@@ -584,6 +611,12 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/info_page_tablet_draft_committing.png"),
           path.join(__dirname, "/info_page_tablet_draft_committing_diff.png"),
         );
+
+        // Execute
+        this.cut.refreshVideoContainerButton.val.click();
+
+        // Verify
+        assertThat(reloaded, eq(true), "reloaded");
       }
       public tearDown() {
         this.cut.remove();
@@ -648,6 +681,7 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         this.cut = new InfoPage(
+          {} as any,
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
           "season1",
@@ -753,6 +787,7 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         this.cut = new InfoPage(
+          {} as any,
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
           "season1",
@@ -774,9 +809,9 @@ TEST_RUNNER.run({
             excludedAreas: [
               {
                 x: 300,
-                y: 640,
-                width: 90,
-                height: 90,
+                y: 325,
+                width: 100,
+                height: 100,
               },
             ],
           },
@@ -793,16 +828,6 @@ TEST_RUNNER.run({
             "/golden/info_page_tablet_committed_scrolled.png",
           ),
           path.join(__dirname, "/info_page_tablet_committed_scrolled_diff.png"),
-          {
-            excludedAreas: [
-              {
-                x: 300,
-                y: 60,
-                width: 90,
-                height: 90,
-              },
-            ],
-          },
         );
 
         // Execute
@@ -919,6 +944,7 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         this.cut = new InfoPage(
+          {} as any,
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
           "season1",
@@ -946,12 +972,28 @@ TEST_RUNNER.run({
             excludedAreas: [
               {
                 x: 300,
-                y: 750,
-                width: 90,
-                height: 90,
+                y: 425,
+                width: 100,
+                height: 100,
               },
             ],
           },
+        );
+
+        // Execute
+        window.scrollTo(0, document.body.scrollHeight);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/info_page_tablet_published_premieres_scrolled.png"),
+          path.join(
+            __dirname,
+            "/golden/info_page_tablet_published_premieres_scrolled.png",
+          ),
+          path.join(
+            __dirname,
+            "/info_page_tablet_published_premieres_scrolled_diff.png",
+          ),
         );
 
         // Prepare
@@ -959,7 +1001,7 @@ TEST_RUNNER.run({
         this.cut.on("editIndex", (episode) => (editIndex = episode));
 
         // Execute
-        this.cut.episodeIndexButton.val.click();
+        this.cut.editIndexButton.val.click();
 
         // Verify
         assertThat(editIndex.episodeIndex, eq(1), "editIndex.episodeIndex");
@@ -972,7 +1014,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.episodePublishedStateButton.val.click();
+        this.cut.editPublishedStateButton.val.click();
 
         // Verify
         assertThat(
@@ -982,6 +1024,7 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
+        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),
@@ -1081,6 +1124,7 @@ TEST_RUNNER.run({
         };
         serviceClientMock.response = response;
         this.cut = new InfoPage(
+          {} as any,
           serviceClientMock,
           () => new Date("2023-10-01T00:00:00Z"),
           "season1",
@@ -1111,9 +1155,9 @@ TEST_RUNNER.run({
             excludedAreas: [
               {
                 x: 300,
-                y: 750,
-                width: 90,
-                height: 90,
+                y: 425,
+                width: 100,
+                height: 100,
               },
             ],
           },

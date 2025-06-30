@@ -67,7 +67,13 @@ export interface InfoPage {
 // - EpisodeDetails.videoContainerCached is required to publish an episode.
 export class InfoPage extends EventEmitter {
   public static create(seasonId: string, episodeId: string): InfoPage {
-    return new InfoPage(SERVICE_CLIENT, () => new Date(), seasonId, episodeId);
+    return new InfoPage(
+      window,
+      SERVICE_CLIENT,
+      () => new Date(),
+      seasonId,
+      episodeId,
+    );
   }
 
   private static LASTING_TIME_TO_SHOW_PROCESSING_FAILURE_MS =
@@ -76,14 +82,17 @@ export class InfoPage extends EventEmitter {
   public body: HTMLElement;
   private card = new Ref<HTMLDivElement>();
   public backButton = new Ref<SimpleIconButton>();
-  public episodeNameButton = new Ref<HTMLDivElement>();
-  public episodeIndexButton = new Ref<HTMLDivElement>();
-  public episodeDraftStateButton = new Ref<HTMLDivElement>();
-  public episodePublishedStateButton = new Ref<HTMLDivElement>();
-  public episodeUploadButton = new Ref<HTMLDivElement>();
+  public editNameButton = new Ref<HTMLDivElement>();
+  public editIndexButton = new Ref<HTMLDivElement>();
+  public refreshVideoContainerButton = new Ref<HTMLDivElement>();
   public editTracksButton = new Ref<HTMLDivElement>();
+  public uploadButton = new Ref<HTMLDivElement>();
+  public refreshProcessingButton = new Ref<HTMLDivElement>();
+  public editDraftStateButton = new Ref<HTMLDivElement>();
+  public editPublishedStateButton = new Ref<HTMLDivElement>();
 
   public constructor(
+    private window: Window,
     private serviceClient: WebServiceClient,
     private getNowDate: () => Date,
     public seasonId: string,
@@ -117,7 +126,7 @@ export class InfoPage extends EventEmitter {
         style: `flex: 0 0 auto; height: 2rem;`,
       }),
       assign(
-        this.episodeNameButton,
+        this.editNameButton,
         eColumnBoxWithArrow([
           eLabelAndText(
             LOCALIZED_TEXT.seasonEpisodeNameLabel,
@@ -128,7 +137,7 @@ export class InfoPage extends EventEmitter {
       ...(episode.episodeIndex
         ? [
             assign(
-              this.episodeIndexButton,
+              this.editIndexButton,
               eColumnBoxWithArrow(
                 [
                   E.div(
@@ -156,256 +165,46 @@ export class InfoPage extends EventEmitter {
             ),
           ]
         : []),
+      ...this.eVideoContainerState(episode.videoContainer),
+      ...this.eVideoPlayer(episode.videoUrl),
+      ...this.eEditTracksButton(episode.videoContainer),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      this.eUploadOrProcessingBox(episode.videoContainer),
+      ...this.eUploadFooter(episode.videoContainer),
       E.div({
         style: `flex: 0 0 auto; height: 2rem;`,
       }),
       this.eStateButton(episode),
-      E.div({
-        style: `flex: 0 0 auto; height: 3rem;`,
-      }),
-      E.div(
-        {
-          class: "episode-details-video-container-title",
-          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
-        },
-        E.text(LOCALIZED_TEXT.seasonEpisodeVideoTitle),
-      ),
-      E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
-      }),
-      this.eUploadBox(episode.videoContainer),
-      E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
-      }),
-      this.eUploadFooter(episode.videoContainer),
-      ...this.eVideoContainerState(episode.videoContainer),
-      ...this.eVideoPlayer(episode.videoUrl),
-      ...this.eEditTracksButton(episode.videoContainer),
       ...this.eStorageFee(episode.videoContainer),
     );
     this.backButton.val.on("action", () => this.emit("back"));
-    this.episodeNameButton.val.addEventListener("click", () =>
+    this.editNameButton.val.addEventListener("click", () =>
       this.emit("editName", episode),
     );
-    this.episodeIndexButton.val?.addEventListener("click", () =>
+    this.editIndexButton.val?.addEventListener("click", () =>
       this.emit("editIndex", episode),
     );
-    this.episodeDraftStateButton.val?.addEventListener("click", () =>
-      this.emit("editDraftState", episode),
-    );
-    this.episodePublishedStateButton.val?.addEventListener("click", () =>
-      this.emit("editPublishedState", episode),
-    );
-    this.episodeUploadButton.val?.addEventListener("click", () =>
-      this.emit("upload", episode),
+    this.refreshVideoContainerButton.val?.addEventListener("click", () =>
+      this.window.location.reload(),
     );
     this.editTracksButton.val?.addEventListener("click", () =>
       this.emit("editTracks", episode),
     );
+    this.uploadButton.val?.addEventListener("click", () =>
+      this.emit("upload", episode),
+    );
+    this.refreshProcessingButton.val?.addEventListener("click", () =>
+      this.window.location.reload(),
+    );
+    this.editDraftStateButton.val?.addEventListener("click", () =>
+      this.emit("editDraftState", episode),
+    );
+    this.editPublishedStateButton.val?.addEventListener("click", () =>
+      this.emit("editPublishedState", episode),
+    );
     this.emit("loaded");
-  }
-
-  private eStateButton(episode: EpisodeDetails): HTMLDivElement {
-    switch (episode.state) {
-      case EpisodeState.DRAFT:
-        return assign(
-          this.episodeDraftStateButton,
-          eColumnBoxWithArrow(
-            [
-              E.div(
-                {
-                  class: "episode-details-episode-draft-state",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeStateLabel),
-              ),
-              E.div(
-                {
-                  class: "episode-details-episode-draft-state-value",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeStateDraft),
-              ),
-              E.div(
-                {
-                  class: "episode-details-episode-draft-state-footer",
-                  style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(
-                  !episode.videoContainerCached
-                    ? LOCALIZED_TEXT.seasonEpisodeStateNoVideoFooter
-                    : LOCALIZED_TEXT.seasonEpisodeStateDraftFooter,
-                ),
-              ),
-            ],
-            {
-              linesGap: 1,
-            },
-          ),
-        );
-      case EpisodeState.PUBLISHED:
-        return assign(
-          this.episodePublishedStateButton,
-          eColumnBoxWithArrow(
-            [
-              E.div(
-                {
-                  class: "episode-details-episode-published-state",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeStateLabel),
-              ),
-              E.div(
-                {
-                  class: "episode-details-episode-published-state-value",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeStatePublished),
-              ),
-              E.div(
-                {
-                  class: "episode-details-episode-premiere-time",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(
-                  `${episode.canPlay ? LOCALIZED_TEXT.seasonHasPremieredAt : LOCALIZED_TEXT.seasonPremieresAt}${formatPremiereTimeLong(episode.premiereTimeMs)}`,
-                ),
-              ),
-            ],
-            {
-              linesGap: 1,
-            },
-          ),
-        );
-    }
-  }
-
-  private eUploadBox(videoContainer: VideoContainer): HTMLDivElement {
-    if (!videoContainer.processing) {
-      return assign(
-        this.episodeUploadButton,
-        eBox(
-          [
-            E.div(
-              {
-                class: "episode-details-upload-button-icon",
-                style: `width: ${ICON_L}rem; height: ${ICON_L}rem;`,
-              },
-              createUploadIcon(SCHEME.neutral1),
-            ),
-            E.div(
-              {
-                class: "episode-details-upload-button-text",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-              },
-              E.text(LOCALIZED_TEXT.seasonEpisodeVideoUploadLabel),
-            ),
-          ],
-          {
-            customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: 2rem;`,
-          },
-        ),
-      );
-    } else if (videoContainer.processing.uploading) {
-      return assign(
-        this.episodeUploadButton,
-        eBox(
-          [
-            E.div(
-              {
-                class: "episode-details-upload-button-icon",
-                style: `width: ${ICON_L}rem; height: ${ICON_L}rem;`,
-              },
-              createUploadIcon(SCHEME.neutral1),
-            ),
-            E.div(
-              {
-                class: "episode-details-upload-button-text",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-              },
-              E.text(LOCALIZED_TEXT.seasonEpisodeVideoResumeUploadLabel),
-            ),
-          ],
-          {
-            customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: 2rem;`,
-          },
-        ),
-      );
-    } else if (
-      videoContainer.processing.mediaFormatting ||
-      videoContainer.processing.subtitleFormatting
-    ) {
-      return eBox(
-        [
-          E.div(
-            {
-              class: "episode-details-upload-button-text",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(LOCALIZED_TEXT.seasonEpisodeVideoProcessingLabel),
-          ),
-        ],
-        {
-          clickable: false,
-          customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center;`,
-        },
-      );
-    } else {
-      throw new Error(
-        `Not handled: ${JSON.stringify(videoContainer.processing)}`,
-      );
-    }
-  }
-
-  private eUploadFooter(videoContainer: VideoContainer): HTMLDivElement {
-    if (
-      videoContainer.lastProcessingFailure &&
-      videoContainer.lastProcessingFailure.timeMs >
-        this.getNowDate().getTime() -
-          InfoPage.LASTING_TIME_TO_SHOW_PROCESSING_FAILURE_MS
-    ) {
-      return E.div(
-        {
-          class: "episode-details-video-container-failures",
-          style: `font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
-        },
-        this.eProcessingFailureText(videoContainer.lastProcessingFailure),
-      );
-    } else {
-      return E.div(
-        {
-          class: "episode-details-video-container-explanation",
-          style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
-        },
-        E.text(LOCALIZED_TEXT.seasonEpisodeVideoExplanation),
-      );
-    }
-  }
-
-  private eProcessingFailureText(failure: LastProcessingFailure): Text {
-    let texts = new Array<string>();
-    for (let reason of failure.reasons) {
-      switch (reason) {
-        case ProcessingFailureReason.MEDIA_FORMAT_INVALID:
-          texts.push(LOCALIZED_TEXT.seasonEpisodeMediaFormatInvalid);
-          break;
-        case ProcessingFailureReason.MEDIA_FORMAT_FAILURE:
-          texts.push(LOCALIZED_TEXT.seasonEpisodeMediaFormatFailure);
-          break;
-        case ProcessingFailureReason.VIDEO_CODEC_REQUIRES_H264:
-          texts.push(LOCALIZED_TEXT.seasonEpisodeVideoCodecRequiresH264);
-          break;
-        case ProcessingFailureReason.AUDIO_CODEC_REQUIRES_AAC:
-          texts.push(LOCALIZED_TEXT.seasonEpisodeAudioCodecRequiresAac);
-          break;
-        case ProcessingFailureReason.SUBTITLE_ZIP_FORMAT_INVALID:
-          texts.push(LOCALIZED_TEXT.seasonEpisodeSubtitleZipFormatInvalid);
-          break;
-        default:
-          throw new Error(`Not handled: ${ProcessingFailureReason[reason]}`);
-      }
-    }
-    return E.text(texts.join(" "));
   }
 
   private eVideoContainerState(
@@ -413,12 +212,22 @@ export class InfoPage extends EventEmitter {
   ): Array<HTMLDivElement> {
     if (videoContainer.masterPlaylist.committing) {
       return [
-        E.div(
-          {
-            class: "episode-details-video-container-state",
-            style: `margin-top: 2rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(LOCALIZED_TEXT.seasonEpisodeVideoComittingVideo),
+        assign(
+          this.refreshVideoContainerButton,
+          eBox(
+            [
+              E.div(
+                {
+                  class: "episode-details-video-container-committing-refresh",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeVideoComittingVideo),
+              ),
+            ],
+            {
+              customeStyle: `margin-top: 2rem; display: flex; flex-flow: row nowrap; justify-content: center;`,
+            },
+          ),
         ),
       ];
     } else {
@@ -743,6 +552,206 @@ export class InfoPage extends EventEmitter {
             ]),
       ),
     );
+  }
+
+  private eUploadOrProcessingBox(videoContainer: VideoContainer): HTMLDivElement {
+    if (!videoContainer.processing) {
+      return assign(
+        this.uploadButton,
+        eBox(
+          [
+            E.div(
+              {
+                class: "episode-details-upload-button-icon",
+                style: `width: ${ICON_L}rem; height: ${ICON_L}rem;`,
+              },
+              createUploadIcon(SCHEME.neutral1),
+            ),
+            E.div(
+              {
+                class: "episode-details-upload-button-text",
+                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              },
+              E.text(LOCALIZED_TEXT.seasonEpisodeVideoUploadLabel),
+            ),
+          ],
+          {
+            customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: 2rem;`,
+          },
+        ),
+      );
+    } else if (videoContainer.processing.uploading) {
+      return assign(
+        this.uploadButton,
+        eBox(
+          [
+            E.div(
+              {
+                class: "episode-details-upload-button-icon",
+                style: `width: ${ICON_L}rem; height: ${ICON_L}rem;`,
+              },
+              createUploadIcon(SCHEME.neutral1),
+            ),
+            E.div(
+              {
+                class: "episode-details-upload-button-text",
+                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              },
+              E.text(LOCALIZED_TEXT.seasonEpisodeVideoResumeUploadLabel),
+            ),
+          ],
+          {
+            customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: 2rem;`,
+          },
+        ),
+      );
+    } else if (
+      videoContainer.processing.mediaFormatting ||
+      videoContainer.processing.subtitleFormatting
+    ) {
+      return eBox(
+        [
+          assign(
+            this.refreshProcessingButton,
+            E.div(
+              {
+                class: "episode-details-upload-button-text",
+                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              },
+              E.text(LOCALIZED_TEXT.seasonEpisodeVideoProcessingLabel),
+            ),
+          ),
+        ],
+        {
+          customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center;`,
+        },
+      );
+    } else {
+      throw new Error(
+        `Not handled: ${JSON.stringify(videoContainer.processing)}`,
+      );
+    }
+  }
+
+  private eUploadFooter(videoContainer: VideoContainer): Array<HTMLDivElement> {
+    if (
+      videoContainer.lastProcessingFailure &&
+      videoContainer.lastProcessingFailure.timeMs >
+        this.getNowDate().getTime() -
+          InfoPage.LASTING_TIME_TO_SHOW_PROCESSING_FAILURE_MS
+    ) {
+      return [
+        E.div(
+          {
+            class: "episode-details-video-container-failures",
+            style: `margin-top: 1rem; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
+          },
+          this.eProcessingFailureText(videoContainer.lastProcessingFailure),
+        ),
+      ];
+    } else {
+      return [];
+    }
+  }
+
+  private eProcessingFailureText(failure: LastProcessingFailure): Text {
+    let texts = new Array<string>();
+    for (let reason of failure.reasons) {
+      switch (reason) {
+        case ProcessingFailureReason.MEDIA_FORMAT_INVALID:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeMediaFormatInvalid);
+          break;
+        case ProcessingFailureReason.MEDIA_FORMAT_FAILURE:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeMediaFormatFailure);
+          break;
+        case ProcessingFailureReason.VIDEO_CODEC_REQUIRES_H264:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeVideoCodecRequiresH264);
+          break;
+        case ProcessingFailureReason.AUDIO_CODEC_REQUIRES_AAC:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeAudioCodecRequiresAac);
+          break;
+        case ProcessingFailureReason.SUBTITLE_ZIP_FORMAT_INVALID:
+          texts.push(LOCALIZED_TEXT.seasonEpisodeSubtitleZipFormatInvalid);
+          break;
+        default:
+          throw new Error(`Not handled: ${ProcessingFailureReason[reason]}`);
+      }
+    }
+    return E.text(texts.join(" "));
+  }
+
+  private eStateButton(episode: EpisodeDetails): HTMLDivElement {
+    switch (episode.state) {
+      case EpisodeState.DRAFT:
+        return assign(
+          this.editDraftStateButton,
+          eColumnBoxWithArrow(
+            [
+              E.div(
+                {
+                  class: "episode-details-episode-draft-state",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeStateLabel),
+                E.div(
+                  {
+                    style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+                  },
+                  E.text(LOCALIZED_TEXT.seasonEpisodeStateDraft),
+                ),
+              ),
+              E.div(
+                {
+                  class: "episode-details-episode-draft-state-footer",
+                  style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(
+                  !episode.videoContainerCached
+                    ? LOCALIZED_TEXT.seasonEpisodeStateNoVideoFooter
+                    : LOCALIZED_TEXT.seasonEpisodeStateDraftFooter,
+                ),
+              ),
+            ],
+            {
+              linesGap: 1,
+            },
+          ),
+        );
+      case EpisodeState.PUBLISHED:
+        return assign(
+          this.editPublishedStateButton,
+          eColumnBoxWithArrow(
+            [
+              E.div(
+                {
+                  class: "episode-details-episode-published-state",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeStateLabel),
+              ),
+              E.div(
+                {
+                  class: "episode-details-episode-published-state-value",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+                },
+                E.text(LOCALIZED_TEXT.seasonEpisodeStatePublished),
+              ),
+              E.div(
+                {
+                  class: "episode-details-episode-premiere-time",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(
+                  `${episode.canPlay ? LOCALIZED_TEXT.seasonHasPremieredAt : LOCALIZED_TEXT.seasonPremieresAt}${formatPremiereTimeLong(episode.premiereTimeMs)}`,
+                ),
+              ),
+            ],
+            {
+              linesGap: 1,
+            },
+          ),
+        );
+    }
   }
 
   private eStorageFee(videoContainer: VideoContainer): Array<HTMLDivElement> {

@@ -708,7 +708,7 @@ export default class Text {
     return `To solely determine the order of the episodes.`;
   }
   get seasonEpisodeStateLabel() {
-    return `State`;
+    return `State: `;
   }
   get seasonEpisodeStateDraft() {
     return `Draft`;
@@ -727,12 +727,6 @@ export default class Text {
   }
   get seasonPremieresAt() {
     return `Scheduled to premiere at `;
-  }
-  get seasonEpisodeVideoTitle() {
-    return `Video`;
-  }
-  get seasonEpisodeVideoExplanation() {
-    return `A video consists of video tracks, audio tracks and subtitle tracks. Once a file is uploaded and processed, you can edit the tracks below and finalize the video.`;
   }
   get seasonEpisodeMediaFormatInvalid() {
     return `Media file format is invalid.`;
@@ -756,10 +750,10 @@ export default class Text {
     return `Resume uploading`;
   }
   get seasonEpisodeVideoProcessingLabel() {
-    return `Processing...Please check back later.`;
+    return `Processing...Click to refresh.`;
   }
   get seasonEpisodeVideoComittingVideo() {
-    return `A new video is being finalized. Please check back later.`;
+    return `Video is being finalized...Click to refresh.`;
   }
   get seasonEpisodeNoVersion() {
     return `Finalize the first version.`;
