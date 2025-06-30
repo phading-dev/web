@@ -554,7 +554,9 @@ export class InfoPage extends EventEmitter {
     );
   }
 
-  private eUploadOrProcessingBox(videoContainer: VideoContainer): HTMLDivElement {
+  private eUploadOrProcessingBox(
+    videoContainer: VideoContainer,
+  ): HTMLDivElement {
     if (!videoContainer.processing) {
       return assign(
         this.uploadButton,
@@ -728,13 +730,12 @@ export class InfoPage extends EventEmitter {
                   style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonEpisodeStateLabel),
-              ),
-              E.div(
-                {
-                  class: "episode-details-episode-published-state-value",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeStatePublished),
+                E.div(
+                  {
+                    style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+                  },
+                  E.text(LOCALIZED_TEXT.seasonEpisodeStatePublished),
+                ),
               ),
               E.div(
                 {
