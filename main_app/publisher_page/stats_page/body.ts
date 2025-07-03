@@ -8,6 +8,7 @@ import { formatWatchTimeSeconds } from "../../../common/formatter/quantity";
 import { BASIC_INPUT_STYLE } from "../../../common/input_styles";
 import {
   ExpandableLineItems,
+  LineItemData,
   eLineItemRow,
   eThreeColumns,
 } from "../../../common/line_item";
@@ -37,6 +38,7 @@ import {
   MeterReadingPerMonth,
 } from "@phading/meter_service_interface/show/web/publisher/meter_reading";
 import { ProductID } from "@phading/price";
+import { calculateMoney } from "@phading/price_config/calculator";
 import { newGetSeasonNameRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -347,11 +349,20 @@ export class StatsPage extends EventEmitter {
       return;
     } else {
       response.readings.forEach((reading, i) => {
-        this.renderThreeColumns(
-          labels[i],
-          reading.watchTimeSec,
+        let { amount, price } = calculateEstimatedMoney(
+          ProductID.SHOW_CREDIT,
           reading.watchTimeSecGraded,
           date.toLocalMonthISOString(),
+        );
+        this.resultList.val.append(
+          eLineItemRow(
+            "",
+            ...eThreeColumns(
+              labels[i],
+              formatMoney(amount, price.currency),
+              formatWatchTimeSeconds(reading.watchTimeSec),
+            ),
+          ),
         );
       });
     }
@@ -387,16 +398,56 @@ export class StatsPage extends EventEmitter {
       iDate.toTimestampMs() <= endDate.toTimestampMs();
       iDate.addDays(1)
     ) {
-      this.renderExpandableItems(
-        iDate.toLocalDateISOString(),
-        dateToReadings.get(iDate.toLocalDateISOString())?.watchTimeSecGraded ??
-          0,
-        (dateToReadings.get(iDate.toLocalDateISOString())?.uploadedKb ?? 0) /
-          1024,
-        (dateToReadings.get(iDate.toLocalDateISOString())?.storageMbm ?? 0) /
-          60,
-        iDate.toLocalMonthISOString(),
+      let dateStr = iDate.toLocalDateISOString();
+      let monthStr = iDate.toLocalMonthISOString();
+      let totalAmount = 0;
+      let items = new Array<LineItemData>();
+      let { amount, price } = calculateEstimatedMoney(
+        ProductID.SHOW_CREDIT,
+        dateToReadings.get(dateStr)?.watchTimeSecGraded ?? 0,
+        monthStr,
       );
+      items.push({
+        label: ProductID[ProductID.SHOW_CREDIT],
+        amount,
+        currency: price.currency,
+      });
+      totalAmount += amount;
+
+      if (dateToReadings.get(dateStr)?.uploadedKb) {
+        let { amount, price } = calculateEstimatedMoney(
+          ProductID.UPLOAD,
+          dateToReadings.get(dateStr)?.uploadedKb / 1024,
+          monthStr,
+        );
+        items.push({
+          label: ProductID[ProductID.UPLOAD],
+          amount: -amount,
+          currency: price.currency,
+        });
+        totalAmount -= amount;
+      }
+      if (dateToReadings.get(dateStr)?.storageMbm) {
+        let { amount, price } = calculateEstimatedMoney(
+          ProductID.STORAGE,
+          dateToReadings.get(dateStr)?.storageMbm / 60,
+          monthStr,
+        );
+        items.push({
+          label: ProductID[ProductID.STORAGE],
+          amount: -amount,
+          currency: price.currency,
+        });
+        totalAmount -= amount;
+      }
+      let line = new ExpandableLineItems({
+        totalLabel: dateStr,
+        totalAmount,
+        totalAmountCurrency: ENV_VARS.defaultCurrency,
+        items,
+      });
+      this.lines.push(line);
+      this.resultList.val.append(line.body);
     }
   }
 
@@ -430,86 +481,59 @@ export class StatsPage extends EventEmitter {
       iMonth.toTimestampMs() <= endMonth.toTimestampMs();
       iMonth.addMonths(1)
     ) {
-      this.renderExpandableItems(
-        iMonth.toLocalMonthISOString(),
-        monthToWatchTimeGraded.get(iMonth.toLocalMonthISOString())
-          ?.watchTimeSecGraded ?? 0,
-        monthToWatchTimeGraded.get(iMonth.toLocalMonthISOString())
-          ?.uploadedMb ?? 0,
-        monthToWatchTimeGraded.get(iMonth.toLocalMonthISOString())
-          ?.storageMbh ?? 0,
-        iMonth.toLocalMonthISOString(),
-      );
-    }
-  }
-
-  private renderThreeColumns(
-    name: string,
-    watchTimeSec: number,
-    watchTimeSecGraded: number,
-    monthStr: string,
-  ): void {
-    let { amount, price } = calculateEstimatedMoney(
-      ProductID.SHOW_CREDIT,
-      watchTimeSecGraded,
-      monthStr,
-    );
-    this.resultList.val.append(
-      eLineItemRow(
-        "",
-        ...eThreeColumns(
-          name,
-          formatMoney(amount, price.currency),
-          formatWatchTimeSeconds(watchTimeSec),
-        ),
-      ),
-    );
-  }
-
-  private renderExpandableItems(
-    label: string,
-    watchTimeSecGraded: number,
-    uploadedMb: number,
-    storageMbh: number,
-    monthStr: string,
-  ): void {
-    let { amount: showCreditAmount, price: showCreditPrice } =
-      calculateEstimatedMoney(
+      let monthStr = iMonth.toLocalMonthISOString();
+      let totalAmount = 0;
+      let items = new Array<LineItemData>();
+      let { amount, price } = calculateMoney(
         ProductID.SHOW_CREDIT,
-        watchTimeSecGraded,
+        ENV_VARS.defaultCurrency,
         monthStr,
+        monthToWatchTimeGraded.get(monthStr)?.watchTimeSecGraded ?? 0,
       );
-    let { amount: uploadAmount, price: uploadPrice } = calculateEstimatedMoney(
-      ProductID.UPLOAD,
-      uploadedMb,
-      monthStr,
-    );
-    let { amount: storageAmount, price: storagePrice } =
-      calculateEstimatedMoney(ProductID.STORAGE, storageMbh, monthStr);
-    let line = new ExpandableLineItems({
-      totalLabel: label,
-      totalAmount: showCreditAmount - uploadAmount - storageAmount,
-      totalAmountCurrency: showCreditPrice.currency,
-      items: [
-        {
-          label: ProductID[ProductID.SHOW_CREDIT],
-          amount: showCreditAmount,
-          currency: showCreditPrice.currency,
-        },
-        {
+      items.push({
+        label: ProductID[ProductID.SHOW_CREDIT],
+        amount,
+        currency: price.currency,
+      });
+      totalAmount += amount;
+
+      if (monthToWatchTimeGraded.get(monthStr)?.uploadedMb) {
+        let { amount, price } = calculateMoney(
+          ProductID.UPLOAD,
+          ENV_VARS.defaultCurrency,
+          monthStr,
+          monthToWatchTimeGraded.get(monthStr)?.uploadedMb,
+        );
+        items.push({
           label: ProductID[ProductID.UPLOAD],
-          amount: -uploadAmount,
-          currency: uploadPrice.currency,
-        },
-        {
+          amount: -amount,
+          currency: price.currency,
+        });
+        totalAmount -= amount;
+      }
+      if (monthToWatchTimeGraded.get(monthStr)?.storageMbh) {
+        let { amount, price } = calculateMoney(
+          ProductID.STORAGE,
+          ENV_VARS.defaultCurrency,
+          monthStr,
+          monthToWatchTimeGraded.get(monthStr)?.storageMbh,
+        );
+        items.push({
           label: ProductID[ProductID.STORAGE],
-          amount: -storageAmount,
-          currency: storagePrice.currency,
-        },
-      ],
-    });
-    this.lines.push(line);
-    this.resultList.val.append(line.body);
+          amount: -amount,
+          currency: price.currency,
+        });
+        totalAmount -= amount;
+      }
+      let line = new ExpandableLineItems({
+        totalLabel: monthStr,
+        totalAmount,
+        totalAmountCurrency: ENV_VARS.defaultCurrency,
+        items,
+      });
+      this.lines.push(line);
+      this.resultList.val.append(line.body);
+    }
   }
 
   public showInvalidRange(): void {

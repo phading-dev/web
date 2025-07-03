@@ -25,6 +25,7 @@ import {
   newListMeterReadingsPerMonthRequest,
 } from "@phading/meter_service_interface/show/web/consumer/client";
 import { ProductID } from "@phading/price";
+import { calculateMoney } from "@phading/price_config/calculator";
 import { newGetSeasonNameRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -337,11 +338,20 @@ export class UsagePage extends EventEmitter {
       );
     } else {
       response.readings.forEach((reading, i) => {
-        this.renderThreeColumns(
-          labels[i],
-          reading.watchTimeSec,
+        let { amount, price } = calculateEstimatedMoney(
+          ProductID.SHOW,
           reading.watchTimeSecGraded,
           date.toLocalMonthISOString(),
+        );
+        this.resultList.val.append(
+          eLineItemRow(
+            "",
+            ...eThreeColumns(
+              labels[i],
+              formatMoney(amount, price.currency),
+              formatWatchTimeSeconds(reading.watchTimeSec),
+            ),
+          ),
         );
       });
     }
@@ -375,10 +385,18 @@ export class UsagePage extends EventEmitter {
       iDate.toTimestampMs() <= endDate.toTimestampMs();
       iDate.addDays(1)
     ) {
-      this.renderTwoColumns(
-        iDate.toLocalDateISOString(),
-        dateToWatchTimeGraded.get(iDate.toLocalDateISOString()) ?? 0,
-        iDate.toLocalMonthISOString(),
+      let dateStr = iDate.toLocalDateISOString();
+      let monthStr = iDate.toLocalMonthISOString();
+      let { amount, price } = calculateEstimatedMoney(
+        ProductID.SHOW,
+        dateToWatchTimeGraded.get(dateStr) ?? 0,
+        monthStr,
+      );
+      this.resultList.val.append(
+        eLineItemRow(
+          "",
+          ...eThreeColumns(dateStr, formatMoney(amount, price.currency)),
+        ),
       );
     }
   }
@@ -411,53 +429,20 @@ export class UsagePage extends EventEmitter {
       iMonth.toTimestampMs() <= endMonth.toTimestampMs();
       iMonth.addMonths(1)
     ) {
-      this.renderTwoColumns(
-        iMonth.toLocalMonthISOString(),
-        monthToWatchTimeGraded.get(iMonth.toLocalMonthISOString()) ?? 0,
-        iMonth.toLocalMonthISOString(),
+      let monthStr = iMonth.toLocalMonthISOString();
+      let { amount, price } = calculateMoney(
+        ProductID.SHOW,
+        ENV_VARS.defaultCurrency,
+        monthStr,
+        monthToWatchTimeGraded.get(monthStr) ?? 0,
+      );
+      this.resultList.val.append(
+        eLineItemRow(
+          "",
+          ...eThreeColumns(monthStr, formatMoney(amount, price.currency)),
+        ),
       );
     }
-  }
-
-  private renderThreeColumns(
-    label: string,
-    watchTimeSec: number,
-    watchTimeSecGraded: number,
-    monthStr: string,
-  ): void {
-    let { amount, price } = calculateEstimatedMoney(
-      ProductID.SHOW,
-      watchTimeSecGraded,
-      monthStr,
-    );
-    this.resultList.val.append(
-      eLineItemRow(
-        "",
-        ...eThreeColumns(
-          label,
-          formatMoney(amount, price.currency),
-          formatWatchTimeSeconds(watchTimeSec),
-        ),
-      ),
-    );
-  }
-
-  private renderTwoColumns(
-    label: string,
-    watchTimeSecGraded: number,
-    monthStr: string,
-  ): void {
-    let { amount, price } = calculateEstimatedMoney(
-      ProductID.SHOW,
-      watchTimeSecGraded,
-      monthStr,
-    );
-    this.resultList.val.append(
-      eLineItemRow(
-        "",
-        ...eThreeColumns(label, formatMoney(amount, price.currency)),
-      ),
-    );
   }
 
   public showInvalidRange(): void {
