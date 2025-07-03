@@ -2,6 +2,7 @@ import EventEmitter = require("events");
 import { SCHEME } from "../../../common/color_scheme";
 import { DateRangeInput, DateType } from "../../../common/date_range_input";
 import { formatMoney } from "../../../common/formatter/price";
+import { eLineItemRow, eThreeColumns } from "../../../common/line_item";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import {
@@ -236,31 +237,12 @@ export class PayoutPage extends EventEmitter {
       });
       for (let payout of response.payouts) {
         this.payoutActivityList.val.append(
-          E.div(
-            {
-              class: "payout-page-activity",
-              style: `width: 100%; box-sizing: border-box; display: flex; flex-flow: row wrap; gap: 1rem;`,
-            },
-            E.div(
-              {
-                class: "payout-page-payout-month",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-              },
-              E.text(payout.month),
-            ),
-            E.div(
-              {
-                class: "payout-page-payout-amount",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 2 0 auto; text-align: end;`,
-              },
-              E.text(formatMoney(payout.amount, payout.currency)),
-            ),
-            E.div(
-              {
-                class: "payout-page-payout-state",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 1 0 10rem; text-align: end;`,
-              },
-              E.text(this.getPayoutStateText(payout.state)),
+          eLineItemRow(
+            "",
+            ...eThreeColumns(
+              payout.month,
+              formatMoney(payout.amount, payout.currency),
+              this.getPayoutStateText(payout.state),
             ),
           ),
         );

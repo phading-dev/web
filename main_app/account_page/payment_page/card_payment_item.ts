@@ -35,17 +35,17 @@ export class CardPaymentItem {
       E.div(
         {
           class: "card-payment-card-brand-icon",
-          style: `width: 7rem;`,
+          style: `flex: 0 0 auto; width: 7rem;`,
         },
         createCardBrandIcon(cardMasked.brand),
       ),
       E.div({
-        style: `width: 1.5rem;`,
+        style: `flex: 0 0 auto; width: 1.5rem;`,
       }),
       E.div(
         {
           class: "card-payment-card-details",
-          style: `flex: 1 1 0; min-width: 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
+          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
         },
         E.div(
           {
@@ -88,17 +88,17 @@ export class AddCardPaymentItem {
       E.div(
         {
           class: "card-payment-card-brand-icon",
-          style: `width: 7rem;`,
+          style: `flex: 0 0 auto; width: 7rem;`,
         },
         createCardBrandIcon(),
       ),
       E.div({
-        style: `width: 1.5rem;`,
+        style: `flex: 0 0 auto; width: 1.5rem;`,
       }),
       E.div(
         {
           class: "card-payment-card-details",
-          style: `flex: 1 1 0; min-width: 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
+          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
         },
         E.div({
           class: "card-payment-card-digits",

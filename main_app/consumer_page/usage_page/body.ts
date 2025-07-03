@@ -6,6 +6,7 @@ import {
 } from "../../../common/formatter/price";
 import { formatWatchTimeSeconds } from "../../../common/formatter/quantity";
 import { BASIC_INPUT_STYLE } from "../../../common/input_styles";
+import { eLineItemRow, eThreeColumns } from "../../../common/line_item";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import { OptionPill, RadioOptionsGroup } from "../../../common/option_buttons";
@@ -419,7 +420,7 @@ export class UsagePage extends EventEmitter {
   }
 
   private renderThreeColumns(
-    name: string,
+    label: string,
     watchTimeSec: number,
     watchTimeSecGraded: number,
     monthStr: string,
@@ -430,31 +431,12 @@ export class UsagePage extends EventEmitter {
       monthStr,
     );
     this.resultList.val.append(
-      E.div(
-        {
-          class: "usage-page-three-columns-item",
-          style: `display: flex; flex-flow: row nowrap; align-items: flex-start; justify-content: space-between; gap: 1rem;`,
-        },
-        E.div(
-          {
-            class: "usage-page-three-columns-title",
-            style: `max-width: 25rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(name),
-        ),
-        E.div(
-          {
-            class: "usage-page-three-columns-money",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(formatMoney(amount, price.currency)),
-        ),
-        E.div(
-          {
-            class: "usage-page-three-columns-seconds",
-            style: `max-width: 25rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: end;`,
-          },
-          E.text(formatWatchTimeSeconds(watchTimeSec)),
+      eLineItemRow(
+        "",
+        ...eThreeColumns(
+          label,
+          formatMoney(amount, price.currency),
+          formatWatchTimeSeconds(watchTimeSec),
         ),
       ),
     );
@@ -471,31 +453,9 @@ export class UsagePage extends EventEmitter {
       monthStr,
     );
     this.resultList.val.append(
-      E.div(
-        {
-          class: "usage-page-two-columns-item",
-          style: `display: flex; flex-flow: row nowrap; align-items: flex-start;`,
-        },
-        E.div(
-          {
-            class: "usage-page-two-columns-label",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(label),
-        ),
-        E.div({
-          style: `flex: 1 0 auto; width: 1rem;`,
-        }),
-        E.div(
-          {
-            class: "usage-page-two-columns-value",
-            style: `height: 2rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(formatMoney(amount, price.currency)),
-        ),
-        E.div({
-          style: `flex: 1 0 0;`,
-        }),
+      eLineItemRow(
+        "",
+        ...eThreeColumns(label, formatMoney(amount, price.currency)),
       ),
     );
   }

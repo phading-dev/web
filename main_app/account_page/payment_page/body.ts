@@ -11,6 +11,7 @@ import {
   createExclamationMarkInACycle,
   createForbiddenIcon,
 } from "../../../common/icons";
+import { eLineItemRow, eThreeColumns } from "../../../common/line_item";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import {
@@ -361,31 +362,12 @@ export class PaymentPage extends EventEmitter {
       });
       for (let payment of response.payments) {
         this.paymentActivityList.val.append(
-          E.div(
-            {
-              class: "payment-page-activity",
-              style: `width: 100%; box-sizing: border-box; display: flex; flex-flow: row nowrap; gap: 1rem;`,
-            },
-            E.div(
-              {
-                class: "payment-page-payment-month",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-              },
-              E.text(payment.month),
-            ),
-            E.div(
-              {
-                class: "payment-page-payment-amount",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 1 0 auto; text-align: end;`,
-              },
-              E.text(formatMoney(payment.amount, payment.currency)),
-            ),
-            E.div(
-              {
-                class: "payment-page-payment-state",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; flex: 1 0 10rem; text-align: end;`,
-              },
-              E.text(this.getPaymentStateText(payment.state)),
+          eLineItemRow(
+            "",
+            ...eThreeColumns(
+              payment.month,
+              formatMoney(payment.amount, payment.currency),
+              this.getPaymentStateText(payment.state),
             ),
           ),
         );

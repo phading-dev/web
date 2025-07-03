@@ -1,12 +1,16 @@
 import { SCHEME } from "../../../common/color_scheme";
 import { DateRangeInput, DateType } from "../../../common/date_range_input";
-import { ExpandableLineItems } from "../../../common/expandable_line_items";
 import {
   calculateEstimatedMoney,
   formatMoney,
 } from "../../../common/formatter/price";
 import { formatWatchTimeSeconds } from "../../../common/formatter/quantity";
 import { BASIC_INPUT_STYLE } from "../../../common/input_styles";
+import {
+  ExpandableLineItems,
+  eLineItemRow,
+  eThreeColumns,
+} from "../../../common/line_item";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import { OptionPill, RadioOptionsGroup } from "../../../common/option_buttons";
@@ -383,7 +387,7 @@ export class StatsPage extends EventEmitter {
       iDate.toTimestampMs() <= endDate.toTimestampMs();
       iDate.addDays(1)
     ) {
-      this.renderCollapsibleItems(
+      this.renderExpandableItems(
         iDate.toLocalDateISOString(),
         dateToReadings.get(iDate.toLocalDateISOString())?.watchTimeSecGraded ??
           0,
@@ -426,7 +430,7 @@ export class StatsPage extends EventEmitter {
       iMonth.toTimestampMs() <= endMonth.toTimestampMs();
       iMonth.addMonths(1)
     ) {
-      this.renderCollapsibleItems(
+      this.renderExpandableItems(
         iMonth.toLocalMonthISOString(),
         monthToWatchTimeGraded.get(iMonth.toLocalMonthISOString())
           ?.watchTimeSecGraded ?? 0,
@@ -451,43 +455,18 @@ export class StatsPage extends EventEmitter {
       monthStr,
     );
     this.resultList.val.append(
-      E.div(
-        {
-          class: "usage-page-three-columns-item",
-          style: `display: flex; flex-flow: row nowrap; align-items: flex-start;`,
-        },
-        E.div(
-          {
-            class: "usage-page-three-columns-title",
-            style: `max-width: 25rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(name),
-        ),
-        E.div({
-          style: `flex: 1 0 auto; width: 1rem;`,
-        }),
-        E.div(
-          {
-            class: "usage-page-three-columns-money",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(formatMoney(amount, price.currency)),
-        ),
-        E.div({
-          style: `flex: 1 0 auto; width: 1rem;`,
-        }),
-        E.div(
-          {
-            class: "usage-page-three-columns-seconds",
-            style: `max-width: 25rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: end;`,
-          },
-          E.text(formatWatchTimeSeconds(watchTimeSec)),
+      eLineItemRow(
+        "",
+        ...eThreeColumns(
+          name,
+          formatMoney(amount, price.currency),
+          formatWatchTimeSeconds(watchTimeSec),
         ),
       ),
     );
   }
 
-  private renderCollapsibleItems(
+  private renderExpandableItems(
     label: string,
     watchTimeSecGraded: number,
     uploadedMb: number,
@@ -516,22 +495,16 @@ export class StatsPage extends EventEmitter {
           label: ProductID[ProductID.SHOW_CREDIT],
           amount: showCreditAmount,
           currency: showCreditPrice.currency,
-          quantity: watchTimeSecGraded,
-          unit: showCreditPrice.unit,
         },
         {
           label: ProductID[ProductID.UPLOAD],
           amount: -uploadAmount,
           currency: uploadPrice.currency,
-          quantity: uploadedMb,
-          unit: uploadPrice.unit,
         },
         {
           label: ProductID[ProductID.STORAGE],
           amount: -storageAmount,
           currency: storagePrice.currency,
-          quantity: storageMbh,
-          unit: storagePrice.unit,
         },
       ],
     });

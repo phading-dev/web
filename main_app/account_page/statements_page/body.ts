@@ -1,7 +1,7 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../common/color_scheme";
 import { DateRangeInput, DateType } from "../../../common/date_range_input";
-import { ExpandableLineItems } from "../../../common/expandable_line_items";
+import { ExpandableLineItems } from "../../../common/line_item";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import {
@@ -168,15 +168,13 @@ export class StatementsPage extends EventEmitter {
       totalAmountCurrency: statement.currency,
       items: statement.items.map((item) => ({
         label: ProductID[item.productID],
-        quantity: item.quantity,
-        unit: item.unit,
         amount:
           item.amount * (item.amountType === this.positiveAmountType ? 1 : -1),
         currency: statement.currency,
       })),
     });
-    this.statementsList.val.append(line.body);
     this.statementLines.push(line);
+    this.statementsList.val.append(line.body);
   }
 
   public remove(): void {
