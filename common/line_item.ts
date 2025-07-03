@@ -96,7 +96,7 @@ export class ExpandableLineItems {
         assign(
           this.totalLine,
           eLineItemRow(
-            "",
+            "cursor: pointer;",
             E.divRef(
               this.expandIcon,
               {
