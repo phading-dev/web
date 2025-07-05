@@ -30,7 +30,7 @@ import {
 } from "@phading/commerce_service_interface/web/payment/client";
 import { CreateStripeSessionToAddPaymentMethodResponse } from "@phading/commerce_service_interface/web/payment/interface";
 import { PaymentState } from "@phading/commerce_service_interface/web/payment/payment";
-import { PaymentProfileState } from "@phading/commerce_service_interface/web/payment/payment_profile_state";
+import { PaymentProfileState } from "@phading/commerce_service_interface/web/payment/payment_profile";
 import { MAX_MONTH_RANGE } from "@phading/constants/commerce";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -105,6 +105,7 @@ export class PaymentPage extends EventEmitter {
       return;
     }
 
+    let profile = response.paymentProfile;
     let nowDate = TzDate.fromDate(
       this.getNowDate(),
       ENV_VARS.timezoneNegativeOffset,
@@ -132,7 +133,7 @@ export class PaymentPage extends EventEmitter {
             class: "payment-page-status-icon",
             style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
           },
-          this.getIcon(response.state),
+          this.getIcon(profile.state),
         ),
         E.divRef(
           this.paymentStatusContent,
@@ -140,16 +141,10 @@ export class PaymentPage extends EventEmitter {
             class: "payment-page-status-content",
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
-          E.text(
-            this.getStatusText(
-              nowDate,
-              response.paymentAfterMs,
-              response.state,
-            ),
-          ),
+          E.text(this.getStatusText(nowDate, profile.state)),
         ),
       ),
-      ...(response.state === PaymentProfileState.WITH_FAILED_PAYMENTS
+      ...(profile.state === PaymentProfileState.WITH_FAILED_PAYMENTS
         ? [
             E.div({
               style: `flex: 0 0 auto; height: 1rem;`,
@@ -189,10 +184,10 @@ export class PaymentPage extends EventEmitter {
       E.div({
         style: `flex: 0 0 auto; height: 1rem;`,
       }),
-      response.primaryPaymentMethod
+      profile.primaryPaymentMethod
         ? new CardPaymentItem(
             nowDate.toTimestampMs(),
-            response.primaryPaymentMethod,
+            profile.primaryPaymentMethod,
           ).body
         : new AddCardPaymentItem().body,
       E.div({
@@ -209,7 +204,7 @@ export class PaymentPage extends EventEmitter {
             "",
           ).append(
             E.text(
-              response.primaryPaymentMethod
+              profile.primaryPaymentMethod
                 ? LOCALIZED_TEXT.updateCardPaymentLabel
                 : LOCALIZED_TEXT.addCardPaymentLabel,
             ),
@@ -278,6 +273,8 @@ export class PaymentPage extends EventEmitter {
     switch (paymentProfileState) {
       case PaymentProfileState.HEALTHY:
         return createCheckmarkIcon(SCHEME.success0);
+      case PaymentProfileState.WITH_PROCESSING_PAYMENTS:
+        return createCheckmarkIcon(SCHEME.success0);
       case PaymentProfileState.WITH_FAILED_PAYMENTS:
         return createExclamationMarkInACycle(SCHEME.warning0);
       case PaymentProfileState.SUSPENDED:
@@ -287,19 +284,13 @@ export class PaymentPage extends EventEmitter {
 
   private getStatusText(
     nowDate: TzDate,
-    paymentAfterMs: number,
     paymentProfileState: PaymentProfileState,
   ): string {
     switch (paymentProfileState) {
       case PaymentProfileState.HEALTHY:
-        let maxDate =
-          nowDate.toTimestampMs() > paymentAfterMs
-            ? nowDate.clone()
-            : TzDate.fromTimestampMs(
-                paymentAfterMs,
-                ENV_VARS.timezoneNegativeOffset,
-              );
-        return `${LOCALIZED_TEXT.paymentStatusHealthy[0]}${maxDate.moveToFirstDayOfMonth().addMonths(1).toLocalDateISOString()}${LOCALIZED_TEXT.paymentStatusHealthy[1]}`;
+        return `${LOCALIZED_TEXT.paymentStatusHealthy[0]}${nowDate.clone().moveToFirstDayOfMonth().addMonths(1).toLocalDateISOString()}${LOCALIZED_TEXT.paymentStatusHealthy[1]}`;
+      case PaymentProfileState.WITH_PROCESSING_PAYMENTS:
+        return LOCALIZED_TEXT.paymentStatusProcessing;
       case PaymentProfileState.WITH_FAILED_PAYMENTS:
         return LOCALIZED_TEXT.paymentStatusWarning;
       case PaymentProfileState.SUSPENDED:

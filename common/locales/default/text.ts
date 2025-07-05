@@ -290,13 +290,16 @@ export default class Text {
     return `Payment status is not available yet. Please try again later.`;
   }
   get paymentStatusHealthy() {
-    return [`No overdue payments. Next payment, if any, is scheduled on `, `.`];
+    return [`No overdue payments. Next payment, if any, is scheduled on or after `, `.`];
+  }
+  get paymentStatusProcessing() {
+    return `Processing payments. Please check back later.`;
   }
   get paymentStatusWarning() {
     return `There are failed payments. Please check or update your payment method and retry.`;
   }
   get paymentStatusRetryingPayments() {
-    return `Retrying failed payments. Please check back later.`;
+    return `Retrying payments. Please check back later.`;
   }
   get retryPaymentsLabel() {
     return `Retry payments`;

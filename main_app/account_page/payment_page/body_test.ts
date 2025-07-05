@@ -20,7 +20,7 @@ import {
 } from "@phading/commerce_service_interface/web/payment/interface";
 import { PaymentState } from "@phading/commerce_service_interface/web/payment/payment";
 import { CardBrand } from "@phading/commerce_service_interface/web/payment/payment_method_masked";
-import { PaymentProfileState } from "@phading/commerce_service_interface/web/payment/payment_profile_state";
+import { PaymentProfileState } from "@phading/commerce_service_interface/web/payment/payment_profile";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -44,8 +44,9 @@ TEST_RUNNER.run({
             switch (request.descriptor) {
               case GET_PAYMENT_PROFILE_INFO:
                 let response: GetPaymentProfileInfoResponse = {
-                  state: PaymentProfileState.HEALTHY,
-                  paymentAfterMs: 0,
+                  paymentProfile: {
+                    state: PaymentProfileState.HEALTHY,
+                  },
                 };
                 return response;
               case LIST_PAYMENTS:
@@ -182,7 +183,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "HealthyWithLaterPaymentDate";
+      public name = "HealthyWithProcessingPayments";
       private cut: PaymentPage;
       public async execute() {
         // Prepare
@@ -192,9 +193,9 @@ TEST_RUNNER.run({
             switch (request.descriptor) {
               case GET_PAYMENT_PROFILE_INFO:
                 let response: GetPaymentProfileInfoResponse = {
-                  state: PaymentProfileState.HEALTHY,
-                  // 2025-05-06
-                  paymentAfterMs: 1746549117000,
+                  paymentProfile: {
+                    state: PaymentProfileState.WITH_PROCESSING_PAYMENTS,
+                  },
                 };
                 return response;
               case LIST_PAYMENTS:
@@ -218,14 +219,14 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/payment_page_healthy_later_payment_date.png"),
+          path.join(__dirname, "/payment_page_with_processing_payments.png"),
           path.join(
             __dirname,
-            "/golden/payment_page_healthy_later_payment_date.png",
+            "/golden/payment_page_with_processing_payments.png",
           ),
           path.join(
             __dirname,
-            "/payment_page_healthy_later_payment_date_diff.png",
+            "/payment_page_with_processing_payments_diff.png",
           ),
         );
       }
@@ -245,7 +246,9 @@ TEST_RUNNER.run({
             switch (request.descriptor) {
               case GET_PAYMENT_PROFILE_INFO:
                 let response: GetPaymentProfileInfoResponse = {
-                  state: PaymentProfileState.WITH_FAILED_PAYMENTS,
+                  paymentProfile: {
+                    state: PaymentProfileState.WITH_FAILED_PAYMENTS,
+                  },
                 };
                 return response;
               case LIST_PAYMENTS:
@@ -361,14 +364,15 @@ TEST_RUNNER.run({
             switch (request.descriptor) {
               case GET_PAYMENT_PROFILE_INFO:
                 let response: GetPaymentProfileInfoResponse = {
-                  state: PaymentProfileState.HEALTHY,
-                  paymentAfterMs: 0,
-                  primaryPaymentMethod: {
-                    card: {
-                      brand: CardBrand.VISA,
-                      lastFourDigits: "1234",
-                      expMonth: 12,
-                      expYear: 2025,
+                  paymentProfile: {
+                    state: PaymentProfileState.HEALTHY,
+                    primaryPaymentMethod: {
+                      card: {
+                        brand: CardBrand.VISA,
+                        lastFourDigits: "1234",
+                        expMonth: 12,
+                        expYear: 2025,
+                      },
                     },
                   },
                 };
