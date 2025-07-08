@@ -290,7 +290,10 @@ export default class Text {
     return `Payment status is not available yet. Please try again later.`;
   }
   get paymentStatusHealthy() {
-    return [`No overdue payments. Next payment, if any, is scheduled on or after `, `.`];
+    return [
+      `You are all set. Next payment, if any, is scheduled on or after `,
+      `.`,
+    ];
   }
   get paymentStatusProcessing() {
     return `Processing payments. Please check back later.`;
@@ -310,8 +313,23 @@ export default class Text {
   get paymentStatusSuspended() {
     return [`Your profile is currently suspended. Please contact at `, `.`];
   }
+  get paymentBalance() {
+    return [`Balance: `, `.`];
+  }
+  get paymentCreditExplanation() {
+    return `You have credits to be used for your next payment.`;
+  }
+  get paymentDebitExplanation() {
+    return `It will be added to your next payment.`;
+  }
   get paymentMethodTitle() {
     return `Payment method`;
+  }
+  get initCreditAvailable() {
+    return [`Claim your sign up credit of `, ` by adding a payment card.`];
+  }
+  get initCreditCaveat() {
+    return `The card must not be added to any profile before. Terms apply.`;
   }
   get addCardPaymentLabel() {
     return `Add`;

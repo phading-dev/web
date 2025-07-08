@@ -34,7 +34,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "PhoneView_HealthyWithNoPaymentMethodAndEmptyList_StartMonthLargerThanEndMonth_ListActivitiesWithMultipleStates_TabletView";
+        "PhoneView_HealthyWithBalanceAndNoPaymentMethodAndEmptyList_StartMonthLargerThanEndMonth_ListActivitiesWithMultipleStates_TabletView";
       private cut: PaymentPage;
       public async execute() {
         // Prepare
@@ -46,6 +46,9 @@ TEST_RUNNER.run({
                 let response: GetPaymentProfileInfoResponse = {
                   paymentProfile: {
                     state: PaymentProfileState.HEALTHY,
+                    balanceAmount: 0,
+                    balanceCurrency: "USD",
+                    canClaimInitCredit: false,
                   },
                 };
                 return response;
@@ -176,6 +179,172 @@ TEST_RUNNER.run({
           path.join(__dirname, "/payment_page_list_payments_tablet.png"),
           path.join(__dirname, "/golden/payment_page_list_payments_tablet.png"),
           path.join(__dirname, "/payment_page_list_payments_tablet_diff.png"),
+        );
+      }
+      public async tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name =
+        "PhoneView_HealthyWithCreditBalanceAndCanClaimInitCredit_TabletView";
+      private cut: PaymentPage;
+      public async execute() {
+        // Prepare
+        await setPhoneView();
+        let serviceClientMock = new (class extends WebServiceClientMock {
+          public async send(request: any): Promise<any> {
+            switch (request.descriptor) {
+              case GET_PAYMENT_PROFILE_INFO:
+                let response: GetPaymentProfileInfoResponse = {
+                  paymentProfile: {
+                    state: PaymentProfileState.HEALTHY,
+                    balanceAmount: -1000,
+                    balanceCurrency: "USD",
+                    canClaimInitCredit: true,
+                  },
+                };
+                return response;
+              case LIST_PAYMENTS:
+                this.request = request;
+                return this.response;
+              default:
+                throw new Error("Unexpected request");
+            }
+          }
+        })();
+        serviceClientMock.response = {
+          payments: [],
+        } as ListPaymentsResponse;
+        this.cut = new PaymentPage(
+          serviceClientMock,
+          {} as any,
+          () => new Date("2025-04-05"),
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise((resolve) => this.cut.once("listed", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/payment_page_with_credit_balance_and_can_claim_init_credit.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/payment_page_with_credit_balance_and_can_claim_init_credit.png",
+          ),
+          path.join(
+            __dirname,
+            "/payment_page_with_credit_balance_and_can_claim_init_credit_diff.png",
+          ),
+        );
+
+        // Execute
+        this.cut.initCreditCaveatExpandButton.val.click();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/payment_page_with_credit_balance_and_init_credit_caveat.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/payment_page_with_credit_balance_and_init_credit_caveat.png",
+          ),
+          path.join(
+            __dirname,
+            "/payment_page_with_credit_balance_and_init_credit_caveat_diff.png",
+          ),
+        );
+
+        // Execute
+        await setTabletView();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/payment_page_with_credit_balance_and_init_credit_caveat_tablet.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/payment_page_with_credit_balance_and_init_credit_caveat_tablet.png",
+          ),
+          path.join(
+            __dirname,
+            "/payment_page_with_credit_balance_and_init_credit_caveat_tablet_diff.png",
+          ),
+        );
+      }
+      public async tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "PhoneView_HealthyWithDebitBalance_TabletView";
+      private cut: PaymentPage;
+      public async execute() {
+        // Prepare
+        await setPhoneView();
+        let serviceClientMock = new (class extends WebServiceClientMock {
+          public async send(request: any): Promise<any> {
+            switch (request.descriptor) {
+              case GET_PAYMENT_PROFILE_INFO:
+                let response: GetPaymentProfileInfoResponse = {
+                  paymentProfile: {
+                    state: PaymentProfileState.HEALTHY,
+                    balanceAmount: 1000,
+                    balanceCurrency: "USD",
+                    canClaimInitCredit: false,
+                  },
+                };
+                return response;
+              case LIST_PAYMENTS:
+                this.request = request;
+                return this.response;
+              default:
+                throw new Error("Unexpected request");
+            }
+          }
+        })();
+        serviceClientMock.response = {
+          payments: [],
+        } as ListPaymentsResponse;
+        this.cut = new PaymentPage(
+          serviceClientMock,
+          {} as any,
+          () => new Date("2025-04-05"),
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise((resolve) => this.cut.once("listed", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/payment_page_with_debit_balance.png"),
+          path.join(__dirname, "/golden/payment_page_with_debit_balance.png"),
+          path.join(__dirname, "/payment_page_with_debit_balance_diff.png"),
+        );
+
+        // Execute
+        await setTabletView();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/payment_page_with_debit_balance_tablet.png"),
+          path.join(
+            __dirname,
+            "/golden/payment_page_with_debit_balance_tablet.png",
+          ),
+          path.join(
+            __dirname,
+            "/payment_page_with_debit_balance_tablet_diff.png",
+          ),
         );
       }
       public async tearDown() {
@@ -354,7 +523,8 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "PhoneView_WithVisaCard_AddFailed_TabletView_AddSuccess";
+      public name =
+        "PhoneView_WithVisaCardAndBalance_AddFailed_TabletView_AddSuccess";
       private cut: PaymentPage;
       public async execute() {
         // Prepare
@@ -366,6 +536,8 @@ TEST_RUNNER.run({
                 let response: GetPaymentProfileInfoResponse = {
                   paymentProfile: {
                     state: PaymentProfileState.HEALTHY,
+                    balanceAmount: 0,
+                    balanceCurrency: "USD",
                     primaryPaymentMethod: {
                       card: {
                         brand: CardBrand.VISA,

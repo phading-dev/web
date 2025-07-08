@@ -3,6 +3,7 @@ import {
   BlockingButton,
   FilledBlockingButton,
 } from "../../../common/blocking_button";
+import { CLICKABLE_TEXT_STYLE } from "../../../common/button_styles";
 import { SCHEME } from "../../../common/color_scheme";
 import { DateRangeInput, DateType } from "../../../common/date_range_input";
 import { formatMoney } from "../../../common/formatter/price";
@@ -10,6 +11,7 @@ import {
   createCheckmarkIcon,
   createExclamationMarkInACycle,
   createForbiddenIcon,
+  createMoneyBagIcon,
 } from "../../../common/icons";
 import { eLineItemRow, eThreeColumns } from "../../../common/line_item";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
@@ -18,7 +20,7 @@ import {
   PAGE_MAX_WIDTH_L,
   ePageWithTopDownCard,
 } from "../../../common/page_elements";
-import { FONT_M, FONT_WEIGHT_600, ICON_M } from "../../../common/sizes";
+import { FONT_M, FONT_S, FONT_WEIGHT_600, ICON_L } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
 import { AddCardPaymentItem, CardPaymentItem } from "./card_payment_item";
@@ -30,7 +32,10 @@ import {
 } from "@phading/commerce_service_interface/web/payment/client";
 import { CreateStripeSessionToAddPaymentMethodResponse } from "@phading/commerce_service_interface/web/payment/interface";
 import { PaymentState } from "@phading/commerce_service_interface/web/payment/payment";
-import { PaymentProfileState } from "@phading/commerce_service_interface/web/payment/payment_profile";
+import {
+  PaymentProfile,
+  PaymentProfileState,
+} from "@phading/commerce_service_interface/web/payment/payment_profile";
 import { MAX_MONTH_RANGE } from "@phading/constants/commerce";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -56,6 +61,8 @@ export class PaymentPage extends EventEmitter {
   public paymentStatusContent = new Ref<HTMLDivElement>();
   public retryPaymentsButton = new Ref<BlockingButton>();
   public retryPaymentsErrorMessage = new Ref<HTMLDivElement>();
+  public initCreditCaveatExpandButton = new Ref<HTMLDivElement>();
+  private initCreditCaveat = new Ref<HTMLDivElement>();
   public addPaymentMethodButton = new Ref<
     BlockingButton<CreateStripeSessionToAddPaymentMethodResponse>
   >();
@@ -131,7 +138,7 @@ export class PaymentPage extends EventEmitter {
         E.div(
           {
             class: "payment-page-status-icon",
-            style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
+            style: `width: ${ICON_L}rem; height: ${ICON_L}rem;`,
           },
           this.getIcon(profile.state),
         ),
@@ -141,9 +148,47 @@ export class PaymentPage extends EventEmitter {
             class: "payment-page-status-content",
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
-          E.text(this.getStatusText(nowDate, profile.state)),
+          E.text(this.getStatusText(nowDate, profile)),
         ),
       ),
+      ...(profile.state === PaymentProfileState.HEALTHY
+        ? [
+            E.div({
+              style: `flex: 0 0 auto; height: 1rem;`,
+            }),
+            E.div(
+              {
+                class: "payment-page-balance-line",
+                style: `display: flex; flex-flow: row nowrap; gap: 1rem; align-items: center;`,
+              },
+              E.div(
+                {
+                  class: "payment-page-status-icon",
+                  style: `width: ${ICON_L}rem; height: ${ICON_L}rem;`,
+                },
+                createMoneyBagIcon(SCHEME.money),
+              ),
+              E.div(
+                {
+                  class: "payment-page-balance",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(LOCALIZED_TEXT.paymentBalance[0]),
+                E.div(
+                  {
+                    style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+                  },
+                  E.text(
+                    formatMoney(profile.balanceAmount, profile.balanceCurrency),
+                  ),
+                ),
+                E.text(
+                  `${LOCALIZED_TEXT.paymentBalance[1]} ${profile.balanceAmount < 0 ? LOCALIZED_TEXT.paymentCreditExplanation : ""}${profile.balanceAmount > 0 ? LOCALIZED_TEXT.paymentDebitExplanation : ""}`,
+                ),
+              ),
+            ),
+          ]
+        : []),
       ...(profile.state === PaymentProfileState.WITH_FAILED_PAYMENTS
         ? [
             E.div({
@@ -193,6 +238,43 @@ export class PaymentPage extends EventEmitter {
       E.div({
         style: `flex: 0 0 auto; height: 1.5rem;`,
       }),
+      ...(profile.canClaimInitCredit
+        ? [
+            E.div(
+              {
+                class: "payment-page-init-credit",
+              },
+              E.div(
+                {
+                  class: "payment-page-init-credit-available",
+                  style: `display: inline; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(
+                  `${LOCALIZED_TEXT.initCreditAvailable[0]}${formatMoney(ENV_VARS.initCreditAmount, ENV_VARS.defaultCurrency)}${LOCALIZED_TEXT.initCreditAvailable[1]} `,
+                ),
+              ),
+              E.divRef(
+                this.initCreditCaveatExpandButton,
+                {
+                  class: "payment-page-init-credit-caveat-expand-button",
+                  style: `display: inline; ${CLICKABLE_TEXT_STYLE} font-size: ${FONT_M}rem;`,
+                },
+                E.text("*"),
+              ),
+              E.divRef(
+                this.initCreditCaveat,
+                {
+                  class: "payment-page-init-credit-caveat",
+                  style: `display: none; font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+                },
+                E.text(` ${LOCALIZED_TEXT.initCreditCaveat}`),
+              ),
+            ),
+            E.div({
+              style: `flex: 0 0 auto; height: 1rem;`,
+            }),
+          ]
+        : []),
       E.div(
         {
           class: "payment-page-add-payment-method-line",
@@ -253,7 +335,6 @@ export class PaymentPage extends EventEmitter {
       endMonth.toLocalMonthISOString(),
     );
     this.listPayments();
-
     this.monthRangeInput.val.on("change", () => this.listPayments());
     this.monthRangeInput.val.on("invalid", () => this.showInvalidRange());
     if (this.retryPaymentsButton.val) {
@@ -262,6 +343,10 @@ export class PaymentPage extends EventEmitter {
         (response, error) => this.postRetryFailedPayments(error),
       );
     }
+
+    this.initCreditCaveatExpandButton.val?.addEventListener("click", () =>
+      this.expandInitCreditCaveat(),
+    );
     this.addPaymentMethodButton.val.addAction(
       async () => this.startStripeSession(),
       (response, error) => this.postStartStripeSession(response, error),
@@ -282,11 +367,8 @@ export class PaymentPage extends EventEmitter {
     }
   }
 
-  private getStatusText(
-    nowDate: TzDate,
-    paymentProfileState: PaymentProfileState,
-  ): string {
-    switch (paymentProfileState) {
+  private getStatusText(nowDate: TzDate, profile: PaymentProfile): string {
+    switch (profile.state) {
       case PaymentProfileState.HEALTHY:
         return `${LOCALIZED_TEXT.paymentStatusHealthy[0]}${nowDate.clone().moveToFirstDayOfMonth().addMonths(1).toLocalDateISOString()}${LOCALIZED_TEXT.paymentStatusHealthy[1]}`;
       case PaymentProfileState.WITH_PROCESSING_PAYMENTS:
@@ -394,6 +476,10 @@ export class PaymentPage extends EventEmitter {
         LOCALIZED_TEXT.paymentStatusRetryingPayments;
     }
     this.emit("retried");
+  }
+
+  private expandInitCreditCaveat(): void {
+    this.initCreditCaveat.val.style.display = "inline";
   }
 
   private startStripeSession(): Promise<CreateStripeSessionToAddPaymentMethodResponse> {

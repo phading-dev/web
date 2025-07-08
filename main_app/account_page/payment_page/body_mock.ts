@@ -18,6 +18,9 @@ export class PaymentPageMock extends PaymentPage {
               let response: GetPaymentProfileInfoResponse = {
                 paymentProfile: {
                   state: PaymentProfileState.HEALTHY,
+                  balanceAmount: 0,
+                  balanceCurrency: "USD",
+                  canClaimInitCredit: false,
                 },
               };
               return response;
