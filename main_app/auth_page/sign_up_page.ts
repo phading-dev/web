@@ -1,8 +1,10 @@
 import EventEmitter = require("events");
+import { CLICKABLE_TEXT_STYLE } from "../../common/button_styles";
 import { SCHEME } from "../../common/color_scheme";
 import { createBrandIcon } from "../../common/icons";
 import { InputFormPage } from "../../common/input_form_page/body";
 import { ValidationResult } from "../../common/input_form_page/input_field";
+import { MandatoryCheckboxInput } from "../../common/input_form_page/mandatory_checkbox_input";
 import { RadioOptionInput } from "../../common/input_form_page/option_input";
 import { PasswordInputWithErrorMsg } from "../../common/input_form_page/password_input";
 import { TextInputWithErrorMsg } from "../../common/input_form_page/text_input";
@@ -48,6 +50,8 @@ export class SignUpPage extends EventEmitter {
   public publisherOption = new Ref<OptionPill<AccountType>>();
   private accountTypeInput = new Ref<RadioOptionInput<AccountType>>();
   public switchToSignInButton = new Ref<HTMLDivElement>();
+  public acceptTermsCheckbox = new Ref<MandatoryCheckboxInput>();
+  public acceptPublisherTermsCheckbox = new Ref<MandatoryCheckboxInput>();
   public inputFormPage: InputFormPage<SignUpResponse>;
   private request: SignUpRequestBody = {};
 
@@ -151,6 +155,65 @@ export class SignUpPage extends EventEmitter {
             (value) => this.changeAccountType(value),
           ),
         ).body,
+        assign(
+          this.acceptTermsCheckbox,
+          new MandatoryCheckboxInput(
+            "",
+            E.text(LOCALIZED_TEXT.acceptTerms[0]),
+            E.a(
+              {
+                href: "/terms",
+                target: "_blank",
+                style: CLICKABLE_TEXT_STYLE,
+              },
+              E.text(LOCALIZED_TEXT.acceptTerms[1]),
+            ),
+            E.text(LOCALIZED_TEXT.acceptTerms[2]),
+            E.a(
+              {
+                href: "/privacy",
+                target: "_blank",
+                style: CLICKABLE_TEXT_STYLE,
+              },
+              E.text(LOCALIZED_TEXT.acceptTerms[3]),
+            ),
+            E.text(LOCALIZED_TEXT.acceptTerms[4]),
+          ),
+        ).body,
+        assign(
+          this.acceptPublisherTermsCheckbox,
+          new MandatoryCheckboxInput(
+            "",
+            E.text(LOCALIZED_TEXT.acceptPublisherTerms[0]),
+            E.a(
+              {
+                href: "/terms",
+                target: "_blank",
+                style: CLICKABLE_TEXT_STYLE,
+              },
+              E.text(LOCALIZED_TEXT.acceptPublisherTerms[1]),
+            ),
+            E.text(LOCALIZED_TEXT.acceptPublisherTerms[2]),
+            E.a(
+              {
+                href: "/privacy",
+                target: "_blank",
+                style: CLICKABLE_TEXT_STYLE,
+              },
+              E.text(LOCALIZED_TEXT.acceptPublisherTerms[3]),
+            ),
+            E.text(LOCALIZED_TEXT.acceptPublisherTerms[4]),
+            E.a(
+              {
+                href: "/publisher",
+                target: "_blank",
+                style: CLICKABLE_TEXT_STYLE,
+              },
+              E.text(LOCALIZED_TEXT.acceptPublisherTerms[5]),
+            ),
+            E.text(LOCALIZED_TEXT.acceptPublisherTerms[6]),
+          ),
+        ).body,
         E.divRef(
           this.switchToSignInButton,
           {
@@ -159,12 +222,6 @@ export class SignUpPage extends EventEmitter {
           },
           E.text(LOCALIZED_TEXT.switchToSignInLink),
         ),
-      ],
-      [
-        this.naturalNameInput.val,
-        this.usernameInput.val,
-        this.passwordInput.val,
-        this.repeatPasswordInput.val,
       ],
       LOCALIZED_TEXT.signUpButtonLabel,
     )
@@ -175,12 +232,15 @@ export class SignUpPage extends EventEmitter {
       .on("handlePrimarySuccess", (response) =>
         this.emit("auth", response.signedSession),
       )
-      .on("primaryDone", () => this.emit("signUpDone"));
-    this.naturalNameInput.val.validate();
-    this.usernameInput.val.validate();
-    this.emailInput.val.validate();
-    this.passwordInput.val.validate();
-    this.repeatPasswordInput.val.validate();
+      .on("primaryDone", () => this.emit("signUpDone"))
+      .addInputs(
+        this.naturalNameInput.val,
+        this.usernameInput.val,
+        this.emailInput.val,
+        this.passwordInput.val,
+        this.repeatPasswordInput.val,
+        this.acceptTermsCheckbox.val,
+      );
     this.accountTypeInput.val.setValue(initAccountType ?? AccountType.CONSUMER);
     this.switchToSignInButton.val.addEventListener("click", () =>
       this.emit("signIn"),
@@ -268,8 +328,16 @@ export class SignUpPage extends EventEmitter {
     this.request.accountType = value;
     if (value === AccountType.CONSUMER) {
       this.subtitle.val.textContent = LOCALIZED_TEXT.signUpViewerSubtitle;
+      this.acceptTermsCheckbox.val.show();
+      this.inputFormPage.addInputs(this.acceptTermsCheckbox.val);
+      this.acceptPublisherTermsCheckbox.val.hide();
+      this.inputFormPage.removeInputs(this.acceptPublisherTermsCheckbox.val);
     } else if (value === AccountType.PUBLISHER) {
       this.subtitle.val.textContent = LOCALIZED_TEXT.signUpPublisherSubtitle;
+      this.acceptTermsCheckbox.val.hide();
+      this.inputFormPage.removeInputs(this.acceptTermsCheckbox.val);
+      this.acceptPublisherTermsCheckbox.val.show();
+      this.inputFormPage.addInputs(this.acceptPublisherTermsCheckbox.val);
     }
   }
 

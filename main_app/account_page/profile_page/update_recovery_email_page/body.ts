@@ -73,7 +73,6 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
           ),
         ).body,
       ],
-      [this.newRecoveryEmailInput.val, this.currentPasswordInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
     )
       .addBackButton()
@@ -83,9 +82,8 @@ export class UpdateRecoveryEmailPage extends EventEmitter {
       )
       .on("handlePrimarySuccess", () => this.emit("back"))
       .on("primaryDone", () => this.emit("updated"))
-      .on("back", () => this.emit("back"));
-    this.newRecoveryEmailInput.val.validate();
-    this.currentPasswordInput.val.validate();
+      .on("back", () => this.emit("back"))
+      .addInputs(this.newRecoveryEmailInput.val, this.currentPasswordInput.val);
   }
 
   private validateOrTakeNewEmail(value: string): ValidationResult {

@@ -97,7 +97,6 @@ export class CreateAccountPage extends EventEmitter {
           ),
         ).body,
       ],
-      [this.naturalNameInput.val, this.emailInput.val],
       LOCALIZED_TEXT.createAccountButtonLabel,
     )
       .addBackButton()
@@ -109,9 +108,8 @@ export class CreateAccountPage extends EventEmitter {
       .on("handlePrimarySuccess", (response) =>
         this.emit("choose", response.signedSession),
       )
-      .on("primaryDone", () => this.emit("chosen"));
-    this.naturalNameInput.val.validate();
-    this.emailInput.val.validate();
+      .on("primaryDone", () => this.emit("chosen"))
+      .addInputs(this.naturalNameInput.val, this.emailInput.val);
     this.accountTypeInput.val.setValue(AccountType.CONSUMER);
   }
 

@@ -83,11 +83,6 @@ export class UpdateAccountInfoPage extends EventEmitter {
           ),
         ).body,
       ],
-      [
-        this.naturalNameInput.val,
-        this.emailInput.val,
-        this.descriptionInput.val,
-      ],
       LOCALIZED_TEXT.updateButtonLabel,
     )
       .addBackButton()
@@ -97,10 +92,12 @@ export class UpdateAccountInfoPage extends EventEmitter {
       )
       .on("handlePrimarySuccess", () => this.emit("back"))
       .on("primaryDone", () => this.emit("updated"))
-      .on("back", () => this.emit("back"));
-    this.emailInput.val.validate();
-    this.naturalNameInput.val.validate();
-    this.descriptionInput.val.validate();
+      .on("back", () => this.emit("back"))
+      .addInputs(
+        this.naturalNameInput.val,
+        this.emailInput.val,
+        this.descriptionInput.val,
+      );
   }
 
   private validateOrTakeNaturalNameInput(value: string): ValidationResult {

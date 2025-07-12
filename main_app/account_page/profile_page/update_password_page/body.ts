@@ -81,11 +81,6 @@ export class UpdatePasswordPage extends EventEmitter {
           ),
         ).body,
       ],
-      [
-        this.newPasswordInput.val,
-        this.newPasswordRepeatInput.val,
-        this.currentPasswordInput.val,
-      ],
       LOCALIZED_TEXT.updateButtonLabel,
     )
       .addBackButton()
@@ -95,10 +90,12 @@ export class UpdatePasswordPage extends EventEmitter {
       )
       .on("handlePrimarySuccess", () => this.emit("back"))
       .on("primaryDone", () => this.emit("updated"))
-      .on("back", () => this.emit("back"));
-    this.newPasswordInput.val.validate();
-    this.newPasswordRepeatInput.val.validate();
-    this.currentPasswordInput.val.validate();
+      .on("back", () => this.emit("back"))
+      .addInputs(
+        this.newPasswordInput.val,
+        this.newPasswordRepeatInput.val,
+        this.currentPasswordInput.val,
+      );
   }
 
   private validateOrTakeNewPassword(value: string): ValidationResult {

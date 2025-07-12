@@ -10,15 +10,13 @@ export class TextInputWithErrorMsg extends EventEmitter implements InputField {
   public body: HTMLElement;
   private input = new Ref<HTMLInputElement>();
   private errorMsg = new Ref<HTMLDivElement>();
-  private valid: boolean = false;
+  private valid: boolean;
 
   public constructor(
     label: string,
     customStyle: string,
     otherInputAttributes: ElementAttributeMap,
-    private validateAndTakeFn: (
-      value: string,
-    ) => Promise<ValidationResult> | ValidationResult,
+    private validateAndTakeFn: (value: string) => ValidationResult,
   ) {
     super();
     this.body = E.div(
@@ -55,7 +53,7 @@ export class TextInputWithErrorMsg extends EventEmitter implements InputField {
     );
 
     this.input.val.addEventListener("keydown", (event) => this.keydown(event));
-    this.input.val.addEventListener("input", () => this.validate());
+    this.input.val.addEventListener("input", () => this.validateInput());
   }
 
   private keydown(event: KeyboardEvent): void {
@@ -65,10 +63,15 @@ export class TextInputWithErrorMsg extends EventEmitter implements InputField {
     }
   }
 
-  public async validate(): Promise<void> {
+  private validateInput(): void {
+    this.validate();
+    this.emit("refresh");
+  }
+
+  public validate(): void {
     this.resetError();
     let value = this.input.val.value;
-    let result = await this.validateAndTakeFn(value);
+    let result = this.validateAndTakeFn(value);
     if (result.valid) {
       this.valid = true;
     } else {
@@ -79,7 +82,6 @@ export class TextInputWithErrorMsg extends EventEmitter implements InputField {
       }
       this.valid = false;
     }
-    this.emit("validate");
   }
 
   private resetError(): void {

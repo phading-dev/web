@@ -64,7 +64,6 @@ export class UpdateIndexPage extends EventEmitter {
           ),
         ).body,
       ],
-      [this.episodeIndexInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
     )
       .addBackButton()
@@ -74,8 +73,8 @@ export class UpdateIndexPage extends EventEmitter {
         (response, error) => this.postUpdate(error),
       )
       .on("handlePrimarySuccess", () => this.emit("back"))
-      .on("primaryDone", () => this.emit("updated"));
-    this.episodeIndexInput.val.validate();
+      .on("primaryDone", () => this.emit("updated"))
+      .addInputs(this.episodeIndexInput.val);
   }
 
   private validateIndexAndTake(value: string): ValidationResult {

@@ -169,7 +169,6 @@ export class UpdatePublishedPricingPage extends EventEmitter {
           ),
         ).body,
       ],
-      [this.nextGradeInput.val, this.effectiveDateInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
     )
       .addBackButton()
@@ -191,8 +190,10 @@ export class UpdatePublishedPricingPage extends EventEmitter {
         .on("handleSecondarySuccess", () => this.emit("back"))
         .on("secondaryDone", () => this.emit("deleted"));
     }
-    this.nextGradeInput.val.validate();
-    this.effectiveDateInput.val.validate();
+    this.inputFormPage.addInputs(
+      this.nextGradeInput.val,
+      this.effectiveDateInput.val,
+    );
   }
 
   private validateGradeAndPreviewAndTake(value: string): ValidationResult {

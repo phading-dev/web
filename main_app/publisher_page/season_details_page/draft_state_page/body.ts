@@ -80,7 +80,6 @@ export class DraftStatePage extends EventEmitter {
           ),
         ).body,
       ],
-      [this.seasonIdInput.val],
       LOCALIZED_TEXT.deleteButtonLabel,
     )
       .addBackButton()
@@ -90,8 +89,8 @@ export class DraftStatePage extends EventEmitter {
         (response, error) => this.postDelete(error),
       )
       .on("handlePrimarySuccess", () => this.emit("delete"))
-      .on("primaryDone", () => this.emit("deleted"));
-    this.seasonIdInput.val.validate();
+      .on("primaryDone", () => this.emit("deleted"))
+      .addInputs(this.seasonIdInput.val);
   }
 
   private validateId(value: string): ValidationResult {

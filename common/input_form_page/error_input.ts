@@ -19,7 +19,7 @@ export class ErrorInput extends EventEmitter implements InputField {
   }
 
   public validate(): void {
-    this.emit("validation");
+    // This input is always invalid, so no validation is needed.
   }
 
   public get isValid(): boolean {

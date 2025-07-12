@@ -2,7 +2,6 @@ import "../../../dev/env";
 import path = require("path");
 import { normalizeBody } from "../../../common/normalize_body";
 import {
-  setDesktopView,
   setPhoneView,
   setTabletView,
 } from "../../../common/view_port";
@@ -352,11 +351,11 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "HealthyWithProcessingPayments";
+      public name = "PhoneView_HealthyWithProcessingPayments";
       private cut: PaymentPage;
       public async execute() {
         // Prepare
-        await setDesktopView();
+        await setPhoneView();
         let serviceClientMock = new (class extends WebServiceClientMock {
           public async send(request: any): Promise<any> {
             switch (request.descriptor) {
@@ -515,6 +514,58 @@ TEST_RUNNER.run({
           path.join(
             __dirname,
             "/payment_page_with_failed_payments_retry_success_diff.png",
+          ),
+        );
+      }
+      public async tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "PhoneView_Suspended";
+      private cut: PaymentPage;
+      public async execute() {
+        // Prepare
+        await setPhoneView();
+        let serviceClientMock = new (class extends WebServiceClientMock {
+          public async send(request: any): Promise<any> {
+            switch (request.descriptor) {
+              case GET_PAYMENT_PROFILE_INFO:
+                let response: GetPaymentProfileInfoResponse = {
+                  paymentProfile: {
+                    state: PaymentProfileState.SUSPENDED,
+                  },
+                };
+                return response;
+              case LIST_PAYMENTS:
+                return {
+                  payments: [],
+                } as ListPaymentsResponse;
+              default:
+                throw new Error("Unexpected request");
+            }
+          }
+        })();
+        this.cut = new PaymentPage(
+          serviceClientMock,
+          {} as any,
+          () => new Date("2025-04-05"),
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise((resolve) => this.cut.once("listed", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/payment_page_suspended.png"),
+          path.join(
+            __dirname,
+            "/golden/payment_page_suspended.png",
+          ),
+          path.join(
+            __dirname,
+            "/payment_page_suspended_diff.png",
           ),
         );
       }

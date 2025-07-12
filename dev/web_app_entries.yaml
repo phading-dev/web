@@ -1,7 +1,16 @@
-
 entries:
   - source: ./main
     output: ./index
+  - source: ./pricing_main
+    output: ./pricing
+  - source: ./privacy_main
+    output: ./privacy
+  - source: ./terms_main
+    output: ./terms
+  - source: ./terms_publisher_main
+    output: ./publisher
+  - source: ./copyright_main
+    output: ./copyright
   - source: ../not_found
     output: ./404
   - source: ../empty

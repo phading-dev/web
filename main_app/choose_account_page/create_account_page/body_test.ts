@@ -196,9 +196,6 @@ TEST_RUNNER.run({
         this.cut.naturalNameInput.val.dispatchInput();
         this.cut.emailInput.val.value = "me@gmail.com";
         this.cut.emailInput.val.dispatchInput();
-        await new Promise<void>((resolve) =>
-          this.cut.emailInput.val.once("validate", resolve),
-        );
         this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) => this.cut.once("chosen", resolve));
 

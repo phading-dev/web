@@ -62,7 +62,7 @@ export default class Text {
     return `Why overpay for subscriptions? Make every second count.`;
   }
   get signUpPublisherSubtitle() {
-    return `Stop selling your work short. Be your own publisher.`;
+    return `Stop selling your content short. Be your own publisher.`;
   }
   get signUpTitle() {
     return `Create your new account`;
@@ -138,6 +138,26 @@ export default class Text {
   }
   get switchToSignInLink() {
     return `Already have an account?`;
+  }
+  get acceptTerms() {
+    return [
+      `I have read and agree to the `,
+      `Terms of Service`,
+      ` and `,
+      `Privacy Policy`,
+      `.`,
+    ];
+  }
+  get acceptPublisherTerms() {
+    return [
+      `I have read and agree to the `,
+      `Terms of Service`,
+      `, `,
+      `Privacy Policy`,
+      ` and `,
+      `Publisher Agreement`,
+      `.`,
+    ];
   }
   get sendTaleEntryButtonLabel() {
     return `Send`;
@@ -311,7 +331,7 @@ export default class Text {
     return `Failed to retry payments. Please try again later.`;
   }
   get paymentStatusSuspended() {
-    return [`Your profile is currently suspended. Please contact at `, `.`];
+    return [`Your profile is currently suspended. Please contact us at `, `.`];
   }
   get paymentBalance() {
     return [`Balance: `, `.`];

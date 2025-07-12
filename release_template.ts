@@ -137,10 +137,44 @@ import "../main";
 `;
   writeFileSync(`${env}/main.ts`, mainTemplate);
 
-  let webAppEntriesTemplate = `
-entries:
+  let pricingMainTemplate = `import "./env";
+import "../pricing_main";
+`;
+  writeFileSync(`${env}/pricing_main.ts`, pricingMainTemplate);
+
+  let privacyMainTemplate = `import "./env";
+import "../privacy_main";
+`;
+  writeFileSync(`${env}/privacy_main.ts`, privacyMainTemplate);
+
+  let termsMainTemplate = `import "./env";
+import "../terms_main";
+`;
+  writeFileSync(`${env}/terms_main.ts`, termsMainTemplate);
+
+  let termsPublisherMainTemplate = `import "./env";
+import "../terms_publisher_main";
+`;
+  writeFileSync(`${env}/terms_publisher_main.ts`, termsPublisherMainTemplate);
+
+  let copyrightMainTemplate = `import "./env";
+import "../copyright_main";
+`;
+  writeFileSync(`${env}/copyright_main.ts`, copyrightMainTemplate);
+
+  let webAppEntriesTemplate = `entries:
   - source: ./main
     output: ./index
+  - source: ./pricing_main
+    output: ./pricing
+  - source: ./privacy_main
+    output: ./privacy
+  - source: ./terms_main
+    output: ./terms
+  - source: ./terms_publisher_main
+    output: ./publisher
+  - source: ./copyright_main
+    output: ./copyright
   - source: ../not_found
     output: ./404
   - source: ../empty

@@ -72,7 +72,6 @@ export class UpdateInfoPage extends EventEmitter {
           ),
         ).body,
       ],
-      [this.nameInput.val, this.descriptionInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
     )
       .addBackButton()
@@ -82,9 +81,8 @@ export class UpdateInfoPage extends EventEmitter {
         (response, error) => this.postUpdate(response, error),
       )
       .on("handlePrimarySuccess", () => this.emit("back"))
-      .on("primaryDone", () => this.emit("updated"));
-    this.nameInput.val.validate();
-    this.descriptionInput.val.validate();
+      .on("primaryDone", () => this.emit("updated"))
+      .addInputs(this.nameInput.val, this.descriptionInput.val);
   }
 
   private validateNameAndTake(value: string): ValidationResult {

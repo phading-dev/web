@@ -4,7 +4,9 @@ export interface ValidationResult {
 }
 
 export interface InputField {
-  on(event: "validate", listener: () => void): this;
+  on(event: "refresh", listener: () => void): this;
   on(event: "action", listener: () => void): this;
+  removeAllListeners: () => void;
+  validate(): void;
   isValid: boolean;
 }

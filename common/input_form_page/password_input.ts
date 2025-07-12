@@ -18,15 +18,13 @@ export class PasswordInputWithErrorMsg
   public showPasswordButton = new Ref<SimpleIconButton>();
   public hidePasswordButton = new Ref<SimpleIconButton>();
   private errorMsg = new Ref<HTMLDivElement>();
-  private valid: boolean = false;
+  private valid: boolean;
 
   public constructor(
     label: string,
     customStyle: string,
     otherInputAttributes: ElementAttributeMap,
-    private validateAndTakeFn: (
-      value: string,
-    ) => Promise<ValidationResult> | ValidationResult,
+    private validateAndTakeFn: (value: string) => ValidationResult,
   ) {
     super();
     this.body = E.div(
@@ -94,7 +92,7 @@ export class PasswordInputWithErrorMsg
     this.showPasswordButton.val.on("action", () => this.showPassword());
     this.hidePasswordButton.val.on("action", () => this.hidePassword());
     this.input.val.addEventListener("keydown", (event) => this.keydown(event));
-    this.input.val.addEventListener("input", () => this.validate());
+    this.input.val.addEventListener("input", () => this.validateInput());
   }
 
   private hidePassword(): void {
@@ -116,10 +114,15 @@ export class PasswordInputWithErrorMsg
     }
   }
 
-  public async validate(): Promise<void> {
+  private validateInput(): void {
+    this.validate();
+    this.emit("refresh");
+  }
+
+  public validate(): void {
     this.resetError();
     let value = this.input.val.value;
-    let result = await this.validateAndTakeFn(value);
+    let result = this.validateAndTakeFn(value);
     if (result.valid) {
       this.valid = true;
     } else {
@@ -131,7 +134,6 @@ export class PasswordInputWithErrorMsg
       }
       this.valid = false;
     }
-    this.emit("validate");
   }
 
   private resetError(): void {

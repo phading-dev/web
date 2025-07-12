@@ -47,7 +47,6 @@ export class CreateSeasonPage extends EventEmitter {
           ),
         ).body,
       ],
-      [this.seasonNameInput.val],
       LOCALIZED_TEXT.createButtonLabel,
     )
       .addPrimaryAction(
@@ -57,8 +56,8 @@ export class CreateSeasonPage extends EventEmitter {
       .on("handlePrimarySuccess", (response) =>
         this.emit("viewSeason", response.seasonId),
       )
-      .on("primaryDone", () => this.emit("createDone"));
-    this.seasonNameInput.val.validate();
+      .on("primaryDone", () => this.emit("createDone"))
+      .addInputs(this.seasonNameInput.val);
   }
 
   private validateNameAndTake(value: string): ValidationResult {

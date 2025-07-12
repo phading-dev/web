@@ -1,5 +1,6 @@
 // import "../common/image_cropper/body_test";
 import "../common/input_form_page/body_test";
+import "../common/input_form_page/mandatory_checkbox_input_test";
 import "../common/input_form_page/option_input_test";
 import "../common/input_form_page/text_area_input_test";
 import "../common/input_form_page/text_input_test";

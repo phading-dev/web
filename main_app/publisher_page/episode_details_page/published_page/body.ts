@@ -84,7 +84,6 @@ export class PublishedPage extends EventEmitter {
           ),
         ).body,
       ],
-      [this.premiereTimeInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
     )
       .addBackButton()
@@ -101,8 +100,8 @@ export class PublishedPage extends EventEmitter {
         (response, error) => this.postUnpublish(error),
       )
       .on("handleSecondarySuccess", () => this.emit("back"))
-      .on("secondaryDone", () => this.emit("unpublished"));
-    this.premiereTimeInput.val.validate();
+      .on("secondaryDone", () => this.emit("unpublished"))
+      .addInputs(this.premiereTimeInput.val);
   }
 
   private toLocalISOStringUntilMinutes(date: Date): string {

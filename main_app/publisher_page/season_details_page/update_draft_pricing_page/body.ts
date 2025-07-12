@@ -97,7 +97,6 @@ export class UpdateDraftPricingPage extends EventEmitter {
           ),
         ),
       ],
-      [this.gradeInput.val],
       LOCALIZED_TEXT.updateButtonLabel,
     )
       .addBackButton()
@@ -107,8 +106,8 @@ export class UpdateDraftPricingPage extends EventEmitter {
         (response, error) => this.postUpdate(error),
       )
       .on("handlePrimarySuccess", () => this.emit("back"))
-      .on("primaryDone", () => this.emit("updated"));
-    this.gradeInput.val.validate();
+      .on("primaryDone", () => this.emit("updated"))
+      .addInputs(this.gradeInput.val);
   }
 
   private validateGradeAndPreviewAndTake(value: string): ValidationResult {

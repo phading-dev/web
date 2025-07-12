@@ -376,7 +376,7 @@ export class PaymentPage extends EventEmitter {
       case PaymentProfileState.WITH_FAILED_PAYMENTS:
         return LOCALIZED_TEXT.paymentStatusWarning;
       case PaymentProfileState.SUSPENDED:
-        return `${LOCALIZED_TEXT.paymentStatusSuspended[0]}${ENV_VARS.contactEmail}${LOCALIZED_TEXT.paymentStatusSuspended[1]}`;
+        return `${LOCALIZED_TEXT.paymentStatusSuspended[0]}${ENV_VARS.supportEmail}${LOCALIZED_TEXT.paymentStatusSuspended[1]}`;
     }
   }
 

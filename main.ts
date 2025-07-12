@@ -4,11 +4,6 @@ import { RlHistoryTracker } from "./rl_history_tracker";
 
 async function main(): Promise<void> {
   normalizeBody();
-  let viewPortMeta = document.createElement("meta");
-  viewPortMeta.name = "viewport";
-  viewPortMeta.content = "width=device-width, initial-scale=1";
-  document.head.appendChild(viewPortMeta);
-
   let app = App.create(document.body);
   let historyTracker = RlHistoryTracker.create();
   historyTracker.on("applyRl", (rl) => app.applyRl(rl));

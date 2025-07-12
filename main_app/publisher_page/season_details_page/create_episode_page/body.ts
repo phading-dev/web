@@ -55,7 +55,6 @@ export class CreateEpisodePage extends EventEmitter {
           ),
         ).body,
       ],
-      [this.nameInput.val],
       LOCALIZED_TEXT.createButtonLabel,
     )
       .addBackButton()
@@ -67,8 +66,8 @@ export class CreateEpisodePage extends EventEmitter {
       .on("handlePrimarySuccess", (response) =>
         this.emit("viewEpisode", response.episodeId),
       )
-      .on("primaryDone", () => this.emit("created"));
-    this.nameInput.val.validate();
+      .on("primaryDone", () => this.emit("created"))
+      .addInputs(this.nameInput.val);
   }
 
   private validateNameAndTake(value: string): ValidationResult {

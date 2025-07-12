@@ -47,11 +47,11 @@ export class InputFormPage<
     response?: SecondaryResponse,
     error?: Error,
   ) => string;
+  private inputs = new Set<InputField>();
 
   public constructor(
     customPageStyle: string,
     lines: Array<HTMLElement>,
-    private inputs: Array<InputField>,
     primaryButtonLabel: string,
   ) {
     super();
@@ -82,10 +82,6 @@ export class InputFormPage<
         ),
       ),
     );
-    for (let input of this.inputs) {
-      input.on("validate", () => this.refreshPrimaryButton());
-      input.on("action", () => this.primaryButton.val.click());
-    }
     this.primaryButton.val.addAction(
       () => this.primaryAction(),
       (response, error) => this.postPrimaryAction(response, error),
@@ -118,6 +114,26 @@ export class InputFormPage<
       this.emit("handlePrimarySuccess", response);
     }
     this.emit("primaryDone");
+  }
+
+  public addInputs(...inputs: Array<InputField>): this {
+    for (let input of inputs) {
+      this.inputs.add(input);
+      input
+        .on("refresh", () => this.refreshPrimaryButton())
+        .on("action", () => this.primaryButton.val.click())
+        .validate();
+    }
+    this.refreshPrimaryButton();
+    return this;
+  }
+
+  public removeInputs(...inputs: Array<InputField>): void {
+    for (let input of inputs) {
+      this.inputs.delete(input);
+      input.removeAllListeners();
+    }
+    this.refreshPrimaryButton();
   }
 
   private refreshPrimaryButton(): void {

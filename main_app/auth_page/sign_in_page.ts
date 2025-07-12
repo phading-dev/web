@@ -73,7 +73,6 @@ export class SignInPage extends EventEmitter {
           E.text(LOCALIZED_TEXT.switchToSignUpLink),
         ),
       ],
-      [this.usernameInput.val, this.passwordInput.val],
       LOCALIZED_TEXT.signInButtonLabel,
     )
       .addPrimaryAction(
@@ -83,9 +82,8 @@ export class SignInPage extends EventEmitter {
       .on("handlePrimarySuccess", (response) =>
         this.emit("auth", response.signedSession),
       )
-      .on("primaryDone", () => this.emit("signInDone"));
-    this.usernameInput.val.validate();
-    this.passwordInput.val.validate();
+      .on("primaryDone", () => this.emit("signInDone"))
+      .addInputs(this.usernameInput.val, this.passwordInput.val);
     this.switchToSignUpButton.val.addEventListener("click", () =>
       this.emit("signUp"),
     );

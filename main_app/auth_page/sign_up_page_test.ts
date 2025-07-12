@@ -36,6 +36,9 @@ TEST_RUNNER.run({
           path.join(__dirname, "/sign_up_page_phone_render.png"),
           path.join(__dirname, "/golden/sign_up_page_phone_render.png"),
           path.join(__dirname, "/sign_up_page_phone_render_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
@@ -46,6 +49,9 @@ TEST_RUNNER.run({
           path.join(__dirname, "/sign_up_page_desktop_render.png"),
           path.join(__dirname, "/golden/sign_up_page_desktop_render.png"),
           path.join(__dirname, "/sign_up_page_desktop_render_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
@@ -59,7 +65,7 @@ TEST_RUNNER.run({
         this.cut.repeatPasswordInput.val.dispatchInput();
         this.cut.emailInput.val.value = " me@gmail.com ";
         this.cut.emailInput.val.dispatchInput();
-        this.cut.publisherOption.val.click();
+        this.cut.acceptTermsCheckbox.val.body.click();
 
         // Verify
         await asyncAssertScreenshot(
@@ -69,6 +75,9 @@ TEST_RUNNER.run({
             "/golden/sign_up_page_enter_all_valid_fields.png",
           ),
           path.join(__dirname, "/sign_up_page_enter_all_valid_fields_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Prepare
@@ -95,7 +104,7 @@ TEST_RUNNER.run({
               password: "123123",
               contactEmail: "me@gmail.com",
               recoveryEmail: "me@gmail.com",
-              accountType: AccountType.PUBLISHER,
+              accountType: AccountType.CONSUMER,
             },
             SIGN_UP_REQUEST_BODY,
           ),
@@ -108,6 +117,9 @@ TEST_RUNNER.run({
             "/golden/sign_up_page_username_submit_failed.png",
           ),
           path.join(__dirname, "/sign_up_page_username_submit_failed_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Prepare
@@ -127,6 +139,9 @@ TEST_RUNNER.run({
           path.join(__dirname, "/sign_up_page_username_is_used.png"),
           path.join(__dirname, "/golden/sign_up_page_username_is_used.png"),
           path.join(__dirname, "/sign_up_page_username_is_used_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Prepare
@@ -146,18 +161,15 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) => this.cut.once("auth", resolve));
 
         // Verify
-        assertThat(
-          signedSession,
-          eq("signed_session"),
-          "auth signed session",
-        );
+        assertThat(signedSession, eq("signed_session"), "auth signed session");
       }
       public tearDown() {
         this.cut.remove();
       }
     })(),
     new (class implements TestCase {
-      public name = "InitPubliserType";
+      public name =
+        "InitPubliserType_SwitchToConsumerType_SwitchBack_AllFieldsValid";
       private cut: SignUpPage;
       public async execute() {
         // Prepare
@@ -172,6 +184,9 @@ TEST_RUNNER.run({
           path.join(__dirname, "/sign_up_page_phone_publisher.png"),
           path.join(__dirname, "/golden/sign_up_page_phone_publisher.png"),
           path.join(__dirname, "/sign_up_page_phone_publisher_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
@@ -182,6 +197,55 @@ TEST_RUNNER.run({
           path.join(__dirname, "/sign_up_page_desktop_publisher.png"),
           path.join(__dirname, "/golden/sign_up_page_desktop_publisher.png"),
           path.join(__dirname, "/sign_up_page_desktop_publisher_diff.png"),
+          {
+            fullPage: true,
+          },
+        );
+
+        // Execute
+        this.cut.consumerOption.val.click();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/sign_up_page_desktop_consumer.png"),
+          path.join(__dirname, "/golden/sign_up_page_desktop_consumer.png"),
+          path.join(__dirname, "/sign_up_page_desktop_consumer_diff.png"),
+          {
+            fullPage: true,
+          },
+        );
+
+        // Execute
+        this.cut.publisherOption.val.click();
+        this.cut.naturalNameInput.val.value = " First Second name ";
+        this.cut.naturalNameInput.val.dispatchInput();
+        this.cut.usernameInput.val.value = " my_username ";
+        this.cut.usernameInput.val.dispatchInput();
+        this.cut.passwordInput.val.value = "123123";
+        this.cut.passwordInput.val.dispatchInput();
+        this.cut.repeatPasswordInput.val.value = "123123";
+        this.cut.repeatPasswordInput.val.dispatchInput();
+        this.cut.emailInput.val.value = " me@gmail.com ";
+        this.cut.emailInput.val.dispatchInput();
+        this.cut.acceptPublisherTermsCheckbox.val.body.click();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/sign_up_page_desktop_publisher_all_fields.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/sign_up_page_desktop_publisher_all_fields.png",
+          ),
+          path.join(
+            __dirname,
+            "/sign_up_page_desktop_publisher_all_fields_diff.png",
+          ),
+          {
+            fullPage: true,
+          },
         );
       }
       public tearDown() {
@@ -212,6 +276,9 @@ TEST_RUNNER.run({
             __dirname,
             "/sign_up_page_natural_name_too_long_error_diff.png",
           ),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
@@ -229,6 +296,9 @@ TEST_RUNNER.run({
             __dirname,
             "/sign_up_page_natural_name_missing_error_diff.png",
           ),
+          {
+            fullPage: true,
+          },
         );
       }
       public tearDown() {
@@ -259,6 +329,9 @@ TEST_RUNNER.run({
             __dirname,
             "/sign_up_page_username_too_long_error_diff.png",
           ),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
@@ -273,6 +346,9 @@ TEST_RUNNER.run({
             "/golden/sign_up_page_username_missing_error.png",
           ),
           path.join(__dirname, "/sign_up_page_username_missing_error_diff.png"),
+          {
+            fullPage: true,
+          },
         );
       }
       public tearDown() {
@@ -297,6 +373,9 @@ TEST_RUNNER.run({
           path.join(__dirname, "/sign_up_page_email_too_long_error.png"),
           path.join(__dirname, "/golden/sign_up_page_email_too_long_error.png"),
           path.join(__dirname, "/sign_up_page_email_too_long_error_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
@@ -308,6 +387,9 @@ TEST_RUNNER.run({
           path.join(__dirname, "/sign_up_page_email_missing_error.png"),
           path.join(__dirname, "/golden/sign_up_page_email_missing_error.png"),
           path.join(__dirname, "/sign_up_page_email_missing_error_diff.png"),
+          {
+            fullPage: true,
+          },
         );
       }
       public tearDown() {
@@ -338,6 +420,9 @@ TEST_RUNNER.run({
             __dirname,
             "/sign_up_page_password_too_long_error_diff.png",
           ),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
@@ -352,6 +437,9 @@ TEST_RUNNER.run({
             "/golden/sign_up_page_password_missing_error.png",
           ),
           path.join(__dirname, "/sign_up_page_password_missing_error_diff.png"),
+          {
+            fullPage: true,
+          },
         );
       }
       public tearDown() {
@@ -387,6 +475,9 @@ TEST_RUNNER.run({
             __dirname,
             "/sign_up_page_repeat_password_not_match_error_diff.png",
           ),
+          {
+            fullPage: true,
+          },
         );
       }
       public tearDown() {

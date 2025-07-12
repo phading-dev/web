@@ -121,9 +121,6 @@ TEST_RUNNER.run({
         this.cut.createAccountPage.emailInput.val.value =
           "new.consumer@example.com";
         this.cut.createAccountPage.emailInput.val.dispatchInput();
-        await new Promise<void>((resolve) =>
-          this.cut.createAccountPage.emailInput.val.once("validate", resolve),
-        );
         this.cut.createAccountPage.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.createAccountPage.once("chosen", resolve),

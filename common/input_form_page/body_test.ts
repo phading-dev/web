@@ -3,6 +3,7 @@ import { normalizeBody } from "../normalize_body";
 import { eFormTitle } from "../page_elements";
 import { setDesktopView, setPhoneView, setTabletView } from "../view_port";
 import { InputFormPage } from "./body";
+import { ErrorInput } from "./error_input";
 import { TextInputWithErrorMsg } from "./text_input";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -38,6 +39,7 @@ TEST_RUNNER.run({
             }
           },
         );
+        let errorInput = new ErrorInput("Fake error input");
         let callError: Error;
         let actioned: boolean;
         let response: Response;
@@ -46,28 +48,28 @@ TEST_RUNNER.run({
         this.cut = new InputFormPage<Response>(
           "",
           [eFormTitle("A title"), input.body],
-          [input],
           "Update",
-        ).addPrimaryAction(
-          async () => {
-            actioned = true;
-            if (callError) {
-              throw callError;
-            } else {
-              return response;
-            }
-          },
-          (response, error) => {
-            if (error) {
-              return "Failed to submit";
-            } else if (response.used) {
-              return "Username is used";
-            } else {
-              return "";
-            }
-          },
-        );
-        input.validate();
+        )
+          .addPrimaryAction(
+            async () => {
+              actioned = true;
+              if (callError) {
+                throw callError;
+              } else {
+                return response;
+              }
+            },
+            (response, error) => {
+              if (error) {
+                return "Failed to submit";
+              } else if (response.used) {
+                return "Username is used";
+              } else {
+                return "";
+              }
+            },
+          )
+          .addInputs(input);
         document.body.append(this.cut.body);
 
         // Verify
@@ -87,6 +89,26 @@ TEST_RUNNER.run({
           path.join(__dirname, "/input_form_page_valid.png"),
           path.join(__dirname, "/golden/input_form_page_valid.png"),
           path.join(__dirname, "/input_form_page_valid_diff.png"),
+        );
+
+        // Execute
+        this.cut.addInputs(errorInput);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_error_input.png"),
+          path.join(__dirname, "/golden/input_form_page_error_input.png"),
+          path.join(__dirname, "/input_form_page_error_input_diff.png"),
+        );
+
+        // Execute
+        this.cut.removeInputs(errorInput);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/input_form_page_no_error_input.png"),
+          path.join(__dirname, "/golden/input_form_page_valid.png"),
+          path.join(__dirname, "/input_form_page_no_error_input_diff.png"),
         );
 
         // Prepare
@@ -171,7 +193,6 @@ TEST_RUNNER.run({
         this.cut = new InputFormPage<Response>(
           "",
           [eFormTitle("A title"), input.body],
-          [input],
           "Update",
         )
           .addPrimaryAction(
@@ -196,8 +217,8 @@ TEST_RUNNER.run({
                 return "";
               }
             },
-          );
-        input.validate();
+          )
+          .addInputs(input);
         document.body.append(this.cut.body);
 
         // Verify
@@ -279,10 +300,10 @@ TEST_RUNNER.run({
         this.cut = new InputFormPage<Response>(
           "",
           [eFormTitle("A title"), input.body],
-          [input],
           "Update",
-        ).addBackButton();
-        input.validate();
+        )
+          .addBackButton()
+          .addInputs(input);
         document.body.append(this.cut.body);
 
         // Verify
@@ -330,10 +351,8 @@ TEST_RUNNER.run({
         this.cut = new InputFormPage<Response>(
           "",
           [eFormTitle("A title"), ...inputs.map((input) => input.body)],
-          inputs,
           "Update",
-        );
-        inputs.forEach((input) => input.validate());
+        ).addInputs(...inputs);
         document.body.append(this.cut.body);
 
         // Verify

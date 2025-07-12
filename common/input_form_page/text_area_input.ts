@@ -13,16 +13,14 @@ export class TextAreaInputWithErrorMsg
   public body: HTMLElement;
   protected textAreaInput = new Ref<HTMLTextAreaElement>();
   private errorMsg = new Ref<HTMLDivElement>();
-  private valid: boolean = false;
+  private valid: boolean;
 
   public constructor(
     label: string,
     customStyle: string,
     otherInputAttributes: ElementAttributeMap,
     value: string,
-    private validateAndTakeFn: (
-      value: string,
-    ) => Promise<ValidationResult> | ValidationResult,
+    private validateAndTakeFn: (value: string) => ValidationResult,
   ) {
     super();
     this.body = E.div(
@@ -63,13 +61,20 @@ export class TextAreaInputWithErrorMsg
       ),
     );
 
-    this.textAreaInput.val.addEventListener("input", () => this.validate());
+    this.textAreaInput.val.addEventListener("input", () =>
+      this.validateInput(),
+    );
   }
 
-  public async validate(): Promise<void> {
+  private validateInput(): void {
+    this.validate();
+    this.emit("refresh");
+  }
+
+  public validate(): void {
     this.resetError();
     let value = this.textAreaInput.val.value;
-    let result = await this.validateAndTakeFn(value);
+    let result = this.validateAndTakeFn(value);
     if (result.valid) {
       this.valid = true;
     } else {
@@ -80,7 +85,6 @@ export class TextAreaInputWithErrorMsg
       }
       this.valid = false;
     }
-    this.emit("validate");
   }
 
   private resetError(): void {

@@ -40,8 +40,9 @@ TEST_RUNNER.run({
             }
           },
         );
+        let refreshed = false;
+        this.cut.on("refresh", () => (refreshed = true));
         this.cut.validate();
-        await new Promise<void>((resolve) => this.cut.on("validate", resolve));
         this.followingLine = E.div(
           {
             style: `font-size: 1.4rem; color: black;`,
@@ -56,6 +57,7 @@ TEST_RUNNER.run({
           eq(false),
           "Initial empty input is invalid",
         );
+        assertThat(refreshed, eq(false), "No refresh for initialization");
         await asyncAssertScreenshot(
           path.join(__dirname, "/vertical_text_input_default.png"),
           path.join(__dirname, "/golden/vertical_text_input_default.png"),
@@ -66,10 +68,10 @@ TEST_RUNNER.run({
         // Execute
         this.cut.value = "12345678901";
         this.cut.dispatchInput();
-        await new Promise<void>((resolve) => this.cut.on("validate", resolve));
 
         // Verify
         assertThat(this.cut.isValid, eq(false), "Too long input is invalid");
+        assertThat(refreshed, eq(true), "Refresh after input");
         await asyncAssertScreenshot(
           path.join(__dirname, "/vertical_text_input_with_error.png"),
           path.join(__dirname, "/golden/vertical_text_input_with_error.png"),
@@ -77,13 +79,16 @@ TEST_RUNNER.run({
           { fullPage: true },
         );
 
+        // Prepare
+        refreshed = false;
+
         // Execute
         this.cut.value = "123456";
         this.cut.dispatchInput();
-        await new Promise<void>((resolve) => this.cut.on("validate", resolve));
 
         // Verify
         assertThat(this.cut.isValid, eq(true), "valid input");
+        assertThat(refreshed, eq(true), "Refresh after input 2");
         await asyncAssertScreenshot(
           path.join(__dirname, "/vertical_text_input_valid.png"),
           path.join(__dirname, "/golden/vertical_text_input_valid.png"),
@@ -91,13 +96,16 @@ TEST_RUNNER.run({
           { fullPage: true },
         );
 
+        // Prepare
+        refreshed = false;
+
         // Execute
         this.cut.value = "";
         this.cut.dispatchInput();
-        await new Promise<void>((resolve) => this.cut.on("validate", resolve));
 
         // Verify
         assertThat(this.cut.isValid, eq(false), "empty input again");
+        assertThat(refreshed, eq(true), "Refresh after input 3");
         await asyncAssertScreenshot(
           path.join(
             __dirname,
@@ -129,6 +137,7 @@ TEST_RUNNER.run({
             return { valid: true };
           },
         );
+        this.cut.validate();
         document.body.append(this.cut.body);
         let submitted = false;
         this.cut.on("action", () => (submitted = true));

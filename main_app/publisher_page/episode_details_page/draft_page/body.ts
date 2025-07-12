@@ -95,10 +95,6 @@ export class DraftPage extends EventEmitter {
           ),
         ).body,
       ],
-      [
-        ...(this.errorInput.val ? [this.errorInput.val] : []),
-        this.premiereTimeInput.val,
-      ],
       LOCALIZED_TEXT.publishButtonLabel,
     )
       .addBackButton()
@@ -115,9 +111,11 @@ export class DraftPage extends EventEmitter {
         (response, error) => this.postDelete(error),
       )
       .on("handleSecondarySuccess", () => this.emit("delete"))
-      .on("secondaryDone", () => this.emit("deleted"));
-    this.errorInput.val?.validate();
-    this.premiereTimeInput.val.validate();
+      .on("secondaryDone", () => this.emit("deleted"))
+      .addInputs(
+        ...(this.errorInput.val ? [this.errorInput.val] : []),
+        this.premiereTimeInput.val,
+      );
   }
 
   private validatePremiereTimeAndTake(value: string): ValidationResult {
