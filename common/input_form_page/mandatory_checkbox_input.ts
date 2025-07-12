@@ -23,7 +23,7 @@ export class MandatoryCheckboxInput extends EventEmitter implements InputField {
         this.boxIcon,
         {
           class: "checkbox-input-box",
-          style: `flex: 0 0 auto; width: ${ICON_M}rem; height: ${ICON_M}rem; padding: ${(LINE_HEIGHT_M - ICON_M) / 2}rem;`,
+          style: `flex: 0 0 auto; width: ${ICON_M}rem; height: ${ICON_M}rem; padding: ${(LINE_HEIGHT_M - ICON_M) / 2}rem 0;`,
         },
         createBoxIcon(SCHEME.neutral1),
       ),
@@ -31,7 +31,7 @@ export class MandatoryCheckboxInput extends EventEmitter implements InputField {
         this.checkedIcon,
         {
           class: "checkbox-input-checked",
-          style: `flex: 0 0 auto; width: ${ICON_M}rem; height: ${ICON_M}rem; padding: ${(LINE_HEIGHT_M - ICON_M) / 2}rem;`,
+          style: `flex: 0 0 auto; width: ${ICON_M}rem; height: ${ICON_M}rem; padding: ${(LINE_HEIGHT_M - ICON_M) / 2}rem 0;`,
         },
         createCheckedBoxIcon(SCHEME.neutral1),
       ),
