@@ -174,9 +174,8 @@ export class PlayPage extends EventEmitter {
     if (this.removed) {
       return;
     }
-
+    document.title = `${season.name} - ${episode.name}`;
     this.settings = settings;
-
     this.body.append(
       E.divRef(
         this.playerCanvas,
@@ -674,6 +673,7 @@ export class PlayPage extends EventEmitter {
 
   public remove(): void {
     this.removed = true;
+    document.title = LOCALIZED_TEXT.brandTitle;
     this.body.remove();
     this.stopPlaying();
     this.player.val?.destroy();

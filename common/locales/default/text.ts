@@ -177,7 +177,7 @@ export default class Text {
   get createAccountError() {
     return `Failed to create a new profile. Please try again later.`;
   }
-  get chooseAccount() {
+  get chooseAccountTitle() {
     return `Choose a profile`;
   }
   get accountNotFoundError() {
@@ -261,7 +261,7 @@ export default class Text {
   get uploadAvatarError() {
     return `Failed to upload your avatar. Please try again later.`;
   }
-  get updateAccountInfo() {
+  get updateAccountInfoTitle() {
     return `Update profile info`;
   }
   get accountDescriptionTooLongError() {
@@ -498,6 +498,9 @@ export default class Text {
   }
   get newPricingStarting() {
     return [` - New rate: `, ` starting in `, ` days.`, ` day.`];
+  }
+  get brandTitle() {
+    return `Secount - Make every second count`;
   }
   get continueWatchingTitle() {
     return `Continue watching`;

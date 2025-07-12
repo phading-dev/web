@@ -49,7 +49,7 @@ export class ListAccountsPage extends EventEmitter {
           class: "list-accounts-title",
           style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; padding-bottom: 3rem;`,
         },
-        E.text(LOCALIZED_TEXT.chooseAccount),
+        E.text(LOCALIZED_TEXT.chooseAccountTitle),
       ),
       E.div(
         {

@@ -45,7 +45,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
     this.inputFormPage = new InputFormPage(
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       [
-        eFormTitle(LOCALIZED_TEXT.updateAccountInfo),
+        eFormTitle(LOCALIZED_TEXT.updateAccountInfoTitle),
         assign(
           this.naturalNameInput,
           new TextInputWithErrorMsg(

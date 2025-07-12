@@ -142,6 +142,7 @@ export class SeasonDetailsPage extends EventEmitter {
   private individualRating: number;
   private prevIndexCursor: number;
   private nextIndexCursor: number;
+  private removed = false;
 
   public constructor(
     private window: Window,
@@ -184,6 +185,10 @@ export class SeasonDetailsPage extends EventEmitter {
         }),
       ),
     ]);
+    if (this.removed) {
+      return;
+    }
+    document.title = seasonDetails.name;
     this.seasonDetails = seasonDetails;
     this.prevIndexCursor = prevIndexCursor;
     this.nextIndexCursor = nextIndexCursor;
@@ -957,6 +962,8 @@ export class SeasonDetailsPage extends EventEmitter {
   }
 
   public remove(): void {
+    this.removed = true;
+    document.title = LOCALIZED_TEXT.brandTitle;
     this.body.remove();
     this.removeAllListeners();
   }

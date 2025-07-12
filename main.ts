@@ -1,9 +1,11 @@
 import { App } from "./app";
+import { LOCALIZED_TEXT } from "./common/locales/localized_text";
 import { normalizeBody } from "./common/normalize_body";
 import { RlHistoryTracker } from "./rl_history_tracker";
 
 async function main(): Promise<void> {
   normalizeBody();
+  document.title = LOCALIZED_TEXT.brandTitle;
   let app = App.create(document.body);
   let historyTracker = RlHistoryTracker.create();
   historyTracker.on("applyRl", (rl) => app.applyRl(rl));
