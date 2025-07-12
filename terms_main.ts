@@ -75,9 +75,9 @@ function eBody(): HTMLElement {
         ),
       ),
       eLi(
-        eBoldText(`Recurring Billing:`),
+        eBoldText(`Monthly Billing:`),
         eNormalText(
-          ` All fees for a billing period, such as a calendar month, will be aggregated and charged to your payment method on file at the end of a billing period. We use a third-party payment processor, Stripe, to handle all payments.`,
+          ` All fees for a calendar month will be aggregated and charged to your payment method on file at the beginning of the following month. We use a third-party payment processor, Stripe, to handle all payments.`,
         ),
       ),
       eLi(
