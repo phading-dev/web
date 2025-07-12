@@ -171,6 +171,9 @@ export default class Text {
   get createAccountTitle() {
     return `Create a new profile`;
   }
+  get acceptPublisherTermsOnly() {
+    return [`I have read and agree to the `, `Publisher Agreement`, `.`];
+  }
   get createAccountButtonLabel() {
     return `Create`;
   }

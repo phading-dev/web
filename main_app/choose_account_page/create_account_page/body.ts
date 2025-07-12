@@ -1,6 +1,8 @@
 import EventEmitter = require("events");
+import { CLICKABLE_TEXT_STYLE } from "../../../common/button_styles";
 import { InputFormPage } from "../../../common/input_form_page/body";
 import { ValidationResult } from "../../../common/input_form_page/input_field";
+import { MandatoryCheckboxInput } from "../../../common/input_form_page/mandatory_checkbox_input";
 import { RadioOptionInput } from "../../../common/input_form_page/option_input";
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
@@ -17,6 +19,7 @@ import {
   CreateAccountRequestBody,
   CreateAccountResponse,
 } from "@phading/user_service_interface/web/self/interface";
+import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
@@ -36,6 +39,7 @@ export class CreateAccountPage extends EventEmitter {
   public consumerOption = new Ref<OptionPill<AccountType>>();
   public publisherOption = new Ref<OptionPill<AccountType>>();
   private accountTypeInput = new Ref<RadioOptionInput<AccountType>>();
+  public acceptPublisherTermsCheckbox = new Ref<MandatoryCheckboxInput>();
   public inputFormPage: InputFormPage<CreateAccountResponse>;
   private request: CreateAccountRequestBody = {};
 
@@ -87,13 +91,26 @@ export class CreateAccountPage extends EventEmitter {
                 new OptionPill(
                   LOCALIZED_TEXT.userTypePublisherLabel,
                   AccountType.PUBLISHER,
-                  "",
                 ),
               ),
             ],
-            (value) => {
-              this.request.accountType = value;
-            },
+            (value) => this.changeAccountType(value),
+          ),
+        ).body,
+        assign(
+          this.acceptPublisherTermsCheckbox,
+          new MandatoryCheckboxInput(
+            "",
+            E.text(LOCALIZED_TEXT.acceptPublisherTermsOnly[0]),
+            E.a(
+              {
+                href: "/publisher",
+                target: "_blank",
+                style: CLICKABLE_TEXT_STYLE,
+              },
+              E.text(LOCALIZED_TEXT.acceptPublisherTermsOnly[1]),
+            ),
+            E.text(LOCALIZED_TEXT.acceptPublisherTermsOnly[2]),
           ),
         ).body,
       ],
@@ -144,6 +161,17 @@ export class CreateAccountPage extends EventEmitter {
     } else {
       this.request.contactEmail = value;
       return { valid: true };
+    }
+  }
+
+  private changeAccountType(value: AccountType): void {
+    this.request.accountType = value;
+    if (value === AccountType.CONSUMER) {
+      this.acceptPublisherTermsCheckbox.val.hide();
+      this.inputFormPage.removeInputs(this.acceptPublisherTermsCheckbox.val);
+    } else {
+      this.acceptPublisherTermsCheckbox.val.show();
+      this.inputFormPage.addInputs(this.acceptPublisherTermsCheckbox.val);
     }
   }
 

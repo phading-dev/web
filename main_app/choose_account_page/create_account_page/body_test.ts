@@ -196,6 +196,7 @@ TEST_RUNNER.run({
         this.cut.naturalNameInput.val.dispatchInput();
         this.cut.emailInput.val.value = "me@gmail.com";
         this.cut.emailInput.val.dispatchInput();
+        this.cut.acceptPublisherTermsCheckbox.val.click();
         this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) => this.cut.once("chosen", resolve));
 
@@ -218,6 +219,11 @@ TEST_RUNNER.run({
           "request body",
         );
         assertThat(signedSession, eq("session 1"), "signed session");
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/create_account_page_publisher_created.png"),
+          path.join(__dirname, "/golden/create_account_page_publisher_created.png"),
+          path.join(__dirname, "/create_account_page_publisher_created_diff.png"),
+        );
       }
       public tearDown() {
         this.cut.remove();
