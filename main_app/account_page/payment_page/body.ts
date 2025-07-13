@@ -148,7 +148,8 @@ export class PaymentPage extends EventEmitter {
           E.text(this.getStatusText(nowDate, profile)),
         ),
       ),
-      ...(profile.state === PaymentProfileState.HEALTHY
+      ...(profile.state === PaymentProfileState.HEALTHY &&
+      profile.balanceAmount !== 0
         ? [
             E.div({
               style: `flex: 0 0 auto; height: 1rem;`,

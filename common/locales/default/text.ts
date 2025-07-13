@@ -343,7 +343,7 @@ export default class Text {
     return `You have credits to be used for your next payment.`;
   }
   get paymentDebitExplanation() {
-    return `It will be added to your next payment.`;
+    return `It will be carried over to your next payment.`;
   }
   get paymentMethodTitle() {
     return `Payment method`;
