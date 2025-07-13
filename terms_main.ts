@@ -196,7 +196,17 @@ function eBody(): HTMLElement {
         ),
       ),
     ),
-    eHeader2(`6. Account Suspension and Termination`),
+    eHeader2(`6. Term, Suspension, and Termination`),
+    eParagraph(
+      eNormalText(
+        `These Terms begin on the date you create your account and continue until your account is terminated by either you or us as described below.`,
+      ),
+    ),
+    eParagraph(
+      eNormalText(
+        `You may terminate your agreement to these Terms at any time by requesting the deletion of your account. To do so, you must send a deletion request to ${ENV_VARS.supportEmail} from the email address associated with your account. Please note that terminating your account is an irreversible action that will result in the permanent deletion of all associated Profiles and their Content.`,
+      ),
+    ),
     eParagraph(
       eNormalText(
         `We may suspend or terminate your account or any Profile associated with your account at our sole discretion if:`,
@@ -210,10 +220,20 @@ function eBody(): HTMLElement {
       ),
       eLi(
         eNormalText(
-          `Your account or a Profile is associated with spam, scam, or other fraudulent activities.`,
+          `Your account or a Profile is associated with spam, scam, fraudulent, or illegal activities.`,
+        ),
+      ),
+      eLi(
+        eNormalText(
+          `Your use of the Platform poses a security or operational risk to the Platform or to other users.`,
         ),
       ),
       eLi(eNormalText(`We are required to do so by law.`)),
+    ),
+    eParagraph(
+      eNormalText(
+        `Upon the termination of your account for any reason, your right to access and use the Platform will immediately cease. All provisions of these Terms that by their nature should survive termination shall survive, including, without limitation, accrued payment obligations, ownership provisions, warranty disclaimers, indemnity, and limitations of liability.`,
+      ),
     ),
     eHeader2(`7. Intellectual Property`),
     eUl(
