@@ -3,7 +3,6 @@ import {
   BlockingButton,
   FilledBlockingButton,
 } from "../../../common/blocking_button";
-import { CLICKABLE_TEXT_STYLE } from "../../../common/button_styles";
 import { SCHEME } from "../../../common/color_scheme";
 import { DateRangeInput, DateType } from "../../../common/date_range_input";
 import { formatMoney } from "../../../common/formatter/price";
@@ -61,8 +60,6 @@ export class PaymentPage extends EventEmitter {
   public paymentStatusContent = new Ref<HTMLDivElement>();
   public retryPaymentsButton = new Ref<BlockingButton>();
   public retryPaymentsErrorMessage = new Ref<HTMLDivElement>();
-  public initCreditCaveatExpandButton = new Ref<HTMLDivElement>();
-  private initCreditCaveat = new Ref<HTMLDivElement>();
   public addPaymentMethodButton = new Ref<
     BlockingButton<CreateStripeSessionToAddPaymentMethodResponse>
   >();
@@ -253,21 +250,12 @@ export class PaymentPage extends EventEmitter {
                   `${LOCALIZED_TEXT.initCreditAvailable[0]}${formatMoney(ENV_VARS.initCreditAmount, ENV_VARS.defaultCurrency)}${LOCALIZED_TEXT.initCreditAvailable[1]} `,
                 ),
               ),
-              E.divRef(
-                this.initCreditCaveatExpandButton,
-                {
-                  class: "payment-page-init-credit-caveat-expand-button",
-                  style: `display: inline; ${CLICKABLE_TEXT_STYLE} font-size: ${FONT_M}rem;`,
-                },
-                E.text("*"),
-              ),
-              E.divRef(
-                this.initCreditCaveat,
+              E.div(
                 {
                   class: "payment-page-init-credit-caveat",
-                  style: `display: none; font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+                  style: `display: inline; font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
                 },
-                E.text(` ${LOCALIZED_TEXT.initCreditCaveat}`),
+                E.text(` (${LOCALIZED_TEXT.initCreditCaveat})`),
               ),
             ),
             E.div({
@@ -344,9 +332,6 @@ export class PaymentPage extends EventEmitter {
       );
     }
 
-    this.initCreditCaveatExpandButton.val?.addEventListener("click", () =>
-      this.expandInitCreditCaveat(),
-    );
     this.addPaymentMethodButton.val.addAction(
       async () => this.startStripeSession(),
       (response, error) => this.postStartStripeSession(response, error),
@@ -476,10 +461,6 @@ export class PaymentPage extends EventEmitter {
         LOCALIZED_TEXT.paymentStatusRetryingPayments;
     }
     this.emit("retried");
-  }
-
-  private expandInitCreditCaveat(): void {
-    this.initCreditCaveat.val.style.display = "inline";
   }
 
   private startStripeSession(): Promise<CreateStripeSessionToAddPaymentMethodResponse> {

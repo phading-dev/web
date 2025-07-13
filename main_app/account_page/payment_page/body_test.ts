@@ -1,10 +1,7 @@
 import "../../../dev/env";
 import path = require("path");
 import { normalizeBody } from "../../../common/normalize_body";
-import {
-  setPhoneView,
-  setTabletView,
-} from "../../../common/view_port";
+import { setPhoneView, setTabletView } from "../../../common/view_port";
 import { PaymentPage } from "./body";
 import {
   CREATE_STRIPE_SESSION_TO_ADD_PAYMENT_METHOD,
@@ -242,40 +239,21 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.initCreditCaveatExpandButton.val.click();
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/payment_page_with_credit_balance_and_init_credit_caveat.png",
-          ),
-          path.join(
-            __dirname,
-            "/golden/payment_page_with_credit_balance_and_init_credit_caveat.png",
-          ),
-          path.join(
-            __dirname,
-            "/payment_page_with_credit_balance_and_init_credit_caveat_diff.png",
-          ),
-        );
-
-        // Execute
         await setTabletView();
 
         // Verify
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/payment_page_with_credit_balance_and_init_credit_caveat_tablet.png",
+            "/payment_page_with_credit_balance_and_can_claim_init_credit_tablet.png",
           ),
           path.join(
             __dirname,
-            "/golden/payment_page_with_credit_balance_and_init_credit_caveat_tablet.png",
+            "/golden/payment_page_with_credit_balance_and_can_claim_init_credit_tablet.png",
           ),
           path.join(
             __dirname,
-            "/payment_page_with_credit_balance_and_init_credit_caveat_tablet_diff.png",
+            "/payment_page_with_credit_balance_and_can_claim_init_credit_tablet_diff.png",
           ),
         );
       }
@@ -559,14 +537,8 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/payment_page_suspended.png"),
-          path.join(
-            __dirname,
-            "/golden/payment_page_suspended.png",
-          ),
-          path.join(
-            __dirname,
-            "/payment_page_suspended_diff.png",
-          ),
+          path.join(__dirname, "/golden/payment_page_suspended.png"),
+          path.join(__dirname, "/payment_page_suspended_diff.png"),
         );
       }
       public async tearDown() {

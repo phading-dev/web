@@ -44,13 +44,13 @@ function eBody(): HTMLElement {
       eLi(
         eBoldText(`Registration:`),
         eNormalText(
-          ` You must create an account to use most features of the Platform. You agree to provide accurate, current, and complete information during the registration process.`,
+          ` You must create an account to use most features of the Platform. You agree to provide accurate, current, and complete information during the registration process. Your account may allow you to create and manage multiple profiles. Where applicable, these Terms apply to each profile.`,
         ),
       ),
       eLi(
         eBoldText(`Account Security:`),
         eNormalText(
-          ` You are responsible for safeguarding your password and for all activities that occur under your account. You must notify us immediately at ${ENV_VARS.supportEmail} of any unauthorized use of your account.`,
+          ` You are responsible for safeguarding your password and for all activities that occur under your account and its associated profiles. You must notify us immediately at ${ENV_VARS.supportEmail} of any unauthorized use of your account.`,
         ),
       ),
       eLi(
@@ -99,7 +99,31 @@ function eBody(): HTMLElement {
       eLi(
         eBoldText(`Failed Payments:`),
         eNormalText(
-          ` If your payment fails, your account will be placed in a grace period and you will be notified. If the outstanding balance is not settled within ten (10) days of the failed invoice, your account will be suspended.`,
+          ` If your payment fails, your account will be placed in a grace period and you will be notified. If the outstanding balance is not settled within ten (10) days of the failed invoice, we reserve the right to suspend the Profile(s) that incurred the charges. We may also, at our sole discretion, suspend your entire account.`,
+        ),
+      ),
+      eLi(
+        eBoldText(`Promotional Credits:`),
+        eNormalText(
+          ` We may, in our sole discretion, offer promotional credits. A one-time credit may be offered when a valid payment method is added to a profile for the first time. To be eligible, the payment method must not have been previously associated with any other Secount account or profile.`,
+        ),
+        eUl(
+          eLi(
+            eBoldText(`One-Time Offer:`),
+            eNormalText(` This credit may be claimed only once per profile.`),
+          ),
+          eLi(
+            eBoldText(`No Cash Value:`),
+            eNormalText(
+              ` Promotional credits have no cash value, are non-transferable, and can only be used to offset Viewing Fees on the Platform.`,
+            ),
+          ),
+          eLi(
+            eBoldText(`Discretionary Offer:`),
+            eNormalText(
+              `  The availability and amount of any promotional credit are subject to change at any time without notice. We reserve the right to modify, suspend, or terminate this promotional offer at our sole discretion. Any unused credits will be forfeited upon account suspension or termination.`,
+            ),
+          ),
         ),
       ),
     ),
@@ -165,7 +189,7 @@ function eBody(): HTMLElement {
           ),
           eLi(
             eNormalText(
-              `Temporary suspension of your account or specific privileges (like uploading).`,
+              `Temporary suspension of your account, a specific Profile, or specific privileges (like uploading).`,
             ),
           ),
           eLi(eNormalText(`Permanent termination of your account.`)),
@@ -175,7 +199,7 @@ function eBody(): HTMLElement {
     eHeader2(`6. Account Suspension and Termination`),
     eParagraph(
       eNormalText(
-        `We may suspend or terminate your account at our sole discretion if:`,
+        `We may suspend or terminate your account or any Profile associated with your account at our sole discretion if:`,
       ),
     ),
     eUl(
@@ -186,7 +210,7 @@ function eBody(): HTMLElement {
       ),
       eLi(
         eNormalText(
-          `Your account is associated with spam, scam, or other fraudulent activities.`,
+          `Your account or a Profile is associated with spam, scam, or other fraudulent activities.`,
         ),
       ),
       eLi(eNormalText(`We are required to do so by law.`)),

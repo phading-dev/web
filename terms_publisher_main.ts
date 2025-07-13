@@ -10,6 +10,7 @@ import {
   eUl,
 } from "./common/document_elements";
 import { normalizeBody } from "./common/normalize_body";
+import { ENV_VARS } from "./env_vars";
 
 export function eBody(): HTMLElement {
   document.title = `Secount - Publisher Agreement`;
@@ -18,12 +19,12 @@ export function eBody(): HTMLElement {
     eParagraph(eBoldText(`Effective Date:`), eNormalText(` July 8, 2025`)),
     eParagraph(
       eNormalText(
-        `This Publisher Agreement ("Agreement") is a binding legal document between you ("Publisher," "you") and Ykuyo, Inc. ("Ykuyo," "we," "us," or "our"). This Agreement governs your use of the Secount platform ("Platform") to upload, manage, and monetize your video content ("Content").`,
+        `This Publisher Agreement ("Agreement") is a binding legal document between you and Ykuyo, Inc. ("Ykuyo," "we," "us," or "our"). This Agreement governs your use of a specific Publisher Profile ("Profile") on the Secount platform ("Platform") to upload, manage, and monetize your video content ("Content"). The terms "Publisher" and "you" refer to the individual or entity operating this specific Profile.`,
       ),
     ),
     eParagraph(
       eNormalText(
-        `By uploading Content to the Platform, you agree to this Agreement and the Secount Terms of Service.`,
+        `By creating a Profile, you agree to this Agreement and the Secount Terms of Service for this Profile.`,
       ),
     ),
     eHeader2(`1. Relationship of Parties`),
@@ -35,19 +36,19 @@ export function eBody(): HTMLElement {
     eHeader2(`2. Content License Grant`),
     eUl(
       eLi(
-        eBoldText(`Ownership: `),
-        eNormalText(`You retain full ownership of your Content.`),
+        eBoldText(`Ownership:`),
+        eNormalText(` You retain full ownership of your Content.`),
       ),
       eLi(
-        eBoldText(`License to Ykuyo: `),
+        eBoldText(`License to Ykuyo:`),
         eNormalText(
-          `By uploading Content to the Platform, you grant Ykuyo, Inc. a worldwide, non-exclusive, royalty-free, sublicensable, and transferable license to use, reproduce, distribute, display, perform, and prepare derivative works of your Content in connection with the Platform's services. This license is for the limited purpose of operating, developing, providing, and improving the Platform, as well as for researching, developing, and marketing and promoting the Platform. This includes streaming your Content to Viewers and processing it for different devices and formats.`,
+          ` By uploading Content to the Platform, you grant Ykuyo, Inc. a worldwide, non-exclusive, royalty-free, sublicensable, and transferable license to use, reproduce, distribute, display, perform, and prepare derivative works of your Content in connection with the Platform's services. This license is for the limited purpose of operating, developing, providing, and improving the Platform, as well as for researching, developing, and marketing and promoting the Platform. This includes streaming your Content to Viewers and processing it for different devices and formats.`,
         ),
       ),
       eLi(
-        eBoldText(`Termination of License: `),
+        eBoldText(`Termination of License:`),
         eNormalText(
-          `This license ends when you or Ykuyo, Inc. remove your Content from the Platform.`,
+          ` This license ends when you or Ykuyo, Inc. remove your Content from the Platform.`,
         ),
       ),
     ),
@@ -78,15 +79,15 @@ export function eBody(): HTMLElement {
     eHeader2(`4. Monetization and Revenue`),
     eUl(
       eLi(
-        eBoldText(`Revenue Share: `),
+        eBoldText(`Revenue Share:`),
         eNormalText(
-          `For each video you monetize on the Platform, you are entitled to a percentage of the Gross Revenue, which shall be referred to as the "Publisher Revenue Share." Gross Revenue is defined as the total fees collected from Viewers for watching your Content, excluding any applicable taxes.`,
+          ` For each video you monetize on the Platform, you are entitled to a percentage of the Gross Revenue, which shall be referred to as the "Publisher Revenue Share." Gross Revenue is defined as the total fees collected from Viewers for watching your Content, excluding any applicable taxes.`,
         ),
       ),
       eLi(
-        eBoldText(`Current Rates: `),
+        eBoldText(`Current Rates:`),
         eNormalText(
-          `The specific percentage for the current Publisher Revenue Share is detailed on our `,
+          ` The specific percentage for the current Publisher Revenue Share is detailed on our `,
         ),
         eLink(`Pricing Page`, `/pricing`),
         eNormalText(
@@ -94,9 +95,9 @@ export function eBody(): HTMLElement {
         ),
       ),
       eLi(
-        eBoldText(`Other Fees: `),
+        eBoldText(`Other Fees:`),
         eNormalText(
-          `You acknowledge and agree that Ykuyo, Inc. may charge separate fees for certain services, such as video storage, uploading, and processing. These fees, which are separate from the Revenue Share, will be clearly communicated to you at the time of the action and/or listed on our `,
+          ` You acknowledge and agree that Ykuyo, Inc. may charge separate fees for certain services, such as video storage, uploading, and processing. These fees, which are separate from the Revenue Share, will be clearly communicated to you at the time of the action and/or listed on our `,
         ),
         eLink(`Pricing Page`, `/pricing`),
         eNormalText(
@@ -104,9 +105,9 @@ export function eBody(): HTMLElement {
         ),
       ),
       eLi(
-        eBoldText(`Price changes: `),
+        eBoldText(`Price changes:`),
         eNormalText(
-          `We may update our Revenue Share rates and service fees from time to time by updating our `,
+          ` We may update our Revenue Share rates and service fees from time to time by updating our `,
         ),
         eLink(`Pricing Page`, `/pricing`),
         eNormalText(
@@ -114,36 +115,56 @@ export function eBody(): HTMLElement {
         ),
       ),
       eLi(
-        eBoldText(`Payments Due: `),
+        eBoldText(`Payments Due:`),
         eNormalText(
-          `In the event that your accrued Other Fees exceed your Publisher Revenue Share for any given billing period, you will have a negative balance. We will issue an invoice or charge your payment method on file for the amount due. If the payment fails or is otherwise not settled, your account will be suspended if the outstanding balance is not paid within ten (10) days of the failed payment.`,
+          ` In the event that your accrued Other Fees exceed your Publisher Revenue Share for any given billing period, you will have a negative balance. We will issue an invoice or charge your payment method on file for the amount due. If the payment fails or is otherwise not settled within ten (10) days of the failed payment, we reserve the right to suspend the Profile with the outstanding balance. We may also, at our sole discretion, suspend your entire account.`,
+        ),
+      ),
+      eLi(
+        eBoldText(`Forfeiture of Earnings upon Suspension or Termination:`),
+        eNormalText(
+          `We reserve the right to withhold payments from your Profile during any investigation into a potential breach of our terms. If your Profile is suspended or terminated due to a breach of this Agreement or our Terms of Service, you may be required to forfeit earnings as follows:`,
+        ),
+        eUl(
+          eLi(
+            eBoldText(`Earnings from Violating Content:`),
+            eNormalText(
+              ` We reserve the right to forfeit any portion of your earnings that was generated directly from Content that violates our policies (including, but not limited to, copyright infringement, prohibited content, or engagement fraud).`,
+            ),
+          ),
+          eLi(
+            eBoldText(`Forfeiture for Severe Breaches:`),
+            eNormalText(
+              ` In cases of severe or fraudulent breaches of this Agreement—including but not limited to activities intended to defraud Ykuyo, Inc. or other users, or the posting of illegal content—we reserve the right, at our sole discretion, to suspend your Profile and forfeit the entire outstanding earnings balance associated with your Profile.`,
+            ),
+          ),
         ),
       ),
     ),
     eHeader2(`5. Payouts`),
     eUl(
       eLi(
-        eBoldText(`Payouts & Stripe Requirement: `),
+        eBoldText(`Payouts & Stripe Requirement:`),
         eNormalText(
-          `Publisher payouts will be processed monthly. To receive a payout, you must have a valid Stripe account connected to your Secount account and be located in a country supported by Stripe for payouts.`,
+          ` Publisher payouts will be processed monthly. To receive a payout for this Profile, you must have a valid Stripe account connected to this Profile and be located in a country supported by Stripe for payouts.`,
         ),
       ),
       eLi(
-        eBoldText(`Publisher's Responsibility: `),
+        eBoldText(`Publisher's Responsibility:`),
         eNormalText(
-          `It is your sole responsibility to maintain a valid and active payout method, to ensure your contact information is up to date, and to comply with all of Stripe's terms and policies.`,
+          ` It is your sole responsibility to establish and maintain a valid and active payout method for each of your Publisher Profiles, to ensure your contact information is up to date, and to comply with all of Stripe's terms and policies.`,
         ),
       ),
       eLi(
-        eBoldText(`Dormant Accounts and Unclaimed Property: `),
+        eBoldText(`Dormant Accounts and Unclaimed Property:`),
         eNormalText(
-          `If your account becomes dormant and we are unable to process payouts to you for any reason (e.g., an invalid Stripe account, lack of contact), we will hold your accumulated earnings (after our fees) on your behalf. If your account remains dormant and we cannot establish contact with you for a period of time (the "Dormancy Period"), we will handle the funds in accordance with our legal obligations under applicable state unclaimed property and escheat laws. This may require us to report and remit the funds to the governing state authority. You will be notified via your last known email address before any such action is taken, as required by law. We recommend you claim all earnings within three (3) years of them being credited to your account to avoid this process.`,
+          ` If a Profile becomes dormant and we are unable to process payouts for it for any reason (e.g., an invalid or disconnected Stripe account, lack of contact), we will hold the Profile's accumulated earnings (after our fees) on your behalf. If the Profile remains dormant and we cannot establish contact with you for a period of time (the "Dormancy Period"), we will handle the funds in accordance with our legal obligations under applicable state unclaimed property and escheat laws. This may require us to report and remit the funds to the governing state authority. You will be notified via your last known email address before any such action is taken, as required by law. We recommend you claim all earnings within three (3) years of them being credited to your Profile to avoid this process.`,
         ),
       ),
       eLi(
-        eBoldText(`Taxes: `),
+        eBoldText(`Taxes:`),
         eNormalText(
-          `You are solely responsible for calculating and paying any and all taxes owed on the income you receive from the Platform. Ykuyo, Inc. is not responsible for withholding taxes on your behalf. Our payment processor, Stripe, may provide you with tax documentation (such as a 1099 form) as required by law.`,
+          ` You are solely responsible for calculating and paying any and all taxes owed on the income you receive from each Profile. Ykuyo, Inc. is not responsible for withholding taxes on your behalf. Our payment processor, Stripe, may provide you with tax documentation (such as a 1099 form) as required by law based on the information provided for each Profile.`,
         ),
       ),
     ),
@@ -156,7 +177,17 @@ export function eBody(): HTMLElement {
     eHeader2(`7. Term and Termination`),
     eParagraph(
       eNormalText(
-        `This Agreement begins when you first upload Content to the Platform and continues until terminated. You may terminate this Agreement by removing all of your Content from the Platform. We may terminate this Agreement and remove your Content if you breach any of its terms.`,
+        `This Agreement applies to the specific Publisher Profile for which it was accepted. It begins when the Profile is created and continues until terminated.`,
+      ),
+    ),
+    eParagraph(
+      eNormalText(
+        `To terminate this Agreement for this Profile, you must submit a deletion request by sending an email to ${ENV_VARS.supportEmail}. Termination will be effective once we have processed your deletion request.`,
+      ),
+    ),
+    eParagraph(
+      eNormalText(
+        `We may also terminate this Agreement for this Profile if you breach any of its terms. A severe breach related to one Profile may, at our sole discretion, result in the termination of your main user account and all associated Publisher Profiles.`,
       ),
     ),
     eParagraph(
