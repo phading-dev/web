@@ -11,12 +11,17 @@ import {
   LIST_PAYMENTS,
   LIST_PAYMENTS_REQUEST_BODY,
   ListPaymentsResponse,
+  REACTIVATE_PAYMENT_PROFILE,
   RETRY_FAILED_PAYMENTS,
+  ReactivatePaymentProfileResponse,
   RetryFailedPaymentsResponse,
 } from "@phading/commerce_service_interface/web/payment/interface";
 import { PaymentState } from "@phading/commerce_service_interface/web/payment/payment";
 import { CardBrand } from "@phading/commerce_service_interface/web/payment/payment_method_masked";
-import { PaymentProfileState } from "@phading/commerce_service_interface/web/payment/payment_profile";
+import {
+  PaymentProfileState,
+  PaymentsOverallState,
+} from "@phading/commerce_service_interface/web/payment/payment_profile";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -41,7 +46,8 @@ TEST_RUNNER.run({
               case GET_PAYMENT_PROFILE_INFO:
                 let response: GetPaymentProfileInfoResponse = {
                   paymentProfile: {
-                    state: PaymentProfileState.HEALTHY,
+                    profileState: PaymentProfileState.HEALTHY,
+                    paymentsOverallState: PaymentsOverallState.ALL_PAID,
                     balanceAmount: 0,
                     balanceCurrency: "USD",
                     canClaimInitCredit: false,
@@ -194,7 +200,8 @@ TEST_RUNNER.run({
               case GET_PAYMENT_PROFILE_INFO:
                 let response: GetPaymentProfileInfoResponse = {
                   paymentProfile: {
-                    state: PaymentProfileState.HEALTHY,
+                    profileState: PaymentProfileState.HEALTHY,
+                    paymentsOverallState: PaymentsOverallState.ALL_PAID,
                     balanceAmount: -1000,
                     balanceCurrency: "USD",
                     canClaimInitCredit: true,
@@ -273,7 +280,8 @@ TEST_RUNNER.run({
               case GET_PAYMENT_PROFILE_INFO:
                 let response: GetPaymentProfileInfoResponse = {
                   paymentProfile: {
-                    state: PaymentProfileState.HEALTHY,
+                    profileState: PaymentProfileState.HEALTHY,
+                    paymentsOverallState: PaymentsOverallState.ALL_PAID,
                     balanceAmount: 1000,
                     balanceCurrency: "USD",
                     canClaimInitCredit: false,
@@ -340,7 +348,12 @@ TEST_RUNNER.run({
               case GET_PAYMENT_PROFILE_INFO:
                 let response: GetPaymentProfileInfoResponse = {
                   paymentProfile: {
-                    state: PaymentProfileState.WITH_PROCESSING_PAYMENTS,
+                    profileState: PaymentProfileState.HEALTHY,
+                    paymentsOverallState:
+                      PaymentsOverallState.WITH_PROCESSING_PAYMENTS,
+                    balanceAmount: 0,
+                    balanceCurrency: "USD",
+                    canClaimInitCredit: false,
                   },
                 };
                 return response;
@@ -393,7 +406,12 @@ TEST_RUNNER.run({
               case GET_PAYMENT_PROFILE_INFO:
                 let response: GetPaymentProfileInfoResponse = {
                   paymentProfile: {
-                    state: PaymentProfileState.WITH_FAILED_PAYMENTS,
+                    profileState: PaymentProfileState.HEALTHY,
+                    paymentsOverallState:
+                      PaymentsOverallState.WITH_FAILED_PAYMENTS,
+                    balanceAmount: 0,
+                    balanceCurrency: "USD",
+                    canClaimInitCredit: false,
                   },
                 };
                 return response;
@@ -500,7 +518,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "PhoneView_Suspended";
+      public name = "PhoneView_SuspendedWithFailedPayments";
       private cut: PaymentPage;
       public async execute() {
         // Prepare
@@ -511,7 +529,9 @@ TEST_RUNNER.run({
               case GET_PAYMENT_PROFILE_INFO:
                 let response: GetPaymentProfileInfoResponse = {
                   paymentProfile: {
-                    state: PaymentProfileState.SUSPENDED,
+                    profileState: PaymentProfileState.SUSPENDED,
+                    paymentsOverallState:
+                      PaymentsOverallState.WITH_FAILED_PAYMENTS,
                   },
                 };
                 return response;
@@ -536,9 +556,183 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/payment_page_suspended.png"),
-          path.join(__dirname, "/golden/payment_page_suspended.png"),
-          path.join(__dirname, "/payment_page_suspended_diff.png"),
+          path.join(
+            __dirname,
+            "/payment_page_suspended_with_failed_payments.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/payment_page_suspended_with_failed_payments.png",
+          ),
+          path.join(
+            __dirname,
+            "/payment_page_suspended_with_failed_payments_diff.png",
+          ),
+        );
+      }
+      public async tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "PhoneView_SuspendedWithProcessingPayments";
+      private cut: PaymentPage;
+      public async execute() {
+        // Prepare
+        await setPhoneView();
+        let serviceClientMock = new (class extends WebServiceClientMock {
+          public async send(request: any): Promise<any> {
+            switch (request.descriptor) {
+              case GET_PAYMENT_PROFILE_INFO:
+                let response: GetPaymentProfileInfoResponse = {
+                  paymentProfile: {
+                    profileState: PaymentProfileState.SUSPENDED,
+                    paymentsOverallState:
+                      PaymentsOverallState.WITH_PROCESSING_PAYMENTS,
+                  },
+                };
+                return response;
+              case LIST_PAYMENTS:
+                return {
+                  payments: [],
+                } as ListPaymentsResponse;
+              default:
+                throw new Error("Unexpected request");
+            }
+          }
+        })();
+        this.cut = new PaymentPage(
+          serviceClientMock,
+          {} as any,
+          () => new Date("2025-04-05"),
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise((resolve) => this.cut.once("listed", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/payment_page_suspended_with_processing_payments.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/payment_page_suspended_with_processing_payments.png",
+          ),
+          path.join(
+            __dirname,
+            "/payment_page_suspended_with_processing_payments_diff.png",
+          ),
+        );
+      }
+      public async tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name =
+        "PhoneView_SuspendedWithAllPaidPayments_ReactivateProfileFailed_TabletView_ReactivateSuccess";
+      private cut: PaymentPage;
+      public async execute() {
+        // Prepare
+        await setPhoneView();
+        let serviceClientMock = new (class extends WebServiceClientMock {
+          public async send(request: any): Promise<any> {
+            switch (request.descriptor) {
+              case GET_PAYMENT_PROFILE_INFO:
+                let response: GetPaymentProfileInfoResponse = {
+                  paymentProfile: {
+                    profileState: PaymentProfileState.SUSPENDED,
+                    paymentsOverallState: PaymentsOverallState.ALL_PAID,
+                  },
+                };
+                return response;
+              case LIST_PAYMENTS:
+                return {
+                  payments: [],
+                } as ListPaymentsResponse;
+              case REACTIVATE_PAYMENT_PROFILE:
+                if (this.error) {
+                  throw this.error;
+                } else {
+                  return this.response;
+                }
+              default:
+                throw new Error("Unexpected request");
+            }
+          }
+        })();
+        this.cut = new PaymentPage(
+          serviceClientMock,
+          {} as any,
+          () => new Date("2025-04-05"),
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise((resolve) => this.cut.once("listed", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/payment_page_suspended_with_all_paid_payments.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/payment_page_suspended_with_all_paid_payments.png",
+          ),
+          path.join(
+            __dirname,
+            "/payment_page_suspended_with_all_paid_payments_diff.png",
+          ),
+        );
+
+        // Prepare
+        serviceClientMock.error = new Error("Fake error");
+
+        // Execute
+        this.cut.reactivateButton.val.click();
+        await new Promise((resolve) => this.cut.once("reactivated", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/payment_page_reactivate_failed.png"),
+          path.join(__dirname, "/golden/payment_page_reactivate_failed.png"),
+          path.join(__dirname, "/payment_page_reactivate_failed_diff.png"),
+        );
+
+        // Execute
+        await setTabletView();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/payment_page_reactivate_failed_tablet.png"),
+          path.join(
+            __dirname,
+            "/golden/payment_page_reactivate_failed_tablet.png",
+          ),
+          path.join(
+            __dirname,
+            "/payment_page_reactivate_failed_tablet_diff.png",
+          ),
+        );
+
+        // Prepare
+        serviceClientMock.error = undefined;
+        serviceClientMock.response = {} as ReactivatePaymentProfileResponse;
+
+        // Execute
+        this.cut.reactivateButton.val.click();
+        await new Promise((resolve) => this.cut.once("reactivated", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/payment_page_reactivate_success.png"),
+          path.join(__dirname, "/golden/payment_page_reactivate_success.png"),
+          path.join(__dirname, "/payment_page_reactivate_success_diff.png"),
         );
       }
       public async tearDown() {
@@ -558,7 +752,8 @@ TEST_RUNNER.run({
               case GET_PAYMENT_PROFILE_INFO:
                 let response: GetPaymentProfileInfoResponse = {
                   paymentProfile: {
-                    state: PaymentProfileState.HEALTHY,
+                    profileState: PaymentProfileState.HEALTHY,
+                    paymentsOverallState: PaymentsOverallState.ALL_PAID,
                     balanceAmount: 0,
                     balanceCurrency: "USD",
                     primaryPaymentMethod: {

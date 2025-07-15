@@ -5,7 +5,10 @@ import {
   LIST_PAYMENTS,
   ListPaymentsResponse,
 } from "@phading/commerce_service_interface/web/payment/interface";
-import { PaymentProfileState } from "@phading/commerce_service_interface/web/payment/payment_profile";
+import {
+  PaymentProfileState,
+  PaymentsOverallState,
+} from "@phading/commerce_service_interface/web/payment/payment_profile";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 export class PaymentPageMock extends PaymentPage {
@@ -17,7 +20,8 @@ export class PaymentPageMock extends PaymentPage {
             case GET_PAYMENT_PROFILE_INFO: {
               let response: GetPaymentProfileInfoResponse = {
                 paymentProfile: {
-                  state: PaymentProfileState.HEALTHY,
+                  profileState: PaymentProfileState.HEALTHY,
+                  paymentsOverallState: PaymentsOverallState.ALL_PAID,
                   balanceAmount: 0,
                   balanceCurrency: "USD",
                   canClaimInitCredit: false,

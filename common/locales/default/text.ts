@@ -318,23 +318,38 @@ export default class Text {
       `.`,
     ];
   }
-  get paymentStatusProcessing() {
+  get paymentStatusHealthyWithProcessingPayments() {
     return `Processing payments. Please check back later.`;
   }
-  get paymentStatusWarning() {
+  get paymentStatusHealthyWithFailedPayments() {
     return `There are failed payments. Please check or update your payment method and retry.`;
   }
   get paymentStatusRetryingPayments() {
     return `Retrying payments. Please check back later.`;
   }
+  get paymentStatusSuspendedWithFailedPayments() {
+    return `Your profile is currently suspended. Please check or update your payment method and retry failed payments first.`;
+  }
+  get paymentStatusSuspendedWithProcessingPayments() {
+    return `Your profile is currently suspended. Waiting for payments processing to be completed. Please check back later.`;
+  }
+  get paymentStatusSuspendedWithSettledPayments() {
+    return `Your profile is currently suspended. All payments have been settled.`;
+  }
   get retryPaymentsLabel() {
-    return `Retry payments`;
+    return `Retry failed payments`;
   }
   get retryPaymentsGenericError() {
     return `Failed to retry payments. Please try again later.`;
   }
-  get paymentStatusSuspended() {
-    return [`Your profile is currently suspended. Please contact us at `, `.`];
+  get reactivatePaymentProfileLabel() {
+    return `Reactivate profile`;
+  }
+  get reactivatePaymentProfileGenericError() {
+    return `Failed to reactivate profile. Please try again later.`;
+  }
+  get reactivatePaymentProfileSuccess() {
+    return `Your account is now active! Please allow a few minutes for all changes to take effect.`;
   }
   get paymentBalance() {
     return [`Balance: `, `.`];

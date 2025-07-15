@@ -27,6 +27,7 @@ import {
   newCreateStripeSessionToAddPaymentMethodRequest,
   newGetPaymentProfileInfoRequest,
   newListPaymentsRequest,
+  newReactivatePaymentProfileRequest,
   newRetryFailedPaymentsRequest,
 } from "@phading/commerce_service_interface/web/payment/client";
 import { CreateStripeSessionToAddPaymentMethodResponse } from "@phading/commerce_service_interface/web/payment/interface";
@@ -34,6 +35,7 @@ import { PaymentState } from "@phading/commerce_service_interface/web/payment/pa
 import {
   PaymentProfile,
   PaymentProfileState,
+  PaymentsOverallState,
 } from "@phading/commerce_service_interface/web/payment/payment_profile";
 import { MAX_MONTH_RANGE } from "@phading/constants/commerce";
 import { E } from "@selfage/element/factory";
@@ -43,6 +45,7 @@ import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface PaymentPage {
   on(event: "retried", listener: () => void): this;
+  on(event: "reactivated", listener: () => void): this;
   on(event: "added", listener: () => void): this;
   on(event: "loaded", listener: () => void): this;
   on(event: "listed", listener: () => void): this;
@@ -60,6 +63,8 @@ export class PaymentPage extends EventEmitter {
   public paymentStatusContent = new Ref<HTMLDivElement>();
   public retryPaymentsButton = new Ref<BlockingButton>();
   public retryPaymentsErrorMessage = new Ref<HTMLDivElement>();
+  public reactivateButton = new Ref<BlockingButton>();
+  public reactivateErrorMessage = new Ref<HTMLDivElement>();
   public addPaymentMethodButton = new Ref<
     BlockingButton<CreateStripeSessionToAddPaymentMethodResponse>
   >();
@@ -137,7 +142,7 @@ export class PaymentPage extends EventEmitter {
             class: "payment-page-status-icon",
             style: `width: ${ICON_L}rem; height: ${ICON_L}rem;`,
           },
-          this.getIcon(profile.state),
+          this.getIcon(profile),
         ),
         E.divRef(
           this.paymentStatusContent,
@@ -148,7 +153,7 @@ export class PaymentPage extends EventEmitter {
           E.text(this.getStatusText(nowDate, profile)),
         ),
       ),
-      ...(profile.state === PaymentProfileState.HEALTHY &&
+      ...(profile.profileState === PaymentProfileState.HEALTHY &&
       profile.balanceAmount !== 0
         ? [
             E.div({
@@ -187,7 +192,8 @@ export class PaymentPage extends EventEmitter {
             ),
           ]
         : []),
-      ...(profile.state === PaymentProfileState.WITH_FAILED_PAYMENTS
+      ...(profile.paymentsOverallState ===
+      PaymentsOverallState.WITH_FAILED_PAYMENTS
         ? [
             E.div({
               style: `flex: 0 0 auto; height: 1rem;`,
@@ -205,6 +211,34 @@ export class PaymentPage extends EventEmitter {
               ).body,
               E.divRef(
                 this.retryPaymentsErrorMessage,
+                {
+                  class: "payment-page-retry-payments-error-message",
+                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
+                },
+                E.text("1"),
+              ),
+            ),
+          ]
+        : []),
+      ...(profile.profileState === PaymentProfileState.SUSPENDED &&
+      profile.paymentsOverallState === PaymentsOverallState.ALL_PAID
+        ? [
+            E.div({
+              style: `flex: 0 0 auto; height: 1rem;`,
+            }),
+            E.div(
+              {
+                class: "payment-page-reactivate-line",
+                style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: 1rem; align-items: center; justify-content: flex-start;`,
+              },
+              assign(
+                this.reactivateButton,
+                new FilledBlockingButton("").append(
+                  E.text(LOCALIZED_TEXT.reactivatePaymentProfileLabel),
+                ),
+              ).body,
+              E.divRef(
+                this.reactivateErrorMessage,
                 {
                   class: "payment-page-retry-payments-error-message",
                   style: `font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
@@ -326,12 +360,14 @@ export class PaymentPage extends EventEmitter {
     this.listPayments();
     this.monthRangeInput.val.on("change", () => this.listPayments());
     this.monthRangeInput.val.on("invalid", () => this.showInvalidRange());
-    if (this.retryPaymentsButton.val) {
-      this.retryPaymentsButton.val.addAction(
-        async () => this.retryFailedPayments(),
-        (response, error) => this.postRetryFailedPayments(error),
-      );
-    }
+    this.retryPaymentsButton.val?.addAction(
+      () => this.retryFailedPayments(),
+      (response, error) => this.postRetryFailedPayments(error),
+    );
+    this.reactivateButton.val?.addAction(
+      () => this.reactivatePaymentMethod(),
+      (response, error) => this.postReactivatePaymentMethod(error),
+    );
 
     this.addPaymentMethodButton.val.addAction(
       async () => this.startStripeSession(),
@@ -340,29 +376,41 @@ export class PaymentPage extends EventEmitter {
     this.emit("loaded");
   }
 
-  private getIcon(paymentProfileState: PaymentProfileState): SVGSVGElement {
-    switch (paymentProfileState) {
+  private getIcon(profile: PaymentProfile): SVGSVGElement {
+    switch (profile.profileState) {
       case PaymentProfileState.HEALTHY:
-        return createCheckmarkIcon(SCHEME.success0);
-      case PaymentProfileState.WITH_PROCESSING_PAYMENTS:
-        return createCheckmarkIcon(SCHEME.success0);
-      case PaymentProfileState.WITH_FAILED_PAYMENTS:
-        return createExclamationMarkInACycle(SCHEME.warning0);
+        switch (profile.paymentsOverallState) {
+          case PaymentsOverallState.ALL_PAID:
+          case PaymentsOverallState.WITH_PROCESSING_PAYMENTS:
+            return createCheckmarkIcon(SCHEME.success0);
+          case PaymentsOverallState.WITH_FAILED_PAYMENTS:
+            return createExclamationMarkInACycle(SCHEME.warning0);
+        }
       case PaymentProfileState.SUSPENDED:
         return createForbiddenIcon(SCHEME.error0);
     }
   }
 
   private getStatusText(nowDate: TzDate, profile: PaymentProfile): string {
-    switch (profile.state) {
+    switch (profile.profileState) {
       case PaymentProfileState.HEALTHY:
-        return `${LOCALIZED_TEXT.paymentStatusHealthy[0]}${nowDate.clone().moveToFirstDayOfMonth().addMonths(1).toLocalDateISOString()}${LOCALIZED_TEXT.paymentStatusHealthy[1]}`;
-      case PaymentProfileState.WITH_PROCESSING_PAYMENTS:
-        return LOCALIZED_TEXT.paymentStatusProcessing;
-      case PaymentProfileState.WITH_FAILED_PAYMENTS:
-        return LOCALIZED_TEXT.paymentStatusWarning;
+        switch (profile.paymentsOverallState) {
+          case PaymentsOverallState.ALL_PAID:
+            return `${LOCALIZED_TEXT.paymentStatusHealthy[0]}${nowDate.clone().moveToFirstDayOfMonth().addMonths(1).toLocalDateISOString()}${LOCALIZED_TEXT.paymentStatusHealthy[1]}`;
+          case PaymentsOverallState.WITH_PROCESSING_PAYMENTS:
+            return LOCALIZED_TEXT.paymentStatusHealthyWithProcessingPayments;
+          case PaymentsOverallState.WITH_FAILED_PAYMENTS:
+            return LOCALIZED_TEXT.paymentStatusHealthyWithFailedPayments;
+        }
       case PaymentProfileState.SUSPENDED:
-        return `${LOCALIZED_TEXT.paymentStatusSuspended[0]}${ENV_VARS.supportEmail}${LOCALIZED_TEXT.paymentStatusSuspended[1]}`;
+        switch (profile.paymentsOverallState) {
+          case PaymentsOverallState.ALL_PAID:
+            return LOCALIZED_TEXT.paymentStatusSuspendedWithSettledPayments;
+          case PaymentsOverallState.WITH_PROCESSING_PAYMENTS:
+            return LOCALIZED_TEXT.paymentStatusSuspendedWithProcessingPayments;
+          case PaymentsOverallState.WITH_FAILED_PAYMENTS:
+            return LOCALIZED_TEXT.paymentStatusSuspendedWithFailedPayments;
+        }
     }
   }
 
@@ -462,6 +510,24 @@ export class PaymentPage extends EventEmitter {
         LOCALIZED_TEXT.paymentStatusRetryingPayments;
     }
     this.emit("retried");
+  }
+
+  private async reactivatePaymentMethod(): Promise<void> {
+    this.reactivateErrorMessage.val.style.visibility = "hidden";
+    await this.serviceClient.send(newReactivatePaymentProfileRequest({}));
+  }
+
+  private postReactivatePaymentMethod(error?: Error): void {
+    if (error) {
+      this.reactivateErrorMessage.val.style.visibility = "visible";
+      this.reactivateErrorMessage.val.textContent =
+        LOCALIZED_TEXT.reactivatePaymentProfileGenericError;
+    } else {
+      this.reactivateButton.val.hide();
+      this.paymentStatusContent.val.textContent =
+        LOCALIZED_TEXT.reactivatePaymentProfileSuccess;
+    }
+    this.emit("reactivated");
   }
 
   private startStripeSession(): Promise<CreateStripeSessionToAddPaymentMethodResponse> {
