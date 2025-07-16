@@ -23,6 +23,11 @@ export function eBody(): HTMLElement {
       ),
     ),
     eParagraph(
+      eBoldText(
+        `IMPORTANT NOTICE REGARDING PAYOUTS: As of the Effective Date of this Agreement, Publisher Payouts are only supported for individuals and entities with a valid US-based bank account. While publishers from other locations may create a Profile and accrue earnings, you will not be able to receive a payout until we formally expand our payout support to your region.`,
+      ),
+    ),
+    eParagraph(
       eNormalText(
         `By creating a Profile, you agree to this Agreement and the Secount Terms of Service for this Profile.`,
       ),
@@ -73,6 +78,11 @@ export function eBody(): HTMLElement {
       eLi(
         eNormalText(
           `Your Content complies with the Prohibited Content policy outlined in the Secount Terms of Service.`,
+        ),
+      ),
+      eLi(
+        eNormalText(
+          `You meet all eligibility requirements for creating a Profile and receiving payouts as set forth in this Agreement, and you will provide accurate information to us and our payment processors.`,
         ),
       ),
     ),
@@ -144,9 +154,21 @@ export function eBody(): HTMLElement {
     eHeader2(`5. Payouts`),
     eUl(
       eLi(
-        eBoldText(`Payouts & Stripe Requirement:`),
+        eBoldText(`Payout eligibility:`),
         eNormalText(
-          ` Publisher payouts will be processed monthly. To receive a payout for this Profile, you must have a valid Stripe account connected to this Profile and be located in a country supported by Stripe for payouts.`,
+          ` As of the Effective Date, only Publishers with a valid, US-based bank account are eligible to receive payouts. Payout eligibility is determined by the ability to connect a US-based bank account to our payment processor, Stripe.`,
+        ),
+      ),
+      eLi(
+        eBoldText(`Stripe Requirement:`),
+        eNormalText(
+          ` To receive a payout, an eligible Publisher must create and connect a valid Stripe account to their Profile and comply with all of Stripe's terms and policies.`,
+        ),
+      ),
+      eLi(
+        eBoldText(`Future Expansion:`),
+        eNormalText(
+          ` We are actively working to expand payout support to more countries. When support for a new region is launched, we will update this Agreement and notify our community. Publishers in newly supported regions will then become eligible to receive payouts for their entire accrued balance, subject to the terms herein.`,
         ),
       ),
       eLi(
@@ -157,8 +179,22 @@ export function eBody(): HTMLElement {
       ),
       eLi(
         eBoldText(`Dormant Accounts and Unclaimed Property:`),
-        eNormalText(
-          ` If a Profile becomes dormant and we are unable to process payouts for it for any reason (e.g., an invalid or disconnected Stripe account, lack of contact), we will hold the Profile's accumulated earnings (after our fees) on your behalf. If the Profile remains dormant and we cannot establish contact with you for a period of time (the "Dormancy Period"), we will handle the funds in accordance with our legal obligations under applicable state unclaimed property and escheat laws. This may require us to report and remit the funds to the governing state authority. You will be notified via your last known email address before any such action is taken, as required by law. We recommend you claim all earnings within three (3) years of them being credited to your Profile to avoid this process.`,
+        eLi(
+          eBoldText(`For eligible (US-based) Publishers,`),
+          eNormalText(
+            ` if a Profile becomes dormant and we are unable to process payouts for any reason (e.g., an invalid or disconnected Stripe account), we will hold the accumulated earnings on your behalf.`,
+          ),
+        ),
+        eLi(
+          eBoldText(`For currently ineligible (non-US) Publishers,`),
+          eNormalText(
+            ` all accrued earnings will be held in your account balance until payout support is available for your region.`,
+          ),
+        ),
+        eLi(
+          eNormalText(
+            `If we cannot establish contact with a Publisher whose funds are being held for an extended period of time (the "Dormancy Period"), we will handle the funds in accordance with applicable state unclaimed property and escheat laws. This may require us to report and remit the funds to the governing state authority. We will attempt to notify you via your last known email address before any such action is taken. We recommend you maintain an active Profile to avoid this process.`,
+          ),
         ),
       ),
       eLi(
