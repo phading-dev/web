@@ -2,11 +2,14 @@ import coverImage = require("../common/test_data/cover_tall.jpg");
 import { MultiSectionPage } from "./body";
 import {
   LIST_CONTINUE_WATCHING_SEASONS,
+  ListContinueWatchingSeasonsResponse,
+} from "@phading/product_service_interface/show/web/consumer/interface";
+import {
   LIST_SEASONS_BY_RATING,
   LIST_SEASONS_BY_RECENT_PREMIERE_TIME,
-  ListContinueWatchingSeasonsResponse,
   ListSeasonsByRatingResponse,
-} from "@phading/product_service_interface/show/web/consumer/interface";
+  ListSeasonsByRecentPremiereTimeResponse,
+} from "@phading/product_service_interface/show/web/public/interface";
 import { ClientRequestInterface } from "@selfage/service_descriptor/client_request_interface";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
@@ -45,7 +48,7 @@ export class MultiSectionPageMock extends MultiSectionPage {
           } else if (
             request.descriptor === LIST_SEASONS_BY_RECENT_PREMIERE_TIME
           ) {
-            let response: ListSeasonsByRatingResponse = {
+            let response: ListSeasonsByRecentPremiereTimeResponse = {
               seasons: [
                 {
                   seasonId: "season2",
@@ -60,7 +63,7 @@ export class MultiSectionPageMock extends MultiSectionPage {
               ],
             };
             return response;
-           } else if (request.descriptor === LIST_SEASONS_BY_RATING) {
+          } else if (request.descriptor === LIST_SEASONS_BY_RATING) {
             let response: ListSeasonsByRatingResponse = {
               seasons: [
                 {
@@ -76,7 +79,7 @@ export class MultiSectionPageMock extends MultiSectionPage {
               ],
             };
             return response;
-           }
+          }
         }
       })(),
       getNowDate,

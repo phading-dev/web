@@ -15,15 +15,15 @@ import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
-export interface DraftStatePage {
+export interface DeletePage {
   on(event: "back", listener: () => void): this;
   on(event: "delete", listener: () => void): this;
   on(event: "deleted", listener: () => void): this;
 }
 
-export class DraftStatePage extends EventEmitter {
-  public static create(seasonId: string): DraftStatePage {
-    return new DraftStatePage(SERVICE_CLIENT, seasonId);
+export class DeletePage extends EventEmitter {
+  public static create(seasonId: string): DeletePage {
+    return new DeletePage(SERVICE_CLIENT, seasonId);
   }
 
   public inputFormPage: InputFormPage<DeleteSeasonResponse>;

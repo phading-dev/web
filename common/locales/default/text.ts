@@ -222,15 +222,6 @@ export default class Text {
   get searchLabel() {
     return `Search`;
   }
-  get seasonStateDraftOptionLabel() {
-    return `Draft`;
-  }
-  get seasonStatePublishedOptionLabel() {
-    return `Published`;
-  }
-  get seasonStateArchivedOptionLabel() {
-    return `Archived`;
-  }
   get searchTargetSeasonLabel() {
     return `Content`;
   }
@@ -724,11 +715,20 @@ export default class Text {
   get seasonStatePublishedFooter() {
     return `All information except draft episodes is visible to the public.`;
   }
+  get seasonStateTakenDownLabel() {
+    return `Taken down`;
+  }
+  get seasonStateTakenDownFooter() {
+    return `Taken down by admin due to the following reason: `;
+  }
   get seasonStateArchivedLabel() {
     return `Archived`;
   }
   get seasonStateArchivedFooter() {
     return `Name and pricing remain visible to the public.`;
+  }
+  get seasonStateAllOptionLabel() {
+    return `All`;
   }
   get seasonCreatedTime() {
     return `Created: `;
@@ -1155,6 +1155,15 @@ export default class Text {
   }
   get seasonPublishedStateDescription() {
     return `It can only be archived. Once archived, the season's name and pricing remain visible to the public.`;
+  }
+  get seasonTakenDownStateTitle() {
+    return `Taken down state`;
+  }
+  get seasonTakenDownStateDescription() {
+    return [
+      `If you'd like to appeal, please contact us at `,
+      `. It can still be archived. Once archived, the season's name and pricing remain visible to the public.`,
+    ];
   }
   get seasonArchiveInstructions() {
     return [

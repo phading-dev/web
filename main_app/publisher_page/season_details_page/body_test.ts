@@ -2,12 +2,12 @@ import "../../../dev/env";
 import path = require("path");
 import { normalizeBody } from "../../../common/normalize_body";
 import { setTabletView } from "../../../common/view_port";
+import { ArchivePage } from "./archive_page/body";
 import { SeasonDetailsPage } from "./body";
 import { CreateEpisodePage } from "./create_episode_page/body";
-import { DraftStatePage } from "./draft_state_page/body";
+import { DeletePage } from "./delete_page/body";
 import { EpisodesListPageMock } from "./episodes_list_page/body_mock";
 import { InfoPageMock } from "./info_page/body_mock";
-import { PublishedStatePage } from "./published_state_page/body";
 import { UpdateCoverImagePage } from "./update_cover_image_page/body";
 import { UpdateDraftPricingPage } from "./update_draft_pricing_page/body";
 import { UpdateInfoPage } from "./update_info_page/body";
@@ -72,8 +72,8 @@ TEST_RUNNER.run({
               grade,
               nextGrade,
             ),
-          (seasonId) => new DraftStatePage(undefined, seasonId),
-          (seasonId) => new PublishedStatePage(undefined, seasonId),
+          (seasonId) => new DeletePage(undefined, seasonId),
+          (seasonId, season) => new ArchivePage(undefined, seasonId, season),
           (seasonId) => new CreateEpisodePage(undefined, seasonId),
           (...bodies) => document.body.append(...bodies),
           "season1",
@@ -364,76 +364,69 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.infoPage.emit("editSeasonDraftState");
+        this.cut.infoPage.emit("deleteSeason", seasonDetails);
 
         // Verify
         assertThat(
-          this.cut.draftStatePage.seasonId,
+          this.cut.deletePage.seasonId,
           eq("season1"),
-          "draftStatePage.seasonId",
+          "deletePage.seasonId",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/season_details_page_draft_state.png"),
-          path.join(__dirname, "/golden/season_details_page_draft_state.png"),
-          path.join(__dirname, "/season_details_page_draft_state_diff.png"),
+          path.join(__dirname, "/season_details_page_delete.png"),
+          path.join(__dirname, "/golden/season_details_page_delete.png"),
+          path.join(__dirname, "/season_details_page_delete_diff.png"),
         );
 
         // Prepare
         back = false;
 
         // Execute
-        this.cut.draftStatePage.emit("delete");
+        this.cut.deletePage.emit("delete");
 
         // Verify
         assertThat(back, eq(true), "back when deleted");
 
         // Execute
-        this.cut.draftStatePage.emit("back");
+        this.cut.deletePage.emit("back");
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/season_details_page_back_from_draft_state.png",
-          ),
+          path.join(__dirname, "/season_details_page_back_from_delete.png"),
           path.join(__dirname, "/golden/season_details_page_default.png"),
           path.join(
             __dirname,
-            "/season_details_page_back_from_draft_state_diff.png",
+            "/season_details_page_back_from_delete_diff.png",
           ),
         );
 
         // Execute
-        this.cut.infoPage.emit("editSeasonPublishedState");
+        this.cut.infoPage.emit("archiveSeason", {
+          state: SeasonState.PUBLISHED,
+        } as SeasonDetails);
 
         // Verify
         assertThat(
-          this.cut.publishedStatePage.seasonId,
+          this.cut.archivePage.seasonId,
           eq("season1"),
-          "publishedStatePage.seasonId",
+          "archivePage.seasonId",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/season_details_page_published_state.png"),
-          path.join(
-            __dirname,
-            "/golden/season_details_page_published_state.png",
-          ),
-          path.join(__dirname, "/season_details_page_published_state_diff.png"),
+          path.join(__dirname, "/season_details_page_archive.png"),
+          path.join(__dirname, "/golden/season_details_page_archive.png"),
+          path.join(__dirname, "/season_details_page_archive_diff.png"),
         );
 
         // Execute
-        this.cut.publishedStatePage.emit("back");
+        this.cut.archivePage.emit("back");
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/season_details_page_back_from_published_state.png",
-          ),
+          path.join(__dirname, "/season_details_page_back_from_archive.png"),
           path.join(__dirname, "/golden/season_details_page_default.png"),
           path.join(
             __dirname,
-            "/season_details_page_back_from_published_state_diff.png",
+            "/season_details_page_back_from_archive_diff.png",
           ),
         );
       }

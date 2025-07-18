@@ -50,6 +50,8 @@ import {
   AUTHORIZE_EPISODE_PLAYBACK_REQUEST_BODY,
   AuthorizeEpisodePlaybackRequestBody,
   AuthorizeEpisodePlaybackResponse,
+} from "@phading/product_service_interface/show/web/consumer/interface";
+import {
   GET_EPISODE_WITH_SEASON_SUMMARY,
   GET_EPISODE_WITH_SEASON_SUMMARY_REQUEST_BODY,
   GET_EPISODE_WITH_SEASON_SUMMARY_RESPONSE,
@@ -59,7 +61,7 @@ import {
   LIST_EPISODES_REQUEST_BODY,
   ListEpisodesRequestBody,
   ListEpisodesResponse,
-} from "@phading/product_service_interface/show/web/consumer/interface";
+} from "@phading/product_service_interface/show/web/public/interface";
 import {
   GET_VIDEO_PLAYER_SETTINGS,
   GetVideoPlayerSettingsResponse,

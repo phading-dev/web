@@ -58,8 +58,8 @@ export interface InfoPage {
     event: "editSeasonPublishedPricing",
     listener: (season: SeasonDetails) => void,
   ): this;
-  on(event: "editSeasonDraftState", listener: () => void): this;
-  on(event: "editSeasonPublishedState", listener: () => void): this;
+  on(event: "deleteSeason", listener: (season: SeasonDetails) => void): this;
+  on(event: "archiveSeason", listener: (season: SeasonDetails) => void): this;
   on(event: "createDraftEpisode", listener: () => void): this;
   on(event: "viewEpisodes", listener: (season: SeasonDetails) => void): this;
   on(event: "loaded", listener: () => void): this;
@@ -362,7 +362,12 @@ export class InfoPage extends EventEmitter {
                 class: "season-details-state-description",
                 style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
               },
-              E.text(this.getStateFooterText(seasonDetails.state)),
+              E.text(
+                this.getStateFooterText(
+                  seasonDetails.state,
+                  seasonDetails.takeDownReason,
+                ),
+              ),
             ),
           ],
           {
@@ -423,8 +428,9 @@ export class InfoPage extends EventEmitter {
       this.seasonStateButton.val.addEventListener("click", () =>
         this.emit(
           seasonDetails.state === SeasonState.DRAFT
-            ? "editSeasonDraftState"
-            : "editSeasonPublishedState",
+            ? "deleteSeason"
+            : "archiveSeason",
+          this.season,
         ),
       );
     }
@@ -434,6 +440,7 @@ export class InfoPage extends EventEmitter {
   private getPricingFooterText(state: SeasonState): string {
     switch (state) {
       case SeasonState.PUBLISHED:
+      case SeasonState.TAKEN_DOWN:
         return `${LOCALIZED_TEXT.seasonPublishedPricingFooter[0]}${MIN_GRADE_EFFECTIVE_GAP_DAY}${LOCALIZED_TEXT.seasonPublishedPricingFooter[1]}`;
       case SeasonState.ARCHIVED:
         return LOCALIZED_TEXT.seasonArchivedPricingFooter;
@@ -450,10 +457,15 @@ export class InfoPage extends EventEmitter {
         return LOCALIZED_TEXT.seasonStateArchivedLabel;
       case SeasonState.DRAFT:
         return LOCALIZED_TEXT.seasonStateDraftLabel;
+      case SeasonState.TAKEN_DOWN:
+        return LOCALIZED_TEXT.seasonStateTakenDownLabel;
     }
   }
 
-  private getStateFooterText(state: SeasonState): string {
+  private getStateFooterText(
+    state: SeasonState,
+    takeDownReason?: string,
+  ): string {
     switch (state) {
       case SeasonState.PUBLISHED:
         return LOCALIZED_TEXT.seasonStatePublishedFooter;
@@ -461,6 +473,8 @@ export class InfoPage extends EventEmitter {
         return LOCALIZED_TEXT.seasonStateArchivedFooter;
       case SeasonState.DRAFT:
         return LOCALIZED_TEXT.seasonStateDraftFooter;
+      case SeasonState.TAKEN_DOWN:
+        return `${LOCALIZED_TEXT.seasonStateTakenDownFooter}${takeDownReason}`;
     }
   }
 

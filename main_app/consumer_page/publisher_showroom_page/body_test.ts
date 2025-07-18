@@ -10,7 +10,7 @@ import {
   LIST_SEASONS_BY_RECENT_PREMIERE_TIME_AND_PUBLISHER,
   LIST_SEASONS_BY_RECENT_PREMIERE_TIME_AND_PUBLISHER_REQUEST_BODY,
   ListSeasonsByRecentPremiereTimeAndPublisherResponse,
-} from "@phading/product_service_interface/show/web/consumer/interface";
+} from "@phading/product_service_interface/show/web/public/interface";
 import {
   GET_ACCOUNT_DETAILS,
   GetAccountDetailsResponse,

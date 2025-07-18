@@ -243,17 +243,14 @@ TEST_RUNNER.run({
         assertThat(seasonCaptured.grade, eq(1), "View episodes season grade");
 
         // Prepare
-        let editSeasonDraftState = false;
-        this.cut.on(
-          "editSeasonDraftState",
-          () => (editSeasonDraftState = true),
-        );
+        let deleteSeason: SeasonDetails;
+        this.cut.on("deleteSeason", (season) => (deleteSeason = season));
 
         // Execute
         this.cut.seasonStateButton.val.click();
 
         // Verify
-        assertThat(editSeasonDraftState, eq(true), "Edit season draft state");
+        assertThat(deleteSeason.grade, eq(1), "Delete season grade");
 
         // Prepare
         let back = false;
@@ -379,21 +376,14 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        let editSeasonPublishedState = false;
-        this.cut.on(
-          "editSeasonPublishedState",
-          () => (editSeasonPublishedState = true),
-        );
+        let archiveSeason: SeasonDetails;
+        this.cut.on("archiveSeason", (season) => (archiveSeason = season));
 
         // Execute
         this.cut.seasonStateButton.val.click();
 
         // Verify
-        assertThat(
-          editSeasonPublishedState,
-          eq(true),
-          "Edit season published state",
-        );
+        assertThat(archiveSeason.grade, eq(599), "Archive season grade");
       }
       public tearDown() {
         window.scrollTo(0, 0);
@@ -456,6 +446,66 @@ TEST_RUNNER.run({
           path.join(__dirname, "/info_page_phone_next_grade.png"),
           path.join(__dirname, "/golden/info_page_phone_next_grade.png"),
           path.join(__dirname, "/info_page_phone_next_grade_diff.png"),
+        );
+      }
+      public tearDown() {
+        window.scrollTo(0, 0);
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "TabletView_TakenDown_PhoneView";
+      private cut: InfoPage;
+      public async execute() {
+        // Prepare
+        await setTabletView();
+        let serviceClientMock = new InfoPageServiceClientMock();
+        serviceClientMock.getSeasonResponse = {
+          seasonDetails: {
+            name: "Re-Zero: Starting Life in Another World Season 1",
+            description:
+              "A thrilling isekai anime following Subaru Natsuki as he navigates a world of magic, danger, and mystery, with the ability to return from death.",
+            state: SeasonState.TAKEN_DOWN,
+            takeDownReason: "Violation of community guidelines",
+            coverImageUrl: coverImage,
+            grade: 599,
+            totalPublishedEpisodes: 10,
+            lastChangeTimeMs: new Date("2024-12-01T18:00:00Z").getTime(),
+            createdTimeMs: new Date("2024-01-01T12:00:00Z").getTime(),
+          },
+        };
+        serviceClientMock.listDraftEpisodesResponse = {
+          episodes: [],
+        };
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2024-12-23T08:00:00Z"),
+          "season1",
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
+        // Somehow need to await again for the body to be fully loaded
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        window.scrollTo(0, document.body.scrollHeight);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/info_page_tablet_taken_down.png"),
+          path.join(__dirname, "/golden/info_page_tablet_taken_down.png"),
+          path.join(__dirname, "/info_page_tablet_taken_down_diff.png"),
+        );
+
+        // Execute
+        await setPhoneView();
+        window.scrollTo(0, document.body.scrollHeight);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/info_page_phone_taken_down.png"),
+          path.join(__dirname, "/golden/info_page_phone_taken_down.png"),
+          path.join(__dirname, "/info_page_phone_taken_down_diff.png"),
         );
       }
       public tearDown() {

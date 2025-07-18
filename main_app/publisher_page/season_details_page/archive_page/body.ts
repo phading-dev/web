@@ -8,20 +8,23 @@ import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_ba
 import { eFormTitle } from "../../../../common/page_elements";
 import { FONT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
+import { ENV_VARS } from "../../../../env_vars";
+import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import { newArchiveSeasonRequest } from "@phading/product_service_interface/show/web/publisher/client";
+import { SeasonDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import { ArchiveSeasonResponse } from "@phading/product_service_interface/show/web/publisher/interface";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
-export interface PublishedStatePage {
+export interface ArchivePage {
   on(event: "back", listener: () => void): this;
   on(event: "archived", listener: () => void): this;
 }
 
-export class PublishedStatePage extends EventEmitter {
-  public static create(seasonId: string): PublishedStatePage {
-    return new PublishedStatePage(SERVICE_CLIENT, seasonId);
+export class ArchivePage extends EventEmitter {
+  public static create(seasonId: string, season: SeasonDetails): ArchivePage {
+    return new ArchivePage(SERVICE_CLIENT, seasonId, season);
   }
 
   public inputFormPage: InputFormPage<ArchiveSeasonResponse>;
@@ -30,25 +33,46 @@ export class PublishedStatePage extends EventEmitter {
   public constructor(
     private serviceClient: WebServiceClient,
     public seasonId: string,
+    public season: SeasonDetails,
   ) {
     super();
+    if (
+      season.state !== SeasonState.PUBLISHED &&
+      season.state !== SeasonState.TAKEN_DOWN
+    ) {
+      throw new Error(
+        `Cannot archive season with state ${SeasonState[season.state]}, expected PUBLISHED or TAKEN_DOWN.`,
+      );
+    }
     this.inputFormPage = new InputFormPage<ArchiveSeasonResponse>(
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       [
-        eFormTitle(LOCALIZED_TEXT.seasonPublishedStateTitle),
+        eFormTitle(
+          season.state === SeasonState.PUBLISHED
+            ? LOCALIZED_TEXT.seasonPublishedStateTitle
+            : LOCALIZED_TEXT.seasonTakenDownStateTitle,
+        ),
         E.div(
           {
             class: "published-state-page-description-1",
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
-          E.text(LOCALIZED_TEXT.seasonStatePublishedFooter),
+          E.text(
+            season.state === SeasonState.PUBLISHED
+              ? LOCALIZED_TEXT.seasonStatePublishedFooter
+              : `${LOCALIZED_TEXT.seasonStateTakenDownFooter}${season.takeDownReason}`,
+          ),
         ),
         E.div(
           {
             class: "published-state-page-description-2",
             style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
           },
-          E.text(LOCALIZED_TEXT.seasonPublishedStateDescription),
+          E.text(
+            season.state === SeasonState.PUBLISHED
+              ? LOCALIZED_TEXT.seasonPublishedStateDescription
+              : `${LOCALIZED_TEXT.seasonTakenDownStateDescription[0]}${ENV_VARS.supportEmail}${LOCALIZED_TEXT.seasonTakenDownStateDescription[1]}`,
+          ),
         ),
         assign(
           this.seasonIdInput,

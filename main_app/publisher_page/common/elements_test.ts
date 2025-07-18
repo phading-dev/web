@@ -8,6 +8,7 @@ import {
   eArchivedSeasonItem,
   eDraftSeasonItem,
   ePublishedSeasonItem,
+  eTakenDownSeasonItem,
 } from "./elements";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -60,6 +61,52 @@ TEST_RUNNER.run({
           path.join(__dirname, "/published_season_item_large.png"),
           path.join(__dirname, "/golden/published_season_item_large.png"),
           path.join(__dirname, "/published_season_item_large_diff.png"),
+        );
+      }
+      public tearDown() {
+        this.container.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "TakenDownSeasonItem";
+      private container: HTMLDivElement;
+      public async execute() {
+        // Prepare
+        await setTabletView();
+        this.container = E.div({
+          style: `background-color: ${SCHEME.neutral4}; display: inline-block;`,
+        });
+        document.body.append(this.container);
+        let cut = eTakenDownSeasonItem(
+          {
+            name: "Re-Zero: Starting Life in Another World Season 1",
+            coverImageUrl: coverImage,
+            ratingsCount: 12345,
+            lastChangeTimeMs: new Date("2024-12-23T12:00:00Z").getTime(),
+            grade: 189,
+          },
+          new Date("2024-12-23T12:00:00Z"),
+          "width: 35rem;",
+        );
+
+        // Execute
+        this.container.append(cut);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/taken_down_season_item_small.png"),
+          path.join(__dirname, "/golden/taken_down_season_item_small.png"),
+          path.join(__dirname, "/taken_down_season_item_small_diff.png"),
+        );
+
+        // Execute
+        cut.style.width = "60rem";
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/taken_down_season_item_large.png"),
+          path.join(__dirname, "/golden/taken_down_season_item_large.png"),
+          path.join(__dirname, "/taken_down_season_item_large_diff.png"),
         );
       }
       public tearDown() {

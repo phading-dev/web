@@ -7,8 +7,8 @@ import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 export class SearchPageMock extends SearchPage {
   public constructor(
     getNowDate: () => Date,
-    seasonState: SeasonState,
-    query?: string,
+    query: string,
+    seasonState?: SeasonState,
   ) {
     super(
       new (class extends WebServiceClientMock {
@@ -22,6 +22,7 @@ export class SearchPageMock extends SearchPage {
                 totalPublishedEpisodes: 25,
                 averageRating: 4.52,
                 ratingsCount: 12345,
+                state: SeasonState.PUBLISHED,
                 lastChangeTimeMs: new Date("2024-12-23T12:00:00Z").getTime(),
                 grade: 1800,
               },
@@ -31,8 +32,8 @@ export class SearchPageMock extends SearchPage {
         }
       })(),
       getNowDate,
-      seasonState,
       query,
+      seasonState,
     );
   }
 }

@@ -41,7 +41,10 @@ import {
 } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
-import { ePageWithTopDownCard, PAGE_MAX_WIDTH_XL } from "../../../common/page_elements";
+import {
+  PAGE_MAX_WIDTH_XL,
+  ePageWithTopDownCard,
+} from "../../../common/page_elements";
 import { getRootFontSize } from "../../../common/root_font_size";
 import { eCoverImage } from "../../../common/season_cover_image";
 import {
@@ -69,15 +72,17 @@ import {
 import {
   newGetContinueEpisodeRequest,
   newGetIndividualSeasonRatingRequest,
-  newGetSeasonDetailsRequest,
-  newListEpisodesRequest,
   newRateSeasonRequest,
   newUnrateSeasonRequest,
 } from "@phading/product_service_interface/show/web/consumer/client";
 import {
+  newGetSeasonDetailsRequest,
+  newListEpisodesRequest,
+} from "@phading/product_service_interface/show/web/public/client";
+import {
   Episode,
   SeasonDetails,
-} from "@phading/product_service_interface/show/web/consumer/info";
+} from "@phading/product_service_interface/show/web/public/info";
 import { AccountSummary } from "@phading/user_service_interface/web/third_person/account";
 import { newGetAccountSummaryRequest } from "@phading/user_service_interface/web/third_person/client";
 import { buildUrl } from "@phading/web_interface/url_builder";

@@ -23,7 +23,7 @@ import {
 import {
   Episode,
   SeasonSummary,
-} from "@phading/product_service_interface/show/web/consumer/info";
+} from "@phading/product_service_interface/show/web/public/info";
 import { AccountDetails } from "@phading/user_service_interface/web/third_person/account";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";

@@ -10,6 +10,7 @@ import {
   eArchivedSeasonItem,
   eDraftSeasonItem,
   ePublishedSeasonItem,
+  eTakenDownSeasonItem,
 } from "../common/elements";
 import { SearchInput } from "../common/search_input";
 import { SeasonState } from "@phading/product_service_interface/show/season_state";
@@ -19,17 +20,17 @@ import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface ListPage {
-  on(event: "listSeasons", listener: (state: SeasonState) => void): this;
+  on(event: "listSeasons", listener: (state?: SeasonState) => void): this;
   on(
     event: "searchSeasons",
-    listener: (state: SeasonState, query: string) => void,
+    listener: (query: string, state?: SeasonState) => void,
   ): this;
   on(event: "viewSeason", listener: (seasonId: string) => void): this;
   on(event: "loaded", listener: () => void): this;
 }
 
 export class ListPage extends EventEmitter {
-  public static create(seasonState: SeasonState): ListPage {
+  public static create(seasonState?: SeasonState): ListPage {
     return new ListPage(SERVICE_CLIENT, () => new Date(), seasonState);
   }
 
@@ -44,7 +45,7 @@ export class ListPage extends EventEmitter {
   public constructor(
     private serviceClient: WebServiceClient,
     private getNowDate: () => Date,
-    public seasonState: SeasonState,
+    public seasonState?: SeasonState,
   ) {
     super();
     this.body = ePageWithTopDownCard(
@@ -53,7 +54,7 @@ export class ListPage extends EventEmitter {
       E.div({
         style: `flex: 0 0 auto; height: 1rem;`,
       }),
-      assign(this.searchInput, new SearchInput(seasonState, "")).body,
+      assign(this.searchInput, new SearchInput("", seasonState)).body,
       E.div({
         style: `flex: 0 0 auto; height: 1rem;`,
       }),
@@ -61,7 +62,7 @@ export class ListPage extends EventEmitter {
     );
     this.searchInput.val
       .on("list", (state) => this.emit("listSeasons", state))
-      .on("search", (state, query) => this.emit("searchSeasons", state, query));
+      .on("search", (query, state) => this.emit("searchSeasons", query, state));
 
     this.loadingSection.val
       .addLoadAction(() => this.load())
@@ -78,38 +79,35 @@ export class ListPage extends EventEmitter {
       }),
     );
     let nowDate = this.getNowDate();
-    switch (this.seasonState) {
-      case SeasonState.DRAFT:
-        response.seasons.forEach((season) => {
-          let item = eDraftSeasonItem(season, nowDate);
-          item.addEventListener("click", () => {
-            this.emit("viewSeason", season.seasonId);
-          });
-          this.loadingSection.val.body.before(item);
-        });
-        break;
-      case SeasonState.PUBLISHED:
-        response.seasons.forEach((season) => {
-          let item = ePublishedSeasonItem(season, nowDate);
-          item.addEventListener("click", () => {
-            this.emit("viewSeason", season.seasonId);
-          });
-          this.loadingSection.val.body.before(item);
-        });
-        break;
-      case SeasonState.ARCHIVED:
-        response.seasons.forEach((season) => {
-          this.loadingSection.val.body.before(
-            eArchivedSeasonItem(season, nowDate),
+    response.seasons.forEach((season) => {
+      let item: HTMLDivElement;
+      switch (season.state) {
+        case SeasonState.DRAFT: {
+          item = eDraftSeasonItem(season, nowDate);
+          break;
+        }
+        case SeasonState.PUBLISHED: {
+          item = ePublishedSeasonItem(season, nowDate);
+          break;
+        }
+        case SeasonState.ARCHIVED: {
+          item = eArchivedSeasonItem(season, nowDate);
+          break;
+        }
+        case SeasonState.TAKEN_DOWN: {
+          item = eTakenDownSeasonItem(season, nowDate);
+          break;
+        }
+        default:
+          throw new Error(
+            `Unhandled season state: ${SeasonState[this.seasonState]}`,
           );
-        });
-        break;
-      default:
-        throw new Error(
-          `Unhandled season state: ${SeasonState[this.seasonState]}`,
-        );
-    }
-
+      }
+      item.addEventListener("click", () => {
+        this.emit("viewSeason", season.seasonId);
+      });
+      this.loadingSection.val.body.before(item);
+    });
     this.lastChangeTimeCursor = response.lastChangeTimeCursor;
     return Boolean(response.lastChangeTimeCursor);
   }

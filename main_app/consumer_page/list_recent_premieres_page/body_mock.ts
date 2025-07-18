@@ -1,6 +1,6 @@
 import coverImage = require("../common/test_data/cover_tall.jpg");
 import { ListRecentPremieresPage } from "./body";
-import { ListSeasonsByRecentPremiereTimeResponse } from "@phading/product_service_interface/show/web/consumer/interface";
+import { ListSeasonsByRecentPremiereTimeResponse } from "@phading/product_service_interface/show/web/public/interface";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 export class ListRecentPremieresPageMock extends ListRecentPremieresPage {

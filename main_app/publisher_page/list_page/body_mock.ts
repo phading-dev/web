@@ -5,7 +5,7 @@ import { ListSeasonsResponse } from "@phading/product_service_interface/show/web
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 export class ListPageMock extends ListPage {
-  public constructor(getNowDate: () => Date, seasonState: SeasonState) {
+  public constructor(getNowDate: () => Date, seasonState?: SeasonState) {
     super(
       new (class extends WebServiceClientMock {
         public async send(request: any): Promise<any> {
@@ -18,6 +18,7 @@ export class ListPageMock extends ListPage {
                 totalPublishedEpisodes: 13,
                 averageRating: 4.75,
                 ratingsCount: 67890,
+                state: SeasonState.PUBLISHED,
                 lastChangeTimeMs: new Date("2024-12-23T12:00:00Z").getTime(),
                 grade: 390,
               },

@@ -29,15 +29,15 @@ import { WatchTimeMeter } from "./watch_time_meter";
 import { Comment } from "@phading/comment_service_interface/show/web/comment";
 import { newListCommentsRequest } from "@phading/comment_service_interface/show/web/reader/client";
 import { newGetLatestWatchedVideoTimeOfEpisodeRequest } from "@phading/play_activity_service_interface/show/web/client";
+import { newAuthorizeEpisodePlaybackRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import {
-  newAuthorizeEpisodePlaybackRequest,
   newGetEpisodeWithSeasonSummaryRequest,
   newListEpisodesRequest,
-} from "@phading/product_service_interface/show/web/consumer/client";
+} from "@phading/product_service_interface/show/web/public/client";
 import {
   Episode,
   SeasonSummary,
-} from "@phading/product_service_interface/show/web/consumer/info";
+} from "@phading/product_service_interface/show/web/public/info";
 import { AccountSummary } from "@phading/user_service_interface/web/self/account";
 import {
   newGetVideoPlayerSettingsRequest,

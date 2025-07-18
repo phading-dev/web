@@ -11,7 +11,7 @@ import {
 import {
   GET_EPISODE_WITH_SEASON_SUMMARY,
   GetEpisodeWithSeasonSummaryResponse,
-} from "@phading/product_service_interface/show/web/consumer/interface";
+} from "@phading/product_service_interface/show/web/public/interface";
 import { ClientRequestInterface } from "@selfage/service_descriptor/client_request_interface";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 

@@ -26,19 +26,21 @@ import {
   GET_CONTINUE_EPISODE_REQUEST_BODY,
   GET_INDIVIDUAL_SEASON_RATING,
   GET_INDIVIDUAL_SEASON_RATING_REQUEST_BODY,
-  GET_SEASON_DETAILS,
-  GET_SEASON_DETAILS_REQUEST_BODY,
   GetContinueEpisodeResponse,
   GetIndividualSeasonRatingResponse,
-  GetSeasonDetailsResponse,
-  LIST_EPISODES,
-  LIST_EPISODES_REQUEST_BODY,
-  ListEpisodesResponse,
   RATE_SEASON,
   RATE_SEASON_REQUEST_BODY,
   UNRATE_SEASON,
   UNRATE_SEASON_REQUEST_BODY,
 } from "@phading/product_service_interface/show/web/consumer/interface";
+import {
+  GET_SEASON_DETAILS,
+  GET_SEASON_DETAILS_REQUEST_BODY,
+  GetSeasonDetailsResponse,
+  LIST_EPISODES,
+  LIST_EPISODES_REQUEST_BODY,
+  ListEpisodesResponse,
+} from "@phading/product_service_interface/show/web/public/interface";
 import {
   GET_ACCOUNT_SUMMARY,
   GET_ACCOUNT_SUMMARY_REQUEST_BODY,

@@ -26,7 +26,7 @@ import {
 } from "@phading/meter_service_interface/show/web/consumer/client";
 import { ProductID } from "@phading/price";
 import { calculateMoney } from "@phading/price_config/calculator";
-import { newGetSeasonNameRequest } from "@phading/product_service_interface/show/web/consumer/client";
+import { newGetSeasonNameRequest } from "@phading/product_service_interface/show/web/public/client";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { TzDate } from "@selfage/tz_date";

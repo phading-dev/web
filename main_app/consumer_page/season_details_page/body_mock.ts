@@ -10,13 +10,15 @@ import {
 import {
   GET_CONTINUE_EPISODE,
   GET_INDIVIDUAL_SEASON_RATING,
-  GET_SEASON_DETAILS,
   GetContinueEpisodeResponse,
   GetIndividualSeasonRatingResponse,
+} from "@phading/product_service_interface/show/web/consumer/interface";
+import {
+  GET_SEASON_DETAILS,
   GetSeasonDetailsResponse,
   LIST_EPISODES,
   ListEpisodesResponse,
-} from "@phading/product_service_interface/show/web/consumer/interface";
+} from "@phading/product_service_interface/show/web/public/interface";
 import {
   GET_ACCOUNT_SUMMARY,
   GetAccountSummaryResponse,

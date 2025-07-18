@@ -17,7 +17,7 @@ import {
 import {
   GET_SEASON_NAME,
   GetSeasonNameResponse,
-} from "@phading/product_service_interface/show/web/consumer/interface";
+} from "@phading/product_service_interface/show/web/public/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";

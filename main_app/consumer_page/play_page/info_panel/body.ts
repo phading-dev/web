@@ -27,7 +27,7 @@ import {
 import {
   Episode,
   SeasonSummary,
-} from "@phading/product_service_interface/show/web/consumer/info";
+} from "@phading/product_service_interface/show/web/public/info";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 import { EventEmitter } from "events";

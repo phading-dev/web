@@ -65,13 +65,13 @@ TEST_RUNNER.run({
         // Verify
         assertThat(
           this.cut.listPage.seasonState,
-          eq(SeasonState.PUBLISHED),
+          eq(undefined),
           "listPage.seasonState",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/publisher_page_list_published.png"),
-          path.join(__dirname, "/golden/publisher_page_list_published.png"),
-          path.join(__dirname, "/publisher_page_list_published_diff.png"),
+          path.join(__dirname, "/publisher_page_list.png"),
+          path.join(__dirname, "/golden/publisher_page_list.png"),
+          path.join(__dirname, "/publisher_page_list_diff.png"),
         );
 
         // Execute
@@ -175,9 +175,7 @@ TEST_RUNNER.run({
           rl,
           eqMessage(
             {
-              list: {
-                seasonState: SeasonState.PUBLISHED,
-              },
+              list: {},
             },
             PUBLISHER_PAGE_RL,
           ),
@@ -188,7 +186,7 @@ TEST_RUNNER.run({
             __dirname,
             "/publisher_page_list_back_from_season_details.png",
           ),
-          path.join(__dirname, "/golden/publisher_page_list_published.png"),
+          path.join(__dirname, "/golden/publisher_page_list.png"),
           path.join(
             __dirname,
             "/publisher_page_list_back_from_season_details_diff.png",
@@ -202,7 +200,7 @@ TEST_RUNNER.run({
         assertThat(
           this.cut.listPage.seasonState,
           eq(SeasonState.DRAFT),
-          "listPage.seasonState after listSeasons",
+          "listPage.seasonState draft",
         );
         assertThat(
           rl,
@@ -214,7 +212,7 @@ TEST_RUNNER.run({
             },
             PUBLISHER_PAGE_RL,
           ),
-          "rl.list after listSeasons",
+          "rl.list draft",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/publisher_page_list_draft.png"),
@@ -223,29 +221,105 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.listPage.emit(
-          "searchSeasons",
-          SeasonState.PUBLISHED,
-          "some query",
-        );
+        this.cut.listPage.emit("listSeasons", SeasonState.PUBLISHED);
 
         // Verify
         assertThat(
-          this.cut.searchPage.seasonState,
+          this.cut.listPage.seasonState,
           eq(SeasonState.PUBLISHED),
-          "searchPage.seasonState",
+          "listPage.seasonState published",
         );
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              list: {
+                seasonState: SeasonState.PUBLISHED,
+              },
+            },
+            PUBLISHER_PAGE_RL,
+          ),
+          "rl.list published",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/publisher_page_list_published.png"),
+          path.join(__dirname, "/golden/publisher_page_list_published.png"),
+          path.join(__dirname, "/publisher_page_list_published_diff.png"),
+        );
+
+        // Execute
+        this.cut.listPage.emit("listSeasons", SeasonState.ARCHIVED);
+
+        // Verify
+        assertThat(
+          this.cut.listPage.seasonState,
+          eq(SeasonState.ARCHIVED),
+          "listPage.seasonState archived",
+        );
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              list: {
+                seasonState: SeasonState.ARCHIVED,
+              },
+            },
+            PUBLISHER_PAGE_RL,
+          ),
+          "rl.list archived",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/publisher_page_list_archived.png"),
+          path.join(__dirname, "/golden/publisher_page_list_archived.png"),
+          path.join(__dirname, "/publisher_page_list_archived_diff.png"),
+        );
+
+        // Execute
+        this.cut.listPage.emit("listSeasons", SeasonState.TAKEN_DOWN);
+
+        // Verify
+        assertThat(
+          this.cut.listPage.seasonState,
+          eq(SeasonState.TAKEN_DOWN),
+          "listPage.seasonState taken down",
+        );
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              list: {
+                seasonState: SeasonState.TAKEN_DOWN,
+              },
+            },
+            PUBLISHER_PAGE_RL,
+          ),
+          "rl.list taken down",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/publisher_page_list_taken_down.png"),
+          path.join(__dirname, "/golden/publisher_page_list_taken_down.png"),
+          path.join(__dirname, "/publisher_page_list_taken_down_diff.png"),
+        );
+
+        // Execute
+        this.cut.listPage.emit("searchSeasons", "some query");
+
+        // Verify
         assertThat(
           this.cut.searchPage.query,
           eq("some query"),
           "searchPage.query",
         );
         assertThat(
+          this.cut.searchPage.seasonState,
+          eq(undefined),
+          "searchPage.seasonState",
+        );
+        assertThat(
           rl,
           eqMessage(
             {
               search: {
-                seasonState: SeasonState.PUBLISHED,
                 query: "some query",
               },
             },
@@ -301,7 +375,6 @@ TEST_RUNNER.run({
           eqMessage(
             {
               search: {
-                seasonState: SeasonState.PUBLISHED,
                 query: "some query",
               },
             },
@@ -322,31 +395,31 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.searchPage.emit("searchSeasons", SeasonState.DRAFT, "My Hero");
+        this.cut.searchPage.emit("searchSeasons", "My Hero", SeasonState.DRAFT);
 
         // Verify
         assertThat(
-          this.cut.searchPage.seasonState,
-          eq(SeasonState.DRAFT),
-          "searchPage.seasonState after searchSeasons",
-        );
-        assertThat(
           this.cut.searchPage.query,
           eq("My Hero"),
-          "searchPage.query after searchSeasons",
+          "searchPage.query draft",
+        );
+        assertThat(
+          this.cut.searchPage.seasonState,
+          eq(SeasonState.DRAFT),
+          "searchPage.seasonState draft",
         );
         assertThat(
           rl,
           eqMessage(
             {
               search: {
-                seasonState: SeasonState.DRAFT,
                 query: "My Hero",
+                seasonState: SeasonState.DRAFT,
               },
             },
             PUBLISHER_PAGE_RL,
           ),
-          "rl.search after searchSeasons",
+          "rl.search draft",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/publisher_page_search_draft.png"),
@@ -355,30 +428,139 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.searchPage.emit("listSeasons", SeasonState.ARCHIVED);
+        this.cut.searchPage.emit(
+          "searchSeasons",
+          "My Hero",
+          SeasonState.PUBLISHED,
+        );
 
         // Verify
         assertThat(
-          this.cut.listPage.seasonState,
-          eq(SeasonState.ARCHIVED),
-          "listPage.seasonState after listSeasons from searchPage",
+          this.cut.searchPage.query,
+          eq("My Hero"),
+          "searchPage.query published",
+        );
+        assertThat(
+          this.cut.searchPage.seasonState,
+          eq(SeasonState.PUBLISHED),
+          "searchPage.seasonState published",
         );
         assertThat(
           rl,
           eqMessage(
             {
-              list: {
+              search: {
+                query: "My Hero",
+                seasonState: SeasonState.PUBLISHED,
+              },
+            },
+            PUBLISHER_PAGE_RL,
+          ),
+          "rl.search published",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/publisher_page_search_published.png"),
+          path.join(__dirname, "/golden/publisher_page_search_published.png"),
+          path.join(__dirname, "/publisher_page_search_published_diff.png"),
+        );
+
+        // Execute
+        this.cut.searchPage.emit(
+          "searchSeasons",
+          "My Hero",
+          SeasonState.ARCHIVED,
+        );
+
+        // Verify
+        assertThat(
+          this.cut.searchPage.query,
+          eq("My Hero"),
+          "searchPage.query archived",
+        );
+        assertThat(
+          this.cut.searchPage.seasonState,
+          eq(SeasonState.ARCHIVED),
+          "searchPage.seasonState archived",
+        );
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              search: {
+                query: "My Hero",
                 seasonState: SeasonState.ARCHIVED,
               },
             },
             PUBLISHER_PAGE_RL,
           ),
-          "rl.list after listSeasons from searchPage",
+          "rl.search archived",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/publisher_page_list_archived.png"),
-          path.join(__dirname, "/golden/publisher_page_list_archived.png"),
-          path.join(__dirname, "/publisher_page_list_archived_diff.png"),
+          path.join(__dirname, "/publisher_page_search_archived.png"),
+          path.join(__dirname, "/golden/publisher_page_search_archived.png"),
+          path.join(__dirname, "/publisher_page_search_archived_diff.png"),
+        );
+
+        // Execute
+        this.cut.searchPage.emit(
+          "searchSeasons",
+          "My Hero",
+          SeasonState.TAKEN_DOWN,
+        );
+
+        // Verify
+        assertThat(
+          this.cut.searchPage.query,
+          eq("My Hero"),
+          "searchPage.query taken_down",
+        );
+        assertThat(
+          this.cut.searchPage.seasonState,
+          eq(SeasonState.TAKEN_DOWN),
+          "searchPage.seasonState taken_down",
+        );
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              search: {
+                query: "My Hero",
+                seasonState: SeasonState.TAKEN_DOWN,
+              },
+            },
+            PUBLISHER_PAGE_RL,
+          ),
+          "rl.search taken_down",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/publisher_page_search_taken_down.png"),
+          path.join(__dirname, "/golden/publisher_page_search_taken_down.png"),
+          path.join(__dirname, "/publisher_page_search_taken_down_diff.png"),
+        );
+
+        // Execute
+        this.cut.searchPage.emit("listSeasons");
+
+        // Verify
+        assertThat(
+          this.cut.listPage.seasonState,
+          eq(undefined),
+          "listPage.seasonState from searchPage",
+        );
+        assertThat(
+          rl,
+          eqMessage(
+            {
+              list: {},
+            },
+            PUBLISHER_PAGE_RL,
+          ),
+          "rl.list after from searchPage",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/publisher_page_list.png"),
+          path.join(__dirname, "/golden/publisher_page_list.png"),
+          path.join(__dirname, "/publisher_page_list_diff.png"),
         );
 
         // Execute
@@ -442,9 +624,7 @@ TEST_RUNNER.run({
           rl,
           eqMessage(
             {
-              list: {
-                seasonState: SeasonState.ARCHIVED,
-              },
+              list: {},
             },
             PUBLISHER_PAGE_RL,
           ),
@@ -453,12 +633,12 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/publisher_page_list_archived_back_from_season_details_after_create.png",
+            "/publisher_page_list_back_from_season_details_after_create.png",
           ),
-          path.join(__dirname, "/golden/publisher_page_list_archived.png"),
+          path.join(__dirname, "/golden/publisher_page_list.png"),
           path.join(
             __dirname,
-            "/publisher_page_list_archived_back_from_season_details_after_create_diff.png",
+            "/publisher_page_list_back_from_season_details_after_create_diff.png",
           ),
         );
 
@@ -522,16 +702,6 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(Boolean(this.cut.listPage), eq(true), "listPage");
-
-        // Execute
-        this.cut.applyRl({
-          search: {
-            query: "My Hero",
-          },
-        });
-
-        // Verify
-        assertThat(Boolean(this.cut.listPage), eq(true), "listPage");
       }
       public tearDown() {
         this.cut.remove();
@@ -571,16 +741,14 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.applyRl({
-          list: {
-            seasonState: SeasonState.DRAFT,
-          },
+          list: {},
         });
 
         // Verify
         assertThat(
           this.cut.listPage.seasonState,
-          eq(SeasonState.DRAFT),
-          "listPage.seasonState changed to DRAFT",
+          eq(undefined),
+          "listPage.seasonState changed to null",
         );
       }
       public tearDown() {

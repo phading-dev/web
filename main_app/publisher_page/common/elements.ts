@@ -86,6 +86,75 @@ export function ePublishedSeasonItem(
       ),
       E.div(
         {
+          class: "published-season-state",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(
+          `${LOCALIZED_TEXT.seasonStateLabel}${LOCALIZED_TEXT.seasonStatePublishedLabel}`,
+        ),
+      ),
+      E.div(
+        {
+          class: "published-season-last-change-time",
+          style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(
+          `${LOCALIZED_TEXT.seasonLastChangeTime}${formatLastChangeTimeShort(season.lastChangeTimeMs)}`,
+        ),
+      ),
+    ),
+  );
+}
+
+export function eTakenDownSeasonItem(
+  season: SeasonSummary,
+  date: Date,
+  customStyle = "",
+): HTMLDivElement {
+  return E.div(
+    {
+      class: "published-season-item",
+      style: `margin: 0 1rem; cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customStyle}`,
+    },
+    E.div(
+      {
+        class: "published-season-item-cover-image",
+        style: `width: 30%; max-width: 15rem; flex: 0 0 auto;`,
+      },
+      eCoverImage("100%", season.coverImageUrl),
+    ),
+    E.div(
+      {
+        class: "published-season-item-info",
+        style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: 1rem;`,
+      },
+      E.div(
+        {
+          class: "published-season-name",
+          style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+        },
+        E.text(season.name),
+      ),
+      E.div(
+        {
+          class: "published-season-grade",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(
+          `${LOCALIZED_TEXT.currentRate}${formatShowPrice(season.grade, date)}`,
+        ),
+      ),
+      E.div(
+        {
+          class: "published-season-state",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(
+          `${LOCALIZED_TEXT.seasonStateLabel}${LOCALIZED_TEXT.seasonStateTakenDownLabel}`,
+        ),
+      ),
+      E.div(
+        {
           class: "published-season-last-change-time",
           style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
         },
@@ -137,6 +206,15 @@ export function eDraftSeasonItem(
       ),
       E.div(
         {
+          class: "draft-season-state",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(
+          `${LOCALIZED_TEXT.seasonStateLabel}${LOCALIZED_TEXT.seasonStateDraftLabel}`,
+        ),
+      ),
+      E.div(
+        {
           class: "draft-season-last-change-time",
           style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
         },
@@ -155,32 +233,54 @@ export function eArchivedSeasonItem(
 ): HTMLDivElement {
   return E.div(
     {
-      class: "archived-season-item-info",
-      style: `margin: 0 1rem; display: flex; flex-flow: column nowrap; gap: 1rem; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customStyle}`,
+      class: "archived-season-item",
+      style: `margin: 0 1rem; cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; ${customStyle}`,
     },
     E.div(
       {
-        class: "archived-season-name",
-        style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+        class: "archived-season-item-cover-image",
+        style: `width: 30%; max-width: 15rem; flex: 0 0 auto;`,
       },
-      E.text(season.name),
+      eCoverImage("100%", season.coverImageUrl),
     ),
     E.div(
       {
-        class: "archived-season-grade",
-        style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        class: "archived-season-item-info",
+        style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: 1rem;`,
       },
-      E.text(
-        `${LOCALIZED_TEXT.currentRate}${formatShowPrice(season.grade, date)}`,
+      E.div(
+        {
+          class: "archived-season-name",
+          style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+        },
+        E.text(season.name),
       ),
-    ),
-    E.div(
-      {
-        class: "archived-season-last-change-time",
-        style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
-      },
-      E.text(
-        `${LOCALIZED_TEXT.seasonLastChangeTime}${formatLastChangeTimeShort(season.lastChangeTimeMs)}`,
+      E.div(
+        {
+          class: "archived-season-grade",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(
+          `${LOCALIZED_TEXT.currentRate}${formatShowPrice(season.grade, date)}`,
+        ),
+      ),
+      E.div(
+        {
+          class: "archived-season-state",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(
+          `${LOCALIZED_TEXT.seasonStateLabel}${LOCALIZED_TEXT.seasonStateArchivedLabel}`,
+        ),
+      ),
+      E.div(
+        {
+          class: "archived-season-last-change-time",
+          style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(
+          `${LOCALIZED_TEXT.seasonLastChangeTime}${formatLastChangeTimeShort(season.lastChangeTimeMs)}`,
+        ),
       ),
     ),
   );

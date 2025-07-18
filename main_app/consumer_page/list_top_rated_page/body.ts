@@ -8,7 +8,7 @@ import {
   eSeasonItem,
   eSeasonItemContainerRef,
 } from "../common/elements";
-import { newListSeasonsByRatingRequest } from "@phading/product_service_interface/show/web/consumer/client";
+import { newListSeasonsByRatingRequest } from "@phading/product_service_interface/show/web/public/client";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";

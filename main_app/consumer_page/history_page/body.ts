@@ -9,8 +9,8 @@ import {
 } from "../common/elements";
 import { ActivityTab, ActivityTabsOption } from "../common/tabs";
 import { newListWatchSessionsRequest } from "@phading/play_activity_service_interface/show/web/client";
-import { newGetEpisodeWithSeasonSummaryRequest } from "@phading/product_service_interface/show/web/consumer/client";
-import { SeasonSummaryAndEpisode } from "@phading/product_service_interface/show/web/consumer/info";
+import { newGetEpisodeWithSeasonSummaryRequest } from "@phading/product_service_interface/show/web/public/client";
+import { SeasonSummaryAndEpisode } from "@phading/product_service_interface/show/web/public/info";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";

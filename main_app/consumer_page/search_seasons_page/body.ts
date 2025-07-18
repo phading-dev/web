@@ -4,7 +4,7 @@ import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { eSeasonItem, eSeasonItemContainerRef } from "../common/elements";
 import { SearchInput } from "../common/search_input";
-import { newSearchSeasonsRequest } from "@phading/product_service_interface/show/web/consumer/client";
+import { newSearchSeasonsRequest } from "@phading/product_service_interface/show/web/public/client";
 import { SearchTarget } from "@phading/web_interface/main/consumer/page";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";

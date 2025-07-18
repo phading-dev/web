@@ -10,11 +10,11 @@ import {
   eSeasonItem,
   eSeasonItemContainerRef,
 } from "../common/elements";
+import { newListContinueWatchingSeasonsRequest } from "@phading/product_service_interface/show/web/consumer/client";
 import {
-  newListContinueWatchingSeasonsRequest,
   newListSeasonsByRatingRequest,
   newListSeasonsByRecentPremiereTimeRequest,
-} from "@phading/product_service_interface/show/web/consumer/client";
+} from "@phading/product_service_interface/show/web/public/client";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";

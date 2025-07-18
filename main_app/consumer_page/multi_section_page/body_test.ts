@@ -11,12 +11,14 @@ import {
 import { MultiSectionPage } from "./body";
 import {
   LIST_CONTINUE_WATCHING_SEASONS,
+  ListContinueWatchingSeasonsResponse,
+} from "@phading/product_service_interface/show/web/consumer/interface";
+import {
   LIST_SEASONS_BY_RATING,
   LIST_SEASONS_BY_RECENT_PREMIERE_TIME,
-  ListContinueWatchingSeasonsResponse,
   ListSeasonsByRatingResponse,
   ListSeasonsByRecentPremiereTimeResponse,
-} from "@phading/product_service_interface/show/web/consumer/interface";
+} from "@phading/product_service_interface/show/web/public/interface";
 import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";

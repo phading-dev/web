@@ -28,11 +28,13 @@ import {
 import {
   AUTHORIZE_EPISODE_PLAYBACK,
   AuthorizeEpisodePlaybackResponse,
+} from "@phading/product_service_interface/show/web/consumer/interface";
+import {
   GET_EPISODE_WITH_SEASON_SUMMARY,
   GetEpisodeWithSeasonSummaryResponse,
   LIST_EPISODES,
   ListEpisodesResponse,
-} from "@phading/product_service_interface/show/web/consumer/interface";
+} from "@phading/product_service_interface/show/web/public/interface";
 import {
   GET_VIDEO_PLAYER_SETTINGS,
   GetVideoPlayerSettingsResponse,

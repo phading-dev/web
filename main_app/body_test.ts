@@ -735,7 +735,9 @@ TEST_RUNNER.run({
 
         // Execute
         await this.cut.applyRl({
-          publisher: {},
+          publisher: {
+            create: {},
+          },
         });
 
         // Verify

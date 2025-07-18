@@ -8,7 +8,7 @@ import { SearchSeasonsPage } from "./body";
 import {
   SEARCH_SEASONS_REQUEST_BODY,
   SearchSeasonsResponse,
-} from "@phading/product_service_interface/show/web/consumer/interface";
+} from "@phading/product_service_interface/show/web/public/interface";
 import { SearchTarget } from "@phading/web_interface/main/consumer/page";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";

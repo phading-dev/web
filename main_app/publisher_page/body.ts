@@ -122,7 +122,7 @@ export class PublisherPage extends EventEmitter {
     if (!rl) {
       rl = {};
     }
-    if (rl.search && (!rl.search.seasonState || !rl.search.query)) {
+    if (rl.search && !rl.search.query) {
       rl.search = undefined;
     }
     if (
@@ -134,9 +134,6 @@ export class PublisherPage extends EventEmitter {
       !rl.stats
     ) {
       rl.list = {};
-    }
-    if (rl.list && !rl.list.seasonState) {
-      rl.list.seasonState = SeasonState.PUBLISHED;
     }
 
     if (
@@ -154,7 +151,7 @@ export class PublisherPage extends EventEmitter {
         (this.searchPage.query ?? "") !== (rl.search.query ?? ""))
     ) {
       this.pageSwitcher.goTo(
-        () => this.addSearchPage(rl.search.seasonState, rl.search.query),
+        () => this.addSearchPage(rl.search.query, rl.search.seasonState),
         () => this.removeSearchPage(),
       );
     } else if (rl.create && !this.createSeasonPage) {
@@ -251,11 +248,11 @@ export class PublisherPage extends EventEmitter {
           },
         });
       })
-      .on("searchSeasons", (seasonState, query) => {
+      .on("searchSeasons", (query, seasonState) => {
         this.pushRl({
           search: {
-            seasonState,
             query,
+            seasonState,
           },
         });
       });
@@ -267,8 +264,8 @@ export class PublisherPage extends EventEmitter {
     this.listPage = undefined;
   }
 
-  private addSearchPage(seasonState: SeasonState, query: string): void {
-    this.searchPage = this.createSearchPage(seasonState, query)
+  private addSearchPage(query: string, seasonState: SeasonState): void {
+    this.searchPage = this.createSearchPage(query, seasonState)
       .on("viewSeason", (seasonId: string) => {
         this.pushRl({
           seasonDetails: {
@@ -276,11 +273,11 @@ export class PublisherPage extends EventEmitter {
           },
         });
       })
-      .on("searchSeasons", (seasonState, query) => {
+      .on("searchSeasons", (query, seasonState) => {
         this.pushRl({
           search: {
-            seasonState,
             query,
+            seasonState,
           },
         });
       })

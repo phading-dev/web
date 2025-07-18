@@ -8,7 +8,7 @@ import { ListTopRatedPage } from "./body";
 import {
   LIST_SEASONS_BY_RATING_REQUEST_BODY,
   ListSeasonsByRatingResponse,
-} from "@phading/product_service_interface/show/web/consumer/interface";
+} from "@phading/product_service_interface/show/web/public/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
