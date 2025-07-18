@@ -6,6 +6,7 @@ import { eFullPage } from "../../../common/page_elements";
 import { FONT_L, FONT_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { AccountItem, AddAccountItem } from "./account_item";
+import { MAX_ACCOUNTS_PER_USER } from "@phading/constants/account";
 import { AccountSummary } from "@phading/user_service_interface/web/self/account";
 import { newListAccountsRequest } from "@phading/user_service_interface/web/self/client";
 import { E } from "@selfage/element/factory";
@@ -57,7 +58,9 @@ export class ListAccountsPage extends EventEmitter {
           style: `display: flex; flex-flow: row wrap; justify-content: center; gap: 2rem; padding-bottom: 3rem;`,
         },
         ...response.accounts.map((account) => this.addAccountItem(account)),
-        assign(this.createAccountButton, new AddAccountItem()).body,
+        ...(response.accounts.length < MAX_ACCOUNTS_PER_USER
+          ? [assign(this.createAccountButton, new AddAccountItem()).body]
+          : []),
       ),
       E.divRef(
         this.signOutButton,
@@ -77,7 +80,7 @@ export class ListAccountsPage extends EventEmitter {
       ),
     );
 
-    this.createAccountButton.val.on("create", () => this.emit("create"));
+    this.createAccountButton.val?.on("create", () => this.emit("create"));
     this.signOutButton.val.addEventListener("click", () =>
       this.emit("signOut"),
     );

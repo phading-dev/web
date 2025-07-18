@@ -192,6 +192,24 @@ TEST_RUNNER.run({
                       avatarLargeUrl: userImage,
                       naturalName: "First Publisher",
                     },
+                    {
+                      accountId: "publisher 2",
+                      accountType: AccountType.PUBLISHER,
+                      avatarLargeUrl: userImage,
+                      naturalName: "Second Publisher",
+                    },
+                    {
+                      accountId: "publisher 3",
+                      accountType: AccountType.PUBLISHER,
+                      avatarLargeUrl: userImage,
+                      naturalName: "Third Publisher",
+                    },
+                    {
+                      accountId: "publisher 4",
+                      accountType: AccountType.PUBLISHER,
+                      avatarLargeUrl: userImage,
+                      naturalName: "4th Publisher",
+                    },
                   ],
                 } as ListAccountsResponse;
               } else if (request.descriptor === SWITCH_ACCOUNT) {
