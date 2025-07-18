@@ -611,10 +611,10 @@ export class InfoPage extends EventEmitter {
       videoContainer.processing.mediaFormatting ||
       videoContainer.processing.subtitleFormatting
     ) {
-      return eBox(
-        [
-          assign(
-            this.refreshProcessingButton,
+      return assign(
+        this.refreshProcessingButton,
+        eBox(
+          [
             E.div(
               {
                 class: "episode-details-upload-button-text",
@@ -622,11 +622,11 @@ export class InfoPage extends EventEmitter {
               },
               E.text(LOCALIZED_TEXT.seasonEpisodeVideoProcessingLabel),
             ),
-          ),
-        ],
-        {
-          customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center;`,
-        },
+          ],
+          {
+            customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center;`,
+          },
+        ),
       );
     } else {
       throw new Error(
