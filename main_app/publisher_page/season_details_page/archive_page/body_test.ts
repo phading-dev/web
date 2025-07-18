@@ -139,7 +139,7 @@ TEST_RUNNER.run({
           "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx",
           {
             state: SeasonState.TAKEN_DOWN,
-            takeDownReason: "Fake reason",
+            takenDownReason: "Fake reason",
           },
         );
 

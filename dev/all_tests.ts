@@ -88,6 +88,5 @@ import "../main_app/publisher_page/stats_page/body_test";
 import "../main_app/publisher_page/body_test";
 import "../main_app/body_test";
 import "../replace_primary_payment_method_action/action_test";
-import "../set_connected_account_onboarded_action/action_test";
 import "../app_test";
 import "../rl_history_tracker_test";

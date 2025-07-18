@@ -2,7 +2,6 @@ import EventEmitter = require("events");
 import { TabSwitcher } from "./common/page_navigator";
 import { MainApp } from "./main_app/body";
 import { ReplacePrimaryPaymentMethodAction } from "./replace_primary_payment_method_action/action";
-import { SetConnectedAccountOnboardedAction } from "./set_connected_account_onboarded_action/action";
 import { AppRl } from "@phading/web_interface/app";
 
 export interface App {
@@ -17,7 +16,6 @@ export class App extends EventEmitter {
     return new App(
       MainApp.create,
       ReplacePrimaryPaymentMethodAction.create,
-      SetConnectedAccountOnboardedAction.create,
       documentBody,
     );
   }
@@ -25,13 +23,11 @@ export class App extends EventEmitter {
   private pageSwitcher = new TabSwitcher();
   public mainApp: MainApp;
   public replacePrimaryPaymentMethodAction: ReplacePrimaryPaymentMethodAction;
-  public setConnectedAccountOnboardedAction: SetConnectedAccountOnboardedAction;
   private rl: AppRl;
 
   public constructor(
     private createMainApp: typeof MainApp.create,
     private createReplacePrimaryPaymentMethodAction: typeof ReplacePrimaryPaymentMethodAction.create,
-    private createSetConnectedAccountOnboardedAction: typeof SetConnectedAccountOnboardedAction.create,
     private documentBody: HTMLElement,
   ) {
     super();
@@ -47,11 +43,7 @@ export class App extends EventEmitter {
     if (!this.rl) {
       this.rl = {};
     }
-    if (
-      !this.rl.main &&
-      !this.rl.replacePrimaryPaymentMethod &&
-      !this.rl.setConnectedAccountOnboarded
-    ) {
+    if (!this.rl.main && !this.rl.replacePrimaryPaymentMethod) {
       this.rl.main = {};
     }
 
@@ -75,19 +67,6 @@ export class App extends EventEmitter {
             this.rl.replacePrimaryPaymentMethod.accountId,
           ),
         () => this.removeReplacePrimaryPaymentMethodAction(),
-      );
-    } else if (
-      this.rl.setConnectedAccountOnboarded &&
-      (!this.setConnectedAccountOnboardedAction ||
-        this.setConnectedAccountOnboardedAction.accountId !==
-          this.rl.setConnectedAccountOnboarded.accountId)
-    ) {
-      this.pageSwitcher.goTo(
-        () =>
-          this.addSetConnectedAccountOnboardedAction(
-            this.rl.setConnectedAccountOnboarded.accountId,
-          ),
-        () => this.removeSetConnectedAccountOnboardedAction(),
       );
     }
     this.emit("rlApplied");
@@ -137,30 +116,6 @@ export class App extends EventEmitter {
   private removeReplacePrimaryPaymentMethodAction(): void {
     this.replacePrimaryPaymentMethodAction.removeAllListeners();
     this.replacePrimaryPaymentMethodAction = undefined;
-  }
-
-  private addSetConnectedAccountOnboardedAction(accountId: string): void {
-    this.setConnectedAccountOnboardedAction =
-      this.createSetConnectedAccountOnboardedAction(accountId).on(
-        "complete",
-        (accountId) => {
-          this.replaceRl({
-            main: {
-              chooseAccount: {
-                accountId: accountId,
-              },
-              account: {
-                payout: {},
-              },
-            },
-          });
-        },
-      );
-  }
-
-  private removeSetConnectedAccountOnboardedAction(): void {
-    this.setConnectedAccountOnboardedAction.removeAllListeners();
-    this.setConnectedAccountOnboardedAction = undefined;
   }
 
   public remove(): void {

@@ -365,7 +365,7 @@ export class InfoPage extends EventEmitter {
               E.text(
                 this.getStateFooterText(
                   seasonDetails.state,
-                  seasonDetails.takeDownReason,
+                  seasonDetails.takenDownReason,
                 ),
               ),
             ),
@@ -464,7 +464,7 @@ export class InfoPage extends EventEmitter {
 
   private getStateFooterText(
     state: SeasonState,
-    takeDownReason?: string,
+    takenDownReason?: string,
   ): string {
     switch (state) {
       case SeasonState.PUBLISHED:
@@ -474,7 +474,7 @@ export class InfoPage extends EventEmitter {
       case SeasonState.DRAFT:
         return LOCALIZED_TEXT.seasonStateDraftFooter;
       case SeasonState.TAKEN_DOWN:
-        return `${LOCALIZED_TEXT.seasonStateTakenDownFooter}${takeDownReason}`;
+        return `${LOCALIZED_TEXT.seasonStateTakenDownFooter}${takenDownReason}`;
     }
   }
 

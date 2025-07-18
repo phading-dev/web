@@ -466,7 +466,7 @@ TEST_RUNNER.run({
             description:
               "A thrilling isekai anime following Subaru Natsuki as he navigates a world of magic, danger, and mystery, with the ability to return from death.",
             state: SeasonState.TAKEN_DOWN,
-            takeDownReason: "Violation of community guidelines",
+            takenDownReason: "Violation of community guidelines",
             coverImageUrl: coverImage,
             grade: 599,
             totalPublishedEpisodes: 10,

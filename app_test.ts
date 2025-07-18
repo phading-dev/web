@@ -6,7 +6,6 @@ import { normalizeBody } from "./common/normalize_body";
 import { setTabletView } from "./common/view_port";
 import { MainAppMock } from "./main_app/body_mock";
 import { ReplacePrimaryPaymentMethodActionMock } from "./replace_primary_payment_method_action/action_mock";
-import { SetConnectedAccountOnboardedActionMock } from "./set_connected_account_onboarded_action/action_mock";
 import { APP_RL, AppRl } from "@phading/web_interface/app";
 import { MainAppRl } from "@phading/web_interface/main/app";
 import { copyMessage } from "@selfage/message/copier";
@@ -23,7 +22,6 @@ function createApp(): [App, Array<AppRl>] {
   let app = new App(
     (appendBodies) => new MainAppMock(() => nowDate, appendBodies),
     (accountId) => new ReplacePrimaryPaymentMethodActionMock(accountId),
-    (accountId) => new SetConnectedAccountOnboardedActionMock(accountId),
     document.body,
   )
     .on("pushRl", (rl) => rls.push(copyMessage(rl, APP_RL)))
@@ -153,65 +151,6 @@ TEST_RUNNER.run({
             "/golden/app_replace_primary_payment_method.png",
           ),
           path.join(__dirname, "/app_replace_primary_payment_method_diff.png"),
-        );
-      }
-      public tearDown() {
-        this.cut.remove();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "SetConnectedAccountOnboardedAction_Complete";
-      private cut: App;
-      public async execute() {
-        // Prepare
-        await setTabletView();
-        LOCAL_SESSION_STORAGE.save("session1");
-        let [cut, rls] = createApp();
-        this.cut = cut;
-        let chosenAccountId: string;
-        this.cut.on("chosen", (accountId) => {
-          chosenAccountId = accountId;
-        });
-        rls.push({
-          setConnectedAccountOnboarded: {
-            accountId: "account1",
-          },
-        });
-
-        // Execute
-        this.cut.applyRl(rls[0]);
-        // SetConnectedAccountOnboardedAction will re-apply RL.
-        await new Promise((resolve) => this.cut.once("rlApplied", resolve));
-
-        // Verify
-        assertThat(
-          rls,
-          isArray([
-            eqMessage(
-              {
-                main: {
-                  account: {
-                    payout: {},
-                  },
-                },
-              },
-              APP_RL,
-            ),
-          ]),
-          "rls after applyRl",
-        );
-        assertThat(
-          chosenAccountId,
-          eq("account1"),
-          "chosen accountId after applyRl",
-        );
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/app_set_connected_account_onboarded.png"),
-          path.join(
-            __dirname,
-            "/golden/app_set_connected_account_onboarded.png",
-          ),
-          path.join(__dirname, "/app_set_connected_account_onboarded_diff.png"),
         );
       }
       public tearDown() {

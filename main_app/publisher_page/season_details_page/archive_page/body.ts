@@ -60,7 +60,7 @@ export class ArchivePage extends EventEmitter {
           E.text(
             season.state === SeasonState.PUBLISHED
               ? LOCALIZED_TEXT.seasonStatePublishedFooter
-              : `${LOCALIZED_TEXT.seasonStateTakenDownFooter}${season.takeDownReason}`,
+              : `${LOCALIZED_TEXT.seasonStateTakenDownFooter}${season.takenDownReason}`,
           ),
         ),
         E.div(
