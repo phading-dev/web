@@ -16,7 +16,7 @@ import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 normalizeBody();
 
 TEST_RUNNER.run({
-  name: "ListAccountsPageTest",
+  name: "SwitchAccountPageTest",
   cases: [
     new (class implements TestCase {
       public name = "Success";
@@ -78,7 +78,7 @@ TEST_RUNNER.run({
         let message = await new Promise<string>((resolve) =>
           this.cut.once("error", (message) => resolve(message)),
         );
-        assertThat(message, containStr("profile not found"), "error message");
+        assertThat(message, containStr("account not found"), "error message");
       }
       public tearDown() {
         this.cut.remove();
@@ -102,7 +102,7 @@ TEST_RUNNER.run({
         );
         assertThat(
           message,
-          containStr("Failed to switch profile"),
+          containStr("Failed to switch account"),
           "error message",
         );
       }

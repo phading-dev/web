@@ -9,10 +9,7 @@ import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { OptionPill } from "../../../common/option_buttons";
 import { eFormTitle } from "../../../common/page_elements";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import {
-  MAX_EMAIL_LENGTH,
-  MAX_NATURAL_NAME_LENGTH,
-} from "@phading/constants/account";
+import { MAX_NAME_LENGTH } from "@phading/constants/account";
 import { AccountType } from "@phading/user_service_interface/account_type";
 import { newCreateAccountRequest } from "@phading/user_service_interface/web/self/client";
 import {
@@ -34,8 +31,7 @@ export class CreateAccountPage extends EventEmitter {
     return new CreateAccountPage(SERVICE_CLIENT);
   }
 
-  public naturalNameInput = new Ref<TextInputWithErrorMsg>();
-  public emailInput = new Ref<TextInputWithErrorMsg>();
+  public accountNameInput = new Ref<TextInputWithErrorMsg>();
   public consumerOption = new Ref<OptionPill<AccountType>>();
   public publisherOption = new Ref<OptionPill<AccountType>>();
   private accountTypeInput = new Ref<RadioOptionInput<AccountType>>();
@@ -50,27 +46,15 @@ export class CreateAccountPage extends EventEmitter {
       [
         eFormTitle(LOCALIZED_TEXT.createAccountTitle),
         assign(
-          this.naturalNameInput,
+          this.accountNameInput,
           new TextInputWithErrorMsg(
-            LOCALIZED_TEXT.naturalNameLabel,
+            LOCALIZED_TEXT.accountNameLabel,
             "",
             {
               type: "text",
               autocomplete: "name",
             },
             (value) => this.validateOrTakeNaturalNameInput(value),
-          ),
-        ).body,
-        assign(
-          this.emailInput,
-          new TextInputWithErrorMsg(
-            LOCALIZED_TEXT.contactEmailLabel,
-            "",
-            {
-              type: "email",
-              autocomplete: "email",
-            },
-            (value) => this.validateOrTakeEmailInput(value),
           ),
         ).body,
         assign(
@@ -126,7 +110,7 @@ export class CreateAccountPage extends EventEmitter {
         this.emit("choose", response.signedSession),
       )
       .on("primaryDone", () => this.emit("chosen"))
-      .addInputs(this.naturalNameInput.val, this.emailInput.val);
+      .addInputs(this.accountNameInput.val);
     this.accountTypeInput.val.setValue(AccountType.CONSUMER);
   }
 
@@ -136,30 +120,13 @@ export class CreateAccountPage extends EventEmitter {
       return {
         valid: false,
       };
-    } else if (value.length > MAX_NATURAL_NAME_LENGTH) {
+    } else if (value.length > MAX_NAME_LENGTH) {
       return {
         valid: false,
-        errorMsg: LOCALIZED_TEXT.naturalNameTooLongError,
+        errorMsg: LOCALIZED_TEXT.accountNameTooLongError,
       };
     } else {
-      this.request.naturalName = value;
-      return { valid: true };
-    }
-  }
-
-  private validateOrTakeEmailInput(value: string): ValidationResult {
-    value = value.trim();
-    if (!value) {
-      return {
-        valid: false,
-      };
-    } else if (value.length > MAX_EMAIL_LENGTH) {
-      return {
-        valid: false,
-        errorMsg: LOCALIZED_TEXT.emailTooLongError,
-      };
-    } else {
-      this.request.contactEmail = value;
+      this.request.name = value;
       return { valid: true };
     }
   }

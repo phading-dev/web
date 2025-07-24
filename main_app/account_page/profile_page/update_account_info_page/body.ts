@@ -9,8 +9,7 @@ import { eFormTitle } from "../../../../common/page_elements";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import {
   MAX_DESCRIPTION_LENGTH,
-  MAX_EMAIL_LENGTH,
-  MAX_NATURAL_NAME_LENGTH,
+  MAX_NAME_LENGTH,
 } from "@phading/constants/account";
 import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
 import { newUpdateAccountRequest } from "@phading/user_service_interface/web/self/client";
@@ -31,8 +30,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
     return new UpdateAccountInfoPage(SERVICE_CLIENT, account);
   }
 
-  public naturalNameInput = new Ref<TextInputWithErrorMsg>();
-  public emailInput = new Ref<TextInputWithErrorMsg>();
+  public accountNameInput = new Ref<TextInputWithErrorMsg>();
   public descriptionInput = new Ref<TextAreaInputWithErrorMsg>();
   public inputFormPage: InputFormPage<UpdateAccountResponse>;
   private request: UpdateAccountRequestBody = {};
@@ -47,29 +45,16 @@ export class UpdateAccountInfoPage extends EventEmitter {
       [
         eFormTitle(LOCALIZED_TEXT.updateAccountInfoTitle),
         assign(
-          this.naturalNameInput,
+          this.accountNameInput,
           new TextInputWithErrorMsg(
-            LOCALIZED_TEXT.naturalNameLabel,
+            LOCALIZED_TEXT.accountNameLabel,
             "",
             {
               type: "text",
               autocomplete: "name",
-              value: account.naturalName ?? "",
+              value: account.name ?? "",
             },
-            (value) => this.validateOrTakeNaturalNameInput(value),
-          ),
-        ).body,
-        assign(
-          this.emailInput,
-          new TextInputWithErrorMsg(
-            LOCALIZED_TEXT.contactEmailLabel,
-            "",
-            {
-              type: "email",
-              autocomplete: "email",
-              value: account.contactEmail ?? "",
-            },
-            (value) => this.validateOrTakeEmailInput(value),
+            (value) => this.validateOrTakeAccountNameInput(value),
           ),
         ).body,
         assign(
@@ -93,43 +78,22 @@ export class UpdateAccountInfoPage extends EventEmitter {
       .on("handlePrimarySuccess", () => this.emit("back"))
       .on("primaryDone", () => this.emit("updated"))
       .on("back", () => this.emit("back"))
-      .addInputs(
-        this.naturalNameInput.val,
-        this.emailInput.val,
-        this.descriptionInput.val,
-      );
+      .addInputs(this.accountNameInput.val, this.descriptionInput.val);
   }
 
-  private validateOrTakeNaturalNameInput(value: string): ValidationResult {
+  private validateOrTakeAccountNameInput(value: string): ValidationResult {
     value = value.trim();
     if (!value) {
       return {
         valid: false,
       };
-    } else if (value.length > MAX_NATURAL_NAME_LENGTH) {
+    } else if (value.length > MAX_NAME_LENGTH) {
       return {
         valid: false,
-        errorMsg: LOCALIZED_TEXT.naturalNameTooLongError,
+        errorMsg: LOCALIZED_TEXT.accountNameTooLongError,
       };
     } else {
-      this.request.naturalName = value;
-      return { valid: true };
-    }
-  }
-
-  private validateOrTakeEmailInput(value: string): ValidationResult {
-    value = value.trim();
-    if (!value) {
-      return {
-        valid: false,
-      };
-    } else if (value.length > MAX_EMAIL_LENGTH) {
-      return {
-        valid: false,
-        errorMsg: LOCALIZED_TEXT.emailTooLongError,
-      };
-    } else {
-      this.request.contactEmail = value;
+      this.request.name = value;
       return { valid: true };
     }
   }

@@ -15,13 +15,13 @@ export class ListAccountsPageMock extends ListAccountsPage {
                 accountId: "consumer 1",
                 accountType: AccountType.CONSUMER,
                 avatarLargeUrl: userImage,
-                naturalName: "First Consumer",
+                name: "First Consumer",
               },
               {
                 accountId: "publisher 1",
                 accountType: AccountType.PUBLISHER,
                 avatarLargeUrl: userImage,
-                naturalName: "First Publisher",
+                name: "First Publisher",
               },
             ],
           } as ListAccountsResponse;

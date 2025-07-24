@@ -54,7 +54,7 @@ export class SeasonDetailsPageMock extends SeasonDetailsPage {
               let response: GetAccountSummaryResponse = {
                 account: {
                   accountId: "550e8400-e29b-41d4-a716-446655440000",
-                  naturalName: "Animplex",
+                  name: "Animplex",
                   avatarSmallUrl: userImage,
                 },
               };

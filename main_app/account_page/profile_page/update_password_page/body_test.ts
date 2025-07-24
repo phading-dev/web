@@ -5,6 +5,7 @@ import { UpdatePasswordPage } from "./body";
 import {
   UPDATE_PASSWORD,
   UPDATE_PASSWORD_REQUEST_BODY,
+  UpdatePasswordResponse,
 } from "@phading/user_service_interface/web/self/interface";
 import { eqMessage } from "@selfage/message/test_matcher";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -34,7 +35,7 @@ TEST_RUNNER.run({
         let clientMock = new WebServiceClientMock();
 
         // Execute
-        this.cut = new UpdatePasswordPage(clientMock, "user1");
+        this.cut = new UpdatePasswordPage(clientMock, "me@gmail.com");
         document.body.append(this.cut.body);
 
         // Verify
@@ -121,6 +122,28 @@ TEST_RUNNER.run({
 
         // Prepare
         clientMock.error = undefined;
+        clientMock.response = {
+          notAuthenticated: true,
+        } as UpdatePasswordResponse;
+
+        // Execute
+        this.cut.inputFormPage.clickPrimaryButton();
+        await new Promise<void>((resolve) => this.cut.once("updated", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/update_password_page_incorrect_password.png"),
+          path.join(
+            __dirname,
+            "/golden/update_password_page_incorrect_password.png",
+          ),
+          path.join(
+            __dirname,
+            "/update_password_page_incorrect_password_diff.png",
+          ),
+        );
+
+        // Prepare
         clientMock.response = {};
         let isBack = false;
         this.cut.on("back", () => (isBack = true));

@@ -117,7 +117,7 @@ class PlayPageServiceClientMock extends WebServiceClientMock {
             response = {
               account: {
                 accountId: "author1",
-                naturalName: "Author 1",
+                name: "Author 1",
                 avatarSmallUrl: userImage,
               },
             };
@@ -126,7 +126,7 @@ class PlayPageServiceClientMock extends WebServiceClientMock {
             response = {
               account: {
                 accountId: "author2",
-                naturalName: "Author 2",
+                name: "Author 2",
                 avatarSmallUrl: userImage2,
               },
             };
@@ -135,7 +135,7 @@ class PlayPageServiceClientMock extends WebServiceClientMock {
             response = {
               account: {
                 accountId: "author3",
-                naturalName: "Author 3",
+                name: "Author 3",
                 avatarSmallUrl: userImage,
               },
             };

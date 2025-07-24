@@ -63,7 +63,7 @@ TEST_RUNNER.run({
               pinnedVideoTimeMs: 1000,
             },
             author: {
-              naturalName: "First Second",
+              name: "First Second",
               avatarSmallUrl: userImage,
             },
           },
@@ -73,7 +73,7 @@ TEST_RUNNER.run({
               pinnedVideoTimeMs: 2000,
             },
             author: {
-              naturalName: "Third Fourth",
+              name: "Third Fourth",
               avatarSmallUrl: userImage2,
             },
           },
@@ -83,7 +83,7 @@ TEST_RUNNER.run({
               pinnedVideoTimeMs: 3000,
             },
             author: {
-              naturalName: "Fifth Sixth",
+              name: "Fifth Sixth",
               avatarSmallUrl: userImage,
             },
           },
@@ -93,7 +93,7 @@ TEST_RUNNER.run({
               pinnedVideoTimeMs: 4000,
             },
             author: {
-              naturalName: "Seventh Eighth",
+              name: "Seventh Eighth",
               avatarSmallUrl: userImage2,
             },
           },
@@ -126,7 +126,7 @@ TEST_RUNNER.run({
                 pinnedVideoTimeMs: (i + 5) * 1000,
               },
               author: {
-                naturalName: `Author ${i + 1}`,
+                name: `Author ${i + 1}`,
                 avatarSmallUrl: i % 2 === 0 ? userImage : userImage2,
               },
             }),

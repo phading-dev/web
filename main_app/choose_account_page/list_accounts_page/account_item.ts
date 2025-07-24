@@ -30,10 +30,10 @@ export class AccountItem extends EventEmitter {
       }),
       E.div(
         {
-          class: "account-item-natural-name",
+          class: "account-item-name",
           style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden; color: ${SCHEME.neutral0}; text-align: center;`,
         },
-        E.text(account.naturalName),
+        E.text(account.name),
       ),
     );
 

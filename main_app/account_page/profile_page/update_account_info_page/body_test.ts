@@ -38,10 +38,8 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.naturalNameInput.val.value = " First second ";
-        this.cut.naturalNameInput.val.dispatchInput();
-        this.cut.emailInput.val.value = " me@gmail.com ";
-        this.cut.emailInput.val.dispatchInput();
+        this.cut.accountNameInput.val.value = " First second ";
+        this.cut.accountNameInput.val.dispatchInput();
         this.cut.descriptionInput.val.value = " Some kind of description. ";
         this.cut.descriptionInput.val.dispatchInput();
 
@@ -75,8 +73,7 @@ TEST_RUNNER.run({
           webServiceClientMock.request.body,
           eqMessage(
             {
-              naturalName: "First second",
-              contactEmail: "me@gmail.com",
+              name: "First second",
               description: "Some kind of description.",
             },
             UPDATE_ACCOUNT_REQUEST_BODY,
@@ -133,8 +130,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut = new UpdateAccountInfoPage(webServiceClientMock, {
-          naturalName: "First second",
-          contactEmail: "me@gmail.com",
+          name: "First second",
         });
         document.body.append(this.cut.body);
 
@@ -168,8 +164,7 @@ TEST_RUNNER.run({
           webServiceClientMock.request.body,
           eqMessage(
             {
-              naturalName: "First second",
-              contactEmail: "me@gmail.com",
+              name: "First second",
               description: "",
             },
             UPDATE_ACCOUNT_REQUEST_BODY,
@@ -191,8 +186,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut = new UpdateAccountInfoPage(webServiceClientMock, {
-          naturalName: "First second",
-          contactEmail: "me@gmail.com",
+          name: "First second",
           description: "Some kind of description.",
         });
         document.body.append(this.cut.body);
@@ -224,8 +218,7 @@ TEST_RUNNER.run({
           webServiceClientMock.request.body,
           eqMessage(
             {
-              naturalName: "First second",
-              contactEmail: "me@gmail.com",
+              name: "First second",
               description: "Some kind of description.",
             },
             UPDATE_ACCOUNT_REQUEST_BODY,
@@ -238,88 +231,53 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "NaturalNameInputError";
+      public name = "AccountNameInputError";
       private cut: UpdateAccountInfoPage;
       public async execute() {
         // Prepare
         await setDesktopView();
         this.cut = new UpdateAccountInfoPage(undefined, {
-          naturalName: "First last",
+          name: "First last",
         });
         document.body.appendChild(this.cut.body);
 
         // Execute
-        this.cut.naturalNameInput.val.value = Array(101).fill("1").join("");
-        this.cut.naturalNameInput.val.dispatchInput();
+        this.cut.accountNameInput.val.value = Array(101).fill("1").join("");
+        this.cut.accountNameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/update_account_info_page_natural_name_too_long_error.png",
+            "/update_account_info_page_account_name_too_long_error.png",
           ),
           path.join(
             __dirname,
-            "/golden/update_account_info_page_natural_name_too_long_error.png",
+            "/golden/update_account_info_page_account_name_too_long_error.png",
           ),
           path.join(
             __dirname,
-            "/update_account_info_page_natural_name_too_long_error_diff.png",
+            "/update_account_info_page_account_name_too_long_error_diff.png",
           ),
         );
 
         // Execute
-        this.cut.naturalNameInput.val.value = "";
-        this.cut.naturalNameInput.val.dispatchInput();
+        this.cut.accountNameInput.val.value = "";
+        this.cut.accountNameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/update_account_info_page_natural_name_missing_error.png",
+            "/update_account_info_page_account_name_missing_error.png",
           ),
           path.join(
             __dirname,
-            "/golden/update_account_info_page_natural_name_missing_error.png",
+            "/golden/update_account_info_page_account_name_missing_error.png",
           ),
           path.join(
             __dirname,
-            "/update_account_info_page_natural_name_missing_error_diff.png",
-          ),
-        );
-      }
-      public tearDown() {
-        this.cut.remove();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "ContactEmailInputError";
-      private cut: UpdateAccountInfoPage;
-      public async execute() {
-        // Prepare
-        await setDesktopView();
-        this.cut = new UpdateAccountInfoPage(undefined, {
-          naturalName: "First last",
-        });
-        document.body.appendChild(this.cut.body);
-
-        // Execute
-        this.cut.emailInput.val.value = Array(201).fill("1").join("");
-        this.cut.emailInput.val.dispatchInput();
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/update_account_info_page_contact_email_too_long_error.png",
-          ),
-          path.join(
-            __dirname,
-            "/golden/update_account_info_page_contact_email_too_long_error.png",
-          ),
-          path.join(
-            __dirname,
-            "/update_account_info_page_contact_email_too_long_error_diff.png",
+            "/update_account_info_page_account_name_missing_error_diff.png",
           ),
         );
       }
@@ -334,7 +292,7 @@ TEST_RUNNER.run({
         // Prepare
         await setDesktopView();
         this.cut = new UpdateAccountInfoPage(undefined, {
-          naturalName: "First last",
+          name: "First last",
         });
         document.body.appendChild(this.cut.body);
 

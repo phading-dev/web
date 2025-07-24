@@ -7,7 +7,7 @@ import { InfoPageMock } from "./info_page/body_mock";
 import { UpdateAccountInfoPage } from "./update_account_info_page/body";
 import { UpdateAvatarPage } from "./update_avatar_page/body";
 import { UpdatePasswordPage } from "./update_password_page/body";
-import { UpdateRecoveryEmailPage } from "./update_recovery_email_page/body";
+import { UpdateUserEmailPage } from "./update_user_email_page/body";
 import { MAX_AVATAR_SIZE } from "@phading/constants/account";
 import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -27,10 +27,8 @@ TEST_RUNNER.run({
         await setDesktopView();
         let account: AccountAndUser = {
           avatarLargeUrl: userImage,
-          contactEmail: "my@gmail.com",
-          naturalName: "First Second",
-          username: "user1",
-          recoveryEmail: "some@gmail.com",
+          userEmail: "my@gmail.com",
+          name: "First Second",
         };
 
         // Execute
@@ -39,8 +37,8 @@ TEST_RUNNER.run({
           (account) =>
             new UpdateAvatarPage(undefined, MAX_AVATAR_SIZE, account),
           (account) => new UpdateAccountInfoPage(undefined, account),
-          (username) => new UpdatePasswordPage(undefined, username),
-          (username) => new UpdateRecoveryEmailPage(undefined, username),
+          (userEmail) => new UpdatePasswordPage(undefined, userEmail),
+          (account) => new UpdateUserEmailPage(undefined, account),
           (...bodies) => document.body.append(...bodies),
         );
 
@@ -107,7 +105,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.infoPage.emit("updatePassword", account.username);
+        this.cut.infoPage.emit("updatePassword", account);
 
         // Verify
         await asyncAssertScreenshot(
@@ -133,34 +131,43 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.infoPage.emit("updateRecoveryEmail", account);
+        this.cut.infoPage.emit("updateUserEmail", account);
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/profile_page_go_to_update_recovery_email.png"),
+          path.join(__dirname, "/profile_page_go_to_update_user_email.png"),
           path.join(
             __dirname,
-            "/golden/profile_page_go_to_update_recovery_email.png",
+            "/golden/profile_page_go_to_update_user_email.png",
           ),
           path.join(
             __dirname,
-            "/profile_page_go_to_update_recovery_email_diff.png",
+            "/profile_page_go_to_update_user_email_diff.png",
           ),
         );
 
+        // Prepare
+        let signOut = false;
+        this.cut.on("signOut", () => {
+          signOut = true;
+        });
+
         // Execute
-        this.cut.updateRecoveryEmailPage.emit("back");
+        this.cut.updateUserEmailPage.emit("signOut");
+
+        // Verify
+        assertThat(signOut, eq(true), "sign out from update user email page");
+
+        // Execute
+        this.cut.updateUserEmailPage.emit("back");
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/profile_page_back_from_update_recovery_email.png",
-          ),
+          path.join(__dirname, "/profile_page_back_from_update_user_email.png"),
           path.join(__dirname, "/golden/profile_page_default.png"),
           path.join(
             __dirname,
-            "/profile_page_back_from_update_recovery_email_diff.png",
+            "/profile_page_back_from_update_user_email_diff.png",
           ),
         );
 
@@ -177,16 +184,13 @@ TEST_RUNNER.run({
         assertThat(chooseAccount, eq(true), "choose account");
 
         // Prepare
-        let signOut = false;
-        this.cut.on("signOut", () => {
-          signOut = true;
-        });
+        signOut = false;
 
         // Execute
         this.cut.infoPage.emit("signOut");
 
         // Verify
-        assertThat(signOut, eq(true), "sign out");
+        assertThat(signOut, eq(true), "sign out from info page");
       }
       public tearDown() {
         this.cut.remove();

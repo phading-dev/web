@@ -27,8 +27,8 @@ TEST_RUNNER.run({
           serviceClientMock,
           "account1",
         );
-        let completeAccountId = await new Promise<string>((resolve) =>
-          cut.once("complete", (accountId) => resolve(accountId)),
+        let paymentAccountId = await new Promise<string>((resolve) =>
+          cut.once("payment", (accountId) => resolve(accountId)),
         );
 
         // Verify
@@ -47,7 +47,7 @@ TEST_RUNNER.run({
           ),
           "RC body",
         );
-        assertThat(completeAccountId, eq("account1"), "complete account");
+        assertThat(paymentAccountId, eq("account1"), "payment account");
       },
     },
     {
@@ -67,12 +67,12 @@ TEST_RUNNER.run({
           serviceClientMock,
           "account1",
         );
-        let completeAccountId = await new Promise<string>((resolve) =>
-          cut.once("complete", (accountId) => resolve(accountId)),
+        let paymentAccountId = await new Promise<string>((resolve) =>
+          cut.once("payment", (accountId) => resolve(accountId)),
         );
 
         // Verify
-        assertThat(completeAccountId, eq("account1"), "complete account");
+        assertThat(paymentAccountId, eq("account1"), "payment account");
       },
     },
     {
@@ -91,12 +91,12 @@ TEST_RUNNER.run({
           serviceClientMock,
           "account1",
         );
-        let completeAccountId = await new Promise<string>((resolve) =>
-          cut.once("complete", (accountId) => resolve(accountId)),
+        let paymentAccountId = await new Promise<string>((resolve) =>
+          cut.once("payment", (accountId) => resolve(accountId)),
         );
 
         // Verify
-        assertThat(completeAccountId, eq("account1"), "complete account");
+        assertThat(paymentAccountId, eq("account1"), "payment account");
       },
     },
   ],

@@ -29,9 +29,8 @@ function createAccountAndUserResponse(): GetAccountAndUserResponse {
   return {
     account: {
       avatarLargeUrl: userImage,
-      naturalName: "Some name",
-      username: "user1",
-      recoveryEmail: "some@gmail.com",
+      name: "Some name",
+      userEmail: "some@gmail.com",
     },
   };
 }
@@ -111,9 +110,8 @@ TEST_RUNNER.run({
           eqMessage(
             {
               avatarLargeUrl: userImage,
-              naturalName: "Some name",
-              username: "user1",
-              recoveryEmail: "some@gmail.com",
+              name: "Some name",
+              userEmail: "some@gmail.com",
             },
             ACCOUNT_AND_USER,
           ),
@@ -132,17 +130,16 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         let webServiceClientMock = new WebServiceClientMock();
-        webServiceClientMock.response = {
+        let response: GetAccountAndUserResponse = {
           account: {
             avatarLargeUrl: userImage,
-            naturalName: "Some name",
-            contactEmail: "aaa@email.com",
+            name: "Some name",
+            userEmail: "aaa@email.com",
             description:
               "long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long",
-            username: "user1",
-            recoveryEmail: "some@gmail.com",
           },
-        } as GetAccountAndUserResponse;
+        };
+        webServiceClientMock.response = response;
         this.cut = new InfoPage(webServiceClientMock);
 
         // Execute
@@ -222,9 +219,8 @@ TEST_RUNNER.run({
           eqMessage(
             {
               avatarLargeUrl: userImage,
-              naturalName: "Some name",
-              username: "user1",
-              recoveryEmail: "some@gmail.com",
+              name: "Some name",
+              userEmail: "some@gmail.com",
             },
             ACCOUNT_AND_USER,
           ),
@@ -257,9 +253,8 @@ TEST_RUNNER.run({
           eqMessage(
             {
               avatarLargeUrl: userImage,
-              naturalName: "Some name",
-              username: "user1",
-              recoveryEmail: "some@gmail.com",
+              name: "Some name",
+              userEmail: "some@gmail.com",
             },
             ACCOUNT_AND_USER,
           ),
@@ -271,7 +266,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "UpdateRecoveryEmail";
+      public name = "UpdateUserEmail";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -282,12 +277,12 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
         let accountCaptured: AccountAndUser;
         this.cut.on(
-          "updateRecoveryEmail",
+          "updateUserEmail",
           (account) => (accountCaptured = account),
         );
 
         // Execute
-        this.cut.recoveryEmail.val.click();
+        this.cut.userEmail.val.click();
 
         // Verify
         assertThat(
@@ -295,9 +290,8 @@ TEST_RUNNER.run({
           eqMessage(
             {
               avatarLargeUrl: userImage,
-              naturalName: "Some name",
-              username: "user1",
-              recoveryEmail: "some@gmail.com",
+              name: "Some name",
+              userEmail: "some@gmail.com",
             },
             ACCOUNT_AND_USER,
           ),

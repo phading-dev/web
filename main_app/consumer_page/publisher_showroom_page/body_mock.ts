@@ -21,7 +21,7 @@ export class PublisherShowroomPageMock extends PublisherShowroomPage {
             let response: GetAccountDetailsResponse = {
               account: {
                 accountId: "account1",
-                naturalName: "Account 1",
+                name: "Account 1",
                 avatarLargeUrl: userImage,
               },
             };

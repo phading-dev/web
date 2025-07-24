@@ -213,7 +213,7 @@ TEST_RUNNER.run({
         let cut = ePublisherItem(
           {
             accountId: "publisher1",
-            naturalName: "Publisher Name",
+            name: "Publisher Name",
             avatarLargeUrl: userImage,
             description: "A simple person with a simple description.",
           },
@@ -258,7 +258,7 @@ TEST_RUNNER.run({
         let cut = ePublisherItem(
           {
             accountId: "123e4567-e89b-12d3-a456-426614174000",
-            naturalName:
+            name:
               "Publisher Name That Is Extremely Long And Keeps Going To Test The Layout Handling Of Very Long Names In A Constrained Space",
             avatarLargeUrl: userImage,
             description:
@@ -290,7 +290,7 @@ TEST_RUNNER.run({
         this.cut = ePublisherContextItem(
           {
             accountId: "123e4567-e89b-12d3-a456-426614174000",
-            naturalName:
+            name:
               "Publisher Name That Is Extremely Long And Keeps Going To Test The Layout Handling Of Very Long Names In A Constrained Space",
             avatarLargeUrl: userImage,
             description:

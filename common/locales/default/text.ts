@@ -70,23 +70,17 @@ export default class Text {
   get contactEmailLabel() {
     return `Contact email`;
   }
-  get naturalNameLabel() {
+  get accountNameLabel() {
     return `Name`;
   }
   get accountDescriptionLabel() {
     return `Description`;
-  }
-  get usernameLabel() {
-    return `Username`;
   }
   get emailLabel() {
     return `Email`;
   }
   get emailTooLongError() {
     return `Email is too long.`;
-  }
-  get recoveryEmailLabel() {
-    return `Recovery email`;
   }
   get passwordLabel() {
     return `Password`;
@@ -95,7 +89,7 @@ export default class Text {
     return `Confirm your password`;
   }
   get chooseAccountTypeLabel() {
-    return `Profile type`;
+    return `Account type`;
   }
   get userTypeConsumerLabel() {
     return `Viewer`;
@@ -103,17 +97,20 @@ export default class Text {
   get userTypePublisherLabel() {
     return `Publisher`;
   }
+  get addMoreAccountsTip() {
+    return `(You can add more accounts under the same email later.)`;
+  }
   get switchToSignUpLink() {
     return `Don't have an account?`;
   }
-  get naturalNameTooLongError() {
+  get forgotPasswordLink() {
+    return `Forgot your password?`;
+  }
+  get accountNameTooLongError() {
     return `Your name is too long`;
   }
-  get usernameTooLongError() {
-    return `Username is too long`;
-  }
-  get usernameIsUsedError() {
-    return `Username is already taken.`;
+  get userEmailAlreadyExists() {
+    return `An account with this email already exists.`;
   }
   get passwordTooLongError() {
     return `Password is too long`;
@@ -134,7 +131,10 @@ export default class Text {
     return `Sign in`;
   }
   get signInError() {
-    return `Failed to sign in. Please check your username and password, and try again.`;
+    return `Failed to sign in. Please try again later.`;
+  }
+  get incorrectCredentialError() {
+    return `Incorrect email or password. Please try again.`;
   }
   get switchToSignInLink() {
     return `Already have an account?`;
@@ -159,35 +159,134 @@ export default class Text {
       `.`,
     ];
   }
-  get sendTaleEntryButtonLabel() {
+  get emailVerificationTitle() {
+    return `Verify your email`;
+  }
+  get emailVerificationSubtitle() {
+    return `We've sent a verification link to your email address:`;
+  }
+  get emailVerificationSubtitle2() {
+    return `Please click the link in the email to verify your address.`;
+  }
+  get emailVerificationNotReceived() {
+    return `Didn't receive the email? Try checking your spam folder.`;
+  }
+  get resendButtonLabel() {
+    return `Resend`;
+  }
+  get resendGenericError() {
+    return `Failed to resend. Please try again later.`;
+  }
+  get resendEmailVerificationEmailRateLimitError() {
+    return [
+      `You can only resend the verification email once every `,
+      ` seconds.`,
+    ];
+  }
+  get resendCountDown() {
+    return [`Resend in `, `s`];
+  }
+  get alternativeAction() {
+    return `or`;
+  }
+  get changeEmailLabel() {
+    return `Change email`;
+  }
+  get changeEmailTitle() {
+    return `Change email address`;
+  }
+  get currentEmail() {
+    return [`Your current email is `, `.`];
+  }
+  get newEmailLabel() {
+    return `New email`;
+  }
+  get sendPasswordResetTitle() {
+    return `Reset password`;
+  }
+  get sendPasswordResetEmailLabel() {
+    return `Enter your email address and we'll send you a link to reset your password.`;
+  }
+  get sendButtonLabel() {
     return `Send`;
   }
-  get saveButtonLabel() {
-    return `Save`;
+  get sendGenericError() {
+    return `Failed to send. Please try again later.`;
+  }
+  get sendPasswordResetEmailRateLimitError() {
+    return `You have recently requested a password reset. Please check your email or try again later.`;
+  }
+  get passwordResetSentSuccessTitle() {
+    return `Check your email`;
+  }
+  get passwordResetSentSuccessBody() {
+    return `We've sent a password reset link to`;
+  }
+  get passwordResetEmailReminder() {
+    return `Please check your inbox and follow the instructions to reset your password.`;
+  }
+  get emailVerifiedTitle() {
+    return `Email verified!`;
+  }
+  get emailVerifiedBody() {
+    return `Thank you! Your email has been successfully verified.`;
+  }
+  get goToHomeButtonLabel() {
+    return `Go to home`;
+  }
+  get emailVerificationTokenExpiredTitle() {
+    return `Verification link expired`;
+  }
+  get emailVerificationTokenExpiredBody() {
+    return `The link you clicked may have expired. Please sign in and request a new verification email.`;
+  }
+  get continueButtonLabel() {
+    return `Continue`;
+  }
+  get resetPasswordTitle() {
+    return `Set a new password`;
+  }
+  get resetButtonLabel() {
+    return `Reset`;
+  }
+  get resetPasswordGenericError() {
+    return `Failed to reset password. Please try again later.`;
+  }
+  get resetPasswordSuccessTitle() {
+    return `Password updated!`;
+  }
+  get resetPasswordSuccessBody() {
+    return `Your password has been successfully updated. You are now signed in.`;
+  }
+  get resetPasswordTokenExpiredTitle() {
+    return `Reset link expired`;
+  }
+  get resetPasswordTokenExpiredBody() {
+    return `The link to reset your password has expired. Please request a new one.`;
   }
   get cancelButtonLabel() {
     return `Cancel`;
   }
   get createAccountTitle() {
-    return `Create a new profile`;
+    return `Add a new account under your email`;
   }
   get acceptPublisherTermsOnly() {
     return [`I have read and agree to the `, `Publisher Agreement`, `.`];
   }
   get createAccountButtonLabel() {
-    return `Create`;
+    return `Add`;
   }
   get createAccountError() {
-    return `Failed to create a new profile. Please try again later.`;
+    return `Failed to add a new account. Please try again later.`;
   }
   get chooseAccountTitle() {
-    return `Choose a profile`;
+    return `Choose an account`;
   }
   get accountNotFoundError() {
-    return `Requested profile not found. Or you can sign out and sign in to other accounts.`;
+    return `Requested account not found. Or you can sign out and sign in to other emails.`;
   }
   get switchAccountFailedError() {
-    return `Failed to switch profile. Please try again later.`;
+    return `Failed to switch account. Please try again later.`;
   }
   get accountLabel() {
     return `Account`;
@@ -232,7 +331,7 @@ export default class Text {
     return `Update`;
   }
   get chooseAccountButtonLabel() {
-    return `Switch profile`;
+    return `Switch account`;
   }
   get signOutButtonLabel() {
     return `Sign out`;
@@ -256,7 +355,7 @@ export default class Text {
     return `Failed to upload your avatar. Please try again later.`;
   }
   get updateAccountInfoTitle() {
-    return `Update profile info`;
+    return `Update account info`;
   }
   get accountDescriptionTooLongError() {
     return `Description is too long.`;
@@ -276,14 +375,17 @@ export default class Text {
   get repeatNewPasswordLabel() {
     return `Confirm new password`;
   }
-  get updateUsernameTitle() {
-    return `Update username`;
+  get updateEmailTitle() {
+    return `Update email`;
   }
-  get newUsernameLabel() {
-    return `New username`;
+  get updateEmailTip() {
+    return `For security, we'll sign you out. Please verify your new email address once you've signed back in.`;
   }
-  get updateRecoveryEmailTitle() {
-    return `Update recovery email`;
+  get userEmailNotAvailableError() {
+    return `This email address is not available. Please try another.`
+  }
+  get incorrectPasswordError() {
+    return `Incorrect password. Please try again.`;
   }
   get updateButtonLabel() {
     return `Update`;
@@ -319,13 +421,13 @@ export default class Text {
     return `Retrying payments. Please check back later.`;
   }
   get paymentStatusSuspendedWithFailedPayments() {
-    return `Your profile is currently suspended. Please check or update your payment method and retry failed payments first.`;
+    return `Your account is currently suspended. Please check or update your payment method and retry failed payments first.`;
   }
   get paymentStatusSuspendedWithProcessingPayments() {
-    return `Your profile is currently suspended. Waiting for payments processing to be completed. Please check back later.`;
+    return `Your account is currently suspended. Waiting for payments processing to be completed. Please check back later.`;
   }
   get paymentStatusSuspendedWithSettledPayments() {
-    return `Your profile is currently suspended. All payments have been settled.`;
+    return `Your account is currently suspended. All payments have been settled.`;
   }
   get retryPaymentsLabel() {
     return `Retry failed payments`;
@@ -334,10 +436,10 @@ export default class Text {
     return `Failed to retry payments. Please try again later.`;
   }
   get reactivatePaymentProfileLabel() {
-    return `Reactivate profile`;
+    return `Reactivate account`;
   }
   get reactivatePaymentProfileGenericError() {
-    return `Failed to reactivate profile. Please try again later.`;
+    return `Failed to reactivate account. Please try again later.`;
   }
   get reactivatePaymentProfileSuccess() {
     return `Your account is now active! Please allow a few minutes for all changes to take effect.`;
@@ -358,7 +460,7 @@ export default class Text {
     return [`Claim your sign up credit of `, ` by adding a payment card.`];
   }
   get initCreditCaveat() {
-    return `The card must not be added to any profile before. Terms apply.`;
+    return `The card must not be added to any account before. Terms apply.`;
   }
   get addCardPaymentLabel() {
     return `Add`;

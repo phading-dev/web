@@ -448,7 +448,7 @@ export class SeasonDetailsPage extends EventEmitter {
                   class: "publisher-item-avatar",
                   style: `flex: 0 0 auto; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: 100%;`,
                   src: publisher.avatarSmallUrl,
-                  alt: publisher.naturalName,
+                  alt: publisher.name,
                 }),
                 E.div(
                   {
@@ -460,7 +460,7 @@ export class SeasonDetailsPage extends EventEmitter {
                       class: "publisher-item-name",
                       style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
                     },
-                    E.text(publisher.naturalName),
+                    E.text(publisher.name),
                   ),
                   E.div(
                     {

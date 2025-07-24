@@ -24,7 +24,7 @@ function eBody(): HTMLElement {
     ),
     eParagraph(
       eNormalText(
-        `By creating an account, accessing, or using our Platform, you agree to be bound by these Terms, our `,
+        `By creating a user login, accessing, or using our Platform, you agree to be bound by these Terms, our `,
       ),
       eLink(`Privacy Policy`, "/privacy"),
       eNormalText(` and our `),
@@ -44,13 +44,13 @@ function eBody(): HTMLElement {
       eLi(
         eBoldText(`Registration:`),
         eNormalText(
-          ` You must create an account to use most features of the Platform. You agree to provide accurate, current, and complete information during the registration process. Your account may allow you to create and manage multiple profiles. Where applicable, these Terms apply to each profile.`,
+          ` You must register and create a user login to use most features of the Platform. You agree to provide accurate, current, and complete information during the registration process. Your registration allows you to create and manage multiple, distinct "Accounts" under a single email login. Each Account is a separate entity for content, management, and billing purposes. These Terms apply in full to each Account you create or manage`,
         ),
       ),
       eLi(
         eBoldText(`Account Security:`),
         eNormalText(
-          ` You are responsible for safeguarding your password and for all activities that occur under your account and its associated profiles. You must notify us immediately at ${ENV_VARS.supportEmail} of any unauthorized use of your account.`,
+          ` You are responsible for safeguarding your password and for all activities that occur under your user login and any Accounts associated with it. You must notify us immediately at ${ENV_VARS.supportEmail} of any unauthorized use of your user login.`,
         ),
       ),
       eLi(
@@ -71,7 +71,7 @@ function eBody(): HTMLElement {
       eLi(
         eBoldText(`Circumvention of Metering:`),
         eNormalText(
-          ` Any attempt to circumvent the collection of viewing data, including but not limited to intercepting network traffic, is strictly prohibited and may result in immediate and permanent termination of your account and potential legal action.`,
+          ` Any attempt to circumvent the collection of viewing data, including but not limited to intercepting network traffic, is strictly prohibited and may result in immediate and permanent termination of your user login and potential legal action.`,
         ),
       ),
       eLi(
@@ -99,18 +99,18 @@ function eBody(): HTMLElement {
       eLi(
         eBoldText(`Failed Payments:`),
         eNormalText(
-          ` If your payment fails, your account will be placed in a grace period and you will be notified. If the outstanding balance is not settled within ten (10) days of the failed invoice, we reserve the right to suspend the Profile(s) that incurred the charges. We may also, at our sole discretion, suspend your entire account.`,
+          ` If your payment fails, your Account(s) will be placed in a grace period and you will be notified. If the outstanding balance is not settled within ten (10) days of the failed invoice, we reserve the right to suspend the Account(s) that incurred the charges. We may also, at our sole discretion, suspend your entire user login.`,
         ),
       ),
       eLi(
         eBoldText(`Promotional Credits:`),
         eNormalText(
-          ` We may, in our sole discretion, offer promotional credits. A one-time credit may be offered when a valid payment method is added to a profile for the first time. To be eligible, the payment method must not have been previously associated with any other Secount account or profile.`,
+          ` We may, in our sole discretion, offer promotional credits. A one-time credit may be offered when a valid payment method is added to an Account for the first time. To be eligible, the payment method must not have been previously associated with any other Account on the Secount platform.`,
         ),
         eUl(
           eLi(
             eBoldText(`One-Time Offer:`),
-            eNormalText(` This credit may be claimed only once per profile.`),
+            eNormalText(` This credit may be claimed only once per Account.`),
           ),
           eLi(
             eBoldText(`No Cash Value:`),
@@ -121,7 +121,7 @@ function eBody(): HTMLElement {
           eLi(
             eBoldText(`Discretionary Offer:`),
             eNormalText(
-              `  The availability and amount of any promotional credit are subject to change at any time without notice. We reserve the right to modify, suspend, or terminate this promotional offer at our sole discretion. Any unused credits will be forfeited upon account suspension or termination.`,
+              `  The availability and amount of any promotional credit are subject to change at any time without notice. We reserve the right to modify, suspend, or terminate this promotional offer at our sole discretion. Any unused credits will be forfeited upon Account or user login suspension or termination.`,
             ),
           ),
         ),
@@ -189,27 +189,27 @@ function eBody(): HTMLElement {
           ),
           eLi(
             eNormalText(
-              `Temporary suspension of your account, a specific Profile, or specific privileges (like uploading).`,
+              `Temporary suspension of your user login, a specific Account, or specific privileges (like uploading).`,
             ),
           ),
-          eLi(eNormalText(`Permanent termination of your account.`)),
+          eLi(eNormalText(`Permanent termination of your user login.`)),
         ),
       ),
     ),
     eHeader2(`6. Term, Suspension, and Termination`),
     eParagraph(
       eNormalText(
-        `These Terms begin on the date you create your account and continue until your account is terminated by either you or us as described below.`,
+        `These Terms begin on the date you create your user login and continue until your user login is terminated by either you or us as described below.`,
       ),
     ),
     eParagraph(
       eNormalText(
-        `You may terminate your agreement to these Terms at any time by requesting the deletion of your account. To do so, you must send a deletion request to ${ENV_VARS.supportEmail} from the email address associated with your account. Please note that terminating your account is an irreversible action that will result in the permanent deletion of all associated Profiles and their Content.`,
+        `You may terminate your agreement to these Terms at any time by requesting the deletion of your user login. To do so, you must send a deletion request to ${ENV_VARS.supportEmail} from the email address associated with your login. Please note that terminating your user login is an irreversible action that will result in the permanent deletion of all associated Accounts and their Content.`,
       ),
     ),
     eParagraph(
       eNormalText(
-        `We may suspend or terminate your account or any Profile associated with your account at our sole discretion if:`,
+        `We may suspend or terminate your user login or any Account associated with it at our sole discretion if:`,
       ),
     ),
     eUl(
@@ -220,7 +220,7 @@ function eBody(): HTMLElement {
       ),
       eLi(
         eNormalText(
-          `Your account or a Profile is associated with spam, scam, fraudulent, or illegal activities.`,
+          `Your user login or an Account is associated with spam, scam, fraudulent, or illegal activities.`,
         ),
       ),
       eLi(
@@ -232,7 +232,7 @@ function eBody(): HTMLElement {
     ),
     eParagraph(
       eNormalText(
-        `Upon the termination of your account for any reason, your right to access and use the Platform will immediately cease. All provisions of these Terms that by their nature should survive termination shall survive, including, without limitation, accrued payment obligations, ownership provisions, warranty disclaimers, indemnity, and limitations of liability.`,
+        `Upon the termination of your user login for any reason, your right to access and use the Platform will immediately cease. All provisions of these Terms that by their nature should survive termination shall survive, including, without limitation, accrued payment obligations, ownership provisions, warranty disclaimers, indemnity, and limitations of liability.`,
       ),
     ),
     eHeader2(`7. Intellectual Property`),

@@ -19,17 +19,17 @@ export function eBody(): HTMLElement {
     eParagraph(eBoldText(`Effective Date:`), eNormalText(` July 8, 2025`)),
     eParagraph(
       eNormalText(
-        `This Publisher Agreement ("Agreement") is a binding legal document between you and Ykuyo, Inc. ("Ykuyo," "we," "us," or "our"). This Agreement governs your use of a specific Publisher Profile ("Profile") on the Secount platform ("Platform") to upload, manage, and monetize your video content ("Content"). The terms "Publisher" and "you" refer to the individual or entity operating this specific Profile.`,
+        `This Publisher Agreement ("Agreement") is a binding legal document between you and Ykuyo, Inc. ("Ykuyo," "we," "us," or "our"). This Agreement governs your use of a specific Publisher Account ("Account") on the Secount platform ("Platform") to upload, manage, and monetize your video content ("Content"). The terms "Publisher" and "you" refer to the individual or entity operating this specific Account.`,
       ),
     ),
     eParagraph(
       eBoldText(
-        `IMPORTANT NOTICE REGARDING PAYOUTS: As of the Effective Date of this Agreement, Publisher Payouts are only supported for individuals and entities with a valid US-based bank account. While publishers from other locations may create a Profile and accrue earnings, you will not be able to receive a payout until we formally expand our payout support to your region.`,
+        `IMPORTANT NOTICE REGARDING PAYOUTS: As of the Effective Date of this Agreement, Publisher Payouts are only supported for individuals and entities with a valid US-based bank account. While publishers from other locations may create an Account and accrue earnings, you will not be able to receive a payout until we formally expand our payout support to your region.`,
       ),
     ),
     eParagraph(
       eNormalText(
-        `By creating a Profile, you agree to this Agreement and the Secount Terms of Service for this Profile.`,
+        `By creating an Account, you agree to this Agreement and the Secount Terms of Service for this Account.`,
       ),
     ),
     eHeader2(`1. Relationship of Parties`),
@@ -82,7 +82,7 @@ export function eBody(): HTMLElement {
       ),
       eLi(
         eNormalText(
-          `You meet all eligibility requirements for creating a Profile and receiving payouts as set forth in this Agreement, and you will provide accurate information to us and our payment processors.`,
+          `You meet all eligibility requirements for creating an Account and receiving payouts as set forth in this Agreement, and you will provide accurate information to us and our payment processors.`,
         ),
       ),
     ),
@@ -127,13 +127,13 @@ export function eBody(): HTMLElement {
       eLi(
         eBoldText(`Payments Due:`),
         eNormalText(
-          ` In the event that your accrued Other Fees exceed your Publisher Revenue Share for any given billing period, you will have a negative balance. We will issue an invoice or charge your payment method on file for the amount due. If the payment fails or is otherwise not settled within ten (10) days of the failed payment, we reserve the right to suspend the Profile with the outstanding balance. We may also, at our sole discretion, suspend your entire account.`,
+          ` In the event that your accrued Other Fees exceed your Publisher Revenue Share for any given billing period, you will have a negative balance. We will issue an invoice or charge your payment method on file for the amount due. If the payment fails or is otherwise not settled within ten (10) days of the failed payment, we reserve the right to suspend the Account with the outstanding balance. We may also, at our sole discretion, suspend your entire user login.`,
         ),
       ),
       eLi(
         eBoldText(`Forfeiture of Earnings upon Suspension or Termination:`),
         eNormalText(
-          `We reserve the right to withhold payments from your Profile during any investigation into a potential breach of our terms. If your Profile is suspended or terminated due to a breach of this Agreement or our Terms of Service, you may be required to forfeit earnings as follows:`,
+          `We reserve the right to withhold payments from your Account during any investigation into a potential breach of our terms. If your Account is suspended or terminated due to a breach of this Agreement or our Terms of Service, you may be required to forfeit earnings as follows:`,
         ),
         eUl(
           eLi(
@@ -145,7 +145,7 @@ export function eBody(): HTMLElement {
           eLi(
             eBoldText(`Forfeiture for Severe Breaches:`),
             eNormalText(
-              ` In cases of severe or fraudulent breaches of this Agreement—including but not limited to activities intended to defraud Ykuyo, Inc. or other users, or the posting of illegal content—we reserve the right, at our sole discretion, to suspend your Profile and forfeit the entire outstanding earnings balance associated with your Profile.`,
+              ` In cases of severe or fraudulent breaches of this Agreement—including but not limited to activities intended to defraud Ykuyo, Inc. or other users, or the posting of illegal content—we reserve the right, at our sole discretion, to suspend your Account and forfeit the entire outstanding earnings balance associated with your Account.`,
             ),
           ),
         ),
@@ -162,7 +162,7 @@ export function eBody(): HTMLElement {
       eLi(
         eBoldText(`Stripe Requirement:`),
         eNormalText(
-          ` To receive a payout, an eligible Publisher must create and connect a valid Stripe account to their Profile and comply with all of Stripe's terms and policies.`,
+          ` To receive a payout, an eligible Publisher must create and connect a valid Stripe account to their Account and comply with all of Stripe's terms and policies.`,
         ),
       ),
       eLi(
@@ -174,7 +174,7 @@ export function eBody(): HTMLElement {
       eLi(
         eBoldText(`Publisher's Responsibility:`),
         eNormalText(
-          ` It is your sole responsibility to establish and maintain a valid and active payout method for each of your Publisher Profiles, to ensure your contact information is up to date, and to comply with all of Stripe's terms and policies.`,
+          ` It is your sole responsibility to establish and maintain a valid and active payout method for each of your Publisher Accounts, to ensure your contact information is up to date, and to comply with all of Stripe's terms and policies.`,
         ),
       ),
       eLi(
@@ -182,25 +182,25 @@ export function eBody(): HTMLElement {
         eLi(
           eBoldText(`For eligible (US-based) Publishers,`),
           eNormalText(
-            ` if a Profile becomes dormant and we are unable to process payouts for any reason (e.g., an invalid or disconnected Stripe account), we will hold the accumulated earnings on your behalf.`,
+            ` if an Account becomes dormant and we are unable to process payouts for any reason (e.g., an invalid or disconnected Stripe account), we will hold the accumulated earnings on your behalf.`,
           ),
         ),
         eLi(
           eBoldText(`For currently ineligible (non-US) Publishers,`),
           eNormalText(
-            ` all accrued earnings will be held in your account balance until payout support is available for your region.`,
+            ` all accrued earnings will be held in your Account balance until payout support is available for your region.`,
           ),
         ),
         eLi(
           eNormalText(
-            `If we cannot establish contact with a Publisher whose funds are being held for an extended period of time (the "Dormancy Period"), we will handle the funds in accordance with applicable state unclaimed property and escheat laws. This may require us to report and remit the funds to the governing state authority. We will attempt to notify you via your last known email address before any such action is taken. We recommend you maintain an active Profile to avoid this process.`,
+            `If we cannot establish contact with a Publisher whose funds are being held for an extended period of time (the "Dormancy Period"), we will handle the funds in accordance with applicable state unclaimed property and escheat laws. This may require us to report and remit the funds to the governing state authority. We will attempt to notify you via your last known email address before any such action is taken. We recommend you maintain an active Account to avoid this process.`,
           ),
         ),
       ),
       eLi(
         eBoldText(`Taxes:`),
         eNormalText(
-          ` You are solely responsible for calculating and paying any and all taxes owed on the income you receive from each Profile. Ykuyo, Inc. is not responsible for withholding taxes on your behalf. Our payment processor, Stripe, may provide you with tax documentation (such as a 1099 form) as required by law based on the information provided for each Profile.`,
+          ` You are solely responsible for calculating and paying any and all taxes owed on the income you receive from each Account. Ykuyo, Inc. is not responsible for withholding taxes on your behalf. Our payment processor, Stripe, may provide you with tax documentation (such as a 1099 form) as required by law based on the information provided for each Account.`,
         ),
       ),
     ),
@@ -213,17 +213,17 @@ export function eBody(): HTMLElement {
     eHeader2(`7. Term and Termination`),
     eParagraph(
       eNormalText(
-        `This Agreement applies to the specific Publisher Profile for which it was accepted. It begins when the Profile is created and continues until terminated.`,
+        `This Agreement applies to the specific Publisher Account for which it was accepted. It begins when the Account is created and continues until terminated.`,
       ),
     ),
     eParagraph(
       eNormalText(
-        `To terminate this Agreement for this Profile, you must submit a deletion request by sending an email to ${ENV_VARS.supportEmail}. Termination will be effective once we have processed your deletion request.`,
+        `To terminate this Agreement for this Account, you must submit a deletion request by sending an email to ${ENV_VARS.supportEmail}. Termination will be effective once we have processed your deletion request.`,
       ),
     ),
     eParagraph(
       eNormalText(
-        `We may also terminate this Agreement for this Profile if you breach any of its terms. A severe breach related to one Profile may, at our sole discretion, result in the termination of your main user account and all associated Publisher Profiles.`,
+        `We may also terminate this Agreement for this Account if you breach any of its terms. A severe breach related to one Account may, at our sole discretion, result in the termination of your user login and all associated Publisher Accounts.`,
       ),
     ),
     eParagraph(

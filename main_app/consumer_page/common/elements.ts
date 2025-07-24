@@ -231,7 +231,7 @@ export function ePublisherItem(
       class: "publisher-item-avatar",
       style: `width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: 100%;`,
       src: publisher.avatarLargeUrl,
-      alt: publisher.naturalName,
+      alt: publisher.name,
     }),
     E.div(
       {
@@ -243,7 +243,7 @@ export function ePublisherItem(
           class: "publisher-item-name",
           style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
         },
-        E.text(publisher.naturalName),
+        E.text(publisher.name),
       ),
       E.div(
         {
@@ -281,14 +281,14 @@ export function ePublisherContextItem(
         class: "publisher-context-item-avatar",
         style: `float: left; margin: 0 1rem .5rem 0; width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: 100%;`,
         src: publisher.avatarLargeUrl,
-        alt: publisher.naturalName,
+        alt: publisher.name,
       }),
       E.div(
         {
           class: "publisher-context-item-name",
           style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
         },
-        E.text(publisher.naturalName),
+        E.text(publisher.name),
       ),
       E.div({
         style: `height: .5rem;`,

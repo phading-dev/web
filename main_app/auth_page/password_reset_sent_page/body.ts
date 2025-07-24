@@ -1,0 +1,86 @@
+import EventEmitter = require("events");
+import { SCHEME } from "../../../common/color_scheme";
+import {
+  SimpleIconButton,
+  createBackButton,
+} from "../../../common/icon_button";
+import { createCheckmarkInACircleIcon } from "../../../common/icons";
+import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import {
+  PAGE_MAX_WIDTH_M,
+  eFormTitle,
+  ePageWithCenterForm,
+} from "../../../common/page_elements";
+import { FONT_M, ICON_XXL } from "../../../common/sizes";
+import { E } from "@selfage/element/factory";
+import { Ref, assign } from "@selfage/ref";
+
+export interface PasswordResetSentPage {
+  on(event: "back", listener: () => void): this;
+}
+
+export class PasswordResetSentPage extends EventEmitter {
+  public static create(email: string): PasswordResetSentPage {
+    return new PasswordResetSentPage(email);
+  }
+
+  public body: HTMLDivElement;
+  public backButton = new Ref<SimpleIconButton>();
+
+  public constructor(email: string) {
+    super();
+    this.body = ePageWithCenterForm(
+      new Ref<HTMLFormElement>(),
+      "",
+      `max-width: ${PAGE_MAX_WIDTH_M}rem; display: flex; flex-flow: column nowrap; align-items: center;`,
+      assign(this.backButton, createBackButton()).body,
+      E.div(
+        {
+          class: "password-reset-sent-icon",
+          style: `height: ${ICON_XXL}rem;`,
+        },
+        createCheckmarkInACircleIcon(SCHEME.success1),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      eFormTitle(LOCALIZED_TEXT.passwordResetSentSuccessTitle),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      E.div(
+        {
+          class: "password-reset-sent-text",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+        },
+        E.text(LOCALIZED_TEXT.passwordResetSentSuccessBody),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 1rem;`,
+      }),
+      E.div(
+        {
+          class: "password-reset-sent-email",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.primary0};`,
+        },
+        E.text(email),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      E.div(
+        {
+          class: "password-reset-sent-reminder",
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+        },
+        E.text(LOCALIZED_TEXT.passwordResetEmailReminder),
+      ),
+    );
+    this.backButton.val.on("action", () => this.emit("back"));
+  }
+
+  public remove(): void {
+    this.body.remove();
+    this.removeAllListeners();
+  }
+}

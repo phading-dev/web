@@ -43,7 +43,7 @@ TEST_RUNNER.run({
                 return {
                   account: {
                     accountId: "account1",
-                    naturalName: "Jackson Chen",
+                    name: "Jackson Chen",
                     avatarLargeUrl: userImage,
                     description: "A passionate writer and publisher.",
                   },

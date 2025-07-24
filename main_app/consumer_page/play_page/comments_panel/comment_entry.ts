@@ -34,7 +34,7 @@ export class CommentEntry extends EventEmitter {
           class: "comment-entry-author-name",
           style: `display: inline; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
         },
-        E.text(comment.author.naturalName),
+        E.text(comment.author.name),
       ),
       E.div(
         {

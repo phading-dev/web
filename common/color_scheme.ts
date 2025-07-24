@@ -19,6 +19,7 @@ let RED_50 = "rgb(255,0,0)";
 let ORANGE_60 = "rgb(255,153,51)";
 let ORANGE_40 = "rgb(204,102,0)";
 let GREEN_60 = "rgb(51,255,51)";
+let GREEN_50 = "rgb(0,255,0)";
 let GREEN_40 = "rgb(0,204,0)";
 let YELLOW_50 = "rgb(255,255,0)";
 let GOLD = "rgb(239,191,4)";
@@ -82,6 +83,9 @@ export class DarkScheme {
   }
   get success0() {
     return GREEN_60;
+  }
+  get success1() {
+    return GREEN_50;
   }
   get heart() {
     return RED_50;
@@ -159,6 +163,9 @@ export class LightScheme {
   }
   get success0() {
     return GREEN_40;
+  }
+  get success1() {
+    return GREEN_50;
   }
   get heart() {
     return RED_50;

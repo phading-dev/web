@@ -22,19 +22,19 @@ export interface UpdatePasswordPage {
 }
 
 export class UpdatePasswordPage extends EventEmitter {
-  public static create(username: string): UpdatePasswordPage {
-    return new UpdatePasswordPage(SERVICE_CLIENT, username);
+  public static create(userEmail: string): UpdatePasswordPage {
+    return new UpdatePasswordPage(SERVICE_CLIENT, userEmail);
   }
 
   public inputFormPage: InputFormPage<UpdatePasswordResponse>;
+  public currentPasswordInput = new Ref<PasswordInputWithErrorMsg>();
   public newPasswordInput = new Ref<PasswordInputWithErrorMsg>();
   public newPasswordRepeatInput = new Ref<PasswordInputWithErrorMsg>();
-  public currentPasswordInput = new Ref<PasswordInputWithErrorMsg>();
   private request: UpdatePasswordRequestBody = {};
 
   public constructor(
     private serviceClient: WebServiceClient,
-    username: string,
+    userEmail: string,
   ) {
     super();
     this.inputFormPage = new InputFormPage(
@@ -42,11 +42,22 @@ export class UpdatePasswordPage extends EventEmitter {
       [
         eFormTitle(LOCALIZED_TEXT.updatePasswordTitle),
         E.input({
-          name: "update-password-username",
+          name: "update-password-user-email",
           style: `display: none;`,
-          autocomplete: "username",
-          value: username,
+          autocomplete: "username email",
+          value: userEmail,
         }),
+        assign(
+          this.currentPasswordInput,
+          new PasswordInputWithErrorMsg(
+            LOCALIZED_TEXT.currentPasswordLabel,
+            "",
+            {
+              autocomplete: "current-password",
+            },
+            (value) => this.validateOrTakeCurrentPassword(value),
+          ),
+        ).body,
         assign(
           this.newPasswordInput,
           new PasswordInputWithErrorMsg(
@@ -69,24 +80,13 @@ export class UpdatePasswordPage extends EventEmitter {
             (value) => this.validateNewPasswordRepeat(value),
           ),
         ).body,
-        assign(
-          this.currentPasswordInput,
-          new PasswordInputWithErrorMsg(
-            LOCALIZED_TEXT.currentPasswordLabel,
-            "",
-            {
-              autocomplete: "current-password",
-            },
-            (value) => this.validateOrTakeCurrentPassword(value),
-          ),
-        ).body,
       ],
       LOCALIZED_TEXT.updateButtonLabel,
     )
       .addBackButton()
       .addPrimaryAction(
         () => this.updatePassword(),
-        (response, error) => this.postUpdatePassword(error),
+        (response, error) => this.postUpdatePassword(response, error),
       )
       .on("handlePrimarySuccess", () => this.emit("back"))
       .on("primaryDone", () => this.emit("updated"))
@@ -96,6 +96,15 @@ export class UpdatePasswordPage extends EventEmitter {
         this.newPasswordRepeatInput.val,
         this.currentPasswordInput.val,
       );
+  }
+
+  private validateOrTakeCurrentPassword(value: string): ValidationResult {
+    if (!value) {
+      return { valid: false };
+    } else {
+      this.request.currentPassword = value;
+      return { valid: true };
+    }
   }
 
   private validateOrTakeNewPassword(value: string): ValidationResult {
@@ -126,22 +135,18 @@ export class UpdatePasswordPage extends EventEmitter {
     }
   }
 
-  private validateOrTakeCurrentPassword(value: string): ValidationResult {
-    if (!value) {
-      return { valid: false };
-    } else {
-      this.request.currentPassword = value;
-      return { valid: true };
-    }
-  }
-
   private updatePassword(): Promise<UpdatePasswordResponse> {
     return this.serviceClient.send(newUpdatePasswordRequest(this.request));
   }
 
-  private postUpdatePassword(error?: Error): string {
+  private postUpdatePassword(
+    response: UpdatePasswordResponse,
+    error?: Error,
+  ): string {
     if (error) {
       return LOCALIZED_TEXT.updateGenericError;
+    } else if (response.notAuthenticated) {
+      return LOCALIZED_TEXT.incorrectPasswordError;
     } else {
       return "";
     }

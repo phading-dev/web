@@ -2,6 +2,8 @@ import EventEmitter = require("events");
 import { TabSwitcher } from "./common/page_navigator";
 import { MainApp } from "./main_app/body";
 import { ReplacePrimaryPaymentMethodAction } from "./replace_primary_payment_method_action/action";
+import { ResetPasswordPage } from "./reset_password_page/body";
+import { VerifyEmailPage } from "./verify_email_page/body";
 import { AppRl } from "@phading/web_interface/app";
 
 export interface App {
@@ -16,6 +18,8 @@ export class App extends EventEmitter {
     return new App(
       MainApp.create,
       ReplacePrimaryPaymentMethodAction.create,
+      ResetPasswordPage.create,
+      VerifyEmailPage.create,
       documentBody,
     );
   }
@@ -23,11 +27,15 @@ export class App extends EventEmitter {
   private pageSwitcher = new TabSwitcher();
   public mainApp: MainApp;
   public replacePrimaryPaymentMethodAction: ReplacePrimaryPaymentMethodAction;
+  public resetPasswordPage: ResetPasswordPage;
+  public verifyEmailPage: VerifyEmailPage;
   private rl: AppRl;
 
   public constructor(
     private createMainApp: typeof MainApp.create,
     private createReplacePrimaryPaymentMethodAction: typeof ReplacePrimaryPaymentMethodAction.create,
+    private createResetPasswordPage: typeof ResetPasswordPage.create,
+    private createVerifyEmailPage: typeof VerifyEmailPage.create,
     private documentBody: HTMLElement,
   ) {
     super();
@@ -43,7 +51,12 @@ export class App extends EventEmitter {
     if (!this.rl) {
       this.rl = {};
     }
-    if (!this.rl.main && !this.rl.replacePrimaryPaymentMethod) {
+    if (
+      !this.rl.main &&
+      !this.rl.replacePrimaryPaymentMethod &&
+      !this.rl.resetPassword &&
+      !this.rl.verifyEmail
+    ) {
       this.rl.main = {};
     }
 
@@ -67,6 +80,24 @@ export class App extends EventEmitter {
             this.rl.replacePrimaryPaymentMethod.accountId,
           ),
         () => this.removeReplacePrimaryPaymentMethodAction(),
+      );
+    } else if (
+      this.rl.verifyEmail &&
+      (!this.verifyEmailPage ||
+        this.verifyEmailPage.tokenId !== this.rl.verifyEmail.tokenId)
+    ) {
+      this.pageSwitcher.goTo(
+        () => this.addVerifyEmailPage(this.rl.verifyEmail.tokenId),
+        () => this.removeVerifyEmailPage(),
+      );
+    } else if (
+      this.rl.resetPassword &&
+      (!this.resetPasswordPage ||
+        this.resetPasswordPage.tokenId !== this.rl.resetPassword.tokenId)
+    ) {
+      this.pageSwitcher.goTo(
+        () => this.addResetPasswordPage(this.rl.resetPassword.tokenId),
+        () => this.removeResetPasswordPage(),
       );
     }
     this.emit("rlApplied");
@@ -97,7 +128,7 @@ export class App extends EventEmitter {
   private addReplacePrimaryPaymentMethodAction(accountId: string): void {
     this.replacePrimaryPaymentMethodAction =
       this.createReplacePrimaryPaymentMethodAction(accountId).on(
-        "complete",
+        "payment",
         (accountId) => {
           this.replaceRl({
             main: {
@@ -116,6 +147,39 @@ export class App extends EventEmitter {
   private removeReplacePrimaryPaymentMethodAction(): void {
     this.replacePrimaryPaymentMethodAction.removeAllListeners();
     this.replacePrimaryPaymentMethodAction = undefined;
+  }
+
+  private addResetPasswordPage(tokenId: string): void {
+    this.resetPasswordPage = this.createResetPasswordPage(
+      (...bodies) => this.documentBody.append(...bodies),
+      tokenId,
+    ).on("home", () => {
+      this.replaceRl({
+        main: {},
+      });
+    });
+  }
+
+  private removeResetPasswordPage(): void {
+    this.resetPasswordPage.remove();
+    this.resetPasswordPage = undefined;
+  }
+
+  private addVerifyEmailPage(tokenId: string): void {
+    this.verifyEmailPage = this.createVerifyEmailPage(tokenId).on(
+      "home",
+      () => {
+        this.replaceRl({
+          main: {},
+        });
+      },
+    );
+    this.documentBody.append(this.verifyEmailPage.body);
+  }
+
+  private removeVerifyEmailPage(): void {
+    this.verifyEmailPage.remove();
+    this.verifyEmailPage = undefined;
   }
 
   public remove(): void {

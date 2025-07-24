@@ -11,10 +11,8 @@ export class InfoPageMock extends InfoPage {
           let response: GetAccountAndUserResponse = {
             account: {
               avatarLargeUrl: userImage,
-              contactEmail: "my@gmail.com",
-              naturalName: "First Second",
-              username: "user1",
-              recoveryEmail: "some@gmail.com",
+              userEmail: "my@gmail.com",
+              name: "First Second",
             },
           };
           return response;

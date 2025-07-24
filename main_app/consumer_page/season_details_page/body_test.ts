@@ -127,7 +127,7 @@ TEST_RUNNER.run({
                 let response: GetAccountSummaryResponse = {
                   account: {
                     accountId: "550e8400-e29b-41d4-a716-446655440000",
-                    naturalName: "Animplex",
+                    name: "Animplex",
                     avatarSmallUrl: userImage,
                   },
                 };
@@ -1032,7 +1032,7 @@ TEST_RUNNER.run({
                 let response: GetAccountSummaryResponse = {
                   account: {
                     accountId: "550e8400-e29b-41d4-a716-446655440000",
-                    naturalName: "Crunchyroll",
+                    name: "Crunchyroll",
                     avatarSmallUrl: userImage,
                   },
                 };
@@ -1400,7 +1400,7 @@ TEST_RUNNER.run({
                 let response: GetAccountSummaryResponse = {
                   account: {
                     accountId: "550e8400-e29b-41d4-a716-446655440000",
-                    naturalName: "Crunchyroll",
+                    name: "Crunchyroll",
                     avatarSmallUrl: userImage,
                   },
                 };
@@ -1543,7 +1543,7 @@ TEST_RUNNER.run({
                 let response: GetAccountSummaryResponse = {
                   account: {
                     accountId: "550e8400-e29b-41d4-a716-446655440000",
-                    naturalName: "Crunchyroll",
+                    name: "Crunchyroll",
                     avatarSmallUrl: userImage,
                   },
                 };

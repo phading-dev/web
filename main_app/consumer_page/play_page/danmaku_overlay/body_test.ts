@@ -31,7 +31,7 @@ function createComment(index: number): CommentWithAuthor {
       content: `Some content ${index}!`,
     },
     author: {
-      naturalName: `Author ${index}`,
+      name: `Author ${index}`,
     },
   };
 }

@@ -75,13 +75,13 @@ TEST_RUNNER.run({
               accountId: "consumer 1",
               accountType: AccountType.CONSUMER,
               avatarLargeUrl: userImage,
-              naturalName: "First Consumer",
+              name: "First Consumer",
             },
             {
               accountId: "publisher 1",
               accountType: AccountType.PUBLISHER,
               avatarLargeUrl: userImage,
-              naturalName: "First Publisher",
+              name: "First Publisher",
             },
           ],
         };
@@ -116,11 +116,8 @@ TEST_RUNNER.run({
         });
 
         // Execute
-        this.cut.createAccountPage.naturalNameInput.val.value = "New Consumer";
-        this.cut.createAccountPage.naturalNameInput.val.dispatchInput();
-        this.cut.createAccountPage.emailInput.val.value =
-          "new.consumer@example.com";
-        this.cut.createAccountPage.emailInput.val.dispatchInput();
+        this.cut.createAccountPage.accountNameInput.val.value = "New Consumer";
+        this.cut.createAccountPage.accountNameInput.val.dispatchInput();
         this.cut.createAccountPage.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) =>
           this.cut.createAccountPage.once("chosen", resolve),
@@ -159,13 +156,13 @@ TEST_RUNNER.run({
               accountId: "consumer 1",
               accountType: AccountType.CONSUMER,
               avatarLargeUrl: userImage,
-              naturalName: "First Consumer",
+              name: "First Consumer",
             },
             {
               accountId: "publisher 1",
               accountType: AccountType.PUBLISHER,
               avatarLargeUrl: userImage,
-              naturalName: "First Publisher",
+              name: "First Publisher",
             },
           ],
         };

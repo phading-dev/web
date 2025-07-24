@@ -23,7 +23,7 @@ function createComment(index: number): CommentWithAuthor {
       content: `${index} This is a very long comment that is being used for testing purposes. This includes testing for proper text wrapping, overflow handling.`,
     },
     author: {
-      naturalName: `Author ${index}`,
+      name: `Author ${index}`,
     },
   };
 }

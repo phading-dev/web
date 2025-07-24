@@ -5,7 +5,7 @@ import { InfoPage } from "./info_page/body";
 import { UpdateAccountInfoPage } from "./update_account_info_page/body";
 import { UpdateAvatarPage } from "./update_avatar_page/body";
 import { UpdatePasswordPage } from "./update_password_page/body";
-import { UpdateRecoveryEmailPage } from "./update_recovery_email_page/body";
+import { UpdateUserEmailPage } from "./update_user_email_page/body";
 import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
 
 export interface ProfilePage {
@@ -20,7 +20,7 @@ export class ProfilePage extends EventEmitter {
       UpdateAvatarPage.create,
       UpdateAccountInfoPage.create,
       UpdatePasswordPage.create,
-      UpdateRecoveryEmailPage.create,
+      UpdateUserEmailPage.create,
       appendBodies,
     );
   }
@@ -30,20 +30,14 @@ export class ProfilePage extends EventEmitter {
   public updateAvatarPage: UpdateAvatarPage;
   public updateAccountInfoPage: UpdateAccountInfoPage;
   public updatePasswordPage: UpdatePasswordPage;
-  public updateRecoveryEmailPage: UpdateRecoveryEmailPage;
+  public updateUserEmailPage: UpdateUserEmailPage;
 
   public constructor(
     private createInfoPage: () => InfoPage,
-    private createUpdateAvatarPage: (
-      accountInfo: AccountAndUser,
-    ) => UpdateAvatarPage,
-    private createUpdateAccountInfoPage: (
-      accountInfo: AccountAndUser,
-    ) => UpdateAccountInfoPage,
-    private createUpdatePasswordPage: (username: string) => UpdatePasswordPage,
-    private createUpdateRecoveryEmailPage: (
-      accountInfo: AccountAndUser,
-    ) => UpdateRecoveryEmailPage,
+    private createUpdateAvatarPage: typeof UpdateAvatarPage.create,
+    private createUpdateAccountInfoPage: typeof UpdateAccountInfoPage.create,
+    private createUpdatePasswordPage: typeof UpdatePasswordPage.create,
+    private createUpdateUserEmailPage: typeof UpdateUserEmailPage.create,
     private appendBodies: AddBodiesFn,
   ) {
     super();
@@ -69,14 +63,14 @@ export class ProfilePage extends EventEmitter {
       )
       .on("updatePassword", (accountInfo) =>
         this.pageSwitcher.goTo(
-          () => this.addUpdatePasswordPage(accountInfo.username),
+          () => this.addUpdatePasswordPage(accountInfo.userEmail),
           () => this.updatePasswordPage.remove(),
         ),
       )
-      .on("updateRecoveryEmail", (accountInfo) =>
+      .on("updateUserEmail", (accountInfo) =>
         this.pageSwitcher.goTo(
-          () => this.addUpdateRecoveryEmailPage(accountInfo),
-          () => this.updateRecoveryEmailPage.remove(),
+          () => this.addUpdateUserEmailPage(accountInfo),
+          () => this.updateUserEmailPage.remove(),
         ),
       )
       .on("chooseAccount", () => this.emit("chooseAccount"))
@@ -108,8 +102,8 @@ export class ProfilePage extends EventEmitter {
     this.appendBodies(this.updateAccountInfoPage.body);
   }
 
-  private addUpdatePasswordPage(username: string): void {
-    this.updatePasswordPage = this.createUpdatePasswordPage(username).on(
+  private addUpdatePasswordPage(userEmail: string): void {
+    this.updatePasswordPage = this.createUpdatePasswordPage(userEmail).on(
       "back",
       () =>
         this.pageSwitcher.goTo(
@@ -120,16 +114,16 @@ export class ProfilePage extends EventEmitter {
     this.appendBodies(this.updatePasswordPage.body);
   }
 
-  private addUpdateRecoveryEmailPage(account: AccountAndUser): void {
-    this.updateRecoveryEmailPage = this.createUpdateRecoveryEmailPage(
-      account,
-    ).on("back", () =>
-      this.pageSwitcher.goTo(
-        () => this.addInfoPage(),
-        () => this.infoPage.remove(),
-      ),
-    );
-    this.appendBodies(this.updateRecoveryEmailPage.body);
+  private addUpdateUserEmailPage(account: AccountAndUser): void {
+    this.updateUserEmailPage = this.createUpdateUserEmailPage(account)
+      .on("back", () =>
+        this.pageSwitcher.goTo(
+          () => this.addInfoPage(),
+          () => this.infoPage.remove(),
+        ),
+      )
+      .on("signOut", () => this.emit("signOut"));
+    this.appendBodies(this.updateUserEmailPage.body);
   }
 
   public remove(): void {

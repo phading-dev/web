@@ -4,7 +4,7 @@ import { newReplacePrimaryPaymentMethodRequest } from "@phading/commerce_service
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface ReplacePrimaryPaymentMethodAction {
-  on(event: "complete", listener: (accountId: string) => void): this;
+  on(event: "payment", listener: (accountId: string) => void): this;
 }
 
 export class ReplacePrimaryPaymentMethodAction extends EventEmitter {
@@ -27,7 +27,7 @@ export class ReplacePrimaryPaymentMethodAction extends EventEmitter {
 
   private async execute(): Promise<void> {
     await this.executeInternal();
-    this.emit("complete", this.accountId);
+    this.emit("payment", this.accountId);
   }
 
   private async executeInternal(): Promise<void> {

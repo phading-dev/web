@@ -63,6 +63,19 @@ export function createAccountIcon(color: string): SVGSVGElement {
   );
 }
 
+export function createAccountOutlineIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "account-outline-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: "2 2 20 20",
+    },
+    E.path({
+      d: `M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z`,
+    }),
+  );
+}
+
 export function createShuffleIcon(color: string): SVGSVGElement {
   return E.svg(
     {
@@ -90,6 +103,19 @@ export function createPlusIcon(color: string): SVGSVGElement {
 }
 
 export function createCrossIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "plus-icon",
+      style: `height: 100%; fill: none; stroke-width: 30; stroke: ${color};`,
+      viewBox: "0 0 200 200",
+    },
+    E.path({
+      d: `M11 11 L189 189  M189 11 L11 189`,
+    }),
+  );
+}
+
+export function createCrossInACircleIcon(color: string): SVGSVGElement {
   return E.svg(
     {
       class: "plus-icon",
@@ -934,6 +960,19 @@ export function createCheckmarkIcon(color: string): SVGSVGElement {
   );
 }
 
+export function createCheckmarkInACircleIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "checkmark-in-a-circle-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: ".5 .5 23 23",
+    },
+    E.path({
+      d: `M8 12L11 15L16 9 M12 2 A10 10 0 1 1 11.9 2z`,
+    }),
+  );
+}
+
 // A horizontal line in a circle.
 export function createForbiddenIcon(color: string): SVGSVGElement {
   return E.svg(
@@ -1211,6 +1250,32 @@ export function createCheckedBoxIcon(color: string): SVGSVGElement {
     },
     E.path({
       d: `M18,3 C19.66,3 21,4.3 21,6 L21,18 C21,19.66 19.66,21 18,21 L6,21 C4.3,21 3,19.66 3,18 L3,6 C3,4.3 4.3,3 6,3 L18,3 Z M16.47,7.97 L10,14.44 L7.5,11.97 C7.2,11.68 6.76,11.68 6.47,11.97 C6.18,12.26 6.18,12.7 6.47,13 L9.47,16 C9.76,16.3 10.2,16.3 10.5,16 L17.5,9 C17.8,8.7 17.8,8.26 17.5,7.97 C17.2,7.68 16.76,7.68 16.47,7.97 Z`,
+    }),
+  );
+}
+
+export function createLockIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "lock-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: "2 2 20 20",
+    },
+    E.path({
+      d: `M12 14.5V16.5M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288`,
+    }),
+  );
+}
+
+export function createEmailIcon(color: string): SVGSVGElement {
+  return E.svg(
+    {
+      class: "email-icon",
+      style: `height: 100%; fill: none; stroke: ${color}; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;`,
+      viewBox: "2 2 20 20",
+    },
+    E.path({
+      d: `M4 7L10.2 11.65C11.3 12.45 12.7 12.45 13.8 11.65L20 7 M3 5.5 h18 v13 h-18z`,
     }),
   );
 }

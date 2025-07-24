@@ -12,7 +12,7 @@ export class SearchPublishersPageMock extends SearchPublishersPage {
             accounts: [
               {
                 accountId: "account1",
-                naturalName: "Account 2",
+                name: "Account 2",
                 avatarLargeUrl: userImage,
               },
             ],

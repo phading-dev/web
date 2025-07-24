@@ -33,50 +33,50 @@ TEST_RUNNER.run({
           accounts: [
             {
               accountId: "account1",
-              naturalName: "Jackson Chen",
+              name: "Jackson Chen",
               avatarLargeUrl: userImage,
               description: "A passionate writer and publisher.",
             },
             {
               accountId: "account2",
-              naturalName: "Emily Davis",
+              name: "Emily Davis",
               avatarLargeUrl: userImage2,
               description:
                 "An experienced editor with a love for storytelling.",
             },
             {
               accountId: "account3",
-              naturalName: "Sophia Brown",
+              name: "Sophia Brown",
               avatarLargeUrl: userImage,
               description: "A creative publisher with a knack for design.",
             },
             {
               accountId: "account4",
-              naturalName: "Liam Johnson",
+              name: "Liam Johnson",
               avatarLargeUrl: userImage2,
               description: "A dedicated author and literary enthusiast.",
             },
             {
               accountId: "account5",
-              naturalName: "Olivia Wilson",
+              name: "Olivia Wilson",
               avatarLargeUrl: userImage,
               description: "An innovative thinker and content creator.",
             },
             {
               accountId: "account6",
-              naturalName: "Ethan Martinez",
+              name: "Ethan Martinez",
               avatarLargeUrl: userImage,
               description: "A skilled publisher with a passion for innovation.",
             },
             {
               accountId: "account7",
-              naturalName: "Ava Garcia",
+              name: "Ava Garcia",
               avatarLargeUrl: userImage2,
               description: "A creative editor with a love for storytelling.",
             },
             {
               accountId: "account8",
-              naturalName: "Mason Rodriguez",
+              name: "Mason Rodriguez",
               avatarLargeUrl: userImage,
               description: "An enthusiastic writer and content strategist.",
             },
@@ -119,20 +119,20 @@ TEST_RUNNER.run({
           accounts: [
             {
               accountId: "account9",
-              naturalName: "Isabella Lee",
+              name: "Isabella Lee",
               avatarLargeUrl: userImage2,
               description: "A talented editor with a passion for creativity.",
             },
             {
               accountId: "account10",
-              naturalName: "James White",
+              name: "James White",
               avatarLargeUrl: userImage,
               description:
                 "An innovative publisher with a love for storytelling.",
             },
             {
               accountId: "account11",
-              naturalName: "Amelia Harris",
+              name: "Amelia Harris",
               avatarLargeUrl: userImage2,
               description:
                 "A skilled writer with a knack for engaging content.",

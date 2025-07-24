@@ -40,8 +40,8 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.naturalNameInput.val.value = Array(120).fill("a").join("");
-        this.cut.naturalNameInput.val.dispatchInput();
+        this.cut.accountNameInput.val.value = Array(120).fill("a").join("");
+        this.cut.accountNameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -60,30 +60,8 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.naturalNameInput.val.value = " First Second ";
-        this.cut.naturalNameInput.val.dispatchInput();
-        this.cut.emailInput.val.value = Array(201).fill("1").join("");
-        this.cut.emailInput.val.dispatchInput();
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/create_account_page_consumer_email_too_long.png",
-          ),
-          path.join(
-            __dirname,
-            "/golden/create_account_page_consumer_email_too_long.png",
-          ),
-          path.join(
-            __dirname,
-            "/create_account_page_consumer_email_too_long_diff.png",
-          ),
-        );
-
-        // Execute
-        this.cut.emailInput.val.value = " me@gmail.com ";
-        this.cut.emailInput.val.dispatchInput();
+        this.cut.accountNameInput.val.value = " First Second ";
+        this.cut.accountNameInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
@@ -113,8 +91,7 @@ TEST_RUNNER.run({
           eqMessage(
             {
               accountType: AccountType.CONSUMER,
-              naturalName: "First Second",
-              contactEmail: "me@gmail.com",
+              name: "First Second",
             },
             CREATE_ACCOUNT_REQUEST_BODY,
           ),
@@ -192,10 +169,8 @@ TEST_RUNNER.run({
         this.cut.on("choose", (session) => (signedSession = session));
 
         // Execute
-        this.cut.naturalNameInput.val.value = "First Second";
-        this.cut.naturalNameInput.val.dispatchInput();
-        this.cut.emailInput.val.value = "me@gmail.com";
-        this.cut.emailInput.val.dispatchInput();
+        this.cut.accountNameInput.val.value = "First Second";
+        this.cut.accountNameInput.val.dispatchInput();
         this.cut.acceptPublisherTermsCheckbox.val.click();
         this.cut.inputFormPage.clickPrimaryButton();
         await new Promise<void>((resolve) => this.cut.once("chosen", resolve));
@@ -211,8 +186,7 @@ TEST_RUNNER.run({
           eqMessage(
             {
               accountType: AccountType.PUBLISHER,
-              naturalName: "First Second",
-              contactEmail: "me@gmail.com",
+              name: "First Second",
             },
             CREATE_ACCOUNT_REQUEST_BODY,
           ),
@@ -221,8 +195,14 @@ TEST_RUNNER.run({
         assertThat(signedSession, eq("session 1"), "signed session");
         await asyncAssertScreenshot(
           path.join(__dirname, "/create_account_page_publisher_created.png"),
-          path.join(__dirname, "/golden/create_account_page_publisher_created.png"),
-          path.join(__dirname, "/create_account_page_publisher_created_diff.png"),
+          path.join(
+            __dirname,
+            "/golden/create_account_page_publisher_created.png",
+          ),
+          path.join(
+            __dirname,
+            "/create_account_page_publisher_created_diff.png",
+          ),
         );
       }
       public tearDown() {

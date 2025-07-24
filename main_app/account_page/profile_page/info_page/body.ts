@@ -30,7 +30,7 @@ export interface InfoPage {
     listener: (account: AccountAndUser) => void,
   ): this;
   on(
-    event: "updateRecoveryEmail",
+    event: "updateUserEmail",
     listener: (account: AccountAndUser) => void,
   ): this;
   on(event: "chooseAccount", listener: () => void): this;
@@ -50,7 +50,7 @@ export class InfoPage extends EventEmitter {
   private avatarUpdateHint = new Ref<HTMLDivElement>();
   public accountInfo = new Ref<HTMLDivElement>();
   public password = new Ref<HTMLDivElement>();
-  public recoveryEmail = new Ref<HTMLDivElement>();
+  public userEmail = new Ref<HTMLDivElement>();
   public chooseAccountButton = new Ref<HTMLDivElement>();
   public signOutButton = new Ref<HTMLDivElement>();
 
@@ -98,30 +98,12 @@ export class InfoPage extends EventEmitter {
       assign(
         this.accountInfo,
         eColumnBoxWithArrow([
-          eLabelAndText(
-            LOCALIZED_TEXT.naturalNameLabel,
-            response.account.naturalName,
-          ),
-          eLabelAndText(
-            LOCALIZED_TEXT.contactEmailLabel,
-            response.account.contactEmail,
-          ),
+          eLabelAndText(LOCALIZED_TEXT.accountNameLabel, response.account.name),
           eLabelAndText(
             LOCALIZED_TEXT.accountDescriptionLabel,
             response.account.description,
           ),
         ]),
-      ),
-      eColumnBoxWithArrow(
-        [
-          eLabelAndText(
-            LOCALIZED_TEXT.usernameLabel,
-            response.account.username,
-          ),
-        ],
-        {
-          clickable: false,
-        },
       ),
       assign(
         this.password,
@@ -130,12 +112,9 @@ export class InfoPage extends EventEmitter {
         ]),
       ),
       assign(
-        this.recoveryEmail,
+        this.userEmail,
         eColumnBoxWithArrow([
-          eLabelAndText(
-            LOCALIZED_TEXT.recoveryEmailLabel,
-            response.account.recoveryEmail,
-          ),
+          eLabelAndText(LOCALIZED_TEXT.emailLabel, response.account.userEmail),
         ]),
       ),
       E.div(
@@ -181,8 +160,8 @@ export class InfoPage extends EventEmitter {
     this.password.val.addEventListener("click", () =>
       this.emit("updatePassword", response.account),
     );
-    this.recoveryEmail.val.addEventListener("click", () =>
-      this.emit("updateRecoveryEmail", response.account),
+    this.userEmail.val.addEventListener("click", () =>
+      this.emit("updateUserEmail", response.account),
     );
     this.chooseAccountButton.val.addEventListener("click", () =>
       this.emit("chooseAccount"),
