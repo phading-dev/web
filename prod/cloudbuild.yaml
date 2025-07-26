@@ -1,0 +1,23 @@
+steps:
+- name: 'node:20.12.1'
+  entrypoint: 'npm'
+  args: ['ci']
+- name: 'node:20.12.1'
+  entrypoint: npx
+  args: ['bundage', 'bwa', '-ec', 'prod/web_app_entries.yaml', '-o', 'server/bin']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/phading-prod/web-ui:latest', '-f', 'prod/Dockerfile', '.']
+- name: "gcr.io/cloud-builders/docker"
+  args: ['push', 'gcr.io/phading-prod/web-ui:latest']
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['apply', '-f', 'prod/service.yaml']
+  env:
+    - 'CLOUDSDK_CONTAINER_CLUSTER=phading-cluster'
+    - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['rollout', 'restart', 'deployment', 'web-ui-deployment']
+  env:
+    - 'CLOUDSDK_CONTAINER_CLUSTER=phading-cluster'
+    - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+options:
+  logging: CLOUD_LOGGING_ONLY
