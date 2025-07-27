@@ -85,6 +85,8 @@ export class InfoPage extends EventEmitter {
   public editNameButton = new Ref<HTMLDivElement>();
   public editIndexButton = new Ref<HTMLDivElement>();
   public refreshVideoContainerButton = new Ref<HTMLDivElement>();
+  private video?: HTMLVideoElement;
+  private hls?: Hls;
   public editTracksButton = new Ref<HTMLDivElement>();
   public uploadButton = new Ref<HTMLDivElement>();
   public refreshProcessingButton = new Ref<HTMLDivElement>();
@@ -239,15 +241,15 @@ export class InfoPage extends EventEmitter {
     if (!videoUrl) {
       return [];
     }
-    let video = E.video({
+    this.video = E.video({
       class: "episode-details-video-player",
       style: `margin-top: 2rem; width: 100%; object-fit: contain;`,
       controls: "true",
     });
-    let hls = new Hls();
-    hls.loadSource(videoUrl);
-    hls.attachMedia(video);
-    return [video];
+    this.hls = new Hls();
+    this.hls.loadSource(videoUrl);
+    this.hls.attachMedia(this.video);
+    return [this.video];
   }
 
   private eEditTracksButton(
@@ -815,6 +817,8 @@ export class InfoPage extends EventEmitter {
   }
 
   public remove(): void {
+    this.video?.pause();
+    this.hls?.destroy();
     this.body.remove();
     this.removeAllListeners();
   }
