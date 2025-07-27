@@ -246,9 +246,7 @@ export class InfoPage extends EventEmitter {
       style: `margin-top: 2rem; width: 100%; object-fit: contain;`,
       controls: "true",
     });
-    this.hls = new Hls({
-      debug: true,
-    });
+    this.hls = new Hls();
     this.hls.loadSource(videoUrl);
     this.hls.attachMedia(this.video);
     return [this.video];
