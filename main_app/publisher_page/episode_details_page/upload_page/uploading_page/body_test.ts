@@ -299,7 +299,7 @@ TEST_RUNNER.run({
         assertThat(
           error,
           eq(
-            "File type not accepted. Only accepting .mp4, .mov, .mkv, .m4a, .aac or .zip.",
+            "File type not accepted. Only accepting .mp4, .mov, .m4a, .aac or .zip.",
           ),
           "Error",
         );
@@ -332,7 +332,7 @@ TEST_RUNNER.run({
         assertThat(
           error,
           eq(
-            "File type not accepted. Only accepting .mp4, .mov, .mkv, .m4a, .aac or .zip.",
+            "File type not accepted. Only accepting .mp4, .mov, .m4a, .aac or .zip.",
           ),
           "Error",
         );
