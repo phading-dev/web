@@ -60,6 +60,7 @@ export class WatchTimeMeter extends EventEmitter {
       // Not started properly.
       return;
     }
+    console.log(`Stopping watch time meter at ${videoTimeMs} ms`);
 
     this.watchTimeMsStaging += videoTimeMs - this.videoTimeStartMs;
     this.videoTimeStartMs = undefined;
@@ -93,6 +94,7 @@ export class WatchTimeMeter extends EventEmitter {
       this.emit("stopPlaying");
       return;
     }
+    console.log(`Watch time synced: ${watchTimeMsStaging} ms`);
     this.watchTimeMsCommitted += watchTimeMsStaging;
     this.emit("newReading", this.watchTimeMsCommitted);
   };
