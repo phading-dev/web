@@ -20,6 +20,7 @@ export class WatchTimeMeter extends EventEmitter {
   }
 
   private static SYNC_THROTTLE_INTERVAL_MS = 10 * 1000;
+  private static WATCH_TIME_ACCUMULATE_GUARDRAIL_MS = 10 * 1000;
 
   private lastSyncTimestampMs: number;
   private videoTimeStartMs: number;
@@ -37,14 +38,13 @@ export class WatchTimeMeter extends EventEmitter {
     this.window.addEventListener("beforeunload", this.syncReading);
   }
 
-  public start(videoTimeMs: number): void {
-    this.videoTimeStartMs = videoTimeMs;
+  public start(currentVideoTimeMs: number): void {
+    this.videoTimeStartMs = currentVideoTimeMs;
     this.lastSyncTimestampMs = this.now();
   }
 
-  public async update(videoTimeMs: number): Promise<void> {
-    this.watchTimeMsStaging += videoTimeMs - this.videoTimeStartMs;
-    this.videoTimeStartMs = videoTimeMs;
+  public async update(currentVideoTimeMs: number): Promise<void> {
+    this.accumulateWatchTimeMs(currentVideoTimeMs);
     let now = this.now();
     if (
       now - this.lastSyncTimestampMs >
@@ -55,16 +55,32 @@ export class WatchTimeMeter extends EventEmitter {
     }
   }
 
-  public async stop(videoTimeMs: number): Promise<void> {
+  public async stop(currentVideoTimeMs: number): Promise<void> {
+    this.accumulateWatchTimeMs(currentVideoTimeMs);
+    this.videoTimeStartMs = undefined;
+    await this.syncReading();
+  }
+
+  private accumulateWatchTimeMs(currentVideoTimeMs: number): void {
     if (this.videoTimeStartMs == null) {
       // Not started properly.
       return;
     }
-    console.log(`Stopping watch time meter at ${videoTimeMs} ms`);
-
-    this.watchTimeMsStaging += videoTimeMs - this.videoTimeStartMs;
-    this.videoTimeStartMs = undefined;
-    await this.syncReading();
+    if (currentVideoTimeMs < this.videoTimeStartMs) {
+      console.warn(
+        `Current video time ${currentVideoTimeMs} ms is less than the start time ${this.videoTimeStartMs} ms.`,
+      );
+    } else if (
+      currentVideoTimeMs >
+      this.videoTimeStartMs + WatchTimeMeter.WATCH_TIME_ACCUMULATE_GUARDRAIL_MS
+    ) {
+      console.warn(
+        `Current video time ${currentVideoTimeMs} ms is unreasonablly more than the start time ${this.videoTimeStartMs} ms.`,
+      );
+    } else {
+      this.watchTimeMsStaging += currentVideoTimeMs - this.videoTimeStartMs;
+    }
+    this.videoTimeStartMs = currentVideoTimeMs;
   }
 
   private syncReading = async (): Promise<void> => {
@@ -94,7 +110,6 @@ export class WatchTimeMeter extends EventEmitter {
       this.emit("stopPlaying");
       return;
     }
-    console.log(`Watch time synced: ${watchTimeMsStaging} ms`);
     this.watchTimeMsCommitted += watchTimeMsStaging;
     this.emit("newReading", this.watchTimeMsCommitted);
   };

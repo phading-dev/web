@@ -121,7 +121,7 @@ export class Player extends EventEmitter {
   public hls: Hls;
   private duration = 0;
   private updateProgressId = -1;
-  private isSeeking = false;
+  private isPointerSeeking = false;
   private playbackSpeedIndex = 0;
   private resizeObserver: ResizeObserver;
   private hideControlsTimeoutId: number;
@@ -392,13 +392,13 @@ export class Player extends EventEmitter {
     this.video.val.addEventListener("waiting", () => {
       this.isLoading();
     });
+    this.video.val.addEventListener("seeking", () => {
+      this.isSeeking();
+    });
     this.video.val.addEventListener("progress", () =>
       this.updateBufferProgress(),
     );
     // this.video.val.addEventListener("ended", () => this.emit("clearComments"));
-    this.video.val.addEventListener("seeking", () =>
-      this.emit("clearComments"),
-    );
     if (this.autoPlay) {
       this.video.val.autoplay = true;
     }
@@ -540,6 +540,12 @@ export class Player extends EventEmitter {
     this.emit("notPlaying");
   }
 
+  private isSeeking(): void {
+    this.cancelUpdateProgress();
+    this.emit("notPlaying");
+    this.emit("clearComments");
+  }
+
   private showLoadingIcon(): void {
     this.loadingIcon.val.style.opacity = `1`;
   }
@@ -642,7 +648,7 @@ export class Player extends EventEmitter {
 
   private startSeekingNewPosition(event: PointerEvent): void {
     let timestamp = this.showPointedTimestamp(event);
-    this.isSeeking = true;
+    this.isPointerSeeking = true;
     this.progressBar.val.setPointerCapture(event.pointerId);
     this.seekNewPosition(timestamp);
   }
@@ -654,17 +660,17 @@ export class Player extends EventEmitter {
 
   private moveToSeekNewPosition(event: PointerEvent): void {
     let timestamp = this.showPointedTimestamp(event);
-    if (!this.isSeeking) {
+    if (!this.isPointerSeeking) {
       return;
     }
     this.seekNewPosition(timestamp);
   }
 
   private stopSeeking(event: PointerEvent): void {
-    if (!this.isSeeking) {
+    if (!this.isPointerSeeking) {
       return;
     }
-    this.isSeeking = false;
+    this.isPointerSeeking = false;
     this.progressBar.val.releasePointerCapture(event.pointerId);
   }
 
