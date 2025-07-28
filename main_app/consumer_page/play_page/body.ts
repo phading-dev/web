@@ -640,6 +640,7 @@ export class PlayPage extends EventEmitter {
   }
 
   private stopPlaying(): void {
+    console.log("Stopping playing");
     this.window.clearTimeout(this.playingLoopId);
     this.pauseCommentOverlay();
     if (this.player.val) {

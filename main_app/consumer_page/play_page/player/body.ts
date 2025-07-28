@@ -395,6 +395,9 @@ export class Player extends EventEmitter {
     this.video.val.addEventListener("seeking", () => {
       this.isSeeking();
     });
+    this.video.val.addEventListener("timeupdate", () => {
+      console.log(`time update: ${this.video.val.currentTime} s`);
+    });
     this.video.val.addEventListener("progress", () =>
       this.updateBufferProgress(),
     );
@@ -541,6 +544,7 @@ export class Player extends EventEmitter {
   }
 
   private isSeeking(): void {
+    console.log("isSeeking");
     this.cancelUpdateProgress();
     this.emit("notPlaying");
     this.emit("clearComments");

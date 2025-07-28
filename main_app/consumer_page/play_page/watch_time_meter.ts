@@ -39,11 +39,13 @@ export class WatchTimeMeter extends EventEmitter {
   }
 
   public start(currentVideoTimeMs: number): void {
+    console.log(`WatchTimeMeter started at ${currentVideoTimeMs} ms.`);
     this.videoTimeStartMs = currentVideoTimeMs;
     this.lastSyncTimestampMs = this.now();
   }
 
   public async update(currentVideoTimeMs: number): Promise<void> {
+    console.log(`WatchTimeMeter updated at ${currentVideoTimeMs} ms.`);
     this.accumulateWatchTimeMs(currentVideoTimeMs);
     let now = this.now();
     if (
@@ -56,6 +58,7 @@ export class WatchTimeMeter extends EventEmitter {
   }
 
   public async stop(currentVideoTimeMs: number): Promise<void> {
+    console.log(`WatchTimeMeter stopped at ${currentVideoTimeMs} ms.`);
     this.accumulateWatchTimeMs(currentVideoTimeMs);
     this.videoTimeStartMs = undefined;
     await this.syncReading();
