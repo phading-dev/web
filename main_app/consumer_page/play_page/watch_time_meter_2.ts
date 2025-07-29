@@ -27,7 +27,7 @@ export class WatchTimeMeter extends EventEmitter {
   private timeoutId: number;
   private watchTimeMsStaging = 0;
   private watchTimeMsCommitted = 0;
-  private playbackRate: number;
+  private playbackSpeed: number;
 
   public constructor(
     private window: Window,
@@ -40,14 +40,13 @@ export class WatchTimeMeter extends EventEmitter {
     this.window.addEventListener("beforeunload", this.syncReading);
   }
 
-  public setPlaybackSpeed(playbackRate: number): this {
-    this.playbackRate = playbackRate;
+  public setPlaybackSpeed(playbackSpeed: number): this {
+    this.playbackSpeed = playbackSpeed;
     return this;
   }
 
   public start(): void {
     let now = this.now();
-    // console.log(`WatchTimeMeter started at ${now} ms.`);
     this.meterStartMs = now;
     this.lastSyncTimestampMs = now;
     this.timeoutId = this.window.setTimeout(
@@ -85,9 +84,8 @@ export class WatchTimeMeter extends EventEmitter {
 
   private accumulateWatchTimeMs(): void {
     let now = this.now();
-    // console.log(`WatchTimeMeter accumulated at ${now} ms.`);
     let elapsedMs = now - this.meterStartMs;
-    this.watchTimeMsStaging += elapsedMs * this.playbackRate;
+    this.watchTimeMsStaging += elapsedMs * this.playbackSpeed;
     this.meterStartMs = now;
   }
 

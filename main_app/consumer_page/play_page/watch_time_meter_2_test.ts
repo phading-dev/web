@@ -30,7 +30,7 @@ TEST_RUNNER.run({
           () => now,
           "season 1",
           "episode 1",
-        ).setPlaybackRate(1);
+        ).setPlaybackSpeed(1);
         let newReading: number;
 
         // Execute
@@ -113,7 +113,7 @@ TEST_RUNNER.run({
           () => now,
           "season 1",
           "episode 1",
-        ).setPlaybackRate(2);
+        ).setPlaybackSpeed(2);
 
         // Execute
         meter.start();
@@ -159,7 +159,7 @@ TEST_RUNNER.run({
           () => now,
           "season 1",
           "episode 1",
-        ).setPlaybackRate(1);
+        ).setPlaybackSpeed(1);
 
         // Execute
         meter.start();
