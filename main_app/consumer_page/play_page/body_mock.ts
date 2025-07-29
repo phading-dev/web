@@ -10,7 +10,7 @@ import { Player } from "./player/body";
 import { SettingsPanel } from "./settings_panel/body";
 import { SideCommentOverlay } from "./side_comment_overlay/body";
 import { WatchSessionTracker } from "./watch_session_tracker";
-import { WatchTimeMeter } from "./watch_time_meter";
+import { WatchTimeMeter } from "./watch_time_meter_2";
 import {
   LIST_COMMENTS,
   ListCommentsResponse,

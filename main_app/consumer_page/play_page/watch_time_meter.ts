@@ -29,7 +29,7 @@ export class WatchTimeMeter extends EventEmitter {
 
   public constructor(
     private window: Window,
-    protected serviceClient: WebServiceClient,
+    private serviceClient: WebServiceClient,
     private now: () => number,
     private seasonId: string,
     private episodeId: string,

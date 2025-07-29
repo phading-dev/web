@@ -17,7 +17,7 @@ export class WatchSessionTracker {
 
   private static SYNC_THROTTLE_INTERVAL_MS = 10 * 1000;
 
-  private lastSyncTimestampMs = 0;
+  private lastSyncTimestampMs: number;
 
   public constructor(
     protected serviceClient: WebServiceClient,
@@ -33,6 +33,10 @@ export class WatchSessionTracker {
   }
 
   public async update(videoTimeMs: number): Promise<void> {
+    if (this.lastSyncTimestampMs == null) {
+      // Not started yet.
+      return;
+    }
     let now = this.now();
     if (
       now - this.lastSyncTimestampMs >

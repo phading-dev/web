@@ -117,7 +117,10 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "./player_phone_view_faded_out.png"),
-          path.join(__dirname, "./golden/player_phone_view_hidden_controls.png"),
+          path.join(
+            __dirname,
+            "./golden/player_phone_view_hidden_controls.png",
+          ),
           path.join(__dirname, "./player_phone_view_faded_out_diff.png"),
         );
 
@@ -152,7 +155,10 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "./player_phone_view_toggled_hide.png"),
-          path.join(__dirname, "./golden/player_phone_view_hidden_controls.png"),
+          path.join(
+            __dirname,
+            "./golden/player_phone_view_hidden_controls.png",
+          ),
           path.join(__dirname, "./player_phone_view_toggled_hide_diff.png"),
         );
 
@@ -176,7 +182,10 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(__dirname, "./player_phone_view_touched_move_show.png"),
           path.join(__dirname, "./golden/player_phone_view.png"),
-          path.join(__dirname, "./player_phone_view_touched_move_show_diff.png"),
+          path.join(
+            __dirname,
+            "./player_phone_view_touched_move_show_diff.png",
+          ),
         );
 
         // Execute
@@ -187,10 +196,12 @@ TEST_RUNNER.run({
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "./player_phone_view_touched_hide.png"),
-          path.join(__dirname, "./golden/player_phone_view_hidden_controls.png"),
+          path.join(
+            __dirname,
+            "./golden/player_phone_view_hidden_controls.png",
+          ),
           path.join(__dirname, "./player_phone_view_touched_hide_diff.png"),
         );
-
       }
       public async tearDown() {
         await forceMouseUp();
@@ -611,9 +622,9 @@ TEST_RUNNER.run({
           this.cut.once("metadataLoaded", resolve),
         );
 
-        let saveSettings = false;
-        this.cut.on("saveSettings", () => {
-          saveSettings = true;
+        let updatePlayerSettings = false;
+        this.cut.on("updatePlayerSettings", () => {
+          updatePlayerSettings = true;
         });
 
         // Execute
@@ -621,7 +632,7 @@ TEST_RUNNER.run({
         await mouseMove(10, 10, 1);
 
         // Verify
-        assertThat(saveSettings, eq(true), "save settings");
+        assertThat(updatePlayerSettings, eq(true), "update player settings");
         assertThat(settings.playbackSpeed, eqAppr(1.1, 0.1), "playback speed");
         assertThat(
           this.cut.video.val.playbackRate,
@@ -635,14 +646,14 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        saveSettings = false;
+        updatePlayerSettings = false;
 
         // Execute
         this.cut.playbackSpeedUpButton.val.click();
         await mouseMove(10, 20, 1);
 
         // Verify
-        assertThat(saveSettings, eq(true), "save settings 2");
+        assertThat(updatePlayerSettings, eq(true), "update player settings 2");
         assertThat(
           settings.playbackSpeed,
           eqAppr(1.25, 0.1),
@@ -660,7 +671,7 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        saveSettings = false;
+        updatePlayerSettings = false;
 
         // Execute
         for (let i = 0; i < 8; i++) {
@@ -669,7 +680,7 @@ TEST_RUNNER.run({
         await mouseMove(10, 30, 1);
 
         // Verify
-        assertThat(saveSettings, eq(true), "save settings 3");
+        assertThat(updatePlayerSettings, eq(true), "update player settings 3");
         assertThat(settings.playbackSpeed, eqAppr(8, 0.1), "playback speed 3");
         assertThat(
           this.cut.video.val.playbackRate,
@@ -683,7 +694,7 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        saveSettings = false;
+        updatePlayerSettings = false;
 
         // Execute
         for (let i = 0; i < 14; i++) {
@@ -692,7 +703,7 @@ TEST_RUNNER.run({
         await mouseMove(10, 40, 1);
 
         // Verify
-        assertThat(saveSettings, eq(true), "save settings 4");
+        assertThat(updatePlayerSettings, eq(true), "update player settings 4");
         assertThat(
           settings.playbackSpeed,
           eqAppr(0.25, 0.1),
@@ -743,9 +754,9 @@ TEST_RUNNER.run({
           this.cut.once("metadataLoaded", resolve),
         );
 
-        let saveSettings = false;
-        this.cut.on("saveSettings", () => {
-          saveSettings = true;
+        let updatePlayerSettings = false;
+        this.cut.on("updatePlayerSettings", () => {
+          updatePlayerSettings = true;
         });
 
         // Execute
@@ -753,7 +764,7 @@ TEST_RUNNER.run({
         await mouseMove(10, 10, 1);
 
         // Verify
-        assertThat(saveSettings, eq(true), "save settings");
+        assertThat(updatePlayerSettings, eq(true), "update player settings");
         assertThat(settings.volume, eq(4), "volume");
         assertThat(
           this.cut.video.val.volume,
@@ -767,14 +778,14 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        saveSettings = false;
+        updatePlayerSettings = false;
 
         // Execute
         this.cut.volumeDownButton.val.click();
         await mouseMove(10, 20, 1);
 
         // Verify
-        assertThat(saveSettings, eq(true), "save settings 2");
+        assertThat(updatePlayerSettings, eq(true), "update player settings 2");
         assertThat(settings.volume, eq(3), "volume 2");
         assertThat(
           this.cut.video.val.volume,
@@ -788,7 +799,7 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        saveSettings = false;
+        updatePlayerSettings = false;
 
         // Execute
         for (let i = 0; i < 4; i++) {
@@ -797,7 +808,7 @@ TEST_RUNNER.run({
         await mouseMove(10, 30, 1);
 
         // Verify
-        assertThat(saveSettings, eq(true), "save settings 3");
+        assertThat(updatePlayerSettings, eq(true), "update player settings 3");
         assertThat(settings.volume, eq(0), "volume 3");
         assertThat(this.cut.video.val.volume, eq(0), "video volume 3");
         await asyncAssertScreenshot(
@@ -807,7 +818,7 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        saveSettings = false;
+        updatePlayerSettings = false;
 
         // Execute
         for (let i = 0; i < 12; i++) {
@@ -816,7 +827,7 @@ TEST_RUNNER.run({
         await mouseMove(10, 40, 1);
 
         // Verify
-        assertThat(saveSettings, eq(true), "save settings 4");
+        assertThat(updatePlayerSettings, eq(true), "update player settings 4");
         assertThat(settings.volume, eq(10), "volume 4");
         assertThat(
           this.cut.video.val.volume,
@@ -830,14 +841,14 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        saveSettings = false;
+        updatePlayerSettings = false;
 
         // Execute
         await keyboardDown("ArrowDown");
         await keyboardUp("ArrowDown");
 
         // Verify
-        assertThat(saveSettings, eq(true), "save settings 5");
+        assertThat(updatePlayerSettings, eq(true), "update player settings 5");
         assertThat(settings.volume, eq(9), "volume 5");
         assertThat(
           this.cut.video.val.volume,
@@ -846,14 +857,14 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        saveSettings = false;
+        updatePlayerSettings = false;
 
         // Execute
         await keyboardDown("ArrowUp");
         await keyboardUp("ArrowUp");
 
         // Verify
-        assertThat(saveSettings, eq(true), "save settings 6");
+        assertThat(updatePlayerSettings, eq(true), "update player settings 6");
         assertThat(settings.volume, eq(10), "volume 6");
         assertThat(
           this.cut.video.val.volume,
@@ -1333,23 +1344,12 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut.interrupt("Interrupted!");
-        await new Promise<void>((resolve) => setTimeout(resolve, 500));
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/player_interrupted.png"),
-          path.join(__dirname, "/golden/player_interrupted.png"),
-          path.join(__dirname, "/player_interrupted_diff.png"),
-        );
-
-        // Execute
-        await new Promise<void>((resolve) => setTimeout(resolve, 5000));
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/player_interrupt_cleared.png"),
-          path.join(__dirname, "/golden/player_interrupt_cleared.png"),
-          path.join(__dirname, "/player_interrupt_cleared_diff.png"),
+          path.join(__dirname, "/player_not_interrupted.png"),
+          path.join(__dirname, "/golden/player_not_interrupted.png"),
+          path.join(__dirname, "/player_not_interrupted_diff.png"),
         );
 
         // Execute
@@ -1365,6 +1365,21 @@ TEST_RUNNER.run({
           this.cut.getCurrentVideoTimeMs(),
           lt(100),
           "current play time after interrupted",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/player_interrupted.png"),
+          path.join(__dirname, "/golden/player_interrupted.png"),
+          path.join(__dirname, "/player_interrupted_diff.png"),
+        );
+
+        // Execute
+        await new Promise<void>((resolve) => setTimeout(resolve, 5000));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/player_interrupt_cleared.png"),
+          path.join(__dirname, "/golden/player_interrupt_cleared.png"),
+          path.join(__dirname, "/player_interrupt_cleared_diff.png"),
         );
       }
       public async tearDown() {

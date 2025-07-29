@@ -25,7 +25,7 @@ import { Player } from "./player/body";
 import { SettingsPanel } from "./settings_panel/body";
 import { SideCommentOverlay } from "./side_comment_overlay/body";
 import { WatchSessionTracker } from "./watch_session_tracker";
-import { WatchTimeMeter } from "./watch_time_meter";
+import { WatchTimeMeter } from "./watch_time_meter_2";
 import { Comment } from "@phading/comment_service_interface/show/web/comment";
 import { newListCommentsRequest } from "@phading/comment_service_interface/show/web/reader/client";
 import { newGetLatestWatchedVideoTimeOfEpisodeRequest } from "@phading/play_activity_service_interface/show/web/client";
@@ -274,7 +274,13 @@ export class PlayPage extends EventEmitter {
     this.watchTimeMeter = this.createWatchTimeMeter(
       this.seasonId,
       this.episodeId,
-    );
+    ).setPlaybackSpeed(this.settings.videoSettings.playbackSpeed);
+    this.player.val.on("updatePlayerSettings", () => {
+      this.watchTimeMeter.setPlaybackSpeed(
+        this.settings.videoSettings.playbackSpeed,
+      );
+      this.saveSettings();
+    });
     this.watchTimeMeter.on("newReading", (watchTimeMs) =>
       this.infoPanel.val.updateMeterReading(watchTimeMs),
     );
@@ -309,7 +315,6 @@ export class PlayPage extends EventEmitter {
       this.emit("viewDetails", this.seasonId),
     );
     this.player.val.on("back", () => this.emit("viewDetails", this.seasonId));
-    this.player.val.on("saveSettings", () => this.saveSettings());
     this.player.val.on("goFullscreen", () => this.goFullscreen());
     this.player.val.on("exitFullscreen", () => this.exitFullscreen());
     this.emit("loaded");
@@ -538,7 +543,7 @@ export class PlayPage extends EventEmitter {
   private startPlaying(): void {
     let currentVideoTimeMs = this.player.val.getCurrentVideoTimeMs();
     this.watchSessionTracker.start(currentVideoTimeMs);
-    this.watchTimeMeter.start(currentVideoTimeMs);
+    this.watchTimeMeter.start();
 
     this.commentPinnedVideoTimeMsEnd ??= currentVideoTimeMs;
     this.playCommentOverlay();
@@ -548,7 +553,6 @@ export class PlayPage extends EventEmitter {
   private playing = (): void => {
     let currentVideoTimeMs = this.player.val.getCurrentVideoTimeMs();
     this.watchSessionTracker.update(currentVideoTimeMs);
-    this.watchTimeMeter.update(currentVideoTimeMs);
     this.commentsPanel.val.setPinnedVideoTimeMs(currentVideoTimeMs);
 
     while (
@@ -640,7 +644,6 @@ export class PlayPage extends EventEmitter {
   }
 
   private stopPlaying(): void {
-    console.log("Stopping playing");
     this.window.clearTimeout(this.playingLoopId);
     this.pauseCommentOverlay();
     if (this.player.val) {
@@ -648,7 +651,7 @@ export class PlayPage extends EventEmitter {
       let currentVideoTimeMs = this.player.val.getCurrentVideoTimeMs();
       this.commentsPanel.val.setPinnedVideoTimeMs(currentVideoTimeMs);
       this.watchSessionTracker.update(currentVideoTimeMs);
-      this.watchTimeMeter.stop(currentVideoTimeMs);
+      this.watchTimeMeter.stop();
     }
   }
 

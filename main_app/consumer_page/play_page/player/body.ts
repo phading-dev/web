@@ -63,7 +63,7 @@ export interface Player {
   on(event: "showSettings", listener: () => void): this;
   on(event: "goFullscreen", listener: () => void): this;
   on(event: "exitFullscreen", listener: () => void): this;
-  on(event: "saveSettings", listener: () => void): this;
+  on(event: "updatePlayerSettings", listener: () => void): this;
   on(event: "metadataLoaded", listener: () => void): this;
 }
 
@@ -395,9 +395,6 @@ export class Player extends EventEmitter {
     this.video.val.addEventListener("seeking", () => {
       this.isSeeking();
     });
-    this.video.val.addEventListener("timeupdate", () => {
-      console.log(`time update: ${this.video.val.currentTime} s`);
-    });
     this.video.val.addEventListener("progress", () =>
       this.updateBufferProgress(),
     );
@@ -544,7 +541,6 @@ export class Player extends EventEmitter {
   }
 
   private isSeeking(): void {
-    console.log("isSeeking");
     this.cancelUpdateProgress();
     this.emit("notPlaying");
     this.emit("clearComments");
@@ -716,7 +712,7 @@ export class Player extends EventEmitter {
     this.settings.playbackSpeed =
       PLAYBACK_SPEED_VALUES[this.playbackSpeedIndex - 1];
     this.applyPlaybackSpeed();
-    this.emit("saveSettings");
+    this.emit("updatePlayerSettings");
   }
 
   private speedUpOnce(): void {
@@ -726,7 +722,7 @@ export class Player extends EventEmitter {
     this.settings.playbackSpeed =
       PLAYBACK_SPEED_VALUES[this.playbackSpeedIndex + 1];
     this.applyPlaybackSpeed();
-    this.emit("saveSettings");
+    this.emit("updatePlayerSettings");
   }
 
   private applyVolume(): void {
@@ -757,7 +753,7 @@ export class Player extends EventEmitter {
       this.settings.volume - Player.VOLUME_STEP,
     );
     this.applyVolume();
-    this.emit("saveSettings");
+    this.emit("updatePlayerSettings");
   }
 
   private volumeUpOnce(): void {
@@ -765,7 +761,7 @@ export class Player extends EventEmitter {
       this.settings.volume + Player.VOLUME_STEP,
     );
     this.applyVolume();
-    this.emit("saveSettings");
+    this.emit("updatePlayerSettings");
   }
 
   private moveToShowControls(event: PointerEvent): void {
@@ -848,6 +844,9 @@ export class Player extends EventEmitter {
   }
 
   public interrupt(reason: string): void {
+    if (this.video.val.paused) {
+      return;
+    }
     this.video.val.pause();
     this.bottomError.val.textContent = reason;
     this.bottomError.val.animate(

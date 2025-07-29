@@ -19,7 +19,7 @@ import { Player } from "./player/body";
 import { SettingsPanel } from "./settings_panel/body";
 import { SideCommentOverlay } from "./side_comment_overlay/body";
 import { WatchSessionTracker } from "./watch_session_tracker";
-import { WatchTimeMeter } from "./watch_time_meter";
+import { WatchTimeMeter } from "./watch_time_meter_2";
 import {
   POST_COMMENT,
   PostCommentRequestBody,
@@ -817,20 +817,22 @@ TEST_RUNNER.run({
     })(),
     new (class {
       public name =
-        "PlayUntilEndWithWatchSessionAndMeterTracking_RestartedWithMeterError_ResumedUntilEnd";
+        "PlayAndPausedWithSessionAndMeterTracking_RestartedWithMeterError_ResumedAndPaused";
       private cut: PlayPage;
       public async execute() {
         // Prepare
         await setDesktopView();
         let serviceClientMock = new PlayPageServiceClientMock();
+        serviceClientMock.authorizeEpisodePlaybackResponse = {
+          videoUrl: blackVideoUrl,
+        };
         let response = copyMessage(
           EPISODE_WITH_SEASON_SUMMARY_RESPONSE,
           GET_EPISODE_WITH_SEASON_SUMMARY_RESPONSE,
         );
         response.summary.season.grade = 9000;
         serviceClientMock.getEpisodeWithSeasonSummaryResponse = response;
-        let nowDate = new Date("2024-02-01T08:00:00Z");
-        this.cut = createPlayPage(serviceClientMock, () => nowDate);
+        this.cut = createPlayPage(serviceClientMock, () => new Date());
         document.body.append(this.cut.body);
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
         await new Promise<void>((resolve) =>
@@ -847,7 +849,7 @@ TEST_RUNNER.run({
         // Verify
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies.length,
-          eq(2),
+          eq(1),
           "watchEpisodeRequestBodies.length",
         );
         assertThat(
@@ -862,19 +864,16 @@ TEST_RUNNER.run({
         );
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies[0].watchedVideoTimeMs,
-          eq(0),
-          "Watch session video time",
-        );
-        assertThat(
-          serviceClientMock.watchEpisodeRequestBodies[1].watchedVideoTimeMs,
           lt(100),
-          "Watch session video time 2",
+          "Watch session video time",
         );
 
         // Prepare
         serviceClientMock.watchEpisodeRequestBodies.length = 0;
 
         // Execute
+        await new Promise<void>((resolve) => setTimeout(resolve, 11000));
+        this.cut.player.val.pauseButton.val.click();
         await new Promise<void>((resolve) =>
           this.cut.player.val.once("notPlaying", resolve),
         );
@@ -883,37 +882,43 @@ TEST_RUNNER.run({
         // Verify
         assertThat(
           serviceClientMock.recordWatchTimeRequestBodies.length,
-          eq(1),
+          eq(2),
           "recordWatchTimeRequestBodies.length when ended",
         );
         assertThat(
           serviceClientMock.recordWatchTimeRequestBodies[0].seasonId,
           eq("season1"),
-          "Watch time season id when ended",
+          "Watch time season id when updated",
         );
         assertThat(
           serviceClientMock.recordWatchTimeRequestBodies[0].episodeId,
           eq("episode1"),
-          "Watch time episode id when ended",
+          "Watch time episode id when updated",
         );
         assertThat(
           serviceClientMock.recordWatchTimeRequestBodies[0].watchTimeMs,
           eqAppr(10000, 0.1),
-          "Watch time when ended",
+          "Watch time when updated",
         );
-        // Because nowDate not moved forward.
+        assertThat(
+          serviceClientMock.recordWatchTimeRequestBodies[1].watchTimeMs,
+          lt(2000),
+          "Watch time when paused",
+        );
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies.length,
-          eq(0),
-          "watchEpisodeRequestBodies.length when ended",
+          eq(1),
+          "watchEpisodeRequestBodies.length when paused",
+        );
+        assertThat(
+          serviceClientMock.watchEpisodeRequestBodies[0].watchedVideoTimeMs,
+          eqAppr(10000, 0.1),
+          "Watch session video time when paused",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/play_page_desktop_watched_until_end.png"),
-          path.join(
-            __dirname,
-            "/golden/play_page_desktop_watched_until_end.png",
-          ),
-          path.join(__dirname, "/play_page_desktop_watched_until_end_diff.png"),
+          path.join(__dirname, "/play_page_desktop_watched_for_10s.png"),
+          path.join(__dirname, "/golden/play_page_desktop_watched_for_10s.png"),
+          path.join(__dirname, "/play_page_desktop_watched_for_10s_diff.png"),
         );
 
         // Prepare
@@ -924,38 +929,37 @@ TEST_RUNNER.run({
         serviceClientMock.watchEpisodeRequestBodies.length = 0;
 
         // Execute
+        this.cut.player.val.video.val.currentTime = 0;
         this.cut.player.val.playButton.val.click();
         await new Promise<void>((resolve) =>
           this.cut.player.val.once("playing", resolve),
         );
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        // Advance 30 seconds which is larger than
-        // WatchTimeMeter.SYNC_THROTTLE_INTERVAL_MS and
-        // WatchSessionTracker.SYNC_THROTTLE_INTERVAL_MS.
-        nowDate = new Date("2024-02-01T08:00:30Z");
+        // Stopped by error.
         await new Promise<void>((resolve) =>
           this.cut.player.val.once("notPlaying", resolve),
         );
+        // Wait for all retries to finish
+        await new Promise<void>((resolve) => setTimeout(resolve, 1000));
 
         // Verify
         assertThat(
           this.cut.player.val.getCurrentVideoTimeMs(),
-          eqAppr(950, 0.1),
+          eqAppr(10000, 0.1),
           "Player stopped",
         );
         assertThat(
           serviceClientMock.recordWatchTimeRequestBodies.length,
-          eq(2),
+          eq(6),
           "recordWatchTimeRequestBodies.length when stopped",
         );
         assertThat(
           serviceClientMock.recordWatchTimeRequestBodies[0].watchTimeMs,
-          eqAppr(950, 0.1),
+          eqAppr(10000, 0.1),
           "Watch time when stopped",
         );
         assertThat(
-          serviceClientMock.recordWatchTimeRequestBodies[1].watchTimeMs,
-          eqAppr(950, 0.1),
+          serviceClientMock.recordWatchTimeRequestBodies[3].watchTimeMs,
+          eqAppr(10000, 0.1),
           "Watch time 2 when stopped",
         );
         assertThat(
@@ -966,27 +970,18 @@ TEST_RUNNER.run({
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies[0].watchedVideoTimeMs,
           lt(100),
-          "Watch session video time restart",
+          "Watch session video time when restarted",
         );
+        // When WatchSessionTracker.SYNC_THROTTLE_INTERVAL_MS and WatchTimeMeter.SYNC_THROTTLE_INTERVAL_MS are the same.
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies[1].watchedVideoTimeMs,
-          eqAppr(950, 0.1),
+          eqAppr(10000, 0.1),
           "Watch session video time update when stopped",
         );
         await asyncAssertScreenshot(
           path.join(__dirname, "/play_page_desktop_interrupted.png"),
           path.join(__dirname, "/golden/play_page_desktop_interrupted.png"),
           path.join(__dirname, "/play_page_desktop_interrupted_diff.png"),
-          {
-            excludedAreas: [
-              {
-                x: 0,
-                y: 0,
-                width: 730,
-                height: 660,
-              },
-            ],
-          },
         );
 
         // Prepare
@@ -995,22 +990,33 @@ TEST_RUNNER.run({
         serviceClientMock.watchEpisodeRequestBodies.length = 0;
 
         // Execute
+        // 5 times to reach 2x speed
+        for (let i = 0; i < 5; i++) {
+          this.cut.player.val.playbackSpeedUpButton.val.click();
+        }
         this.cut.player.val.playButton.val.click();
+        await new Promise<void>((resolve) =>
+          this.cut.player.val.once("playing", resolve),
+        );
+        await new Promise<void>((resolve) => setTimeout(resolve, 5000));
+        this.cut.player.val.pauseButton.val.click();
         await new Promise<void>((resolve) =>
           this.cut.player.val.once("notPlaying", resolve),
         );
+        await mouseMove(200, 100, 1);
 
         // Verify
         assertThat(
           serviceClientMock.recordWatchTimeRequestBodies.length,
           eq(1),
-          "recordWatchTimeRequestBodies.length when resumed",
+          "recordWatchTimeRequestBodies.length when resumed and paused",
         );
         assertThat(
           serviceClientMock.recordWatchTimeRequestBodies[0].watchTimeMs,
-          eqAppr(10000, 0.1),
-          "Watch time when resumed",
+          eqAppr(20000, 0.1),
+          "Watch time when resumed and paused",
         );
+        // Not reach WatchSessionTracker.SYNC_THROTTLE_INTERVAL_MS.
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies.length,
           eq(1),
@@ -1018,18 +1024,18 @@ TEST_RUNNER.run({
         );
         assertThat(
           serviceClientMock.watchEpisodeRequestBodies[0].watchedVideoTimeMs,
-          eqAppr(1000, 0.1),
+          lt(11000),
           "Watch session video time when resumed",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/play_page_desktop_watched_until_end_2.png"),
+          path.join(__dirname, "/play_page_desktop_watched_after_interrupted.png"),
           path.join(
             __dirname,
-            "/golden/play_page_desktop_watched_until_end_2.png",
+            "/golden/play_page_desktop_watched_after_interrupted.png",
           ),
           path.join(
             __dirname,
-            "/play_page_desktop_watched_until_end_2_diff.png",
+            "/play_page_desktop_watched_after_interrupted_diff.png",
           ),
         );
       }
