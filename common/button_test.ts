@@ -1,10 +1,10 @@
 import path = require("path");
 import {
   BlockingButton,
-  FilledBlockingButton,
-  OutlineBlockingButton,
-  TextBlockingButton,
-} from "./blocking_button";
+  FilledButton,
+  OutlineButton,
+  TextButton,
+} from "./button";
 import { normalizeBody } from "./normalize_body";
 import { setTabletView } from "./view_port";
 import { E } from "@selfage/element/factory";
@@ -18,7 +18,7 @@ class RenderCase implements TestCase {
   private container: HTMLDivElement;
   public constructor(
     public name: string,
-    private buttonFactoryFn: (customeStyle: string) => BlockingButton,
+    private buttonFactoryFn: () => BlockingButton,
     private renderScreenshotPath: string,
     private renderScreenshotGoldenPath: string,
     private renderScreenshotDiffPath: string,
@@ -33,16 +33,15 @@ class RenderCase implements TestCase {
     // Prepare
     await setTabletView();
     let resolveFn: Function;
-    let resovablePromise = new Promise<void>((resolve) => {
+    let resolvablePromise = new Promise<void>((resolve) => {
       resolveFn = resolve;
     });
-    let cut = this.buttonFactoryFn("")
-      .append(E.text("some button"))
-      .addAction(() => resovablePromise);
+    let cut = this.buttonFactoryFn().addAction(() => resolvablePromise);
     this.container = E.div({}, cut.body);
 
     // Execute
     document.body.append(this.container);
+
     // Verify
     await asyncAssertScreenshot(
       this.renderScreenshotPath,
@@ -54,7 +53,7 @@ class RenderCase implements TestCase {
     );
 
     // Execute
-    cut.body.click();
+    cut.click();
 
     // Verify
     await asyncAssertScreenshot(
@@ -79,11 +78,12 @@ class RenderCase implements TestCase {
 }
 
 TEST_RUNNER.run({
-  name: "BlockingButtonTest",
+  name: "ButtonTest",
   cases: [
     new RenderCase(
       "RenderFilledButton",
-      (customeStyle) => new FilledBlockingButton(customeStyle),
+      () =>
+        new BlockingButton(new FilledButton().append(E.text("some button"))),
       path.join(__dirname, "/filled_blocking_button_default.png"),
       path.join(__dirname, "/golden/filled_blocking_button_default.png"),
       path.join(__dirname, "/filled_blocking_button_default_diff.png"),
@@ -96,7 +96,8 @@ TEST_RUNNER.run({
     ),
     new RenderCase(
       "RenderOutlineButton",
-      (customeStyle) => new OutlineBlockingButton(customeStyle),
+      () =>
+        new BlockingButton(new OutlineButton().append(E.text("some button"))),
       path.join(__dirname, "/outline_blocking_button_default.png"),
       path.join(__dirname, "/golden/outline_blocking_button_default.png"),
       path.join(__dirname, "/outline_blocking_button_default_diff.png"),
@@ -109,7 +110,7 @@ TEST_RUNNER.run({
     ),
     new RenderCase(
       "RenderTextButton",
-      (customeStyle) => new TextBlockingButton(customeStyle),
+      () => new BlockingButton(new TextButton().append(E.text("some button"))),
       path.join(__dirname, "/text_blocking_button_default.png"),
       path.join(__dirname, "/golden/text_blocking_button_default.png"),
       path.join(__dirname, "/text_blocking_button_default_diff.png"),
@@ -125,11 +126,11 @@ TEST_RUNNER.run({
       async execute() {
         // Prepare
         let actioned = false;
-        let cut = new FilledBlockingButton<number>("").addAction(
+        let cut = new BlockingButton<number>(new FilledButton("")).addAction(
           async () => {
             return 1;
           },
-          (response) => {
+          (error, response) => {
             assertThat(response, eq(1), "action response");
             actioned = true;
           },
@@ -148,9 +149,11 @@ TEST_RUNNER.run({
       async execute() {
         // Prepare
         let actioned = false;
-        let cut = new FilledBlockingButton("").addAction(async () => {
-          actioned = true;
-        });
+        let cut = new BlockingButton(new FilledButton("")).addAction(
+          async () => {
+            actioned = true;
+          },
+        );
 
         // Execute
         cut.disable();

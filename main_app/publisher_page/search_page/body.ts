@@ -1,10 +1,8 @@
 import EventEmitter = require("events");
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
-import {
-  PAGE_MAX_WIDTH_L,
-  ePageWithTopDownCard,
-} from "../../../common/page_elements";
+import { ePageWithTopDownCard } from "../../../common/page_elements";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
+import { GAP_1X, PAGE_MAX_WIDTH_L } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
   eArchivedSeasonItem,
@@ -54,11 +52,11 @@ export class SearchPage extends EventEmitter {
       this.card,
       `max-width: ${PAGE_MAX_WIDTH_L}rem; padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       assign(this.searchInput, new SearchInput(query, seasonState)).body,
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       assign(this.loadingSection, new ScrollLoadingSection()).body,
     );

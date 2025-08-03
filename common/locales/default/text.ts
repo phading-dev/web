@@ -59,10 +59,10 @@ export default class Text {
     ];
   }
   get signUpViewerSubtitle() {
-    return `Why overpay for subscriptions? Make every second count.`;
+    return [`Why overpay for subscriptions?`, `Make every second count.`];
   }
   get signUpPublisherSubtitle() {
-    return `Stop selling your content short. Be your own publisher.`;
+    return [`Stop selling your content short.`, `Be your own publisher.`];
   }
   get signUpTitle() {
     return `Create your new account`;
@@ -98,7 +98,7 @@ export default class Text {
     return `Publisher`;
   }
   get addMoreAccountsTip() {
-    return `(You can add more accounts under the same email later.)`;
+    return `Note: You can add more accounts under the same email later.`;
   }
   get switchToSignUpLink() {
     return `Don't have an account?`;
@@ -140,24 +140,16 @@ export default class Text {
     return `Already have an account?`;
   }
   get acceptTerms() {
-    return [
-      `I have read and agree to the `,
-      `Terms of Service`,
-      ` and `,
-      `Privacy Policy`,
-      `.`,
-    ];
+    return `I have read and agree to the following documents:`;
   }
-  get acceptPublisherTerms() {
-    return [
-      `I have read and agree to the `,
-      `Terms of Service`,
-      `, `,
-      `Privacy Policy`,
-      ` and `,
-      `Publisher Agreement`,
-      `.`,
-    ];
+  get termsOfService() {
+    return `Terms of Service`;
+  }
+  get privacyPolicy() {
+    return `Privacy Policy`;
+  }
+  get publisherAgreement() {
+    return `Publisher Agreement`;
   }
   get emailVerificationTitle() {
     return `Verify your email`;
@@ -171,11 +163,14 @@ export default class Text {
   get emailVerificationNotReceived() {
     return `Didn't receive the email? Try checking your spam folder.`;
   }
-  get resendButtonLabel() {
-    return `Resend`;
+  get resendEmailButtonLabel() {
+    return `Resend email`;
   }
-  get resendGenericError() {
-    return `Failed to resend. Please try again later.`;
+  get resendingEmail() {
+    return `Resending...`;
+  }
+  get resendEmailGenericError() {
+    return `Failed to resend email. Please try again later.`;
   }
   get resendEmailVerificationEmailRateLimitError() {
     return [
@@ -185,9 +180,6 @@ export default class Text {
   }
   get resendCountDown() {
     return [`Resend in `, `s`];
-  }
-  get alternativeAction() {
-    return `or`;
   }
   get changeEmailLabel() {
     return `Change email`;
@@ -1060,7 +1052,7 @@ export default class Text {
     ];
   }
   get audioFileTipTwo() {
-    return `• Each audio track must use AAC codec.`;
+    return `• Each audio track must use AAC codec with only one channel (mono) or two channels (stereo).`;
   }
   get audioFileTipThree() {
     return `• No re-encoding. The quality of the audio tracks will be preserved and only processed to be better streamed online.`;
@@ -1308,7 +1300,7 @@ export default class Text {
     return `Effective date is invalid.`;
   }
   get updateSeasonNewRateEffectiveDateTooSoonError() {
-    return [`Effective date must be `, ` days from now or later.`];
+    return `Effective date is too soon.`;
   }
   get updateSeasonDeleteNewRateButtonLabel() {
     return `Delete new rate`;

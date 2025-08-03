@@ -40,7 +40,7 @@ TEST_RUNNER.run({
             grade: 189,
           },
           new Date("2024-12-23T12:00:00Z"),
-          "width: 35rem;",
+          "width: 350px;",
         );
 
         // Execute
@@ -54,7 +54,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.style.width = "60rem";
+        cut.style.width = "600px";
 
         // Verify
         await asyncAssertScreenshot(
@@ -86,7 +86,7 @@ TEST_RUNNER.run({
             grade: 189,
           },
           new Date("2024-12-23T12:00:00Z"),
-          "width: 35rem;",
+          "width: 350px;",
         );
 
         // Execute
@@ -100,7 +100,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.style.width = "60rem";
+        cut.style.width = "600px";
 
         // Verify
         await asyncAssertScreenshot(
@@ -130,7 +130,7 @@ TEST_RUNNER.run({
             grade: 189,
           },
           new Date("2024-12-23T12:00:00Z"),
-          "width: 35rem;",
+          "width: 350px;",
         );
 
         // Execute
@@ -164,7 +164,7 @@ TEST_RUNNER.run({
             grade: 189,
           },
           new Date("2024-12-23T12:00:00Z"),
-          "width: 60rem;",
+          "width: 600px;",
         );
 
         // Execute
@@ -198,7 +198,7 @@ TEST_RUNNER.run({
             grade: 189,
           },
           new Date("2024-12-23T12:00:00Z"),
-          "width: 35rem;",
+          "width: 350px;",
         );
 
         // Execute
@@ -212,7 +212,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        cut.style.width = "60rem";
+        cut.style.width = "600px";
 
         // Verify
         await asyncAssertScreenshot(

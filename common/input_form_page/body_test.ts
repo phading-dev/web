@@ -20,7 +20,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "Default_ValidInput_SubmitError_ErrorInResponse_SubmitSuccess";
+        "Default_ValidInput_AddErrorInput_RemoveErrorInput_SubmitError_ErrorInResponse_SubmitSuccess";
       private cut: InputFormPage<Response>;
       public async execute() {
         // Prepare
@@ -45,12 +45,10 @@ TEST_RUNNER.run({
         let response: Response;
 
         // Execute
-        this.cut = new InputFormPage<Response>(
-          "",
-          [eFormTitle("A title"), input.body],
-          "Update",
-        )
-          .addPrimaryAction(
+        this.cut = new InputFormPage<Response>()
+          .addLines(eFormTitle("A title"), input.body)
+          .addButtonsContainerAndPrimaryButton(
+            "Update",
             async () => {
               actioned = true;
               if (callError) {
@@ -59,7 +57,7 @@ TEST_RUNNER.run({
                 return response;
               }
             },
-            (response, error) => {
+            (error, response) => {
               if (error) {
                 return "Failed to submit";
               } else if (response.used) {
@@ -113,8 +111,6 @@ TEST_RUNNER.run({
 
         // Prepare
         callError = new Error("Fake error");
-        let primarySuccess = false;
-        this.cut.on("handlePrimarySuccess", () => (primarySuccess = true));
 
         // Execute
         this.cut.clickPrimaryButton();
@@ -124,7 +120,6 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(actioned, eq(true), "actioned");
-        assertThat(primarySuccess, eq(false), "not primarySuccess");
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_submit_error.png"),
           path.join(__dirname, "/golden/input_form_page_submit_error.png"),
@@ -144,7 +139,6 @@ TEST_RUNNER.run({
         );
 
         // Verify
-        assertThat(primarySuccess, eq(false), "not primarySuccess");
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_error_in_response.png"),
           path.join(__dirname, "/golden/input_form_page_error_in_response.png"),
@@ -161,7 +155,6 @@ TEST_RUNNER.run({
         );
 
         // Verify
-        assertThat(primarySuccess, eq(true), "primarySuccess");
         await asyncAssertScreenshot(
           path.join(__dirname, "/input_form_page_submitted.png"),
           path.join(__dirname, "/golden/input_form_page_valid.png"),
@@ -190,16 +183,14 @@ TEST_RUNNER.run({
         let deleteError: Error;
 
         // Execute
-        this.cut = new InputFormPage<Response>(
-          "",
-          [eFormTitle("A title"), input.body],
-          "Update",
-        )
-          .addPrimaryAction(
+        this.cut = new InputFormPage<Response>()
+          .addLines(eFormTitle("A title"), input.body)
+          .addButtonsContainerAndPrimaryButton(
+            "Update",
             async () => {
               return {};
             },
-            (response, error) => {
+            () => {
               return "";
             },
           )
@@ -210,7 +201,7 @@ TEST_RUNNER.run({
                 throw deleteError;
               }
             },
-            (response, error) => {
+            (error, response) => {
               if (error) {
                 return "Failed to delete delete delete delete!!!";
               } else {
@@ -232,7 +223,7 @@ TEST_RUNNER.run({
         deleteError = new Error("Fake error");
 
         // Execute
-        this.cut.secondaryBlockingButton.val.click();
+        this.cut.secondaryButton.val.click();
         await new Promise<void>((resolve) =>
           this.cut.once("secondaryDone", resolve),
         );
@@ -265,7 +256,7 @@ TEST_RUNNER.run({
         await setTabletView();
 
         // Execute
-        this.cut.secondaryBlockingButton.val.click();
+        this.cut.secondaryButton.val.click();
         await new Promise<void>((resolve) =>
           this.cut.once("secondaryDone", resolve),
         );
@@ -297,11 +288,17 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut = new InputFormPage<Response>(
-          "",
-          [eFormTitle("A title"), input.body],
-          "Update",
-        )
+        this.cut = new InputFormPage<Response>()
+          .addLines(eFormTitle("A title"), input.body)
+          .addButtonsContainerAndPrimaryButton(
+            "Update",
+            async () => {
+              return {};
+            },
+            () => {
+              return "";
+            },
+          )
           .addBackButton()
           .addInputs(input);
         document.body.append(this.cut.body);
@@ -348,11 +345,18 @@ TEST_RUNNER.run({
         }
 
         // Execute
-        this.cut = new InputFormPage<Response>(
-          "",
-          [eFormTitle("A title"), ...inputs.map((input) => input.body)],
-          "Update",
-        ).addInputs(...inputs);
+        this.cut = new InputFormPage<Response>()
+          .addLines(eFormTitle("A title"), ...inputs.map((input) => input.body))
+          .addButtonsContainerAndPrimaryButton(
+            "Update",
+            async () => {
+              return {};
+            },
+            () => {
+              return "";
+            },
+          )
+          .addInputs(...inputs);
         document.body.append(this.cut.body);
 
         // Verify

@@ -1,7 +1,13 @@
 import EventEmitter = require("events");
 import { SCHEME } from "./color_scheme";
 import { LOCALIZED_TEXT } from "./locales/localized_text";
-import { FONT_M } from "./sizes";
+import {
+  BORDER_RADIUS_S,
+  BORDER_WIDTH_2,
+  FONT_M,
+  GAP_1_d_5X,
+  GAP_6X,
+} from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
@@ -18,7 +24,7 @@ export class FileDropZone extends EventEmitter {
     this.body = E.div(
       {
         class: "upload-page-drop-zone",
-        style: `cursor: pointer; border: .2rem dashed; border-radius: 1rem; padding: 10rem 2rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center; gap: 2rem; ${customStyles}`,
+        style: `cursor: pointer; border: ${BORDER_WIDTH_2}rem dashed; border-radius: ${BORDER_RADIUS_S}rem; padding: ${GAP_6X}rem ${GAP_1_d_5X}rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center; gap: ${GAP_1_d_5X}rem; ${customStyles}`,
       },
       E.div(
         {

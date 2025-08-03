@@ -4,11 +4,15 @@ import { DateRangeInput, DateType } from "../../../common/date_range_input";
 import { ExpandableLineItems } from "../../../common/line_item";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
+import { ePageWithTopDownCard } from "../../../common/page_elements";
 import {
+  FONT_M,
+  FONT_WEIGHT_600,
+  GAP_1X,
+  GAP_2X,
+  GAP_d_5X,
   PAGE_MAX_WIDTH_L,
-  ePageWithTopDownCard,
-} from "../../../common/page_elements";
-import { FONT_M, FONT_WEIGHT_600 } from "../../../common/sizes";
+} from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
 import { newListTransactionStatementsRequest } from "@phading/commerce_service_interface/web/statements/client";
@@ -56,7 +60,7 @@ export class StatementsPage extends EventEmitter {
     let startMonth = endMonth.clone().addMonths(-StatementsPage.INIT_MONTHS);
     this.body = ePageWithTopDownCard(
       new Ref(),
-      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: 1rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${GAP_1X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
       E.div(
         {
           class: "statements-page-title",
@@ -69,7 +73,7 @@ export class StatementsPage extends EventEmitter {
         ),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
       }),
       assign(
         this.monthRangeInput,
@@ -80,11 +84,11 @@ export class StatementsPage extends EventEmitter {
         ).show(),
       ).body,
       E.div({
-        style: `flex: 0 0 auto; height: 1.5rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.divRef(this.statementsList, {
         class: "statements-page-list",
-        style: `display: flex; flex-flow: column nowrap; width: 100%; gap: 1rem;`,
+        style: `display: flex; flex-flow: column nowrap; width: 100%; gap: ${GAP_d_5X}rem;`,
       }),
     );
     this.monthRangeInput.val.setValues(

@@ -172,17 +172,18 @@ TEST_RUNNER.run({
 
         // Execute
         await setDesktopView();
+        window.scrollTo(0, 0);
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/search_publishers_page_desktop_scrolled.png"),
+          path.join(__dirname, "/search_publishers_page_desktop_render.png"),
           path.join(
             __dirname,
-            "/golden/search_publishers_page_desktop_scrolled.png",
+            "/golden/search_publishers_page_desktop_render.png",
           ),
           path.join(
             __dirname,
-            "/search_publishers_page_desktop_scrolled_diff.png",
+            "/search_publishers_page_desktop_render_diff.png",
           ),
         );
 

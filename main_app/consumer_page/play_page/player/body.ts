@@ -1,11 +1,8 @@
 import EventEmitter from "events";
 import Hls from "hls.js";
+import { IconButton, createBackButton } from "../../../../common/button";
 import { SCHEME } from "../../../../common/color_scheme";
 import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
-import {
-  SimpleIconButton,
-  createBackButton,
-} from "../../../../common/icon_button";
 import {
   createCommentIcon,
   createDashedCircleIcon,
@@ -28,10 +25,16 @@ import {
   FONT_L,
   FONT_M,
   FONT_S,
-  ICON_BUTTON_L,
+  GAP_1X,
+  GAP_1_d_5X,
+  GAP_d_25X,
+  GAP_d_5X,
+  GAP_d_75X,
+  ICON_BUTTON_M,
   ICON_BUTTON_XL,
   ICON_XL,
   ICON_XXL,
+  LINE_HEIGHT_M,
 } from "../../../../common/sizes";
 import {
   PLAYBACK_SPEED_DEFAULT,
@@ -86,7 +89,7 @@ export class Player extends EventEmitter {
   private static VOLUME_STEP = 1;
   private static SKIP_STEP_SEC = 10;
   private static DELAY_TO_HIDE_CONTROLS_MS = 2000;
-  private static LAYOUT_BREAKPOINT = 60; // rem
+  private static LAYOUT_BREAKPOINT = 40; // rem
   private static MOVE_SENSITIVITY_THRESHOLD = 15; // px
 
   public elements: Array<HTMLElement>;
@@ -94,23 +97,23 @@ export class Player extends EventEmitter {
   private bottomError = new Ref<HTMLDivElement>();
   private controlsContainer = new Ref<HTMLDivElement>();
   private centerControlsContainer = new Ref<HTMLDivElement>();
-  public backButton = new Ref<SimpleIconButton>();
-  public volumeDownButton = new Ref<SimpleIconButton>();
+  public backButton = new Ref<IconButton>();
+  public volumeDownButton = new Ref<IconButton>();
   private currentVolumeIcon = new Ref<HTMLDivElement>();
-  public volumeUpButton = new Ref<SimpleIconButton>();
-  public skipBackwardButton = new Ref<SimpleIconButton>();
-  public playButton = new Ref<SimpleIconButton>();
-  public pauseButton = new Ref<SimpleIconButton>();
-  public skipForwardButton = new Ref<SimpleIconButton>();
-  public playbackSpeedDownButton = new Ref<SimpleIconButton>();
+  public volumeUpButton = new Ref<IconButton>();
+  public skipBackwardButton = new Ref<IconButton>();
+  public playButton = new Ref<IconButton>();
+  public pauseButton = new Ref<IconButton>();
+  public skipForwardButton = new Ref<IconButton>();
+  public playbackSpeedDownButton = new Ref<IconButton>();
   private currentPlaybackSpeed = new Ref<HTMLDivElement>();
-  public playbackSpeedUpButton = new Ref<SimpleIconButton>();
-  public playNextButton = new Ref<SimpleIconButton>();
-  public showInfoButton = new Ref<SimpleIconButton>();
-  public showCommentsButton = new Ref<SimpleIconButton>();
-  public showSettingsButton = new Ref<SimpleIconButton>();
-  public fullscreenButton = new Ref<SimpleIconButton>();
-  public exitFullscreenButton = new Ref<SimpleIconButton>();
+  public playbackSpeedUpButton = new Ref<IconButton>();
+  public playNextButton = new Ref<IconButton>();
+  public showInfoButton = new Ref<IconButton>();
+  public showCommentsButton = new Ref<IconButton>();
+  public showSettingsButton = new Ref<IconButton>();
+  public fullscreenButton = new Ref<IconButton>();
+  public exitFullscreenButton = new Ref<IconButton>();
   private progressBar = new Ref<HTMLDivElement>();
   private progressBarBuffer = new Ref<HTMLDivElement>();
   private progressBarFiller = new Ref<HTMLDivElement>();
@@ -143,14 +146,14 @@ export class Player extends EventEmitter {
         style: `width: 100%; height: 100%; object-fit: contain;`,
       }),
       E.divRef(this.bottomError, {
-        class: "player-bottom-status",
-        style: `opacity: 0; position: absolute; bottom: 0; left: 0; width: 100%; padding: 1rem; box-sizing: border-box; text-align: center; font-size: ${FONT_M}rem; color: ${SCHEME.error0}; background-color: ${SCHEME.neutral4};`,
+        class: "player-bottom-error",
+        style: `opacity: 0; position: absolute; bottom: 0; left: 0; width: 100%; padding: ${GAP_d_5X}rem; box-sizing: border-box; text-align: center; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; background-color: ${SCHEME.neutral4};`,
       }),
       E.divRef(
         this.controlsContainer,
         {
           class: "player-controls",
-          style: `position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding-bottom: .2rem; background-color: ${SCHEME.neutral4Translucent}; display: flex; flex-flow: column nowrap; transition: opacity .2s;`,
+          style: `position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; background-color: ${SCHEME.neutral4Translucent}; display: flex; flex-flow: column nowrap; transition: opacity .2s;`,
         },
         assign(this.backButton, createBackButton()).body,
         E.divRef(
@@ -162,11 +165,11 @@ export class Player extends EventEmitter {
           E.div(
             {
               class: "player-volume-controls",
-              style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 1.5rem;`,
+              style: `display: flex; flex-flow: row nowrap; align-items: center;`,
             },
             assign(
               this.volumeDownButton,
-              new SimpleIconButton(
+              new IconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createVolumeLowIcon("currentColor"),
@@ -174,11 +177,11 @@ export class Player extends EventEmitter {
             ).body,
             E.divRef(this.currentVolumeIcon, {
               class: "player-volume-number",
-              style: `width: ${ICON_XXL}rem; height: ${ICON_XXL}rem;`,
+              style: `width: ${ICON_XXL}rem; height: ${ICON_XXL}rem; padding: ${(ICON_BUTTON_XL - ICON_XXL) / 2}rem`,
             }),
             assign(
               this.volumeUpButton,
-              new SimpleIconButton(
+              new IconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createVolumeFullIcon("currentColor"),
@@ -188,11 +191,11 @@ export class Player extends EventEmitter {
           E.div(
             {
               class: "player-play-controls",
-              style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+              style: `display: flex; flex-flow: row nowrap; align-items: center;`,
             },
             assign(
               this.skipBackwardButton,
-              new SimpleIconButton(
+              new IconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createSkipBackwardBy10Icon("currentColor"),
@@ -200,7 +203,7 @@ export class Player extends EventEmitter {
             ).body,
             assign(
               this.playButton,
-              new SimpleIconButton(
+              new IconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createPlayIcon("currentColor"),
@@ -208,7 +211,7 @@ export class Player extends EventEmitter {
             ).body,
             assign(
               this.pauseButton,
-              new SimpleIconButton(
+              new IconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createPauseIcon("currentColor"),
@@ -216,7 +219,7 @@ export class Player extends EventEmitter {
             ).body,
             assign(
               this.skipForwardButton,
-              new SimpleIconButton(
+              new IconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createSkipForwardBy10Icon("currentColor"),
@@ -226,11 +229,11 @@ export class Player extends EventEmitter {
           E.div(
             {
               class: "player-playback-speed-controls",
-              style: `display: flex; flex-flow: row nowrap;align-items: center; gap: 1rem;`,
+              style: `display: flex; flex-flow: row nowrap; align-items: center;`,
             },
             assign(
               this.playbackSpeedDownButton,
-              new SimpleIconButton(
+              new IconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createFastForwardIcon(
@@ -241,11 +244,11 @@ export class Player extends EventEmitter {
             ).body,
             E.divRef(this.currentPlaybackSpeed, {
               class: "player-playback-speed-number",
-              style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; width: 4rem; text-align: center;`,
+              style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; width: ${ICON_BUTTON_XL}rem; text-align: center;`,
             }),
             assign(
               this.playbackSpeedUpButton,
-              new SimpleIconButton(
+              new IconButton(
                 ICON_BUTTON_XL,
                 ICON_XXL,
                 createFastForwardIcon("currentColor"),
@@ -256,52 +259,52 @@ export class Player extends EventEmitter {
         E.div(
           {
             class: "player-bottom-controls",
-            style: `display: flex; flex-flow: row wrap; justify-content: flex-end; align-items: center; gap: 1.5rem; padding: 0 1.5rem;`,
+            style: `display: flex; flex-flow: row wrap; justify-content: flex-end; align-items: center; gap: ${GAP_1X}rem; padding: 0 ${GAP_1X}rem;`,
           },
           assign(
             this.playNextButton,
-            new SimpleIconButton(
-              ICON_BUTTON_L,
+            new IconButton(
+              ICON_BUTTON_M,
               ICON_XL,
               createPlayNextIcon("currentColor"),
             ),
           ).body,
           assign(
             this.showInfoButton,
-            new SimpleIconButton(
-              ICON_BUTTON_L,
+            new IconButton(
+              ICON_BUTTON_M,
               ICON_XL,
               createFilledExclamationMarkInACircle("currentColor"),
             ),
           ).body,
           assign(
             this.showCommentsButton,
-            new SimpleIconButton(
-              ICON_BUTTON_L,
+            new IconButton(
+              ICON_BUTTON_M,
               ICON_XL,
               createCommentIcon("currentColor"),
             ),
           ).body,
           assign(
             this.showSettingsButton,
-            new SimpleIconButton(
-              ICON_BUTTON_L,
+            new IconButton(
+              ICON_BUTTON_M,
               ICON_XL,
               createSettingsIcon("currentColor"),
             ),
           ).body,
           assign(
             this.fullscreenButton,
-            new SimpleIconButton(
-              ICON_BUTTON_L,
+            new IconButton(
+              ICON_BUTTON_M,
               ICON_XL,
               createFullscreenIcon("currentColor"),
             ),
           ).body,
           assign(
             this.exitFullscreenButton,
-            new SimpleIconButton(
-              ICON_BUTTON_L,
+            new IconButton(
+              ICON_BUTTON_M,
               ICON_XL,
               createExitFullscreenIcon("currentColor"),
             ),
@@ -311,7 +314,7 @@ export class Player extends EventEmitter {
           this.progressBar,
           {
             class: "player-progress-bar",
-            style: `position: relative; width: 100%; height: 1rem; margin-top: 1.5rem; box-sizing: border-box; transition: padding .2s linear; touch-action: none; cursor: pointer;`,
+            style: `position: relative; width: 100%; height: .75rem; margin-top: ${GAP_1_d_5X}rem; box-sizing: border-box; transition: padding .2s linear; touch-action: none; cursor: pointer;`,
           },
           E.div(
             {
@@ -324,18 +327,18 @@ export class Player extends EventEmitter {
             }),
             E.divRef(this.progressBarFiller, {
               class: "player-progress-bar-filler",
-              style: `position: absolute; top: 0; left: 0; height: 100%; width: 0; background-color: ${SCHEME.progress};`,
+              style: `position: absolute; top: 0; left: 0; height: 100%; width: 0; background-color: ${SCHEME.primary1};`,
             }),
           ),
           E.divRef(this.pointedTimestamp, {
             class: "player-pointed-timestamp",
-            style: `position: absolute; bottom: 100%; padding-bottom: .3rem; font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+            style: `position: absolute; bottom: 100%; padding-bottom: ${GAP_d_5X}rem; font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
           }),
         ),
         E.div(
           {
             class: "player-progress-line",
-            style: `width: 100%; box-sizing: border-box; padding: .5rem 1rem; display: flex; flex-flow: row nowrap; justify-content: space-between; align-items: center;`,
+            style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem ${GAP_d_75X}rem ${GAP_d_5X}rem ${GAP_d_75X}rem; display: flex; flex-flow: row nowrap; justify-content: space-between; align-items: center;`,
           },
           E.div(
             {
@@ -362,7 +365,7 @@ export class Player extends EventEmitter {
         ),
       ),
     ];
-    this.backButton.val.on("action", () => this.emit("back"));
+    this.backButton.val.addAction(() => this.emit("back"));
 
     this.hideLoadingIcon();
     this.hls = new Hls();
@@ -410,11 +413,11 @@ export class Player extends EventEmitter {
       this.playButton.val.hide();
       this.pauseButton.val.show();
     }
-    this.playButton.val.on("action", () => this.video.val.play());
-    this.pauseButton.val.on("action", () => this.video.val.pause());
+    this.playButton.val.addAction(() => this.video.val.play());
+    this.pauseButton.val.addAction(() => this.video.val.pause());
 
-    this.skipBackwardButton.val.on("action", () => this.skipBackward());
-    this.skipForwardButton.val.on("action", () => this.skipForward());
+    this.skipBackwardButton.val.addAction(() => this.skipBackward());
+    this.skipForwardButton.val.addAction(() => this.skipForward());
 
     this.leaveProgressBar();
     this.progressBar.val.addEventListener("pointerenter", (event) =>
@@ -434,29 +437,27 @@ export class Player extends EventEmitter {
     );
 
     this.applyPlaybackSpeed();
-    this.playbackSpeedDownButton.val.on("action", () => this.speedDownOnce());
-    this.playbackSpeedUpButton.val.on("action", () => this.speedUpOnce());
+    this.playbackSpeedDownButton.val.addAction(() => this.speedDownOnce());
+    this.playbackSpeedUpButton.val.addAction(() => this.speedUpOnce());
 
     this.applyVolume();
-    this.volumeDownButton.val.on("action", () => this.volumeDownOnce());
-    this.volumeUpButton.val.on("action", () => this.volumeUpOnce());
+    this.volumeDownButton.val.addAction(() => this.volumeDownOnce());
+    this.volumeUpButton.val.addAction(() => this.volumeUpOnce());
 
     if (this.nextEpisodeId) {
-      this.playNextButton.val.on("action", () =>
+      this.playNextButton.val.addAction(() =>
         this.emit("play", this.nextEpisodeId),
       );
     } else {
       this.playNextButton.val.hide();
     }
-    this.showInfoButton.val.on("action", () => this.emit("showInfo"));
-    this.showCommentsButton.val.on("action", () => this.emit("showComments"));
-    this.showSettingsButton.val.on("action", () => this.emit("showSettings"));
+    this.showInfoButton.val.addAction(() => this.emit("showInfo"));
+    this.showCommentsButton.val.addAction(() => this.emit("showComments"));
+    this.showSettingsButton.val.addAction(() => this.emit("showSettings"));
 
     this.exitFullscreenButton.val.hide();
-    this.fullscreenButton.val.on("action", () => this.emit("goFullscreen"));
-    this.exitFullscreenButton.val.on("action", () =>
-      this.emit("exitFullscreen"),
-    );
+    this.fullscreenButton.val.addAction(() => this.emit("goFullscreen"));
+    this.exitFullscreenButton.val.addAction(() => this.emit("exitFullscreen"));
 
     this.resizeObserver = new ResizeObserver((entries) =>
       this.updateControlsLayout(entries[0]),
@@ -675,7 +676,7 @@ export class Player extends EventEmitter {
   }
 
   private leaveProgressBar(): void {
-    this.progressBar.val.style.paddingTop = `.8rem`;
+    this.progressBar.val.style.paddingTop = `.5rem`;
     this.pointedTimestamp.val.style.display = `none`;
   }
 

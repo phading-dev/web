@@ -7,7 +7,13 @@ import { PasswordInputWithErrorMsg } from "../../../common/input_form_page/passw
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { eFormTitle } from "../../../common/page_elements";
-import { FONT_M, FONT_WEIGHT_600, ICON_XXL } from "../../../common/sizes";
+import {
+  FONT_M,
+  FONT_WEIGHT_600,
+  GAP_1X,
+  ICON_XXL,
+  LINE_HEIGHT_M,
+} from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { MAX_EMAIL_LENGTH } from "@phading/constants/account";
 import { newUpdateUserEmailWithPasswordRequest } from "@phading/user_service_interface/web/self/client";
@@ -41,30 +47,35 @@ export class ChangeEmailPage extends EventEmitter {
   ) {
     super();
     this.request.currentEmail = currentEmail;
-    this.inputFormPage = new InputFormPage(
-      "",
-      [
+    this.inputFormPage = new InputFormPage()
+      .addLines(
         E.div(
           {
-            class: "change-email-icon",
-            style: `align-self: center; height: ${ICON_XXL}rem;`,
+            class: "change-email-page",
+            style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_1X}rem;`,
           },
-          createAccountOutlineIcon(SCHEME.primary1),
-        ),
-        eFormTitle(LOCALIZED_TEXT.changeEmailTitle),
-        E.div(
-          {
-            class: "change-email-current-email",
-            style: `align-self: center; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
-          },
-          E.text(LOCALIZED_TEXT.currentEmail[0]),
           E.div(
             {
-              style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+              class: "change-email-icon",
+              style: `align-self: center; height: ${ICON_XXL}rem;`,
             },
-            E.text(currentEmail),
+            createAccountOutlineIcon(SCHEME.primary1),
           ),
-          E.text(LOCALIZED_TEXT.currentEmail[1]),
+          eFormTitle(LOCALIZED_TEXT.changeEmailTitle),
+          E.div(
+            {
+              class: "change-email-current-email",
+              style: `align-self: center; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+            },
+            E.text(LOCALIZED_TEXT.currentEmail[0]),
+            E.div(
+              {
+                style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+              },
+              E.text(currentEmail),
+            ),
+            E.text(LOCALIZED_TEXT.currentEmail[1]),
+          ),
         ),
         E.input({
           name: "change-email-current-email-hidden",
@@ -95,19 +106,15 @@ export class ChangeEmailPage extends EventEmitter {
             (value) => this.validateOrTakeEmailInput(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.updateButtonLabel,
-    )
-      .addInputs(this.passwordInput.val, this.emailInput.val)
-      .addBackButton()
-      .on("back", () => this.emit("back"))
-      .addPrimaryAction(
+      )
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.updateButtonLabel,
         () => this.update(),
-        (response, error) => this.postUpdate(response, error),
+        (error, response) => this.postUpdate(error, response),
       )
-      .on("handlePrimarySuccess", (response) =>
-        this.emit("verifyEmail", this.request.newEmail),
-      )
+      .addBackButton()
+      .addInputs(this.passwordInput.val, this.emailInput.val)
+      .on("back", () => this.emit("back"))
       .on("primaryDone", () => this.emit("updated"));
   }
 
@@ -148,8 +155,8 @@ export class ChangeEmailPage extends EventEmitter {
   }
 
   private postUpdate(
-    response?: UpdateUserEmailWithPasswordResponse,
     error?: Error,
+    response?: UpdateUserEmailWithPasswordResponse,
   ): string {
     if (error) {
       return LOCALIZED_TEXT.updateGenericError;
@@ -158,6 +165,7 @@ export class ChangeEmailPage extends EventEmitter {
     } else if (response.userEmailUnavailable) {
       return LOCALIZED_TEXT.userEmailNotAvailableError;
     } else {
+      this.emit("verifyEmail", this.request.newEmail);
       return "";
     }
   }

@@ -44,9 +44,10 @@ export class UpdateInfoPage extends EventEmitter {
     this.request.seasonId = seasonId;
     this.request.episodeId = episodeId;
 
-    this.inputFormPage = new InputFormPage(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    this.inputFormPage = new InputFormPage({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.updateEpisodeInfoTitle),
         assign(
           this.episodeNameInput,
@@ -60,18 +61,16 @@ export class UpdateInfoPage extends EventEmitter {
             (value: string) => this.validateNameAndTake(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.updateButtonLabel,
-    )
-      .addBackButton()
-      .on("back", () => this.emit("back"))
-      .addPrimaryAction(
-        () => this.update(),
-        (response, error) => this.postUpdate(error),
       )
-      .on("handlePrimarySuccess", () => this.emit("back"))
-      .on("primaryDone", () => this.emit("updated"))
-      .addInputs(this.episodeNameInput.val);
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.updateButtonLabel,
+        () => this.update(),
+        (error) => this.postUpdate(error),
+      )
+      .addBackButton()
+      .addInputs(this.episodeNameInput.val)
+      .on("back", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("updated"));
   }
 
   private validateNameAndTake(value: string): ValidationResult {
@@ -101,6 +100,7 @@ export class UpdateInfoPage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.updateGenericError;
     } else {
+      this.emit("back");
       return "";
     }
   }

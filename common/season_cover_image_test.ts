@@ -21,7 +21,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 40rem;`,
+          style: `width: 400px;`,
         });
         document.body.append(this.container);
 
@@ -46,7 +46,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 40rem;`,
+          style: `width: 400px;`,
         });
         document.body.append(this.container);
 
@@ -71,7 +71,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 40rem;`,
+          style: `width: 400px;`,
         });
         document.body.append(this.container);
 
@@ -96,7 +96,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 10rem;`,
+          style: `width: 100px;`,
         });
         document.body.append(this.container);
 

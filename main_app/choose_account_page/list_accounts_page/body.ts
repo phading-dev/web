@@ -1,9 +1,16 @@
 import EventEmitter = require("events");
-import { OUTLINE_BUTTON_STYLE } from "../../../common/button_styles";
+import { Button, OutlineButton } from "../../../common/button";
 import { SCHEME } from "../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { eFullPage } from "../../../common/page_elements";
-import { FONT_L, FONT_M } from "../../../common/sizes";
+import {
+  FONT_L,
+  FONT_M,
+  GAP_1X,
+  GAP_2X,
+  LINE_HEIGHT_L,
+  LINE_HEIGHT_M,
+} from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { AccountItem, AddAccountItem } from "./account_item";
 import { MAX_ACCOUNTS_PER_USER } from "@phading/constants/account";
@@ -28,7 +35,7 @@ export class ListAccountsPage extends EventEmitter {
   public body: HTMLDivElement;
   public accountItems = new Array<AccountItem>();
   public createAccountButton = new Ref<AddAccountItem>();
-  public signOutButton = new Ref<HTMLDivElement>();
+  public signOutButton = new Ref<Button>();
   public errorMessage = new Ref<HTMLDivElement>();
 
   public constructor(
@@ -37,7 +44,7 @@ export class ListAccountsPage extends EventEmitter {
   ) {
     super();
     this.body = eFullPage(
-      `justify-content: center; align-items: center; padding: 2rem;`,
+      `justify-content: center; align-items: center; padding: ${GAP_2X}rem ${GAP_1X}rem;`,
     );
     this.load();
   }
@@ -48,42 +55,42 @@ export class ListAccountsPage extends EventEmitter {
       E.div(
         {
           class: "list-accounts-title",
-          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; padding-bottom: 3rem;`,
+          style: `font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(LOCALIZED_TEXT.chooseAccountTitle),
       ),
+      E.div({
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
+      }),
       E.div(
         {
           class: "list-accounts-items",
-          style: `display: flex; flex-flow: row wrap; justify-content: center; gap: 2rem; padding-bottom: 3rem;`,
+          style: `display: flex; flex-flow: row wrap; justify-content: center; gap: ${GAP_1X}rem;`,
         },
         ...response.accounts.map((account) => this.addAccountItem(account)),
         ...(response.accounts.length < MAX_ACCOUNTS_PER_USER
           ? [assign(this.createAccountButton, new AddAccountItem()).body]
           : []),
       ),
-      E.divRef(
+      E.div({
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
+      }),
+      assign(
         this.signOutButton,
-        {
-          class: "list-accounts-sign-out",
-          style: OUTLINE_BUTTON_STYLE,
-        },
-        E.text(LOCALIZED_TEXT.signOutButtonLabel),
-      ),
+        new OutlineButton().append(E.text(LOCALIZED_TEXT.signOutButtonLabel)),
+      ).body,
       E.divRef(
         this.errorMessage,
         {
           class: "list-accounts-error-message",
-          style: `padding-top: 2rem; font-size: ${FONT_M}rem; color: ${SCHEME.error0}; visibility: ${this.error ? "visible" : "hidden"};`,
+          style: `padding-top: ${GAP_1X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; display: ${this.error ? "block" : "none"};`,
         },
         E.text(this.error ?? "1"),
       ),
     );
 
     this.createAccountButton.val?.on("create", () => this.emit("create"));
-    this.signOutButton.val.addEventListener("click", () =>
-      this.emit("signOut"),
-    );
+    this.signOutButton.val.addAction(() => this.emit("signOut"));
     this.emit("loaded");
   }
 

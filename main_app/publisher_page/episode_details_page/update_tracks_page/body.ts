@@ -1,15 +1,13 @@
 import EventEmitter = require("events");
 import {
   BlockingButton,
-  FilledBlockingButton,
-  TextBlockingButton,
-} from "../../../../common/blocking_button";
+  FilledButton,
+  IconButton,
+  TextButton,
+  createBackButton,
+} from "../../../../common/button";
 import { SCHEME } from "../../../../common/color_scheme";
 import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
-import {
-  SimpleIconButton,
-  createBackButton,
-} from "../../../../common/icon_button";
 import {
   createCrossIcon,
   createEditIcon,
@@ -17,20 +15,25 @@ import {
   createSwitchIcon,
   createTrashCanIcon,
 } from "../../../../common/icons";
-import { BASIC_INPUT_STYLE } from "../../../../common/input_styles";
+import { COMMON_BASIC_INPUT_STYLE } from "../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
-  PAGE_MAX_WIDTH_L,
   eFormTitle,
   ePageWithCenterForm,
 } from "../../../../common/page_elements";
 import {
+  BORDER_WIDTH_1,
   FONT_M,
   FONT_WEIGHT_600,
+  GAP_2X,
+  GAP_d_25X,
+  GAP_d_5X,
   ICON_BUTTON_M,
   ICON_L,
   ICON_M,
+  LINE_HEIGHT_M,
+  PAGE_MAX_WIDTH_L,
 } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import {
@@ -70,7 +73,7 @@ function eTransitionArrow(): HTMLDivElement {
   return E.div(
     {
       class: "update-tracks-arrow-icon",
-      style: `width: ${ICON_L}rem; height: ${ICON_L}rem; margin: .5rem; transform: rotate(-90deg);`,
+      style: `width: ${ICON_L}rem; height: ${ICON_L}rem; transform: rotate(-90deg);`,
     },
     createLineArrowIcon(SCHEME.neutral1),
   );
@@ -84,15 +87,15 @@ export interface VideoTrackEditor {
 export class VideoTrackEditor extends EventEmitter {
   public body: HTMLDivElement;
   private transitionArrowLine = new Ref<HTMLDivElement>();
-  public deleteTrackButton = new Ref<SimpleIconButton>();
+  public deleteTrackButton = new Ref<IconButton>();
   private pendingValuesLine = new Ref<HTMLDivElement>();
-  public dropStagingButton = new Ref<SimpleIconButton>();
+  public dropStagingButton = new Ref<IconButton>();
   public videoTrack: VideoTrack = {};
 
   public constructor(videoTrack: VideoTrack) {
     super();
     this.body = E.div({
-      style: `width: 100%; box-sizing: border-box; padding: .5rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
+      style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
     });
     this.videoTrack = copyMessage(videoTrack, VIDEO_TRACK);
     this.videoTrack.staging = undefined; // Only copy non-staging values
@@ -101,41 +104,41 @@ export class VideoTrackEditor extends EventEmitter {
         E.div(
           {
             class: "update-tracks-video-committed-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: baseline;`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
           },
           E.div(
             {
               class: "update-tracks-video-committed-state",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-video-committed-duration",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(formatSecondsAsHHMMSS(this.videoTrack.durationSec)),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-video-committed-resolution",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(this.videoTrack.resolution),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: 1rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           assign(
             this.deleteTrackButton,
-            new SimpleIconButton(
+            new IconButton(
               ICON_BUTTON_M,
               ICON_L,
               createTrashCanIcon("currentColor"),
@@ -151,30 +154,30 @@ export class VideoTrackEditor extends EventEmitter {
           E.div(
             {
               class: "update-tracks-video-committed-state-hidden",
-              style: `font-size: ${FONT_M}rem; visibility: hidden;`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; visibility: hidden;`,
             },
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           eTransitionArrow(),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-video-committed-resolution-hidden",
-              style: `font-size: ${FONT_M}rem; visibility: hidden;`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; visibility: hidden;`,
             },
             E.text(this.videoTrack.resolution),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: ${1 + ICON_BUTTON_M}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_d_5X + ICON_BUTTON_M}rem;`,
           }),
         ),
       );
-      this.deleteTrackButton.val.on("action", () => this.deleteTrack());
+      this.deleteTrackButton.val.addAction(() => this.deleteTrack());
     }
     this.applyNewStaging(videoTrack.staging);
   }
@@ -188,41 +191,41 @@ export class VideoTrackEditor extends EventEmitter {
           this.pendingValuesLine,
           {
             class: "update-tracks-video-deleting-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: baseline;`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
           },
           E.div(
             {
               class: "update-tracks-video-deleting-state",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateDeletingLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-video-deleting-duration",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
             },
             E.text(formatSecondsAsHHMMSS(this.videoTrack.durationSec)),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-video-deleting-resolution",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
             },
             E.text(this.videoTrack.resolution),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: 1rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           assign(
             this.dropStagingButton,
-            new SimpleIconButton(
+            new IconButton(
               ICON_BUTTON_M,
               ICON_M,
               createCrossIcon(SCHEME.neutral1),
@@ -230,7 +233,7 @@ export class VideoTrackEditor extends EventEmitter {
           ).body,
         ),
       );
-      this.dropStagingButton.val.on("action", () => this.dropStaging());
+      this.dropStagingButton.val.addAction(() => this.dropStaging());
     }
     if (this.videoTrack.staging?.toDelete && !newStaging?.toDelete) {
       this.deleteTrackButton.val.enable();
@@ -247,12 +250,12 @@ export class VideoTrackEditor extends EventEmitter {
           this.pendingValuesLine,
           {
             class: "update-tracks-video-adding-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: baseline;`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
           },
           E.div(
             {
               class: "update-tracks-video-adding-state",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
               this.videoTrack.committed
@@ -261,31 +264,31 @@ export class VideoTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-video-adding-duration",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(formatSecondsAsHHMMSS(this.videoTrack.durationSec)),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-video-adding-resolution",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(this.videoTrack.resolution),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: 1rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           assign(
             this.dropStagingButton,
-            new SimpleIconButton(
+            new IconButton(
               ICON_BUTTON_M,
               ICON_M,
               createCrossIcon(SCHEME.neutral1),
@@ -293,7 +296,7 @@ export class VideoTrackEditor extends EventEmitter {
           ).body,
         ),
       );
-      this.dropStagingButton.val.on("action", () => this.dropStaging());
+      this.dropStagingButton.val.addAction(() => this.dropStaging());
     }
     if (this.videoTrack.staging?.toAdd && !newStaging?.toAdd) {
       if (this.transitionArrowLine.val) {
@@ -340,10 +343,10 @@ export interface AudioTrackEditor {
 export class AudioTrackEditor extends EventEmitter {
   public body: HTMLDivElement;
   private transitionArrowLine = new Ref<HTMLDivElement>();
-  public editTrackButton = new Ref<SimpleIconButton>();
-  public deleteTrackButton = new Ref<SimpleIconButton>();
+  public editTrackButton = new Ref<IconButton>();
+  public deleteTrackButton = new Ref<IconButton>();
   private pendingValuesLine = new Ref<HTMLDivElement>();
-  public dropStagingButton = new Ref<SimpleIconButton>();
+  public dropStagingButton = new Ref<IconButton>();
   public nameInput = new Ref<HTMLInputElement>();
   public isDefaultToggleButton = new Ref<HTMLDivElement>();
   private isDefaultText = new Ref<HTMLDivElement>();
@@ -352,7 +355,7 @@ export class AudioTrackEditor extends EventEmitter {
   public constructor(audioTrack: AudioTrack) {
     super();
     this.body = E.div({
-      style: `width: 100%; box-sizing: border-box; padding: .5rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
+      style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
     });
     this.audioTrack = copyMessage(audioTrack, AUDIO_TRACK);
     this.audioTrack.staging = undefined; // Only copy non-staging values
@@ -361,32 +364,32 @@ export class AudioTrackEditor extends EventEmitter {
         E.div(
           {
             class: "update-tracks-audio-committed-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: baseline;`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
           },
           E.div(
             {
               class: "update-tracks-audio-committed-state",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-audio-committed-name",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(this.audioTrack.committed.name),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-audio-committed-default",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
               this.audioTrack.committed.isDefault
@@ -395,22 +398,22 @@ export class AudioTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: 1rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           assign(
             this.editTrackButton,
-            new SimpleIconButton(
+            new IconButton(
               ICON_BUTTON_M,
               ICON_M,
               createEditIcon("currentColor"),
             ),
           ).body,
           E.div({
-            style: `flex: 0 0 auto; width: .5rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_d_25X}rem;`,
           }),
           assign(
             this.deleteTrackButton,
-            new SimpleIconButton(
+            new IconButton(
               ICON_BUTTON_M,
               ICON_L,
               createTrashCanIcon("currentColor"),
@@ -426,21 +429,21 @@ export class AudioTrackEditor extends EventEmitter {
           E.div(
             {
               class: "update-tracks-audio-committed-state-hidden",
-              style: `font-size: ${FONT_M}rem; visibility: hidden;`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; visibility: hidden;`,
             },
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           eTransitionArrow(),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-audio-committed-default-hidden",
-              style: `font-size: ${FONT_M}rem; visibility: hidden;`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; visibility: hidden;`,
             },
             E.text(
               this.audioTrack.committed.isDefault
@@ -449,12 +452,12 @@ export class AudioTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: ${1.5 + ICON_BUTTON_M * 2}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M * 2}rem;`,
           }),
         ),
       );
-      this.editTrackButton.val.on("action", () => this.editTrack());
-      this.deleteTrackButton.val.on("action", () => this.deleteTrack());
+      this.editTrackButton.val.addAction(() => this.editTrack());
+      this.deleteTrackButton.val.addAction(() => this.deleteTrack());
     }
     this.applyNewStaging(audioTrack.staging);
   }
@@ -469,32 +472,32 @@ export class AudioTrackEditor extends EventEmitter {
           this.pendingValuesLine,
           {
             class: "update-tracks-audio-deleting-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: baseline;`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
           },
           E.div(
             {
               class: "update-tracks-audio-deleting-state",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateDeletingLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-audio-deleting-name",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
             },
             E.text(this.audioTrack.committed.name),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-audio-deleting-default",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
             },
             E.text(
               this.audioTrack.committed.isDefault
@@ -503,11 +506,11 @@ export class AudioTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: ${1.5 + ICON_BUTTON_M}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M}rem;`,
           }),
           assign(
             this.dropStagingButton,
-            new SimpleIconButton(
+            new IconButton(
               ICON_BUTTON_M,
               ICON_M,
               createCrossIcon("currentColor"),
@@ -515,7 +518,7 @@ export class AudioTrackEditor extends EventEmitter {
           ).body,
         ),
       );
-      this.dropStagingButton.val.on("action", () => this.dropStaging());
+      this.dropStagingButton.val.addAction(() => this.dropStaging());
     }
     if (this.audioTrack.staging?.toDelete && !newStaging?.toDelete) {
       this.editTrackButton.val.enable();
@@ -535,12 +538,12 @@ export class AudioTrackEditor extends EventEmitter {
           this.pendingValuesLine,
           {
             class: "update-tracks-audio-adding-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: baseline;`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
           },
           E.div(
             {
               class: "update-tracks-audio-adding-state",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
               this.audioTrack.committed
@@ -549,28 +552,28 @@ export class AudioTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.inputRef(this.nameInput, {
             class: "update-tracks-audio-adding-name",
-            style: `${BASIC_INPUT_STYLE} width: 40%; text-align: center;`,
+            style: `${COMMON_BASIC_INPUT_STYLE} width: 40%; text-align: center;`,
             value: newStaging.toAdd.name,
             maxlength: `${MAX_AUDIO_TRACK_NAME_LENGTH}`,
           }),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.divRef(
             this.isDefaultToggleButton,
             {
               class: "update-tracks-audio-default-button",
-              style: `cursor: pointer; box-sizing: border-box; height: ${ICON_BUTTON_M}rem; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: .5rem;`,
+              style: `cursor: pointer; box-sizing: border-box; height: ${ICON_BUTTON_M}rem; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_d_25X}rem;`,
             },
             E.divRef(
               this.isDefaultText,
               {
                 class: "update-tracks-audio-adding-default",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
               },
               E.text(
                 newStaging.toAdd.isDefault
@@ -587,11 +590,11 @@ export class AudioTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: ${1.5 + ICON_BUTTON_M}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M}rem;`,
           }),
           assign(
             this.dropStagingButton,
-            new SimpleIconButton(
+            new IconButton(
               ICON_BUTTON_M,
               ICON_M,
               createCrossIcon("currentColor"),
@@ -608,7 +611,7 @@ export class AudioTrackEditor extends EventEmitter {
       this.isDefaultToggleButton.val.addEventListener("click", () =>
         this.toggleDefaultValue(),
       );
-      this.dropStagingButton.val.on("action", () => this.dropStaging());
+      this.dropStagingButton.val.addAction(() => this.dropStaging());
     }
     if (this.audioTrack.staging?.toAdd && !newStaging?.toAdd) {
       this.editTrackButton.val?.enable();
@@ -702,17 +705,17 @@ export interface SubtitleTrackEditor {
 export class SubtitleTrackEditor extends EventEmitter {
   public body: HTMLDivElement;
   private transitionArrowLine = new Ref<HTMLDivElement>();
-  public editTrackButton = new Ref<SimpleIconButton>();
-  public deleteTrackButton = new Ref<SimpleIconButton>();
+  public editTrackButton = new Ref<IconButton>();
+  public deleteTrackButton = new Ref<IconButton>();
   private pendingValuesLine = new Ref<HTMLDivElement>();
-  public dropStagingButton = new Ref<SimpleIconButton>();
+  public dropStagingButton = new Ref<IconButton>();
   public nameInput = new Ref<HTMLInputElement>();
   public subtitleTrack: any = {};
 
   public constructor(subtitleTrack: any) {
     super();
     this.body = E.div({
-      style: `width: 100%; box-sizing: border-box; padding: .5rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
+      style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
     });
     this.subtitleTrack = copyMessage(subtitleTrack, SUBTITLE_TRACK);
     this.subtitleTrack.staging = undefined; // Only copy non-staging values
@@ -721,42 +724,42 @@ export class SubtitleTrackEditor extends EventEmitter {
         E.div(
           {
             class: "update-tracks-subtitle-committed-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: baseline;`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
           },
           E.div(
             {
               class: "update-tracks-subtitle-committed-state",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-subtitle-committed-name",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(this.subtitleTrack.committed.name),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           assign(
             this.editTrackButton,
-            new SimpleIconButton(
+            new IconButton(
               ICON_BUTTON_M,
               ICON_M,
               createEditIcon("currentColor"),
             ),
           ).body,
           E.div({
-            style: `flex: 0 0 auto; width: .5rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_d_25X}rem;`,
           }),
           assign(
             this.deleteTrackButton,
-            new SimpleIconButton(
+            new IconButton(
               ICON_BUTTON_M,
               ICON_L,
               createTrashCanIcon("currentColor"),
@@ -772,21 +775,21 @@ export class SubtitleTrackEditor extends EventEmitter {
           E.div(
             {
               class: "update-tracks-subtitle-committed-state-hidden",
-              style: `font-size: ${FONT_M}rem; visibility: hidden;`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; visibility: hidden;`,
             },
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           eTransitionArrow(),
           E.div({
-            style: `flex: 1 0 auto; width: ${1.5 + ICON_BUTTON_M * 2}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M * 2}rem;`,
           }),
         ),
       );
-      this.editTrackButton.val.on("action", () => this.editTrack());
-      this.deleteTrackButton.val.on("action", () => this.deleteTrack());
+      this.editTrackButton.val.addAction(() => this.editTrack());
+      this.deleteTrackButton.val.addAction(() => this.deleteTrack());
     }
     this.applyNewStaging(subtitleTrack.staging);
   }
@@ -801,31 +804,31 @@ export class SubtitleTrackEditor extends EventEmitter {
           this.pendingValuesLine,
           {
             class: "update-tracks-subtitle-deleting-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: baseline;`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
           },
           E.div(
             {
               class: "update-tracks-subtitle-deleting-state",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateDeletingLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.div(
             {
               class: "update-tracks-subtitle-deleting-name",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
             },
             E.text(this.subtitleTrack.committed.name),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${1.5 + ICON_BUTTON_M}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M}rem;`,
           }),
           assign(
             this.dropStagingButton,
-            new SimpleIconButton(
+            new IconButton(
               ICON_BUTTON_M,
               ICON_M,
               createCrossIcon("currentColor"),
@@ -833,7 +836,7 @@ export class SubtitleTrackEditor extends EventEmitter {
           ).body,
         ),
       );
-      this.dropStagingButton.val.on("action", () => this.dropStaging());
+      this.dropStagingButton.val.addAction(() => this.dropStaging());
     }
     if (this.subtitleTrack.staging?.toDelete && !newStaging?.toDelete) {
       this.editTrackButton.val.enable();
@@ -853,12 +856,12 @@ export class SubtitleTrackEditor extends EventEmitter {
           this.pendingValuesLine,
           {
             class: "update-tracks-subtitle-adding-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: baseline;`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
           },
           E.div(
             {
               class: "update-tracks-subtitle-adding-state",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
               this.subtitleTrack.committed
@@ -867,20 +870,20 @@ export class SubtitleTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: 1rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
           }),
           E.inputRef(this.nameInput, {
             class: "update-tracks-subtitle-adding-name",
-            style: `${BASIC_INPUT_STYLE} width: max(40%, 20rem); text-align: center;`,
+            style: `${COMMON_BASIC_INPUT_STYLE} width: max(40%, 14rem); text-align: center;`,
             value: newStaging.toAdd.name,
             maxlength: `${MAX_SUBTITLE_TRACK_NAME_LENGTH}`,
           }),
           E.div({
-            style: `flex: 1 0 auto; width: ${1.5 + ICON_BUTTON_M}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M}rem;`,
           }),
           assign(
             this.dropStagingButton,
-            new SimpleIconButton(
+            new IconButton(
               ICON_BUTTON_M,
               ICON_M,
               createCrossIcon("currentColor"),
@@ -894,7 +897,7 @@ export class SubtitleTrackEditor extends EventEmitter {
         }
       });
       this.nameInput.val.addEventListener("change", () => this.changeName());
-      this.dropStagingButton.val.on("action", () => this.dropStaging());
+      this.dropStagingButton.val.addAction(() => this.dropStaging());
     }
     if (this.subtitleTrack.staging?.toAdd && !newStaging?.toAdd) {
       this.editTrackButton.val?.enable();
@@ -987,7 +990,7 @@ export class UpdateTracksPage extends EventEmitter {
   }
 
   public body: HTMLDivElement;
-  public backButton = new Ref<SimpleIconButton>();
+  public backButton = new Ref<IconButton>();
   public saveStagingButton = new Ref<
     BlockingButton<SaveEpisodeStagingDataResponse>
   >();
@@ -1018,44 +1021,44 @@ export class UpdateTracksPage extends EventEmitter {
             E.div(
               {
                 class: "update-tracks-videos-title",
-                style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
+                style: `margin-top: ${GAP_2X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
               },
               E.text(LOCALIZED_TEXT.seasonEpisodeVideoTracksTitle),
             ),
             E.div(
               {
                 class: "update-tracks-videos-header",
-                style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: baseline;`,
+                style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center;`,
               },
               E.div(
                 {
                   class: "update-tracks-video-state",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
               ),
               E.div({
-                style: `flex: 1 0 auto; width: 1rem;`,
+                style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
               }),
               E.div(
                 {
                   class: "update-tracks-video-duration-sec",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackVideoDurationLabel),
               ),
               E.div({
-                style: `flex: 1 0 auto; width: 1rem;`,
+                style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
               }),
               E.div(
                 {
                   class: "update-tracks-video-resolution",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackVideoResolutionLabel),
               ),
               E.div({
-                style: `flex: 0 0 auto; width: ${1 + ICON_BUTTON_M}rem;`,
+                style: `flex: 0 0 auto; width: ${GAP_d_5X + ICON_BUTTON_M}rem;`,
               }),
             ),
           ]),
@@ -1068,44 +1071,44 @@ export class UpdateTracksPage extends EventEmitter {
             E.div(
               {
                 class: "update-tracks-audio-tracks-title",
-                style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
+                style: `margin-top: ${GAP_2X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
               },
               E.text(LOCALIZED_TEXT.seasonEpisodeAudioTracksTitle),
             ),
             E.div(
               {
                 class: "update-tracks-audio-tracks-header",
-                style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: baseline;`,
+                style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center;`,
               },
               E.div(
                 {
                   class: "update-tracks-audio-state",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
               ),
               E.div({
-                style: `flex: 1 0 auto; width: 1rem;`,
+                style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
               }),
               E.div(
                 {
                   class: "update-tracks-audio-name-label",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
               ),
               E.div({
-                style: `flex: 1 0 auto; width: 1rem;`,
+                style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
               }),
               E.div(
                 {
                   class: "update-tracks-audio-default-label",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultLabel),
               ),
               E.div({
-                style: `flex: 0 0 auto; width: ${1.5 + ICON_BUTTON_M * 2}rem;`,
+                style: `flex: 0 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M * 2}rem;`,
               }),
             ),
           ]),
@@ -1118,34 +1121,34 @@ export class UpdateTracksPage extends EventEmitter {
             E.div(
               {
                 class: "update-tracks-subtitle-tracks-title",
-                style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
+                style: `margin-top: ${GAP_2X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
               },
               E.text(LOCALIZED_TEXT.seasonEpisodeSubtitleTracksTitle),
             ),
             E.div(
               {
                 class: "update-tracks-subtitle-tracks-header",
-                style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: baseline;`,
+                style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center;`,
               },
               E.div(
                 {
                   class: "update-tracks-subtitle-state",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
               ),
               E.div({
-                style: `flex: 1 0 auto; width: 1rem;`,
+                style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
               }),
               E.div(
                 {
                   class: "update-tracks-subtitle-name-label",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
               ),
               E.div({
-                style: `flex: 1 0 auto; width: ${1.5 + ICON_BUTTON_M * 2}rem;`,
+                style: `flex: 1 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M * 2}rem;`,
               }),
             ),
           ]),
@@ -1153,45 +1156,45 @@ export class UpdateTracksPage extends EventEmitter {
         this.createSubtitleTrackEditor(subtitleTrack),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 3rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.div(
         {
           class: "update-tracks-video-actions",
-          style: `display: flex; flex-flow: row-reverse wrap; gap: 2rem; align-items: center;`,
+          style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
         },
+        E.divRef(this.actionError, {
+          class: "update-tracks-action-error",
+          style: `display: none; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; text-align: center; self-align: center;`,
+        }),
         assign(
           this.commitStagingButton,
-          new FilledBlockingButton<CommitEpisodeStagingDataResponse>().append(
-            E.text(LOCALIZED_TEXT.commitTrackChangesButtonLabel),
+          new BlockingButton<CommitEpisodeStagingDataResponse>(
+            new FilledButton(`width: 100%;`).append(
+              E.text(LOCALIZED_TEXT.commitTrackChangesButtonLabel),
+            ),
           ),
         ).body,
         assign(
           this.saveStagingButton,
-          new TextBlockingButton<SaveEpisodeStagingDataResponse>().append(
-            E.text(LOCALIZED_TEXT.saveTrackChangesButtonLabel),
+          new BlockingButton<SaveEpisodeStagingDataResponse>(
+            new TextButton(`width: 100%;`).append(
+              E.text(LOCALIZED_TEXT.saveTrackChangesButtonLabel),
+            ),
           ),
         ).body,
-        E.divRef(
-          this.actionError,
-          {
-            class: "update-tracks-action-error",
-            style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
-          },
-          E.text("1"),
-        ),
       ),
     );
-    this.backButton.val.on("action", () => this.emit("back"));
+    this.backButton.val.addAction(() => this.emit("back"));
 
     this.refreshActions();
     this.saveStagingButton.val.addAction(
       () => this.saveStagingChanges(),
-      (response, error) => this.postSaveStagingChanges(response, error),
+      (error, response) => this.postSaveStagingChanges(error, response),
     );
     this.commitStagingButton.val.addAction(
       () => this.commitStagingChanges(),
-      (response, error) => this.postCommitStagingChanges(response, error),
+      (error, response) => this.postCommitStagingChanges(error, response),
     );
   }
 
@@ -1247,7 +1250,7 @@ export class UpdateTracksPage extends EventEmitter {
   }
 
   private saveStagingChanges(): Promise<SaveEpisodeStagingDataResponse> {
-    this.actionError.val.style.visibility = "hidden";
+    this.actionError.val.style.display = "none";
     return this.serviceClient.send(
       newSaveEpisodeStagingDataRequest({
         seasonId: this.seasonId,
@@ -1264,8 +1267,8 @@ export class UpdateTracksPage extends EventEmitter {
   }
 
   private postSaveStagingChanges(
-    response?: SaveEpisodeStagingDataResponse,
     error?: Error,
+    response?: SaveEpisodeStagingDataResponse,
   ): void {
     let errorMsg = "";
     if (error) {
@@ -1274,7 +1277,7 @@ export class UpdateTracksPage extends EventEmitter {
       errorMsg = this.getErrorMessage(response.error);
     }
     if (errorMsg) {
-      this.actionError.val.style.visibility = "visible";
+      this.actionError.val.style.display = "block";
       this.actionError.val.textContent = errorMsg;
     } else {
       this.emit("back");
@@ -1283,7 +1286,7 @@ export class UpdateTracksPage extends EventEmitter {
   }
 
   private commitStagingChanges(): Promise<CommitEpisodeStagingDataResponse> {
-    this.actionError.val.style.visibility = "hidden";
+    this.actionError.val.style.display = "none";
     return this.serviceClient.send(
       newCommitEpisodeStagingDataRequest({
         seasonId: this.seasonId,
@@ -1300,8 +1303,8 @@ export class UpdateTracksPage extends EventEmitter {
   }
 
   private postCommitStagingChanges(
-    response?: CommitEpisodeStagingDataResponse,
     error?: Error,
+    response?: CommitEpisodeStagingDataResponse,
   ): void {
     let errorMsg = "";
     if (error) {
@@ -1310,7 +1313,7 @@ export class UpdateTracksPage extends EventEmitter {
       errorMsg = this.getErrorMessage(response.error);
     }
     if (errorMsg) {
-      this.actionError.val.style.visibility = "visible";
+      this.actionError.val.style.display = "block";
       this.actionError.val.textContent = errorMsg;
     } else {
       this.emit("back");

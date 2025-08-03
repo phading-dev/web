@@ -2,28 +2,21 @@ import EventEmitter = require("events");
 import { SCHEME } from "..//color_scheme";
 import {
   BlockingButton,
-  FilledBlockingButton,
-  TextBlockingButton,
-} from "../blocking_button";
-import { SimpleIconButton, createBackButton } from "../icon_button";
-import { PAGE_MAX_WIDTH_M, ePageWithCenterForm } from "../page_elements";
-import { FONT_M } from "../sizes";
+  FilledButton,
+  IconButton,
+  TextButton,
+  createBackButton,
+} from "../button";
+import { ePageWithCenterForm } from "../page_elements";
+import { FONT_M, GAP_2X, GAP_d_5X, LINE_HEIGHT_M, PAGE_MAX_WIDTH_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
 export interface InputFormPage<PrimaryResponse, SecondaryResponse> {
-  on(
-    event: "handlePrimarySuccess",
-    listener: (response: PrimaryResponse) => void,
-  ): this;
-  on(event: "primaryDone", listener: () => void): this;
-  on(
-    event: "handleSecondarySuccess",
-    listener: (response: SecondaryResponse) => void,
-  ): this;
-  on(event: "secondaryDone", listener: () => void): this;
   on(event: "back", listener: () => void): this;
+  on(event: "primaryDone", listener: () => void): this;
+  on(event: "secondaryDone", listener: () => void): this;
 }
 
 export class InputFormPage<
@@ -32,87 +25,89 @@ export class InputFormPage<
 > extends EventEmitter {
   public body: HTMLDivElement;
   private card = new Ref<HTMLFormElement>();
-  private buttonsLine = new Ref<HTMLDivElement>();
+  private buttonsContainer = new Ref<HTMLDivElement>();
   private actionError = new Ref<HTMLDivElement>();
   public primaryButton = new Ref<BlockingButton<PrimaryResponse>>();
-  public backButton = new Ref<SimpleIconButton>();
-  public secondaryBlockingButton = new Ref<BlockingButton<SecondaryResponse>>();
+  public backButton = new Ref<IconButton>();
+  public secondaryButton = new Ref<BlockingButton<SecondaryResponse>>();
   private primaryActionFn: () => Promise<PrimaryResponse>;
   private postPrimaryActionFn: (
-    response?: PrimaryResponse,
     error?: Error,
+    response?: PrimaryResponse,
   ) => string;
   private secondaryActionFn: () => Promise<SecondaryResponse>;
   private postSecondaryActionFn: (
-    response?: SecondaryResponse,
     error?: Error,
+    response?: SecondaryResponse,
   ) => string;
   private inputs = new Set<InputField>();
 
   public constructor(
-    customPageStyle: string,
-    lines: Array<HTMLElement>,
-    primaryButtonLabel: string,
+    options: { customPageStyle?: string; customCardStyle?: string } = {},
   ) {
     super();
     this.body = ePageWithCenterForm(
       this.card,
-      customPageStyle,
-      `max-width: ${PAGE_MAX_WIDTH_M}rem; display: flex; flex-flow: column nowrap; gap: 2rem;`,
-      ...lines,
+      options.customPageStyle ?? "",
+      `max-width: ${PAGE_MAX_WIDTH_M}rem; display: flex; flex-flow: column nowrap; gap: ${GAP_2X}rem; ${options.customCardStyle ?? ""}`,
+    );
+  }
+
+  public addLines(...lines: Array<HTMLElement>): this {
+    this.card.val.append(...lines);
+    return this;
+  }
+
+  public addButtonsContainerAndPrimaryButton(
+    buttonLabel: string,
+    primaryActionFn: () => Promise<PrimaryResponse>,
+    postPrimaryActionFn: (error?: Error, response?: PrimaryResponse) => string,
+  ): this {
+    this.primaryActionFn = primaryActionFn;
+    this.postPrimaryActionFn = postPrimaryActionFn;
+
+    this.card.val.append(
       E.divRef(
-        this.buttonsLine,
+        this.buttonsContainer,
         {
-          class: "input-form-buttons-line",
-          style: `width: 100%; display: flex; flex-flow: row-reverse wrap; justify-content: flex-start; align-items: center; gap: 2rem;`,
+          class: "input-form-buttons-container",
+          style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
         },
+        E.divRef(this.actionError, {
+          class: "input-form-action-error",
+          style: `display: none; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; text-align: center; align-self: center;`,
+        }),
         assign(
           this.primaryButton,
-          new FilledBlockingButton<PrimaryResponse>().append(
-            E.text(primaryButtonLabel),
+          new BlockingButton<PrimaryResponse>(
+            new FilledButton("width: 100%;").append(E.text(buttonLabel)),
           ),
         ).body,
-        E.divRef(
-          this.actionError,
-          {
-            class: "input-form-action-error",
-            style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
-          },
-          E.text("1"),
-        ),
       ),
     );
     this.primaryButton.val.addAction(
       () => this.primaryAction(),
-      (response, error) => this.postPrimaryAction(response, error),
+      (error, response) => this.postPrimaryAction(error, response),
     );
-  }
-
-  public addPrimaryAction(
-    primaryActionFn: () => Promise<PrimaryResponse>,
-    postPrimaryActionFn: (response?: PrimaryResponse, error?: Error) => string,
-  ): this {
-    this.primaryActionFn = primaryActionFn;
-    this.postPrimaryActionFn = postPrimaryActionFn;
     return this;
   }
 
   private primaryAction(): Promise<PrimaryResponse> {
-    this.actionError.val.style.visibility = "hidden";
+    this.actionError.val.style.display = "none";
+    this.inputs.forEach((input) => input.disable());
     return this.primaryActionFn();
   }
 
-  private postPrimaryAction(response?: PrimaryResponse, error?: Error): void {
+  private postPrimaryAction(error?: Error, response?: PrimaryResponse): void {
     if (error) {
       console.error(error);
     }
-    let errorMsg = this.postPrimaryActionFn(response, error);
+    let errorMsg = this.postPrimaryActionFn(error, response);
     if (errorMsg) {
-      this.actionError.val.style.visibility = "visible";
+      this.actionError.val.style.display = "block";
       this.actionError.val.textContent = errorMsg;
-    } else {
-      this.emit("handlePrimarySuccess", response);
     }
+    this.inputs.forEach((input) => input.enable());
     this.emit("primaryDone");
   }
 
@@ -122,7 +117,7 @@ export class InputFormPage<
       input
         .on("refresh", () => this.refreshPrimaryButton())
         .on("action", () => this.primaryButton.val.click())
-        .validate();
+        .enable();
     }
     this.refreshPrimaryButton();
     return this;
@@ -153,49 +148,49 @@ export class InputFormPage<
 
   public addBackButton(): this {
     this.card.val.append(assign(this.backButton, createBackButton()).body);
-    this.backButton.val.on("action", () => this.emit("back"));
+    this.backButton.val.addAction(() => this.emit("back"));
     return this;
   }
 
   public addSecondaryButton(
     buttonLabel: string,
     actionFn: () => Promise<SecondaryResponse>,
-    postActionFn: (response?: SecondaryResponse, error?: Error) => string,
+    postActionFn: (error?: Error, response?: SecondaryResponse) => string,
   ): this {
-    this.primaryButton.val.body.after(
-      assign(
-        this.secondaryBlockingButton,
-        new TextBlockingButton<SecondaryResponse>().append(E.text(buttonLabel)),
-      ).body,
-    );
     this.secondaryActionFn = actionFn;
     this.postSecondaryActionFn = postActionFn;
 
-    this.secondaryBlockingButton.val.addAction(
+    this.buttonsContainer.val.append(
+      assign(
+        this.secondaryButton,
+        new BlockingButton<SecondaryResponse>(
+          new TextButton("width: 100%;").append(E.text(buttonLabel)),
+        ),
+      ).body,
+    );
+    this.secondaryButton.val.addAction(
       () => this.secondaryBlockingButtonAction(),
-      (response, error) => this.postSecondaryButtonAction(response, error),
+      (error, response) => this.postSecondaryButtonAction(error, response),
     );
     return this;
   }
 
   private secondaryBlockingButtonAction(): Promise<SecondaryResponse> {
-    this.actionError.val.style.visibility = "hidden";
+    this.actionError.val.style.display = "none";
     return this.secondaryActionFn();
   }
 
   private postSecondaryButtonAction(
-    response?: SecondaryResponse,
     error?: Error,
+    response?: SecondaryResponse,
   ): void {
     if (error) {
       console.error(error);
     }
-    let errorMsg = this.postSecondaryActionFn(response, error);
+    let errorMsg = this.postSecondaryActionFn(error, response);
     if (errorMsg) {
-      this.actionError.val.style.visibility = "visible";
+      this.actionError.val.style.display = "block";
       this.actionError.val.textContent = errorMsg;
-    } else {
-      this.emit("handleSecondarySuccess", response);
     }
     this.emit("secondaryDone");
   }
@@ -210,7 +205,7 @@ export class InputFormPage<
     this.primaryButton.val.click();
   }
   public clickSecondaryButton(): void {
-    this.secondaryBlockingButton.val.click();
+    this.secondaryButton.val.click();
   }
   public clickBackButton(): void {
     this.backButton.val.click();

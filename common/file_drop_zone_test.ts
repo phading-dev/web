@@ -21,7 +21,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 60rem; height: 60rem; background: ${SCHEME.neutral4};`,
+          style: `width: 600px; height: 600px; background: ${SCHEME.neutral4};`,
         });
         document.body.append(this.container);
         let cut = new FileDropZone();

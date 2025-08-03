@@ -1,24 +1,29 @@
 import EventEmitter = require("events");
-import {
-  BlockingButton,
-  FilledBlockingButton,
-} from "../../../../common/blocking_button";
+import { BlockingButton, FilledButton } from "../../../../common/button";
 import { SCHEME } from "../../../../common/color_scheme";
 import { FileDropZone } from "../../../../common/file_drop_zone";
 import { formatBytesShort } from "../../../../common/formatter/quantity";
 import {
-  SimpleIconButton,
+  IconButton,
   createBackButton,
-} from "../../../../common/icon_button";
+} from "../../../../common/button";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
-  PAGE_MAX_WIDTH_M,
   eFormTitle,
   ePageWithCenterForm,
 } from "../../../../common/page_elements";
 import { eCoverImage } from "../../../../common/season_cover_image";
-import { FONT_M, FONT_S } from "../../../../common/sizes";
+import {
+  BORDER_WIDTH_1,
+  FONT_M,
+  GAP_1X,
+  GAP_2X,
+  GAP_d_25X,
+  GAP_d_5X,
+  LINE_HEIGHT_M,
+  PAGE_MAX_WIDTH_M,
+} from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import {
   COVER_IMAGE_HEIGHT,
@@ -52,7 +57,7 @@ export class UpdateCoverImagePage extends EventEmitter {
   }
 
   public body: HTMLDivElement;
-  public backButton = new Ref<SimpleIconButton>();
+  public backButton = new Ref<IconButton>();
   public fileDropZone = new Ref<FileDropZone>();
   private loadErrorMessage = new Ref<HTMLDivElement>();
   private previewImage = new Ref<HTMLDivElement>();
@@ -75,75 +80,72 @@ export class UpdateCoverImagePage extends EventEmitter {
       assign(this.backButton, createBackButton()).body,
       eFormTitle(LOCALIZED_TEXT.updateSeasonCoverImageTitle),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       assign(this.fileDropZone, new FileDropZone("width: 100%;")).body,
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
       }),
       assign(
         this.loadErrorMessage,
         E.div({
           class: "update-cover-image-load-error-message",
-          style: `display: none; align-self: flex-start; margin-bottom: .5rem; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
+          style: `display: none; align-self: flex-start; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
         }),
       ),
       E.div(
         {
           class: "update-cover-image-instruction",
-          style: `align-self: flex-start; font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+          style: `align-self: flex-start; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral1};`,
         },
         E.text(
           `${LOCALIZED_TEXT.updateSeasonCoverImageInstruction[0]}${COVER_IMAGE_WIDTH}${LOCALIZED_TEXT.updateSeasonCoverImageInstruction[1]}${COVER_IMAGE_HEIGHT}${LOCALIZED_TEXT.updateSeasonCoverImageInstruction[2]}`,
         ),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 3rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.div(
         {
           class: "update-cover-image-preview-title",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(LOCALIZED_TEXT.updateSeasonCoverImagePreviewTitle),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       E.divRef(
         this.previewImage,
         {
           class: "update-cover-image-preview",
-          style: `width: 100%; max-width: 40.2rem; box-sizing: border-box; border: .1rem solid ${SCHEME.neutral1};`,
+          style: `width: 100%; max-width: ${25 + BORDER_WIDTH_1 * 2}rem; box-sizing: border-box; border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
         },
         eCoverImage(`100%`, season.coverImageUrl),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 3rem;`,
-      }),
-      assign(
-        this.submitButton,
-        new FilledBlockingButton<UploadCoverImageResponse>()
-          .append(E.text(LOCALIZED_TEXT.updateButtonLabel))
-          .disable(),
-      ).body,
-      E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.divRef(
         this.submitErrorMessage,
         {
           class: "update-cover-image-submit-error-message",
-          style: `visibility: hidden; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
+          style: `display: none; margin-bottom: ${GAP_d_5X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
         },
         E.text("1"),
       ),
+      assign(
+        this.submitButton,
+        new BlockingButton<UploadCoverImageResponse>(
+          new FilledButton("width: 100%;").append(E.text(LOCALIZED_TEXT.updateButtonLabel)),
+        ).disable(),
+      ).body,
     );
-    this.backButton.val.on("action", () => this.emit("back"));
+    this.backButton.val.addAction(() => this.emit("back"));
     this.fileDropZone.val.on("select", (file: File) => this.selectFile(file));
     this.submitButton.val.addAction(
       () => this.upload(),
-      (response, error) => this.postUpload(error),
+      (error) => this.postUpload(error),
     );
   }
 

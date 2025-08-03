@@ -1,11 +1,17 @@
 import LRUCache from "lru-cache";
+import { IconButton } from "../../../common/button";
 import { SCHEME } from "../../../common/color_scheme";
-import { SimpleIconButton } from "../../../common/icon_button";
 import { createCrossIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { TabSwitcher } from "../../../common/page_navigator";
 import { getRootFontSize } from "../../../common/root_font_size";
-import { ICON_BUTTON_L, ICON_L } from "../../../common/sizes";
+import {
+  GAP_5X,
+  GAP_d_5X,
+  ICON_BUTTON_M,
+  ICON_L,
+  PAGE_MAX_WIDTH_M,
+} from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { CommentsPanel } from "./comments_panel/body";
 import { CommentWithAuthor } from "./common/comment_with_author";
@@ -90,7 +96,7 @@ export class PlayPage extends EventEmitter {
     );
   }
 
-  private static LAYOUT_BREAKPOINT = 80; // rem
+  private static LAYOUT_BREAKPOINT = 50; // rem
   private static LIST_COMMENTS_BUFFER_RANGE_MS = 30000;
   private static LIST_COMMENTS_ENOUGH_BUFFER_RANGE_MS = 10000;
   private static PLAYING_LOOP_INTERVAL_MS = 250;
@@ -102,7 +108,7 @@ export class PlayPage extends EventEmitter {
   private danmakuOverlay = new Ref<DanmakuOverlay>();
   public player = new Ref<Player>();
   private panelContainer = new Ref<HTMLDivElement>();
-  public closePanelButton = new Ref<SimpleIconButton>();
+  public closePanelButton = new Ref<IconButton>();
   public infoPanel = new Ref<InfoPanel>();
   public commentsPanel = new Ref<CommentsPanel>();
   public settingsPanel = new Ref<SettingsPanel>();
@@ -185,7 +191,7 @@ export class PlayPage extends EventEmitter {
         },
         E.divRef(this.commentOverlayContainer, {
           class: "play-page-comment-overlay-container",
-          style: `position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding: 1rem 0 7rem;`,
+          style: `position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding: ${GAP_d_5X}rem 0 ${GAP_5X}rem;`,
         }),
         ...assign(
           this.player,
@@ -203,22 +209,17 @@ export class PlayPage extends EventEmitter {
         this.panelContainer,
         {
           class: "play-page-panels",
-          style: `flex: 0 0 auto; max-width: 70rem; background-color: ${SCHEME.neutral4}; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; padding: 0 1rem 1rem 1rem; flex-flow: column nowrap; gap: 1rem;`,
+          style: `flex: 0 0 auto; max-width: ${PAGE_MAX_WIDTH_M}rem; background-color: ${SCHEME.neutral4}; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; padding: 0 ${GAP_d_5X}rem ${GAP_d_5X}rem ${GAP_d_5X}rem; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
         },
-        E.div(
-          {
-            class: "play-page-card-header",
-            style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; justify-content: flex-end; gap: 1rem;`,
-          },
-          assign(
-            this.closePanelButton,
-            new SimpleIconButton(
-              ICON_BUTTON_L,
-              ICON_L,
-              createCrossIcon("currentColor"),
-            ),
-          ).body,
-        ),
+        assign(
+          this.closePanelButton,
+          new IconButton(
+            ICON_BUTTON_M,
+            ICON_L,
+            createCrossIcon("currentColor"),
+            `align-self: flex-end;`,
+          ),
+        ).body,
         assign(
           this.infoPanel,
           this.createInfoPanel(
@@ -247,7 +248,7 @@ export class PlayPage extends EventEmitter {
     this.commentsPanel.val.hide();
     this.settingsPanel.val.hide();
     this.closePanel();
-    this.closePanelButton.val.on("action", () => this.closePanel());
+    this.closePanelButton.val.addAction(() => this.closePanel());
     this.player.val.on("showInfo", () => this.openPanel(Tab.INFO));
     this.player.val.on("showComments", () => this.openPanel(Tab.COMMENTS));
     this.player.val.on("showSettings", () => this.openPanel(Tab.SETTINGS));

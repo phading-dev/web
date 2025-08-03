@@ -1,7 +1,7 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
 import { createBoxIcon, createCheckedBoxIcon } from "../icons";
-import { FONT_M, ICON_M, LINE_HEIGHT_M } from "../sizes";
+import { FONT_M, GAP_d_5X, ICON_M, LINE_HEIGHT_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -12,12 +12,12 @@ export class MandatoryCheckboxInput extends EventEmitter implements InputField {
   private checkedIcon = new Ref<HTMLDivElement>();
   private checked_ = false;
 
-  public constructor(customStyle: string, ...labelEles: Array<Node>) {
+  public constructor(customStyle: string, label: string) {
     super();
     this.body = E.div(
       {
         class: "checkbox-input",
-        style: `cursor: pointer; width: 100%; display: flex; flex-flow: row nowrap; align-items: flex-start; gap: 1rem; ${customStyle}`,
+        style: `width: 100%; display: flex; flex-flow: row nowrap; align-items: flex-start; gap: ${GAP_d_5X}rem; ${customStyle}`,
       },
       E.divRef(
         this.boxIcon,
@@ -40,13 +40,13 @@ export class MandatoryCheckboxInput extends EventEmitter implements InputField {
           class: "checkbox-input-label",
           style: `flex: 1 0 0; min-width: 0; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem;`,
         },
-        ...labelEles,
+        E.text(label),
       ),
     );
     this.body.addEventListener("click", () => this.toggle());
   }
 
-  public validate(): void {
+  private render(): void {
     if (!this.checked_) {
       this.boxIcon.val.style.display = "block";
       this.checkedIcon.val.style.display = "none";
@@ -58,8 +58,21 @@ export class MandatoryCheckboxInput extends EventEmitter implements InputField {
 
   private toggle(): void {
     this.checked_ = !this.checked_;
-    this.validate();
+    this.render();
     this.emit("refresh");
+  }
+
+  public enable(): this {
+    this.body.style.cursor = "pointer";
+    this.body.style.pointerEvents = "auto";
+    this.render();
+    return this;
+  }
+
+  public disable(): this {
+    this.body.style.cursor = "not-allowed";
+    this.body.style.pointerEvents = "none";
+    return this;
   }
 
   public set value(checked: boolean) {

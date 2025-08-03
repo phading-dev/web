@@ -2,7 +2,6 @@ import path = require("path");
 import { normalizeBody } from "../normalize_body";
 import { setTabletView } from "../view_port";
 import { TextAreaInputWithErrorMsg } from "./text_area_input";
-import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
@@ -16,13 +15,12 @@ TEST_RUNNER.run({
       public name =
         "DefaultTextAreaInput_InvalidWithErrors_Valid_InvalidWithoutErrors";
       private cut: TextAreaInputWithErrorMsg;
-      private followingLine: HTMLDivElement;
       public async execute() {
         // Execute
         await setTabletView();
         this.cut = new TextAreaInputWithErrorMsg(
           "Input",
-          "width: 50rem;",
+          "width: 100%;",
           {},
           "",
           (value) => {
@@ -40,14 +38,8 @@ TEST_RUNNER.run({
         );
         let refreshed = false;
         this.cut.on("refresh", () => (refreshed = true));
-        this.cut.validate();
-        this.followingLine = E.div(
-          {
-            style: `font-size: 1.4rem; color: black;`,
-          },
-          E.text("following lines...."),
-        );
-        document.body.append(this.cut.body, this.followingLine);
+        this.cut.enable();
+        document.body.append(this.cut.body);
 
         // Verify
         assertThat(
@@ -64,7 +56,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.value = "12345678901";
+        this.cut.value = "12345\n678901";
         this.cut.dispatchInput();
 
         // Verify
@@ -74,6 +66,28 @@ TEST_RUNNER.run({
           path.join(__dirname, "/text_area_input_with_error.png"),
           path.join(__dirname, "/golden/text_area_input_with_error.png"),
           path.join(__dirname, "/text_area_input_with_error_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        this.cut.disable();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/text_area_input_disabled.png"),
+          path.join(__dirname, "/golden/text_area_input_disabled.png"),
+          path.join(__dirname, "/text_area_input_disabled_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        this.cut.enable();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/text_area_input_enabled_with_error.png"),
+          path.join(__dirname, "/golden/text_area_input_with_error.png"),
+          path.join(__dirname, "/text_area_input_enabled_with_error_diff.png"),
           { fullPage: true },
         );
 
@@ -116,7 +130,6 @@ TEST_RUNNER.run({
       }
       public tearDown() {
         this.cut.remove();
-        this.followingLine.remove();
       }
     })(),
     new (class implements TestCase {
@@ -133,8 +146,7 @@ TEST_RUNNER.run({
           (value) => {
             return { valid: true };
           },
-        );
-        this.cut.validate();
+        ).enable();
         document.body.append(this.cut.body);
 
         // Verify

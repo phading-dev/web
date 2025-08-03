@@ -39,9 +39,10 @@ export class CreateEpisodePage extends EventEmitter {
   ) {
     super();
     this.request.seasonId = seasonId;
-    this.inputFormPage = new InputFormPage<CreateEpisodeResponse>(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    this.inputFormPage = new InputFormPage<CreateEpisodeResponse>({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.createEpisodeTitle),
         assign(
           this.nameInput,
@@ -54,20 +55,16 @@ export class CreateEpisodePage extends EventEmitter {
             (value) => this.validateNameAndTake(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.createButtonLabel,
-    )
-      .addBackButton()
-      .on("back", () => this.emit("back"))
-      .addPrimaryAction(
+      )
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.createButtonLabel,
         () => this.create(),
-        (response, error) => this.postCreate(error),
+        (error, response) => this.postCreate(error, response),
       )
-      .on("handlePrimarySuccess", (response) =>
-        this.emit("viewEpisode", response.episodeId),
-      )
-      .on("primaryDone", () => this.emit("created"))
-      .addInputs(this.nameInput.val);
+      .addBackButton()
+      .addInputs(this.nameInput.val)
+      .on("back", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("created"));
   }
 
   private validateNameAndTake(value: string): ValidationResult {
@@ -93,10 +90,11 @@ export class CreateEpisodePage extends EventEmitter {
     return this.serviceClient.send(newCreateEpisodeRequest(this.request));
   }
 
-  private postCreate(error?: Error): string {
+  private postCreate(error?: Error, response?: CreateEpisodeResponse): string {
     if (error) {
       return LOCALIZED_TEXT.createGenericError;
     } else {
+      this.emit("viewEpisode", response.episodeId);
       return "";
     }
   }

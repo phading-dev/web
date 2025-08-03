@@ -41,9 +41,10 @@ export class UpdateUserEmailPage extends EventEmitter {
     account: AccountAndUser,
   ) {
     super();
-    this.inputFormPage = new InputFormPage(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    this.inputFormPage = new InputFormPage({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.updateEmailTitle),
         E.input({
           name: "update-password-user-email",
@@ -81,18 +82,16 @@ export class UpdateUserEmailPage extends EventEmitter {
           },
           E.text(LOCALIZED_TEXT.updateEmailTip),
         ),
-      ],
-      LOCALIZED_TEXT.updateButtonLabel,
-    )
-      .addBackButton()
-      .addPrimaryAction(
-        () => this.updateRecoveryEmail(),
-        (response, error) => this.postUpdateUserEmail(response, error),
       )
-      .on("handlePrimarySuccess", () => this.emit("signOut"))
+      .addBackButton()
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.updateButtonLabel,
+        () => this.updateRecoveryEmail(),
+        (error, response) => this.postUpdateUserEmail(error, response),
+      )
+      .addInputs(this.currentPasswordInput.val, this.newUserEmailInput.val)
       .on("primaryDone", () => this.emit("updated"))
-      .on("back", () => this.emit("back"))
-      .addInputs(this.currentPasswordInput.val, this.newUserEmailInput.val);
+      .on("back", () => this.emit("back"));
   }
 
   private validateOrTakeCurrentPassword(value: string): ValidationResult {
@@ -126,8 +125,8 @@ export class UpdateUserEmailPage extends EventEmitter {
   }
 
   private postUpdateUserEmail(
-    response?: UpdateUserEmailResponse,
     error?: Error,
+    response?: UpdateUserEmailResponse,
   ): string {
     if (error) {
       return LOCALIZED_TEXT.updateGenericError;
@@ -136,6 +135,7 @@ export class UpdateUserEmailPage extends EventEmitter {
     } else if (response.userEmailUnavailable) {
       return LOCALIZED_TEXT.userEmailNotAvailableError;
     } else {
+      this.emit("signOut");
       return "";
     }
   }

@@ -33,7 +33,8 @@ TEST_RUNNER.run({
   name: "MultiSectionPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "OneForEachSection_ClickToPlay_ClickToviewDetails";
+      public name =
+        "DesktopView_OneForEachSection_TabletView_PhoneView_ClickToPlay_ClickToviewDetails";
       private cut: MultiSectionPage;
       public async execute() {
         // Prepare
@@ -146,7 +147,7 @@ TEST_RUNNER.run({
         });
 
         // Execute
-        await mouseClick(100, 50);
+        await mouseClick(100, 100);
 
         // Verify
         assertThat(playSeasonId, eq("season1"), "playSeasonId");
@@ -393,6 +394,7 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
+        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),

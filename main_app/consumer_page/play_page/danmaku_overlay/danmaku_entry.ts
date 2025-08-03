@@ -5,6 +5,7 @@ import { Comment } from "@phading/comment_service_interface/show/web/comment";
 import { CommentOverlaySettings } from "@phading/user_service_interface/web/self/video_player_settings";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
+import { BORDER_WIDTH_1, BORDER_WIDTH_2 } from "../../../../common/sizes";
 
 export interface DanmakuEntry {
   on(event: "fullyDisplayed", listener: () => void): this;
@@ -50,13 +51,13 @@ export class DanmakuEntry extends EventEmitter {
     this.body = E.div(
       {
         class: "danmaku-entry",
-        style: `position: absolute; left: 100%; top: 0; padding: .2rem; visibility: hidden;`,
+        style: `position: absolute; left: 100%; top: 0; visibility: hidden;`,
       },
       E.divRef(
         this.content,
         {
           class: "danmaku-entry-content",
-          style: `white-space: nowrap; line-height: 1; color: ${SCHEME.neutral0}; text-shadow: -.1rem 0 .2rem ${SCHEME.neutral4}, 0 .1rem .2rem ${SCHEME.neutral4}, .1rem 0 .2rem ${SCHEME.neutral4}, 0 -.1rem .2rem ${SCHEME.neutral4};`,
+          style: `white-space: nowrap; line-height: 1.2; color: ${SCHEME.neutral0}; text-shadow: -${BORDER_WIDTH_1}rem 0 ${BORDER_WIDTH_2}rem ${SCHEME.neutral4}, 0 ${BORDER_WIDTH_1}rem ${BORDER_WIDTH_2}rem ${SCHEME.neutral4}, ${BORDER_WIDTH_1}rem 0 ${BORDER_WIDTH_2}rem ${SCHEME.neutral4}, 0 -${BORDER_WIDTH_1}rem ${BORDER_WIDTH_2}rem ${SCHEME.neutral4};`,
         },
         E.text(comment.content),
       ),

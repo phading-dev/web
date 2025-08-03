@@ -93,9 +93,7 @@ export class PublisherPage extends EventEmitter {
     );
     this.listButton.val.addEventListener("click", () => {
       this.pushRl({
-        list: {
-          seasonState: SeasonState.PUBLISHED,
-        },
+        list: {},
       });
     });
     this.createSeasonButton.val.addEventListener("click", () => {

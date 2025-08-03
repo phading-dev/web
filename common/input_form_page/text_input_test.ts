@@ -2,7 +2,6 @@ import path = require("path");
 import { normalizeBody } from "../normalize_body";
 import { setTabletView } from "../view_port";
 import { TextInputWithErrorMsg } from "./text_input";
-import { E } from "@selfage/element/factory";
 import { keyboardDown, keyboardUp } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -16,13 +15,12 @@ TEST_RUNNER.run({
     new (class implements TestCase {
       public name = "Default_InvalidWithErrors_Valid_InvalidWithoutErrors";
       private cut: TextInputWithErrorMsg;
-      private followingLine: HTMLDivElement;
       public async execute() {
-        // Execute
+        // Prepare
         await setTabletView();
         this.cut = new TextInputWithErrorMsg(
           "Input",
-          "width: 50rem;",
+          "width: 100%;",
           {
             type: "text",
             autocomplete: "username",
@@ -42,14 +40,10 @@ TEST_RUNNER.run({
         );
         let refreshed = false;
         this.cut.on("refresh", () => (refreshed = true));
-        this.cut.validate();
-        this.followingLine = E.div(
-          {
-            style: `font-size: 1.4rem; color: black;`,
-          },
-          E.text("following lines...."),
-        );
-        document.body.append(this.cut.body, this.followingLine);
+
+        // Execute
+        this.cut.enable();
+        document.body.append(this.cut.body);
 
         // Verify
         assertThat(
@@ -59,9 +53,9 @@ TEST_RUNNER.run({
         );
         assertThat(refreshed, eq(false), "No refresh for initialization");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/vertical_text_input_default.png"),
-          path.join(__dirname, "/golden/vertical_text_input_default.png"),
-          path.join(__dirname, "/vertical_text_input_default_diff.png"),
+          path.join(__dirname, "/text_input_default.png"),
+          path.join(__dirname, "/golden/text_input_default.png"),
+          path.join(__dirname, "/text_input_default_diff.png"),
           { fullPage: true },
         );
 
@@ -73,9 +67,31 @@ TEST_RUNNER.run({
         assertThat(this.cut.isValid, eq(false), "Too long input is invalid");
         assertThat(refreshed, eq(true), "Refresh after input");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/vertical_text_input_with_error.png"),
-          path.join(__dirname, "/golden/vertical_text_input_with_error.png"),
-          path.join(__dirname, "/vertical_text_input_with_error_diff.png"),
+          path.join(__dirname, "/text_input_with_error.png"),
+          path.join(__dirname, "/golden/text_input_with_error.png"),
+          path.join(__dirname, "/text_input_with_error_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        this.cut.disable();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/text_input_disabled.png"),
+          path.join(__dirname, "/golden/text_input_disabled.png"),
+          path.join(__dirname, "/text_input_disabled_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        this.cut.enable();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/text_input_enabled_with_error.png"),
+          path.join(__dirname, "/golden/text_input_with_error.png"),
+          path.join(__dirname, "/text_input_enabled_with_error_diff.png"),
           { fullPage: true },
         );
 
@@ -90,9 +106,9 @@ TEST_RUNNER.run({
         assertThat(this.cut.isValid, eq(true), "valid input");
         assertThat(refreshed, eq(true), "Refresh after input 2");
         await asyncAssertScreenshot(
-          path.join(__dirname, "/vertical_text_input_valid.png"),
-          path.join(__dirname, "/golden/vertical_text_input_valid.png"),
-          path.join(__dirname, "/vertical_text_input_valid_diff.png"),
+          path.join(__dirname, "/text_input_valid.png"),
+          path.join(__dirname, "/golden/text_input_valid.png"),
+          path.join(__dirname, "/text_input_valid_diff.png"),
           { fullPage: true },
         );
 
@@ -107,21 +123,14 @@ TEST_RUNNER.run({
         assertThat(this.cut.isValid, eq(false), "empty input again");
         assertThat(refreshed, eq(true), "Refresh after input 3");
         await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/vertical_text_input_invalid_without_error.png",
-          ),
-          path.join(__dirname, "/golden/vertical_text_input_default.png"),
-          path.join(
-            __dirname,
-            "/vertical_text_input_invalid_without_error_diff.png",
-          ),
+          path.join(__dirname, "/text_input_invalid_without_error.png"),
+          path.join(__dirname, "/golden/text_input_default.png"),
+          path.join(__dirname, "/text_input_invalid_without_error_diff.png"),
           { fullPage: true },
         );
       }
       public tearDown() {
         this.cut.remove();
-        this.followingLine.remove();
       }
     })(),
     new (class implements TestCase {
@@ -136,8 +145,7 @@ TEST_RUNNER.run({
           (value) => {
             return { valid: true };
           },
-        );
-        this.cut.validate();
+        ).enable();
         document.body.append(this.cut.body);
         let submitted = false;
         this.cut.on("action", () => (submitted = true));

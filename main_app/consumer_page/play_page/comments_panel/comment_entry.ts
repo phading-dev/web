@@ -2,10 +2,10 @@ import EventEmitter = require("events");
 import { SCHEME } from "../../../../common/color_scheme";
 import {
   AVATAR_S,
-  FONT_M,
   FONT_S,
   FONT_WEIGHT_600,
-  LINE_HEIGHT_M,
+  GAP_d_25X,
+  LINE_HEIGHT_S,
 } from "../../../../common/sizes";
 import { CommentWithAuthor } from "../common/comment_with_author";
 import { E } from "@selfage/element/factory";
@@ -22,17 +22,17 @@ export class CommentEntry extends EventEmitter {
     this.body = E.div(
       {
         class: "comment-entry",
-        style: `position: relative; padding: .5rem 0; min-height: ${AVATAR_S}rem;`,
+        style: `position: relative; margin: ${GAP_d_25X}rem 0; min-height: ${AVATAR_S}rem;`,
       },
       E.image({
         class: "comment-entry-author-avatar",
-        style: `float: left; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: ${AVATAR_S}rem; margin: 0 .5rem .5rem 0;`,
+        style: `float: left; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: ${AVATAR_S}rem; margin: ${GAP_d_25X}rem ${GAP_d_25X}rem ${GAP_d_25X}rem 0;`,
         src: comment.author.avatarSmallUrl,
       }),
       E.div(
         {
           class: "comment-entry-author-name",
-          style: `display: inline; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+          style: `display: inline; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1}; font-weight: ${FONT_WEIGHT_600};`,
         },
         E.text(comment.author.name),
       ),
@@ -45,7 +45,7 @@ export class CommentEntry extends EventEmitter {
       E.div(
         {
           class: "comment-entry-content",
-          style: `display: inline; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+          style: `display: inline; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(comment.comment.content),
       ),

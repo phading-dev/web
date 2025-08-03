@@ -2,7 +2,6 @@ import path = require("path");
 import { normalizeBody } from "../normalize_body";
 import { setTabletView } from "../view_port";
 import { PasswordInputWithErrorMsg } from "./password_input";
-import { E } from "@selfage/element/factory";
 import { keyboardDown, keyboardUp } from "@selfage/puppeteer_test_executor_api";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -16,13 +15,12 @@ TEST_RUNNER.run({
     new (class implements TestCase {
       public name = "Default_InvalidWithErrors_Valid_InvalidWithoutErrors";
       private cut: PasswordInputWithErrorMsg;
-      private followingLine: HTMLDivElement;
       public async execute() {
         // Execute
         await setTabletView();
         this.cut = new PasswordInputWithErrorMsg(
           "Input",
-          "width: 50rem;",
+          "width: 100%;",
           {
             autocomplete: "password",
           },
@@ -41,14 +39,8 @@ TEST_RUNNER.run({
         );
         let refreshed = false;
         this.cut.on("refresh", () => (refreshed = true));
-        this.cut.validate();
-        this.followingLine = E.div(
-          {
-            style: `font-size: 1.4rem; color: black;`,
-          },
-          E.text("following lines...."),
-        );
-        document.body.append(this.cut.body, this.followingLine);
+        this.cut.enable();
+        document.body.append(this.cut.body);
 
         // Verify
         assertThat(
@@ -75,6 +67,28 @@ TEST_RUNNER.run({
           path.join(__dirname, "/password_input_with_error.png"),
           path.join(__dirname, "/golden/password_input_with_error.png"),
           path.join(__dirname, "/password_input_with_error_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        this.cut.disable();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/password_input_disabled.png"),
+          path.join(__dirname, "/golden/password_input_disabled.png"),
+          path.join(__dirname, "/password_input_disabled_diff.png"),
+          { fullPage: true },
+        );
+
+        // Execute
+        this.cut.enable();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/password_input_enabled_with_error.png"),
+          path.join(__dirname, "/golden/password_input_with_error.png"),
+          path.join(__dirname, "/password_input_enabled_with_error_diff.png"),
           { fullPage: true },
         );
 
@@ -117,7 +131,6 @@ TEST_RUNNER.run({
       }
       public tearDown() {
         this.cut.remove();
-        this.followingLine.remove();
       }
     })(),
     new (class implements TestCase {
@@ -128,7 +141,7 @@ TEST_RUNNER.run({
         await setTabletView();
         this.cut = new PasswordInputWithErrorMsg(
           "Input",
-          "width: 50rem;",
+          "width: 100%;",
           {
             autocomplete: "password",
           },
@@ -137,7 +150,7 @@ TEST_RUNNER.run({
           },
         );
         this.cut.value = "123456";
-        this.cut.validate();
+        this.cut.enable();
 
         // Execute
         document.body.append(this.cut.body);
@@ -183,7 +196,7 @@ TEST_RUNNER.run({
         // Prepare
         this.cut = new PasswordInputWithErrorMsg("Label", "", {}, (value) => {
           return { valid: true };
-        });
+        }).enable();
         document.body.append(this.cut.body);
         let submitted = false;
         this.cut.on("action", () => (submitted = true));

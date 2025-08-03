@@ -653,6 +653,21 @@ TEST_RUNNER.run({
           path.join(__dirname, "/publisher_page_stats_diff.png"),
         );
 
+        // Execute
+        this.cut.listButton.val.click();
+
+        // Verify
+        assertThat(
+          rl,
+          eqMessage({ list: {} }, PUBLISHER_PAGE_RL),
+          "rl.list when clicking list button",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/publisher_page_list_clicked_button.png"),
+          path.join(__dirname, "/golden/publisher_page_list.png"),
+          path.join(__dirname, "/publisher_page_list_clicked_button_diff.png"),
+        );
+
         // Prepare
         let goToAccount = false;
         this.cut.on("goToAccount", () => (goToAccount = true));

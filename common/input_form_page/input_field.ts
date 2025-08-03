@@ -7,6 +7,7 @@ export interface InputField {
   on(event: "refresh", listener: () => void): this;
   on(event: "action", listener: () => void): this;
   removeAllListeners: () => void;
-  validate(): void;
+  enable(): this;
+  disable(): this;
   isValid: boolean;
 }

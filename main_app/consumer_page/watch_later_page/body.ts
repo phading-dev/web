@@ -11,6 +11,7 @@ import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
+import { GAP_1X, GAP_2X } from "../../../common/sizes";
 
 export interface WatchLaterPage {
   on(event: "viewHistory", listener: () => void): this;
@@ -40,11 +41,11 @@ export class WatchLaterPage extends EventEmitter {
     this.body = eFullPage(
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       assign(this.tabs, new ActivityTabsOption()).body,
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       eSeasonItemContainerRef(this.contentContainer),
       assign(this.loadingSection, new ScrollLoadingSection()).body,

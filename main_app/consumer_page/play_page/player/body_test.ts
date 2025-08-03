@@ -99,7 +99,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        await setViewport(540, 800);
+        await setViewport(640, 800);
         await mouseMove(10, 100, 1);
 
         // Verify

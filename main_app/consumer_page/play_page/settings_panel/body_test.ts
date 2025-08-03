@@ -38,7 +38,7 @@ async function setUpSettingsPanel(): Promise<{
   // Prepare
   await setTabletView();
   let container = E.div({
-    style: `width: 35rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
+    style: `width: 350px; background-color: ${SCHEME.neutral4}; padding: 10px;`,
   });
   document.body.appendChild(container);
   let settings: VideoPlayerSettings = JSON.parse(JSON.stringify(SETTINGS));
@@ -78,7 +78,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.container.style.width = "60rem";
+        this.container.style.width = "600px";
 
         // Verify
         await asyncAssertScreenshot(

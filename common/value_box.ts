@@ -1,33 +1,27 @@
 import { SCHEME } from "./color_scheme";
 import { createArrowIcon } from "./icons";
-import { FONT_M, ICON_M } from "./sizes";
+import { BORDER_RADIUS_S, BORDER_WIDTH_1, FONT_M, FONT_S, GAP_1X, GAP_d_25X, ICON_M, LINE_HEIGHT_M, LINE_HEIGHT_S } from "./sizes";
 import { E } from "@selfage/element/factory";
-
-export let BOX_BORDER_RADIUS = 0.5; // rem
 
 export function eLabelAndText(label: string, value?: string): HTMLDivElement {
   return E.div(
     {
       class: "label-and-text",
-      style: `width: 100%; display: flex; flex-flow: column nowrap; gap: 1rem;`,
+      style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_d_25X}rem;`,
     },
     E.div(
       {
         class: "label-and-text-label",
-        style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
       },
       E.text(label),
     ),
     E.div(
       {
         class: "label-and-text-value",
-        style: `width: 100%; line-height: 2rem; font-size: ${FONT_M}rem; ${
-          value ? "" : "height: 2rem;"
-        } color: ${SCHEME.neutral0}; border-bottom: .1rem solid ${
-          SCHEME.neutral1
-        };`,
+        style: `width: 100%; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${value ? SCHEME.neutral0 : SCHEME.neutral2}; ${value ? "" : "font-style: italic;"} `,
       },
-      E.text(value),
+      E.text(value ? value : "Empty"),
     ),
   );
 }
@@ -41,7 +35,7 @@ export function eColumnBoxWithArrow(
   } = {},
 ): HTMLDivElement {
   options.clickable = options.clickable ?? true;
-  options.linesGap = options.linesGap ?? 2;
+  options.linesGap = options.linesGap ?? GAP_1X;
   options.customeStyle = options.customeStyle ?? "";
   return eBox(
     [
@@ -62,7 +56,7 @@ export function eColumnBoxWithArrow(
     ],
     {
       clickable: options.clickable,
-      customeStyle: `display: flex; flex-flow: row nowrap; align-items: center; gap: 2rem; ${options.customeStyle}`,
+      customeStyle: `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_1X}rem; ${options.customeStyle}`,
     },
   );
 }
@@ -77,7 +71,7 @@ export function eRowBoxWithArrow(
   } = {},
 ): HTMLDivElement {
   options.clickable = options.clickable ?? true;
-  options.columnGap = options.columnGap ?? 2;
+  options.columnGap = options.columnGap ?? GAP_1X;
   options.justifyContent = options.justifyContent ?? "space-between";
   options.customeStyle = options.customeStyle ?? "";
   return eBox(
@@ -110,7 +104,7 @@ export function eBox(
   return E.div(
     {
       class: "box",
-      style: `border: .1rem solid ${options.clickable ? SCHEME.neutral1 : SCHEME.neutral2}; border-radius: ${BOX_BORDER_RADIUS}rem; padding: 2rem; ${options.clickable ? "cursor: pointer" : ""}; ${options.customeStyle}`,
+      style: `border: ${BORDER_WIDTH_1}rem solid ${options.clickable ? SCHEME.neutral1 : SCHEME.neutral2}; border-radius: ${BORDER_RADIUS_S}rem; padding: ${GAP_1X}rem; ${options.clickable ? "cursor: pointer" : ""}; ${options.customeStyle}`,
     },
     ...children,
   );

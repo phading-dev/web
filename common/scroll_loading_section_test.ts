@@ -3,7 +3,7 @@ import path from "path";
 import { SCHEME } from "./color_scheme";
 import { normalizeBody } from "./normalize_body";
 import { ScrollLoadingSection } from "./scroll_loading_section";
-import { FONT_M } from "./sizes";
+import { FONT_M, GAP_1_d_5X } from "./sizes";
 import { setTabletView } from "./view_port";
 import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
@@ -17,7 +17,7 @@ let index = 0;
 function item(): HTMLDivElement {
   return E.div(
     {
-      style: `width: 100%; height: 10rem; background-color: ${SCHEME.neutral2}; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem;`,
+      style: `width: 100%; height: 6rem; background-color: ${SCHEME.neutral2}; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem;`,
     },
     E.text(`Item ${index++}`),
   );
@@ -35,7 +35,7 @@ TEST_RUNNER.run({
         let cut = new Ref<ScrollLoadingSection>();
         this.container = E.div(
           {
-            style: `width: 100%; min-height: 100%; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+            style: `width: 100%; min-height: 100%; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: column nowrap; gap: ${GAP_1_d_5X}rem;`,
           },
           assign(cut, new ScrollLoadingSection()).body,
         );

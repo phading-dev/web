@@ -6,7 +6,7 @@ import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_i
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import { eFormTitle } from "../../../../common/page_elements";
-import { FONT_M } from "../../../../common/sizes";
+import { FONT_M, GAP_1X } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { ENV_VARS } from "../../../../env_vars";
 import { SeasonState } from "@phading/product_service_interface/show/season_state";
@@ -44,9 +44,10 @@ export class ArchivePage extends EventEmitter {
         `Cannot archive season with state ${SeasonState[season.state]}, expected PUBLISHED or TAKEN_DOWN.`,
       );
     }
-    this.inputFormPage = new InputFormPage<ArchiveSeasonResponse>(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    this.inputFormPage = new InputFormPage<ArchiveSeasonResponse>({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(
           season.state === SeasonState.PUBLISHED
             ? LOCALIZED_TEXT.seasonPublishedStateTitle
@@ -54,24 +55,30 @@ export class ArchivePage extends EventEmitter {
         ),
         E.div(
           {
-            class: "published-state-page-description-1",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            class: "published-state-page-descriptions",
+            style: `display: flex; flex-flow: column nowrap; gap: ${GAP_1X}rem;`,
           },
-          E.text(
-            season.state === SeasonState.PUBLISHED
-              ? LOCALIZED_TEXT.seasonStatePublishedFooter
-              : `${LOCALIZED_TEXT.seasonStateTakenDownFooter}${season.takenDownReason}`,
+          E.div(
+            {
+              class: "published-state-page-description-1",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(
+              season.state === SeasonState.PUBLISHED
+                ? LOCALIZED_TEXT.seasonStatePublishedFooter
+                : `${LOCALIZED_TEXT.seasonStateTakenDownFooter}${season.takenDownReason}`,
+            ),
           ),
-        ),
-        E.div(
-          {
-            class: "published-state-page-description-2",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(
-            season.state === SeasonState.PUBLISHED
-              ? LOCALIZED_TEXT.seasonPublishedStateDescription
-              : `${LOCALIZED_TEXT.seasonTakenDownStateDescription[0]}${ENV_VARS.supportEmail}${LOCALIZED_TEXT.seasonTakenDownStateDescription[1]}`,
+          E.div(
+            {
+              class: "published-state-page-description-2",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(
+              season.state === SeasonState.PUBLISHED
+                ? LOCALIZED_TEXT.seasonPublishedStateDescription
+                : `${LOCALIZED_TEXT.seasonTakenDownStateDescription[0]}${ENV_VARS.supportEmail}${LOCALIZED_TEXT.seasonTakenDownStateDescription[1]}`,
+            ),
           ),
         ),
         assign(
@@ -85,16 +92,14 @@ export class ArchivePage extends EventEmitter {
             (value) => this.validateId(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.archiveButtonLabel,
-    )
+      )
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.archiveButtonLabel,
+        () => this.archive(),
+        (error) => this.postArchive(error),
+      )
       .addBackButton()
       .on("back", () => this.emit("back"))
-      .addPrimaryAction(
-        () => this.archive(),
-        (response, error) => this.postArchive(error),
-      )
-      .on("handlePrimarySuccess", () => this.emit("back"))
       .on("primaryDone", () => this.emit("archived"))
       .addInputs(this.seasonIdInput.val);
   }
@@ -123,6 +128,7 @@ export class ArchivePage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.archiveGenericError;
     } else {
+      this.emit("back");
       return "";
     }
   }

@@ -103,10 +103,38 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        serviceClientMock.error = new Error("Fake error");
+        let resolveFn: (value: SendEmailVerificationEmailResponse) => void;
+        let rejectFn: (error: Error) => void;
+        serviceClientMock.send = async () => {
+          return new Promise<SendEmailVerificationEmailResponse>(
+            (resolve, reject) => {
+              resolveFn = resolve;
+              rejectFn = reject;
+            },
+          );
+        };
 
         // Execute
         this.cut.resendButton.val.click();
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/send_email_verification_page_tablet_resending.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/send_email_verification_page_tablet_resending.png",
+          ),
+          path.join(
+            __dirname,
+            "/send_email_verification_page_tablet_resending_diff.png",
+          ),
+        );
+
+        // Execute
+        rejectFn(new Error("Fake error"));
 
         // Verify
         await asyncAssertScreenshot(
@@ -125,14 +153,13 @@ TEST_RUNNER.run({
         );
 
         // Prepare
-        serviceClientMock.error = undefined;
         response = {
           rateLimited: true,
         };
-        serviceClientMock.response = response;
 
         // Execute
         this.cut.resendButton.val.click();
+        resolveFn(response);
 
         // Verify
         await asyncAssertScreenshot(
@@ -154,10 +181,10 @@ TEST_RUNNER.run({
         response = {
           rateLimited: false,
         };
-        serviceClientMock.response = response;
 
         // Execute
         this.cut.resendButton.val.click();
+        resolveFn(response);
 
         // Verify
         await asyncAssertScreenshot(

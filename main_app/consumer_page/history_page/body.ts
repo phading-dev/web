@@ -15,6 +15,7 @@ import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { EventEmitter } from "events";
+import { GAP_1X, GAP_2X } from "../../../common/sizes";
 
 export interface HistoryPage {
   on(event: "viewWatchLater", listener: () => void): this;
@@ -44,7 +45,7 @@ export class HistoryPage extends EventEmitter {
     this.body = eFullPage(
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       assign(this.tabs, new ActivityTabsOption()).body,
       assign(this.loadingSection, new ScrollLoadingSection()).body,
@@ -101,11 +102,11 @@ export class HistoryPage extends EventEmitter {
         contentContainer = new Ref<HTMLDivElement>();
         this.loadingSection.val.body.before(
           E.div({
-            style: `flex: 0 0 auto; height: 2rem;`,
+            style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
           }),
           eContainerTitle(session.date),
           E.div({
-            style: `flex: 0 0 auto; height: 1rem;`,
+            style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
           }),
           eContinueEpisodeItemContainerRef(contentContainer),
         );

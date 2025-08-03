@@ -7,7 +7,7 @@ import { PasswordInputWithErrorMsg } from "../../common/input_form_page/password
 import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
 import { eFormTitle } from "../../common/page_elements";
-import { ICON_XXL } from "../../common/sizes";
+import { GAP_1X, ICON_XXL } from "../../common/sizes";
 import { SERVICE_CLIENT } from "../../common/web_service_client";
 import { MAX_PASSWORD_LENGTH } from "@phading/constants/account";
 import { newResetPasswordAndSignInRequest } from "@phading/user_service_interface/web/self/client";
@@ -44,17 +44,21 @@ export class ResetPage extends EventEmitter {
   ) {
     super();
     this.request.resetToken = tokenId;
-    this.inputFormPage = new InputFormPage<ResetPasswordAndSignInResponse>(
-      "",
-      [
+    this.inputFormPage = new InputFormPage<ResetPasswordAndSignInResponse>()
+      .addLines(
         E.div(
           {
-            class: "send-password-reset-page-icon",
-            style: `align-self: center; height: ${ICON_XXL}rem;`,
+            style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_1X}rem;`,
           },
-          createLockIcon(SCHEME.primary1),
+          E.div(
+            {
+              class: "send-password-reset-page-icon",
+              style: `align-self: center; height: ${ICON_XXL}rem;`,
+            },
+            createLockIcon(SCHEME.primary1),
+          ),
+          eFormTitle(LOCALIZED_TEXT.resetPasswordTitle),
         ),
-        eFormTitle(LOCALIZED_TEXT.resetPasswordTitle),
         assign(
           this.newPasswordInput,
           new PasswordInputWithErrorMsg(
@@ -77,14 +81,13 @@ export class ResetPage extends EventEmitter {
             (value) => this.validateRepeatPasswordInput(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.resetButtonLabel,
-    )
-      .addInputs(this.newPasswordInput.val, this.repeatPasswordInput.val)
-      .addPrimaryAction(
-        () => this.reset(),
-        (response, error) => this.postReset(response, error),
       )
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.resetButtonLabel,
+        () => this.reset(),
+        (error, response) => this.postReset(error, response),
+      )
+      .addInputs(this.newPasswordInput.val, this.repeatPasswordInput.val)
       .on("primaryDone", () => this.emit("resetDone"));
   }
 
@@ -124,8 +127,8 @@ export class ResetPage extends EventEmitter {
   }
 
   private postReset(
-    response?: ResetPasswordAndSignInResponse,
     error?: Error,
+    response?: ResetPasswordAndSignInResponse,
   ): string {
     if (this.removed) {
       return "";

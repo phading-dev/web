@@ -6,7 +6,7 @@ import { ValidationResult } from "../../../common/input_form_page/input_field";
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { eFormTitle } from "../../../common/page_elements";
-import { ICON_XXL } from "../../../common/sizes";
+import { GAP_1X, ICON_XXL } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { newSendPasswordResetEmailRequest } from "@phading/user_service_interface/web/self/client";
 import {
@@ -34,17 +34,21 @@ export class SendPasswordResetPage extends EventEmitter {
 
   public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.inputFormPage = new InputFormPage<SendPasswordResetEmailResponse>(
-      "",
-      [
+    this.inputFormPage = new InputFormPage<SendPasswordResetEmailResponse>()
+      .addLines(
         E.div(
           {
-            class: "send-password-reset-page-icon",
-            style: `align-self: center; height: ${ICON_XXL}rem;`,
+            style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_1X}rem;`,
           },
-          createLockIcon(SCHEME.primary1),
+          E.div(
+            {
+              class: "send-password-reset-page-icon",
+              style: `align-self: center; height: ${ICON_XXL}rem;`,
+            },
+            createLockIcon(SCHEME.primary1),
+          ),
+          eFormTitle(LOCALIZED_TEXT.sendPasswordResetTitle),
         ),
-        eFormTitle(LOCALIZED_TEXT.sendPasswordResetTitle),
         assign(
           this.emailInput,
           new TextInputWithErrorMsg(
@@ -57,18 +61,14 @@ export class SendPasswordResetPage extends EventEmitter {
             (value) => this.validateOrTakeEmailInput(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.sendButtonLabel,
-    )
-      .addInputs(this.emailInput.val)
-      .addBackButton()
-      .addPrimaryAction(
+      )
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.sendButtonLabel,
         () => this.send(),
-        (response, error) => this.postSend(response, error),
+        (error, response) => this.postSend(error, response),
       )
-      .on("handlePrimarySuccess", () =>
-        this.emit("showSuccess", this.request.userEmail),
-      )
+      .addBackButton()
+      .addInputs(this.emailInput.val)
       .on("primaryDone", () => this.emit("sent"))
       .on("back", () => this.emit("back"));
   }
@@ -94,14 +94,15 @@ export class SendPasswordResetPage extends EventEmitter {
   }
 
   private postSend(
-    response: SendPasswordResetEmailResponse,
     error?: Error,
+    response?: SendPasswordResetEmailResponse,
   ): string {
     if (error) {
       return LOCALIZED_TEXT.sendGenericError;
     } else if (response.rateLimited) {
       return LOCALIZED_TEXT.sendPasswordResetEmailRateLimitError;
     } else {
+      this.emit("showSuccess", this.request.userEmail);
       return "";
     }
   }

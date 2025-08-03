@@ -2,6 +2,7 @@ import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import { eFullPage } from "../../../common/page_elements";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
+import { GAP_1X, GAP_2X } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
   eContainerTitle,
@@ -58,15 +59,15 @@ export class PublisherShowroomPage extends EventEmitter {
     );
     this.body.append(
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       ePublisherContextItem(response.account),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       eContainerTitle(LOCALIZED_TEXT.recentPremieresTitle),
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       eSeasonItemContainerRef(this.contentContainer),
       assign(this.loadingSection, new ScrollLoadingSection()).body,

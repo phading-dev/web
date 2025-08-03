@@ -1,6 +1,6 @@
-import { CLICKABLE_TEXT_STYLE } from "./button_styles";
+import { CLICKABLE_TEXT_STYLE } from "./button";
 import { SCHEME } from "./color_scheme";
-import { FONT_M, FONT_WEIGHT_600, FONT_XL } from "./sizes";
+import { FONT_M, FONT_WEIGHT_600, FONT_XL, LINE_HEIGHT_M, LINE_HEIGHT_XL } from "./sizes";
 import { E } from "@selfage/element/factory";
 
 export function eDocumentPage(...children: Array<Node>): HTMLElement {
@@ -17,7 +17,7 @@ export function eHeader1(text: string): HTMLElement {
   return E.div(
     {
       class: "header1",
-      style: `margin: 1.5rem 0; font-size: ${FONT_XL}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+      style: `margin: 1.5rem 0; font-size: ${FONT_XL}rem; line-height: ${LINE_HEIGHT_XL}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
     },
     E.text(text),
   );
@@ -27,7 +27,7 @@ export function eHeader2(text: string): HTMLElement {
   return E.div(
     {
       class: "header2",
-      style: `margin: 1.5rem 0; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+      style: `margin: 1.5rem 0; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
     },
     E.text(text),
   );
@@ -62,7 +62,7 @@ export function eParagraph(...children: Array<Node>): HTMLElement {
   return E.div(
     {
       class: "paragraph",
-      style: `margin: 1rem 0; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: 1.3;`,
+      style: `margin: 1rem 0; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
     },
     ...children,
   );
@@ -92,7 +92,7 @@ export function eLi(...children: Array<Node>): HTMLElement {
   return E.li(
     {
       class: "list-item",
-      style: `margin: 0; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; line-height: 1.3;`,
+      style: `margin: 0; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem;`,
     },
     ...children,
   );
@@ -115,7 +115,7 @@ export function eTableHeaderItem(text: string): HTMLElement {
   return E.div(
     {
       class: "table-header-item",
-      style: `padding: 1rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600}; background-color: ${SCHEME.neutral3};`,
+      style: `padding: 1rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600}; background-color: ${SCHEME.neutral3};`,
     },
     E.text(text),
   );
@@ -125,7 +125,7 @@ export function eTableItem(text: string): HTMLElement {
   return E.div(
     {
       class: "table-item",
-      style: `padding: 1rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; border-top: .1rem solid ${SCHEME.neutral1};`,
+      style: `padding: 1rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; border-top: .1rem solid ${SCHEME.neutral1};`,
     },
     E.text(text),
   );

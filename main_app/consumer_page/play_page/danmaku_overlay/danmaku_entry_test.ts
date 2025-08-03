@@ -76,10 +76,10 @@ TEST_RUNNER.run({
         this.cut.setStartPosition(20, 600);
 
         // Verify
-        // The width of the content is 197px.
+        // The width of the content is 193px.
         assertThat(
           this.cut.body.style.transform,
-          eq("translate3d(197px, 20px, 0px)"),
+          eq("translate3d(193px, 20px, 0px)"),
           "starting transform",
         );
         assertThat(
@@ -98,17 +98,17 @@ TEST_RUNNER.run({
           eq("translate3d(-600px, 20px, 0px)"),
           "target transform",
         );
-        // (600px + 197px) / 100 (speed) = 7.97s
+        // (600px + 193px) / 100 (speed) = 7.93s
         assertThat(
           this.cut.body.style.transition,
-          eq("transform 7.97s linear"),
+          eq("transform 7.93s linear"),
           "transitioning",
         );
-        // 197px / 100 (speed) * 1000 = 1970 ms.
-        // (600px + 197px) / 100 (speed) * 1000 = 7970 ms.
+        // 193px / 100 (speed) * 1000 = 1930 ms.
+        // (600px + 193px) / 100 (speed) * 1000 = 7930 ms.
         assertThat(
           delaysMs,
-          isArray([eq(1970), eq(7970)]),
+          isArray([eq(1930), eq(7930)]),
           "delay until fully displayed and hidden",
         );
 

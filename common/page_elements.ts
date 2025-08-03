@@ -1,11 +1,7 @@
 import { SCHEME } from "./color_scheme";
-import { FONT_L } from "./sizes";
+import { BORDER_RADIUS_M, FONT_L, GAP_2X, LINE_HEIGHT_L } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
-
-export let PAGE_MAX_WIDTH_M = 60;
-export let PAGE_MAX_WIDTH_L = 80;
-export let PAGE_MAX_WIDTH_XL = 120;
 
 // The container of a page needs to pre-define its width and height. E.g. a page container might set width: 100vw and height: 100vh;
 export function ePageWithCenterForm(
@@ -23,7 +19,7 @@ export function ePageWithCenterForm(
       card,
       {
         class: "page-center-card",
-        style: `flex: 0 0 auto; box-sizing: border-box; width: 100%; padding: 3rem; border-radius: 1rem; background-color: ${SCHEME.neutral4}; position: relative; ${customCardStyle}`,
+        style: `flex: 0 0 auto; box-sizing: border-box; width: 100%; padding: ${GAP_2X}rem; border-radius: ${BORDER_RADIUS_M}rem; background-color: ${SCHEME.neutral4}; position: relative; ${customCardStyle}`,
       },
       ...children,
     ),
@@ -34,7 +30,7 @@ export function eFormTitle(text: string): HTMLDivElement {
   return E.div(
     {
       class: "input-form-title",
-      style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; width: 80%; text-align: center; align-self: center;`,
+      style: `font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; color: ${SCHEME.neutral0}; text-align: center; align-self: center;`,
     },
     E.text(text),
   );

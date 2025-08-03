@@ -1157,8 +1157,8 @@ TEST_RUNNER.run({
             excludedAreas: [
               // Excludes the seconds.
               {
-                x: 763,
-                y: 58,
+                x: 759,
+                y: 109,
                 width: 20,
                 height: 20,
               },
@@ -1191,8 +1191,8 @@ TEST_RUNNER.run({
           {
             excludedAreas: [
               {
-                x: 763,
-                y: 58,
+                x: 759,
+                y: 109,
                 width: 20,
                 height: 20,
               },
@@ -1241,8 +1241,8 @@ TEST_RUNNER.run({
           {
             excludedAreas: [
               {
-                x: 763,
-                y: 58,
+                x: 759,
+                y: 109,
                 width: 20,
                 height: 20,
               },
@@ -1299,8 +1299,8 @@ TEST_RUNNER.run({
           {
             excludedAreas: [
               {
-                x: 763,
-                y: 58,
+                x: 759,
+                y: 109,
                 width: 20,
                 height: 20,
               },
@@ -1325,8 +1325,8 @@ TEST_RUNNER.run({
           {
             excludedAreas: [
               {
-                x: 763,
-                y: 58,
+                x: 759,
+                y: 109,
                 width: 20,
                 height: 20,
               },
@@ -1416,8 +1416,8 @@ TEST_RUNNER.run({
           {
             excludedAreas: [
               {
-                x: 763,
-                y: 58,
+                x: 759,
+                y: 109,
                 width: 20,
                 height: 20,
               },
@@ -1474,8 +1474,8 @@ TEST_RUNNER.run({
           {
             excludedAreas: [
               {
-                x: 763,
-                y: 58,
+                x: 759,
+                y: 109,
                 width: 20,
                 height: 20,
               },
@@ -1494,8 +1494,8 @@ TEST_RUNNER.run({
           {
             excludedAreas: [
               {
-                x: 763,
-                y: 58,
+                x: 759,
+                y: 109,
                 width: 20,
                 height: 20,
               },

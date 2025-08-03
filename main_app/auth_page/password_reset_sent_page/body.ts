@@ -1,17 +1,17 @@
 import EventEmitter = require("events");
+import { IconButton, createBackButton } from "../../../common/button";
 import { SCHEME } from "../../../common/color_scheme";
-import {
-  SimpleIconButton,
-  createBackButton,
-} from "../../../common/icon_button";
 import { createCheckmarkInACircleIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
+import { eFormTitle, ePageWithCenterForm } from "../../../common/page_elements";
 import {
+  FONT_M,
+  GAP_1X,
+  GAP_2X,
+  ICON_XXL,
+  LINE_HEIGHT_M,
   PAGE_MAX_WIDTH_M,
-  eFormTitle,
-  ePageWithCenterForm,
-} from "../../../common/page_elements";
-import { FONT_M, ICON_XXL } from "../../../common/sizes";
+} from "../../../common/sizes";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
@@ -25,7 +25,7 @@ export class PasswordResetSentPage extends EventEmitter {
   }
 
   public body: HTMLDivElement;
-  public backButton = new Ref<SimpleIconButton>();
+  public backButton = new Ref<IconButton>();
 
   public constructor(email: string) {
     super();
@@ -42,41 +42,38 @@ export class PasswordResetSentPage extends EventEmitter {
         createCheckmarkInACircleIcon(SCHEME.success1),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       eFormTitle(LOCALIZED_TEXT.passwordResetSentSuccessTitle),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.div(
         {
           class: "password-reset-sent-text",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
         },
         E.text(LOCALIZED_TEXT.passwordResetSentSuccessBody),
       ),
-      E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
-      }),
       E.div(
         {
           class: "password-reset-sent-email",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.primary0};`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.primary0};`,
         },
         E.text(email),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.div(
         {
           class: "password-reset-sent-reminder",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
         },
         E.text(LOCALIZED_TEXT.passwordResetEmailReminder),
       ),
     );
-    this.backButton.val.on("action", () => this.emit("back"));
+    this.backButton.val.addAction(() => this.emit("back"));
   }
 
   public remove(): void {

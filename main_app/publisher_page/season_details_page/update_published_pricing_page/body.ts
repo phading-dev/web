@@ -11,7 +11,7 @@ import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_i
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import { eFormTitle } from "../../../../common/page_elements";
-import { FONT_M } from "../../../../common/sizes";
+import { FONT_M, GAP_2X, LINE_HEIGHT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { ENV_VARS } from "../../../../env_vars";
 import { eNewRateInputLabel } from "../common/elements";
@@ -85,19 +85,20 @@ export class UpdatePublishedPricingPage extends EventEmitter {
     this.inputFormPage = new InputFormPage<
       UpdateNextSeasonGradeResponse,
       DeleteNextSeasonGradeResponse
-    >(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    >({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.updateSeasonPricingTitle),
         E.div(
           {
             class: "update-published-pricing-preview-line",
-            style: `display: flex; flex-flow: row wrap; column-gap: 2rem; row-gap: 1rem;`,
+            style: `display: flex; flex-flow: row wrap; column-gap: ${GAP_2X}rem;`,
           },
           E.div(
             {
               class: "update-published-pricing-current-rate",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
               `${LOCALIZED_TEXT.seasonCurrentRateLabel}${formatShowPrice(grade, this.getNowDate())}`,
@@ -106,7 +107,7 @@ export class UpdatePublishedPricingPage extends EventEmitter {
           E.div(
             {
               class: "update-published-pricing-current-net-rate",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
               `${LOCALIZED_TEXT.seasonNetRateLabel}${formatShowCreditPrice(grade, this.getNowDate())}`,
@@ -130,12 +131,12 @@ export class UpdatePublishedPricingPage extends EventEmitter {
         E.div(
           {
             class: "update-published-pricing-preview-line",
-            style: `display: flex; flex-flow: row wrap; column-gap: 2rem; row-gap: 1rem;`,
+            style: `display: flex; flex-flow: row wrap; column-gap: ${GAP_2X}rem;`,
           },
           E.div(
             {
               class: "update-published-pricing-new-rate",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.seasonNewRateLabel),
             E.textRef(
@@ -146,7 +147,7 @@ export class UpdatePublishedPricingPage extends EventEmitter {
           E.div(
             {
               class: "update-published-pricing-new-net-rate",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.seasonNewNetRateLabel),
             E.textRef(
@@ -168,32 +169,25 @@ export class UpdatePublishedPricingPage extends EventEmitter {
             (value) => this.validateEffectiveDateAndTake(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.updateButtonLabel,
-    )
-      .addBackButton()
-      .on("back", () => this.emit("back"));
-    this.inputFormPage
-      .addPrimaryAction(
-        () => this.update(),
-        (response, error) => this.postUpdate(error),
       )
-      .on("handlePrimarySuccess", () => this.emit("back"))
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.updateButtonLabel,
+        () => this.update(),
+        (error) => this.postUpdate(error),
+      )
+      .addBackButton()
+      .addInputs(this.nextGradeInput.val, this.effectiveDateInput.val)
+      .on("back", () => this.emit("back"))
       .on("primaryDone", () => this.emit("updated"));
     if (nextGrade) {
       this.inputFormPage
         .addSecondaryButton(
           LOCALIZED_TEXT.updateSeasonDeleteNewRateButtonLabel,
           () => this.delete(),
-          (response, error) => this.postDelete(error),
+          (error) => this.postDelete(error),
         )
-        .on("handleSecondarySuccess", () => this.emit("back"))
         .on("secondaryDone", () => this.emit("deleted"));
     }
-    this.inputFormPage.addInputs(
-      this.nextGradeInput.val,
-      this.effectiveDateInput.val,
-    );
   }
 
   private validateGradeAndPreviewAndTake(value: string): ValidationResult {
@@ -245,7 +239,7 @@ export class UpdatePublishedPricingPage extends EventEmitter {
     } else if (value < this.minDateStr) {
       return {
         valid: false,
-        errorMsg: `${LOCALIZED_TEXT.updateSeasonNewRateEffectiveDateTooSoonError[0]}${MIN_GRADE_EFFECTIVE_GAP_DAY}${LOCALIZED_TEXT.updateSeasonNewRateEffectiveDateTooSoonError[1]}`,
+        errorMsg: LOCALIZED_TEXT.updateSeasonNewRateEffectiveDateTooSoonError,
       };
     } else {
       this.request.effectiveDate = value;
@@ -265,6 +259,7 @@ export class UpdatePublishedPricingPage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.updateGenericError;
     } else {
+      this.emit("back");
       return "";
     }
   }
@@ -281,6 +276,7 @@ export class UpdatePublishedPricingPage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.deleteGenericError;
     } else {
+      this.emit("back");
       return "";
     }
   }

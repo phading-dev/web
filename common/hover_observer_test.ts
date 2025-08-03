@@ -29,7 +29,7 @@ TEST_RUNNER.run({
         let inputRef = new Ref<HTMLInputElement>();
         this.anchorElement = E.div(
           {
-            style: `margin: 10rem; width: 20rem; height: 20rem; background-color: black;`,
+            style: `margin: 100px; width: 200px; height: 200px; background-color: black;`,
           },
           E.inputRef(inputRef, {}),
         );
@@ -132,7 +132,7 @@ TEST_RUNNER.run({
         let inputRef = new Ref<HTMLInputElement>();
         this.anchorElement = E.div(
           {
-            style: `margin: 10rem; width: 20rem; height: 20rem; background-color: black;`,
+            style: `margin: 100px; width: 200px; height: 200px; background-color: black;`,
           },
           E.inputRef(inputRef, {}),
         );

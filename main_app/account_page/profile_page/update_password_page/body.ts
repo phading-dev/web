@@ -37,9 +37,10 @@ export class UpdatePasswordPage extends EventEmitter {
     userEmail: string,
   ) {
     super();
-    this.inputFormPage = new InputFormPage(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    this.inputFormPage = new InputFormPage({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.updatePasswordTitle),
         E.input({
           name: "update-password-user-email",
@@ -80,22 +81,20 @@ export class UpdatePasswordPage extends EventEmitter {
             (value) => this.validateNewPasswordRepeat(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.updateButtonLabel,
-    )
-      .addBackButton()
-      .addPrimaryAction(
-        () => this.updatePassword(),
-        (response, error) => this.postUpdatePassword(response, error),
       )
-      .on("handlePrimarySuccess", () => this.emit("back"))
-      .on("primaryDone", () => this.emit("updated"))
-      .on("back", () => this.emit("back"))
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.updateButtonLabel,
+        () => this.updatePassword(),
+        (error, response) => this.postUpdatePassword(error, response),
+      )
+      .addBackButton()
       .addInputs(
         this.newPasswordInput.val,
         this.newPasswordRepeatInput.val,
         this.currentPasswordInput.val,
-      );
+      )
+      .on("primaryDone", () => this.emit("updated"))
+      .on("back", () => this.emit("back"));
   }
 
   private validateOrTakeCurrentPassword(value: string): ValidationResult {
@@ -140,14 +139,15 @@ export class UpdatePasswordPage extends EventEmitter {
   }
 
   private postUpdatePassword(
-    response: UpdatePasswordResponse,
     error?: Error,
+    response?: UpdatePasswordResponse,
   ): string {
     if (error) {
       return LOCALIZED_TEXT.updateGenericError;
     } else if (response.notAuthenticated) {
       return LOCALIZED_TEXT.incorrectPasswordError;
     } else {
+      this.emit("back");
       return "";
     }
   }

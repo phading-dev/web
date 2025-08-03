@@ -1,3 +1,4 @@
+import { IconButton } from "../../../../common/button";
 import { SCHEME } from "../../../../common/color_scheme";
 import {
   formatPremieredTime,
@@ -17,19 +18,25 @@ import {
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { eCoverImage } from "../../../../common/season_cover_image";
 import {
+  BORDER_RADIUS_S,
+  BORDER_WIDTH_2,
   FONT_M,
   FONT_S,
   FONT_WEIGHT_600,
+  GAP_1X,
+  GAP_d_5X,
   ICON_BUTTON_M,
   ICON_L,
   ICON_M,
+  LINE_HEIGHT_M,
+  LINE_HEIGHT_S,
 } from "../../../../common/sizes";
 import {
   Episode,
   SeasonSummary,
 } from "@phading/product_service_interface/show/web/public/info";
 import { E } from "@selfage/element/factory";
-import { Ref } from "@selfage/ref";
+import { Ref, assign } from "@selfage/ref";
 import { EventEmitter } from "events";
 
 export interface InfoPanel {
@@ -57,7 +64,7 @@ export class InfoPanel extends EventEmitter {
 
   public body: HTMLElement;
   private metering = new Ref<Text>();
-  public meteringQuestionMark = new Ref<HTMLDivElement>();
+  public meteringQuestionMark = new Ref<IconButton>();
   private meteringExplained = new Ref<HTMLDivElement>();
   public seasonInfoButton = new Ref<HTMLDivElement>();
   public nextEpisodeButton = new Ref<HTMLDivElement>();
@@ -81,25 +88,19 @@ export class InfoPanel extends EventEmitter {
       E.div(
         {
           class: "info-panel-episode-name",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
         },
         E.text(episode.name),
       ),
-      E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
-      }),
       E.div(
         {
           class: "info-panel-episode-premiere-time",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+          style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
         },
         E.text(
           `${LOCALIZED_TEXT.episodePremieredOn}${formatPremieredTime(episode.premiereTimeMs)}`,
         ),
       ),
-      E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
-      }),
       E.div(
         {
           class: "info-panel-episode-metering-line",
@@ -108,41 +109,41 @@ export class InfoPanel extends EventEmitter {
         E.div(
           {
             class: "info-panel-episode-metering",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(`${LOCALIZED_TEXT.currentMetering}`),
           E.textRef(this.metering, ""),
         ),
-        E.divRef(
+        assign(
           this.meteringQuestionMark,
-          {
-            class: "info-panel-episode-metering-question-mark",
-            style: `cursor: pointer; width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_L) / 2}rem;`,
-          },
-          createQuestionMarkIcon(SCHEME.neutral1),
-        ),
+          new IconButton(
+            ICON_BUTTON_M,
+            ICON_L,
+            createQuestionMarkIcon("currentColor"),
+          ),
+        ).body,
       ),
       E.divRef(
         this.meteringExplained,
         {
           class: "info-panel-episode-metering-explained",
-          style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0}; display: none; transition: height .2s; overflow: hidden;`,
+          style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1}; display: none; transition: height .2s; overflow: hidden;`,
         },
         E.text(`${LOCALIZED_TEXT.currentMeteringExplained}`),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
       }),
       E.divRef(
         this.seasonInfoButton,
         {
           class: "info-panel-season-info-row",
-          style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem;`,
+          style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem;`,
         },
         E.div(
           {
             class: "info-panel-cover-image-container",
-            style: `flex: 1 0 0; max-width: 10rem;`,
+            style: `flex: 1 0 0; max-width: 6rem;`,
           },
           eCoverImage("100%", this.seasonSummary.coverImageUrl),
         ),
@@ -154,47 +155,31 @@ export class InfoPanel extends EventEmitter {
           E.div(
             {
               class: "info-panel-season-name",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
             },
             E.text(this.seasonSummary.name),
           ),
-          E.div({
-            style: `flex: 0 0 auto; height: 1rem;`,
-          }),
           E.div(
             {
               class: "info-panel-season-pricing",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
             },
             E.text(
               `${LOCALIZED_TEXT.currentRate}${formatShowPrice(this.seasonSummary.grade, this.nowDate)}`,
             ),
           ),
-          E.div({
-            style: `flex: 0 0 auto; height: 1rem;`,
-          }),
-          E.div(
-            {
-              class: "info-panel-season-total-episodes",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              `${LOCALIZED_TEXT.totalEpisodes[0]}${this.seasonSummary.totalEpisodes}${LOCALIZED_TEXT.totalEpisodes[1]}`,
-            ),
-          ),
         ),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       ...this.createNextEpisodeElements(),
     );
     this.show();
     this.updateMeterReading(0);
 
-    this.meteringQuestionMark.val.addEventListener(
-      "click",
-      this.showMeteringExplained,
+    this.meteringQuestionMark.val.addAction(
+      () => this.showMeteringExplained(),
     );
     this.seasonInfoButton.val.addEventListener("click", () =>
       this.emit("viewDetails"),
@@ -215,18 +200,18 @@ export class InfoPanel extends EventEmitter {
         E.div(
           {
             class: "info-panel-next-episode",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.nextEpisode),
         ),
         E.div({
-          style: `flex: 0 0 auto; height: 1rem;`,
+          style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
         }),
         E.divRef(
           this.nextEpisodeButton,
           {
             class: "info-panel-next-episode",
-            style: `cursor: ${this.nextEpisode.canPlay ? "pointer" : "default"}; border: .2rem solid ${this.nextEpisode.canPlay ? SCHEME.primary1 : SCHEME.neutral2}; border-radius: .5rem; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem; padding: 1rem;`,
+            style: `cursor: ${this.nextEpisode.canPlay ? "pointer" : "default"}; border: ${BORDER_WIDTH_2}rem solid ${this.nextEpisode.canPlay ? SCHEME.primary1 : SCHEME.neutral2}; border-radius: ${BORDER_RADIUS_S}rem; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem; padding: ${GAP_d_5X}rem;`,
           },
           E.div(
             {
@@ -240,12 +225,12 @@ export class InfoPanel extends EventEmitter {
           E.div(
             {
               class: "info-panel-next-episode-column",
-              style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: 1rem;`,
+              style: `flex: 1 0 0; display: flex; flex-flow: column nowrap;`,
             },
             E.div(
               {
                 class: "info-panel-next-episode-name",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
               },
               E.text(this.nextEpisode.name),
             ),
@@ -261,18 +246,18 @@ export class InfoPanel extends EventEmitter {
                       style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
                     },
                     createCircularProgressIcon(
-                      SCHEME.progress,
+                      SCHEME.primary1,
                       SCHEME.neutral2,
                       continueTimeMs / 1000 / this.nextEpisode.videoDurationSec,
                     ),
                   ),
                   E.div({
-                    style: `flex: 0 0 auto; width: 1rem;`,
+                    style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
                   }),
                   E.div(
                     {
-                      class: "info-panel-next-episode-conintue-at",
-                      style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      class: "info-panel-next-episode-continue-at",
+                      style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral0};`,
                     },
                     E.text(
                       `${formatSecondsAsHHMMSS(continueTimeMs / 1000)} / ${formatSecondsAsHHMMSS(this.nextEpisode.videoDurationSec)} (${calculateEstimatedShowMoneyAndFormat(this.seasonSummary.grade, this.nextEpisode.videoDurationSec, this.nowDate)})`,
@@ -282,7 +267,7 @@ export class InfoPanel extends EventEmitter {
               : E.div(
                   {
                     class: "season-details-episode-premiere-time",
-                    style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                    style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral0};`,
                   },
                   E.text(
                     `${LOCALIZED_TEXT.episodePremieresAt}${formatUpcomingPremiereTime(this.nextEpisode.premiereTimeMs)}`,
@@ -303,17 +288,14 @@ export class InfoPanel extends EventEmitter {
     );
   }
 
-  private showMeteringExplained = (): void => {
+  private showMeteringExplained(): void {
     this.meteringExplained.val.style.display = "block";
     this.meteringExplained.val.style.height = "0";
     this.meteringExplained.val.style.height = `${this.meteringExplained.val.scrollHeight}px`;
     this.meteringExplained.val.addEventListener("transitionend", () => {
       this.meteringExplained.val.style.height = "auto";
     });
-    this.meteringQuestionMark.val.removeEventListener(
-      "click",
-      this.showMeteringExplained,
-    );
+    this.meteringQuestionMark.val.clearAction();
   };
 
   public show(): void {

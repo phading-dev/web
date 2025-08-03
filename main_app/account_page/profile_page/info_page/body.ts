@@ -1,13 +1,17 @@
 import EventEmitter = require("events");
-import { OUTLINE_BUTTON_STYLE } from "../../../../common/button_styles";
+import { Button, OutlineButton, TextButton } from "../../../../common/button";
 import { SCHEME } from "../../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
+import { ePageWithTopDownCard } from "../../../../common/page_elements";
 import {
+  AVATAR_M,
+  FONT_M,
+  GAP_1X,
+  GAP_2X,
+  LINE_HEIGHT_M,
   PAGE_MAX_WIDTH_L,
-  ePageWithTopDownCard,
-} from "../../../../common/page_elements";
-import { AVATAR_M, FONT_M } from "../../../../common/sizes";
+} from "../../../../common/sizes";
 import {
   eColumnBoxWithArrow,
   eLabelAndText,
@@ -51,14 +55,14 @@ export class InfoPage extends EventEmitter {
   public accountInfo = new Ref<HTMLDivElement>();
   public password = new Ref<HTMLDivElement>();
   public userEmail = new Ref<HTMLDivElement>();
-  public chooseAccountButton = new Ref<HTMLDivElement>();
-  public signOutButton = new Ref<HTMLDivElement>();
+  public chooseAccountButton = new Ref<Button>();
+  public signOutButton = new Ref<Button>();
 
   public constructor(private serviceClient: WebServiceClient) {
     super();
     this.body = ePageWithTopDownCard(
       this.card,
-      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: 2rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap; gap: 2rem;`,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${GAP_1X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap; gap: ${GAP_2X}rem;`,
     );
     this.load();
   }
@@ -89,7 +93,7 @@ export class InfoPage extends EventEmitter {
           E.div(
             {
               class: `account-info-avatar-update-hint-label`,
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.changeAvatarLabel),
           ),
@@ -108,7 +112,7 @@ export class InfoPage extends EventEmitter {
       assign(
         this.password,
         eColumnBoxWithArrow([
-          eLabelAndText(LOCALIZED_TEXT.passwordLabel, "********"),
+          eLabelAndText(LOCALIZED_TEXT.passwordLabel, "••••••"),
         ]),
       ),
       assign(
@@ -120,24 +124,18 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "account-info-buttons",
-          style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: wrap row; justify-content: center; align-items: center; column-gap: 10rem; row-gap: 2rem;`,
+          style: `width: 100%; box-sizing: border-box; display: flex; flex-flow: wrap row; justify-content: space-evenly; align-items: center; gap: ${GAP_1X}rem;`,
         },
-        E.divRef(
+        assign(
           this.chooseAccountButton,
-          {
-            class: "account-info-switch-account",
-            style: `${OUTLINE_BUTTON_STYLE} color: ${SCHEME.neutral0}; border-color: ${SCHEME.neutral1};`,
-          },
-          E.text(LOCALIZED_TEXT.chooseAccountButtonLabel),
-        ),
-        E.divRef(
+          new OutlineButton().append(
+            E.text(LOCALIZED_TEXT.chooseAccountButtonLabel),
+          ),
+        ).body,
+        assign(
           this.signOutButton,
-          {
-            class: "account-info-sign-out",
-            style: `${OUTLINE_BUTTON_STYLE} color: ${SCHEME.neutral0}; border-color: ${SCHEME.neutral1};`,
-          },
-          E.text(LOCALIZED_TEXT.signOutButtonLabel),
-        ),
+          new TextButton().append(E.text(LOCALIZED_TEXT.signOutButtonLabel)),
+        ).body,
       ),
     );
 
@@ -163,12 +161,8 @@ export class InfoPage extends EventEmitter {
     this.userEmail.val.addEventListener("click", () =>
       this.emit("updateUserEmail", response.account),
     );
-    this.chooseAccountButton.val.addEventListener("click", () =>
-      this.emit("chooseAccount"),
-    );
-    this.signOutButton.val.addEventListener("click", () =>
-      this.emit("signOut"),
-    );
+    this.chooseAccountButton.val.addAction(() => this.emit("chooseAccount"));
+    this.signOutButton.val.addAction(() => this.emit("signOut"));
     this.emit("loaded");
   }
 

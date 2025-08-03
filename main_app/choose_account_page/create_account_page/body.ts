@@ -1,5 +1,6 @@
 import EventEmitter = require("events");
-import { CLICKABLE_TEXT_STYLE } from "../../../common/button_styles";
+import { CLICKABLE_TEXT_STYLE } from "../../../common/button";
+import { SCHEME } from "../../../common/color_scheme";
 import { InputFormPage } from "../../../common/input_form_page/body";
 import { ValidationResult } from "../../../common/input_form_page/input_field";
 import { MandatoryCheckboxInput } from "../../../common/input_form_page/mandatory_checkbox_input";
@@ -8,6 +9,7 @@ import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_inpu
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { OptionPill } from "../../../common/option_buttons";
 import { eFormTitle } from "../../../common/page_elements";
+import { FONT_M, GAP_2X, GAP_d_5X, LINE_HEIGHT_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { MAX_NAME_LENGTH } from "@phading/constants/account";
 import { AccountType } from "@phading/user_service_interface/account_type";
@@ -35,15 +37,15 @@ export class CreateAccountPage extends EventEmitter {
   public consumerOption = new Ref<OptionPill<AccountType>>();
   public publisherOption = new Ref<OptionPill<AccountType>>();
   private accountTypeInput = new Ref<RadioOptionInput<AccountType>>();
+  private acceptTerms = new Ref<HTMLDivElement>();
   public acceptPublisherTermsCheckbox = new Ref<MandatoryCheckboxInput>();
   public inputFormPage: InputFormPage<CreateAccountResponse>;
   private request: CreateAccountRequestBody = {};
 
   public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.inputFormPage = new InputFormPage<CreateAccountResponse>(
-      "",
-      [
+    this.inputFormPage = new InputFormPage<CreateAccountResponse>()
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.createAccountTitle),
         assign(
           this.accountNameInput,
@@ -81,36 +83,44 @@ export class CreateAccountPage extends EventEmitter {
             (value) => this.changeAccountType(value),
           ),
         ).body,
-        assign(
-          this.acceptPublisherTermsCheckbox,
-          new MandatoryCheckboxInput(
-            "",
-            E.text(LOCALIZED_TEXT.acceptPublisherTermsOnly[0]),
+        E.divRef(
+          this.acceptTerms,
+          {
+            class: "create-account-terms",
+          },
+          assign(
+            this.acceptPublisherTermsCheckbox,
+            new MandatoryCheckboxInput("", LOCALIZED_TEXT.acceptTerms),
+          ).body,
+          E.div(
+            {},
+            E.div(
+              {
+                style: `display: inline; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; margin: 0 ${GAP_d_5X}rem 0 ${GAP_2X}rem;`,
+              },
+              E.text("•"),
+            ),
             E.a(
               {
+                class: "create-account-publisher-agreement-link",
                 href: "/publisher",
                 target: "_blank",
-                style: CLICKABLE_TEXT_STYLE,
+                style: `${CLICKABLE_TEXT_STYLE} font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem;`,
               },
-              E.text(LOCALIZED_TEXT.acceptPublisherTermsOnly[1]),
+              E.text(LOCALIZED_TEXT.publisherAgreement),
             ),
-            E.text(LOCALIZED_TEXT.acceptPublisherTermsOnly[2]),
           ),
-        ).body,
-      ],
-      LOCALIZED_TEXT.createAccountButtonLabel,
-    )
-      .addBackButton()
-      .on("back", () => this.emit("back"))
-      .addPrimaryAction(
+        ),
+      )
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.createAccountButtonLabel,
         () => this.createAccount(),
-        (response, error) => this.postCreateAccount(response, error),
+        (error, response) => this.postCreateAccount(error, response),
       )
-      .on("handlePrimarySuccess", (response) =>
-        this.emit("choose", response.signedSession),
-      )
-      .on("primaryDone", () => this.emit("chosen"))
-      .addInputs(this.accountNameInput.val);
+      .addBackButton()
+      .addInputs(this.accountNameInput.val)
+      .on("back", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("chosen"));
     this.accountTypeInput.val.setValue(AccountType.CONSUMER);
   }
 
@@ -134,10 +144,10 @@ export class CreateAccountPage extends EventEmitter {
   private changeAccountType(value: AccountType): void {
     this.request.accountType = value;
     if (value === AccountType.CONSUMER) {
-      this.acceptPublisherTermsCheckbox.val.hide();
+      this.acceptTerms.val.style.display = "none";
       this.inputFormPage.removeInputs(this.acceptPublisherTermsCheckbox.val);
     } else {
-      this.acceptPublisherTermsCheckbox.val.show();
+      this.acceptTerms.val.style.display = "block";
       this.inputFormPage.addInputs(this.acceptPublisherTermsCheckbox.val);
     }
   }
@@ -147,12 +157,13 @@ export class CreateAccountPage extends EventEmitter {
   }
 
   private postCreateAccount(
-    response: CreateAccountResponse,
     error?: Error,
+    response?: CreateAccountResponse,
   ): string {
     if (error) {
       return LOCALIZED_TEXT.createAccountError;
     } else {
+      this.emit("choose", response.signedSession);
       return "";
     }
   }

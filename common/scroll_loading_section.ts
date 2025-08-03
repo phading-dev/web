@@ -1,7 +1,7 @@
 import { SCHEME } from "./color_scheme";
 import { createLoadingIcon } from "./icons";
 import { LOCALIZED_TEXT } from "./locales/localized_text";
-import { FONT_M, ICON_XL } from "./sizes";
+import { FONT_M, GAP_1_d_5X, ICON_XL } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 import { EventEmitter } from "events";
@@ -23,7 +23,7 @@ export class ScrollLoadingSection extends EventEmitter {
     this.body = E.div(
       {
         class: "loading-section",
-        style: `display: flex; flex-flow: column nowrap; align-items: center; padding: 2rem; gap: 2rem;`,
+        style: `display: flex; flex-flow: column nowrap; align-items: center; padding: ${GAP_1_d_5X}rem;`,
       },
       E.divRef(
         this.endOfLoading,
@@ -37,7 +37,7 @@ export class ScrollLoadingSection extends EventEmitter {
         this.loadingIcon,
         {
           class: "loading-section-loading-icon",
-          style: `height: ${ICON_XL}rem; padding .5rem; box-sizing: border-box;`,
+          style: `height: ${ICON_XL}rem; box-sizing: border-box;`,
         },
         createLoadingIcon(SCHEME.neutral1),
       ),

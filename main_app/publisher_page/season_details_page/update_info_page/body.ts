@@ -45,9 +45,10 @@ export class UpdateInfoPage extends EventEmitter {
   ) {
     super();
     this.request.seasonId = seasonId;
-    this.inputFormPage = new InputFormPage<UpdateSeasonResponse>(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    this.inputFormPage = new InputFormPage<UpdateSeasonResponse>({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.updateSeasonInfoTitle),
         assign(
           this.nameInput,
@@ -71,18 +72,16 @@ export class UpdateInfoPage extends EventEmitter {
             (value) => this.validateDescriptionAndTake(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.updateButtonLabel,
-    )
-      .addBackButton()
-      .on("back", () => this.emit("back"))
-      .addPrimaryAction(
-        () => this.update(),
-        (response, error) => this.postUpdate(response, error),
       )
-      .on("handlePrimarySuccess", () => this.emit("back"))
-      .on("primaryDone", () => this.emit("updated"))
-      .addInputs(this.nameInput.val, this.descriptionInput.val);
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.updateButtonLabel,
+        () => this.update(),
+        (error) => this.postUpdate(error),
+      )
+      .addBackButton()
+      .addInputs(this.nameInput.val, this.descriptionInput.val)
+      .on("back", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("updated"));
   }
 
   private validateNameAndTake(value: string): ValidationResult {
@@ -123,10 +122,11 @@ export class UpdateInfoPage extends EventEmitter {
     return this.serviceClient.send(newUpdateSeasonRequest(this.request));
   }
 
-  private postUpdate(response?: UpdateSeasonResponse, error?: Error): string {
+  private postUpdate(error?: Error): string {
     if (error) {
       return LOCALIZED_TEXT.updateGenericError;
     } else {
+      this.emit("back");
       return "";
     }
   }

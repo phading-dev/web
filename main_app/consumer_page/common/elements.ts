@@ -1,24 +1,25 @@
 import { AT_USER } from "../../../common/at_user";
 import { SCHEME } from "../../../common/color_scheme";
-import { formatShowPriceShortened } from "../../../common/formatter/price";
-import {
-  formatRating,
-  formatRatingsCountShort,
-} from "../../../common/formatter/rating";
+import { formatShowPrice } from "../../../common/formatter/price";
 import { formatSecondsAsHHMMSS } from "../../../common/formatter/timestamp";
 import {
   createArrowIcon,
   createCircularProgressIcon,
-  createFilledStarIcon,
 } from "../../../common/icons";
 import { eCoverImage } from "../../../common/season_cover_image";
 import {
   AVATAR_M,
+  FONT_L,
   FONT_M,
+  FONT_S,
   FONT_WEIGHT_600,
+  GAP_1X,
+  GAP_d_25X,
+  GAP_d_5X,
   ICON_L,
-  ICON_M,
+  LINE_HEIGHT_L,
   LINE_HEIGHT_M,
+  LINE_HEIGHT_S,
 } from "../../../common/sizes";
 import {
   Episode,
@@ -28,20 +29,11 @@ import { AccountDetails } from "@phading/user_service_interface/web/third_person
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 
-export function eSeasonItemContainerRef(
-  ref: Ref<HTMLDivElement>,
-): HTMLDivElement {
-  return E.divRef(ref, {
-    class: "season-item-container-content",
-    style: `width: 100%; box-sizing: border-box; padding: 0 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(17.6rem, 1fr)); gap: 1rem;`,
-  });
-}
-
 export function eContainerTitle(title: string): HTMLDivElement {
   return E.div(
     {
       class: "container-title",
-      style: `padding: 0 1rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+      style: `padding: 0 ${GAP_d_5X}rem; font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
     },
     E.text(title),
   );
@@ -61,11 +53,20 @@ export function eContainerTitleClickableRef(
     E.div(
       {
         class: "container-title-arrow",
-        style: `width: ${ICON_M}rem; height: ${ICON_M}rem; transform: rotate(180deg);`,
+        style: `width: ${ICON_L}rem; height: ${ICON_L}rem; transform: rotate(180deg);`,
       },
       createArrowIcon(SCHEME.neutral0),
     ),
   );
+}
+
+export function eSeasonItemContainerRef(
+  ref: Ref<HTMLDivElement>,
+): HTMLDivElement {
+  return E.divRef(ref, {
+    class: "season-item-container-content",
+    style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_d_5X}rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: ${GAP_1X}rem;`,
+  });
 }
 
 export function eSeasonItem(
@@ -80,52 +81,21 @@ export function eSeasonItem(
     },
     eCoverImage("100%", season.coverImageUrl),
     E.div({
-      style: `height: .5rem;`,
+      style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
     }),
     E.div(
       {
         class: "season-item-name",
-        style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
+        style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 2}rem; color: ${SCHEME.neutral0}; overflow: hidden;`,
       },
       E.text(season.name),
     ),
-    E.div({
-      style: `height: .5rem;`,
-    }),
     E.div(
       {
-        class: "season-item-info-line",
-        style: `width: 100%; display: flex; flex-flow: row wrap; align-items: center;`,
+        class: "season-item-price",
+        style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
       },
-      E.div(
-        {
-          class: "season-item-rating-icon",
-          style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
-        },
-        createFilledStarIcon(SCHEME.star),
-      ),
-      E.div({
-        style: `flex: 0 0 .5rem;`,
-      }),
-      E.div(
-        {
-          class: "season-item-rating",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-        },
-        E.text(
-          `${formatRating(season.averageRating)} (${formatRatingsCountShort(season.ratingsCount)})`,
-        ),
-      ),
-      E.div({
-        style: `flex: 1 0 .5rem;`,
-      }),
-      E.div(
-        {
-          class: "season-item-price",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-        },
-        E.text(formatShowPriceShortened(season.grade, date)),
-      ),
+      E.text(formatShowPrice(season.grade, date)),
     ),
   );
 }
@@ -135,7 +105,7 @@ export function eContinueEpisodeItemContainerRef(
 ): HTMLDivElement {
   return E.divRef(ref, {
     class: "continue-watching-content",
-    style: `width: 100%; box-sizing: border-box; padding: 0 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr)); gap: 1rem;`,
+    style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_d_5X}rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: ${GAP_1X}rem;`,
   });
 }
 
@@ -158,31 +128,31 @@ export function eContinueEpisodeItem(
       eCoverImage("100%", season.coverImageUrl),
     ),
     E.div({
-      style: `width: 1rem;`,
+      style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
     }),
     E.div(
       {
         class: "continue-episode-info",
-        style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: 1rem;`,
+        style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: ${GAP_d_25X}rem;`,
       },
       E.div(
         {
           class: "continue-episode-season-name",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; max-height: ${LINE_HEIGHT_M * 2}rem; overflow: hidden;`,
         },
         E.text(season.name),
       ),
       E.div(
         {
           class: "continue-episode-name",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
+          style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1}; max-height: ${LINE_HEIGHT_S * 2}rem; overflow: hidden;`,
         },
         E.text(episode.name),
       ),
       E.div(
         {
           class: "continue-episode-progress-line",
-          style: `width: 100%; display: flex; flex-flow: row wrap; align-items: center; gap: 1rem;`,
+          style: `width: 100%; display: flex; flex-flow: row wrap; align-items: center; gap: ${GAP_d_5X}rem;`,
         },
         E.div(
           {
@@ -190,7 +160,7 @@ export function eContinueEpisodeItem(
             style: `width: ${ICON_L}rem;`,
           },
           createCircularProgressIcon(
-            SCHEME.progress,
+            SCHEME.primary1,
             SCHEME.neutral2,
             continueTimeMs / 1000 / episode.videoDurationSec,
           ),
@@ -198,7 +168,7 @@ export function eContinueEpisodeItem(
         E.div(
           {
             class: "continue-episode-continue-at",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
           },
           E.text(
             `${formatSecondsAsHHMMSS(Math.round(continueTimeMs / 1000))} / ${formatSecondsAsHHMMSS(episode.videoDurationSec)}`,
@@ -214,7 +184,7 @@ export function ePublisherItemContainerRef(
 ): HTMLDivElement {
   return E.divRef(ref, {
     class: "publishers-content",
-    style: `width: 100%; box-sizing: border-box; padding: 0 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr)); gap: 2rem;`,
+    style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_d_5X}rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); gap: ${GAP_1X}rem;`,
   });
 }
 
@@ -225,7 +195,7 @@ export function ePublisherItem(
   return E.div(
     {
       class: "publisher-item",
-      style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem; ${customStyle}`,
+      style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem; ${customStyle}`,
     },
     E.image({
       class: "publisher-item-avatar",
@@ -236,26 +206,29 @@ export function ePublisherItem(
     E.div(
       {
         class: "publisher-item-info",
-        style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
+        style: `flex: 1 0 0; display: flex; flex-flow: column nowrap;`,
       },
       E.div(
         {
           class: "publisher-item-name",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 2}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600}; overflow: hidden;`,
         },
         E.text(publisher.name),
       ),
       E.div(
         {
           class: "publisher-item-id",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+          style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
         },
         E.text(`${AT_USER}${publisher.accountId}`),
       ),
+      E.div({
+        style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+      }),
       E.div(
         {
           class: "publisher-item-description",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; overflow: hidden;`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; max-height: ${LINE_HEIGHT_M * 3}rem; color: ${SCHEME.neutral0}; overflow: hidden;`,
         },
         E.text(publisher.description ?? ""),
       ),
@@ -270,43 +243,40 @@ export function ePublisherContextItem(
   return E.div(
     {
       class: "publisher-context-item-container",
-      style: `width: 100%; box-sizing: border-box; padding: 0 1rem; display: flex; flex-flow: row nowrap; justify-content: center; ${customStyle}`,
+      style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_d_5X}rem; display: flex; flex-flow: row nowrap; justify-content: center; ${customStyle}`,
     },
     E.div(
       {
         class: "publisher-context-item",
-        style: `flex: 1; max-width: 60rem; display: flow-root;`,
+        style: `flex: 1; max-width: 38rem; display: flow-root;`,
       },
       E.image({
         class: "publisher-context-item-avatar",
-        style: `float: left; margin: 0 1rem .5rem 0; width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: 100%;`,
+        style: `float: left; margin: 0 ${GAP_d_5X}rem ${GAP_d_25X}rem 0; width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: 100%;`,
         src: publisher.avatarLargeUrl,
         alt: publisher.name,
       }),
       E.div(
         {
           class: "publisher-context-item-name",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
         },
         E.text(publisher.name),
       ),
-      E.div({
-        style: `height: .5rem;`,
-      }),
       E.div(
         {
           class: "publisher-context-item-id",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+          style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
         },
         E.text(`${AT_USER}${publisher.accountId}`),
       ),
       E.div({
-        style: `height: 1rem;`,
+        style: `height: ${GAP_d_5X}rem;`,
       }),
       E.div(
         {
           class: "publisher-context-item-description",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(publisher.description ?? ""),
       ),

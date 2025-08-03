@@ -1,6 +1,6 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
-import { FONT_M } from "../sizes";
+import { FONT_M, LINE_HEIGHT_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 
@@ -12,14 +12,18 @@ export class ErrorInput extends EventEmitter implements InputField {
     this.body = E.div(
       {
         class: "forced-invalid-input",
-        style: `font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
+        style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
       },
       E.text(error),
     );
   }
 
-  public validate(): void {
-    // This input is always invalid, so no validation is needed.
+  public enable(): this {
+    return this;
+  }
+
+  public disable(): this {
+    return this;
   }
 
   public get isValid(): boolean {

@@ -54,7 +54,7 @@ TEST_RUNNER.run({
   environment: {
     setUp() {
       container = E.div({
-        style: `width: 40rem; height: 30rem; background-color: white;`,
+        style: `width: 400px; height: 300px; background-color: white;`,
       });
       document.body.append(container);
     },

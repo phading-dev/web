@@ -65,9 +65,10 @@ export class PublishedPage extends EventEmitter {
     this.inputFormPage = new InputFormPage<
       UpdateEpisodePremiereTimeResponse,
       UnpublishEpisodeResponse
-    >(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    >({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.publishedEpisodeTitle),
         assign(
           this.premiereTimeInput,
@@ -83,25 +84,22 @@ export class PublishedPage extends EventEmitter {
             (value: string) => this.validatePremiereTimeAndTake(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.updateButtonLabel,
-    )
-      .addBackButton()
-      .on("back", () => this.emit("back"))
-      .addPrimaryAction(
-        () => this.update(),
-        (response, error) => this.postUpdate(error),
       )
-      .on("handlePrimarySuccess", () => this.emit("back"))
-      .on("primaryDone", () => this.emit("updated"))
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.updateButtonLabel,
+        () => this.update(),
+        (error) => this.postUpdate(error),
+      )
       .addSecondaryButton(
         LOCALIZED_TEXT.unpublishButtonLabel,
         () => this.unpublish(),
-        (response, error) => this.postUnpublish(error),
+        (error) => this.postUnpublish(error),
       )
-      .on("handleSecondarySuccess", () => this.emit("back"))
-      .on("secondaryDone", () => this.emit("unpublished"))
-      .addInputs(this.premiereTimeInput.val);
+      .addBackButton()
+      .addInputs(this.premiereTimeInput.val)
+      .on("back", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("updated"))
+      .on("secondaryDone", () => this.emit("unpublished"));
   }
 
   private toLocalISOStringUntilMinutes(date: Date): string {
@@ -140,6 +138,7 @@ export class PublishedPage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.updateGenericError;
     } else {
+      this.emit("back");
       return "";
     }
   }
@@ -154,6 +153,7 @@ export class PublishedPage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.unpublishEpisodeGenericError;
     } else {
+      this.emit("back");
       return "";
     }
   }

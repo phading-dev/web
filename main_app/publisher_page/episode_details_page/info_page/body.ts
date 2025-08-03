@@ -6,23 +6,29 @@ import { formatStorageEstimatedMonthlyPrice } from "../../../../common/formatter
 import { formatBytesShort } from "../../../../common/formatter/quantity";
 import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
 import {
-  SimpleIconButton,
+  IconButton,
   createBackButton,
-} from "../../../../common/icon_button";
+} from "../../../../common/button";
 import { createUploadIcon } from "../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
+import { ePageWithTopDownCard } from "../../../../common/page_elements";
 import {
-  PAGE_MAX_WIDTH_L,
-  ePageWithTopDownCard,
-} from "../../../../common/page_elements";
-import {
+  BORDER_WIDTH_1,
   FONT_L,
   FONT_M,
   FONT_S,
   FONT_WEIGHT_600,
+  GAP_1X,
+  GAP_2X,
+  GAP_d_25X,
+  GAP_d_5X,
   ICON_BUTTON_L,
   ICON_L,
+  LINE_HEIGHT_L,
+  LINE_HEIGHT_M,
+  LINE_HEIGHT_S,
+  PAGE_MAX_WIDTH_L,
 } from "../../../../common/sizes";
 import {
   eBox,
@@ -81,7 +87,7 @@ export class InfoPage extends EventEmitter {
 
   public body: HTMLElement;
   private card = new Ref<HTMLDivElement>();
-  public backButton = new Ref<SimpleIconButton>();
+  public backButton = new Ref<IconButton>();
   public editNameButton = new Ref<HTMLDivElement>();
   public editIndexButton = new Ref<HTMLDivElement>();
   public refreshVideoContainerButton = new Ref<HTMLDivElement>();
@@ -103,7 +109,7 @@ export class InfoPage extends EventEmitter {
     super();
     this.body = ePageWithTopDownCard(
       this.card,
-      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + 1}rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + GAP_d_5X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
     );
     this.load();
   }
@@ -120,12 +126,12 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "episode-details-info-card-season-title",
-          style: `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(`${episode.seasonName}`),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       assign(
         this.editNameButton,
@@ -145,7 +151,7 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "episode-details-episode-index",
-                      style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                     },
                     E.text(
                       `${LOCALIZED_TEXT.seasonEpisodeIndex[0]}${episode.episodeIndex}${LOCALIZED_TEXT.seasonEpisodeIndex[1]}${episode.totalPublishedEpisodes}${LOCALIZED_TEXT.seasonEpisodeIndex[2]}`,
@@ -154,14 +160,14 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "episode-details-episode-index-footer",
-                      style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+                      style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral0};`,
                     },
                     E.text(LOCALIZED_TEXT.seasonEpisodeIndexFooter),
                   ),
                 ],
                 {
-                  linesGap: 1,
-                  customeStyle: `margin-top: 2rem;`,
+                  linesGap: GAP_d_25X,
+                  customeStyle: `margin-top: ${GAP_1X}rem;`,
                 },
               ),
             ),
@@ -171,17 +177,17 @@ export class InfoPage extends EventEmitter {
       ...this.eVideoPlayer(episode.videoUrl),
       ...this.eEditTracksButton(episode.videoContainer),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       this.eUploadOrProcessingBox(episode.videoContainer),
       ...this.eUploadFooter(episode.videoContainer),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       this.eStateButton(episode),
       ...this.eStorageFee(episode.videoContainer),
     );
-    this.backButton.val.on("action", () => this.emit("back"));
+    this.backButton.val.addAction(() => this.emit("back"));
     this.editNameButton.val.addEventListener("click", () =>
       this.emit("editName", episode),
     );
@@ -221,13 +227,13 @@ export class InfoPage extends EventEmitter {
               E.div(
                 {
                   class: "episode-details-video-container-committing-refresh",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonEpisodeVideoComittingVideo),
               ),
             ],
             {
-              customeStyle: `margin-top: 2rem; display: flex; flex-flow: row nowrap; justify-content: center;`,
+              customeStyle: `margin-top: ${GAP_1X}rem; display: flex; flex-flow: row nowrap; justify-content: center;`,
             },
           ),
         ),
@@ -243,7 +249,7 @@ export class InfoPage extends EventEmitter {
     }
     this.video = E.video({
       class: "episode-details-video-player",
-      style: `margin-top: 2rem; width: 100%; object-fit: contain;`,
+      style: `margin-top: ${GAP_1X}rem; width: 100%; object-fit: contain;`,
       controls: "true",
     });
     this.hls = new Hls();
@@ -273,26 +279,26 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "episode-details-video-tracks",
-                      style: `font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
+                      style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
                     },
                     E.text(LOCALIZED_TEXT.seasonEpisodeVideoTracksTitle),
                   ),
                   E.div(
                     {
                       class: "episode-details-video-tracks",
-                      style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+                      style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem;`,
                     },
                     E.div(
                       {
                         class: "episode-details-video-track-state",
-                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                       },
                       E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
                     ),
                     E.div(
                       {
                         class: "episode-details-video-track-duration-sec",
-                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                       },
                       E.text(
                         LOCALIZED_TEXT.seasonEpisodeTrackVideoDurationLabel,
@@ -301,7 +307,7 @@ export class InfoPage extends EventEmitter {
                     E.div(
                       {
                         class: "episode-details-video-track-resolution",
-                        style: `flex: 0 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                        style: `flex: 0 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                       },
                       E.text(
                         LOCALIZED_TEXT.seasonEpisodeTrackVideoResolutionLabel,
@@ -318,33 +324,33 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "episode-details-audio-tracks",
-                      style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
+                      style: `margin-top: ${GAP_1X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
                     },
                     E.text(LOCALIZED_TEXT.seasonEpisodeAudioTracksTitle),
                   ),
                   E.div(
                     {
                       class: "episode-details-audio-tracks",
-                      style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+                      style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem;`,
                     },
                     E.div(
                       {
                         class: "episode-details-audio-track-state",
-                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                       },
                       E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
                     ),
                     E.div(
                       {
                         class: "episode-details-audio-track-duration-sec",
-                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                       },
                       E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
                     ),
                     E.div(
                       {
                         class: "episode-details-audio-track-default",
-                        style: `flex: 0 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                        style: `flex: 0 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                       },
                       E.text(LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultLabel),
                     ),
@@ -359,26 +365,26 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "episode-details-subtitle-tracks",
-                      style: `margin-top: 2rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
+                      style: `margin-top: ${GAP_1X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
                     },
                     E.text(LOCALIZED_TEXT.seasonEpisodeSubtitleTracksTitle),
                   ),
                   E.div(
                     {
                       class: "episode-details-subtitle-tracks",
-                      style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+                      style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem;`,
                     },
                     E.div(
                       {
                         class: "episode-details-subtitle-track-state",
-                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                       },
                       E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
                     ),
                     E.div(
                       {
                         class: "episode-details-subtitle-track-duration-sec",
-                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                        style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                       },
                       E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
                     ),
@@ -390,7 +396,7 @@ export class InfoPage extends EventEmitter {
           ],
           {
             linesGap: 0,
-            customeStyle: `margin-top: 2rem;`,
+            customeStyle: `margin-top: ${GAP_1X}rem;`,
           },
         ),
       ),
@@ -401,12 +407,12 @@ export class InfoPage extends EventEmitter {
     return E.div(
       {
         class: "episode-details-video-track",
-        style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: 1rem;`,
+        style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem;`,
       },
       E.div(
         {
           class: "episode-details-video-track-state",
-          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(
           videoTrack.staging
@@ -417,14 +423,14 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "episode-details-video-track-duration-sec",
-          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};${videoTrack.staging?.toDelete ? " text-decoration: line-through;" : ""}`,
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};${videoTrack.staging?.toDelete ? " text-decoration: line-through;" : ""}`,
         },
         E.text(`${formatSecondsAsHHMMSS(videoTrack.durationSec)}`),
       ),
       E.div(
         {
           class: "episode-details-video-track-resolution",
-          style: `flex: 0 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};${videoTrack.staging?.toDelete ? " text-decoration: line-through;" : ""}`,
+          style: `flex: 0 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};${videoTrack.staging?.toDelete ? " text-decoration: line-through;" : ""}`,
         },
         E.text(`${videoTrack.resolution}`),
       ),
@@ -435,12 +441,12 @@ export class InfoPage extends EventEmitter {
     return E.div(
       {
         class: "episode-details-audio-track",
-        style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: 1rem;`,
+        style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem;`,
       },
       E.div(
         {
           class: "episode-details-audio-track-state",
-          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(
           audioTrack.staging
@@ -451,7 +457,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "episode-details-audio-track-name",
-          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: .5rem;`,
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_25X}rem;`,
         },
         ...(Boolean(audioTrack.committed) &&
         Boolean(audioTrack.staging) &&
@@ -477,7 +483,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "episode-details-audio-default",
-          style: `flex: 0 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: .5rem;`,
+          style: `flex: 0 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_25X}rem;`,
         },
         ...(Boolean(audioTrack.committed) &&
         Boolean(audioTrack.staging) &&
@@ -513,12 +519,12 @@ export class InfoPage extends EventEmitter {
     return E.div(
       {
         class: "episode-details-subtitle-track",
-        style: `width: 100%; box-sizing: border-box; padding: 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: 1rem;`,
+        style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem;`,
       },
       E.div(
         {
           class: "episode-details-subtitle-track-state",
-          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(
           subtitleTrack.staging
@@ -529,7 +535,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "episode-details-subtitle-track-name",
-          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: .5rem;`,
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_25X}rem;`,
         },
         ...(Boolean(subtitleTrack.committed) &&
         Boolean(subtitleTrack.staging) &&
@@ -574,13 +580,13 @@ export class InfoPage extends EventEmitter {
             E.div(
               {
                 class: "episode-details-upload-button-text",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
               },
               E.text(LOCALIZED_TEXT.seasonEpisodeVideoUploadLabel),
             ),
           ],
           {
-            customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: 2rem;`,
+            customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_1X}rem;`,
           },
         ),
       );
@@ -599,13 +605,13 @@ export class InfoPage extends EventEmitter {
             E.div(
               {
                 class: "episode-details-upload-button-text",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
               },
               E.text(LOCALIZED_TEXT.seasonEpisodeVideoResumeUploadLabel),
             ),
           ],
           {
-            customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: 2rem;`,
+            customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_1X}rem;`,
           },
         ),
       );
@@ -620,7 +626,7 @@ export class InfoPage extends EventEmitter {
             E.div(
               {
                 class: "episode-details-upload-button-text",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
               },
               E.text(LOCALIZED_TEXT.seasonEpisodeVideoProcessingLabel),
             ),
@@ -648,7 +654,7 @@ export class InfoPage extends EventEmitter {
         E.div(
           {
             class: "episode-details-video-container-failures",
-            style: `margin-top: 1rem; font-size: ${FONT_S}rem; color: ${SCHEME.error0};`,
+            style: `margin-top: ${GAP_d_25X}rem; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.error0};`,
           },
           this.eProcessingFailureText(videoContainer.lastProcessingFailure),
         ),
@@ -694,7 +700,7 @@ export class InfoPage extends EventEmitter {
               E.div(
                 {
                   class: "episode-details-episode-draft-state",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonEpisodeStateLabel),
                 E.div(
@@ -707,7 +713,7 @@ export class InfoPage extends EventEmitter {
               E.div(
                 {
                   class: "episode-details-episode-draft-state-footer",
-                  style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(
                   !episode.videoContainerCached
@@ -717,7 +723,7 @@ export class InfoPage extends EventEmitter {
               ),
             ],
             {
-              linesGap: 1,
+              linesGap: GAP_d_25X,
             },
           ),
         );
@@ -729,7 +735,7 @@ export class InfoPage extends EventEmitter {
               E.div(
                 {
                   class: "episode-details-episode-published-state",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonEpisodeStateLabel),
                 E.div(
@@ -742,7 +748,7 @@ export class InfoPage extends EventEmitter {
               E.div(
                 {
                   class: "episode-details-episode-premiere-time",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(
                   `${episode.canPlay ? LOCALIZED_TEXT.seasonHasPremieredAt : LOCALIZED_TEXT.seasonPremieresAt}${formatPremiereTimeLong(episode.premiereTimeMs)}`,
@@ -750,7 +756,7 @@ export class InfoPage extends EventEmitter {
               ),
             ],
             {
-              linesGap: 1,
+              linesGap: GAP_d_5X,
             },
           ),
         );
@@ -781,20 +787,20 @@ export class InfoPage extends EventEmitter {
     return [
       E.div(
         {
-          class: "episode-details-subtitle-tracks",
-          style: `margin-top: 3rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+          class: "episode-details-storage-summary-title",
+          style: `margin-top: ${GAP_2X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
         },
         E.text(LOCALIZED_TEXT.seasonEpisodeStorageFeeTitle),
       ),
       E.div(
         {
-          class: "episode-details-subtitle-tracks",
-          style: `width: 100%; box-sizing: border-box; padding: 1rem; display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+          class: "episode-details-storage-size",
+          style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem;`,
         },
         E.div(
           {
             class: "episode-details-subtitle-track-state",
-            style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(
             `${LOCALIZED_TEXT.seasonEpisodeStorageSize}${formatBytesShort(totalBytes)}`,
@@ -803,7 +809,7 @@ export class InfoPage extends EventEmitter {
         E.div(
           {
             class: "episode-details-subtitle-track-duration-sec",
-            style: `flex: 1 1 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(
             `${LOCALIZED_TEXT.seasonEpisodeStorageEstimatedFee}${formatStorageEstimatedMonthlyPrice(

@@ -1,4 +1,5 @@
 import EventEmitter = require("events");
+import { IconButton, createBackButton } from "../../../../common/button";
 import { SCHEME } from "../../../../common/color_scheme";
 import {
   formatLastChangeTimeLong,
@@ -8,24 +9,23 @@ import {
   formatShowCreditPrice,
   formatShowPrice,
 } from "../../../../common/formatter/price";
-import {
-  SimpleIconButton,
-  createBackButton,
-} from "../../../../common/icon_button";
 import { createPlusIcon } from "../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
-import {
-  PAGE_MAX_WIDTH_L,
-  ePageWithTopDownCard,
-} from "../../../../common/page_elements";
+import { ePageWithTopDownCard } from "../../../../common/page_elements";
 import { eCoverImage } from "../../../../common/season_cover_image";
 import {
   FONT_M,
   FONT_S,
   FONT_WEIGHT_600,
+  GAP_1X,
+  GAP_2X,
+  GAP_d_5X,
   ICON_BUTTON_L,
   ICON_L,
+  LINE_HEIGHT_M,
+  LINE_HEIGHT_S,
+  PAGE_MAX_WIDTH_L,
 } from "../../../../common/sizes";
 import {
   eBox,
@@ -74,7 +74,7 @@ export class InfoPage extends EventEmitter {
 
   public body: HTMLDivElement;
   private card = new Ref<HTMLDivElement>();
-  public backButton = new Ref<SimpleIconButton>();
+  public backButton = new Ref<IconButton>();
   public coverImageButton = new Ref<HTMLDivElement>();
   public seasonInfoButton = new Ref<HTMLDivElement>();
   public seasonPricingButton = new Ref<HTMLDivElement>();
@@ -91,7 +91,7 @@ export class InfoPage extends EventEmitter {
     super();
     this.body = ePageWithTopDownCard(
       this.card,
-      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + 1}rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + GAP_d_5X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
     );
     this.load();
   }
@@ -121,8 +121,7 @@ export class InfoPage extends EventEmitter {
               eColumnBoxWithArrow(
                 [eCoverImage(`100%`, seasonDetails.coverImageUrl)],
                 {
-                  customeStyle:
-                    "margin-bottom: 2rem; align-self: center; width: 100%; max-width: 44rem; box-sizing: border-box;",
+                  customeStyle: `margin-bottom: ${GAP_1X}rem; align-self: center; width: 100%; max-width: 30rem; box-sizing: border-box;`,
                 },
               ),
             ),
@@ -144,7 +143,7 @@ export class InfoPage extends EventEmitter {
         ),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       assign(
         this.seasonPricingButton,
@@ -153,12 +152,12 @@ export class InfoPage extends EventEmitter {
             E.div(
               {
                 class: "season-details-current-rate-line",
-                style: `display: flex; flex-flow: row wrap; column-gap: 2rem; row-gap: 1rem;`,
+                style: `display: flex; flex-flow: row wrap; column-gap: ${GAP_2X}rem;`,
               },
               E.div(
                 {
                   class: "season-details-current-rate",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonCurrentRateLabel),
                 E.div(
@@ -171,7 +170,7 @@ export class InfoPage extends EventEmitter {
               E.div(
                 {
                   class: "season-details-current-net-rate",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonNetRateLabel),
                 E.div(
@@ -187,12 +186,12 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "season-details-new-rate-line",
-                      style: `display: flex; flex-flow: row wrap; column-gap: 2rem; row-gap: 1rem;`,
+                      style: `display: flex; flex-flow: row wrap; column-gap: ${GAP_2X}rem;`,
                     },
                     E.div(
                       {
                         class: "season-details-new-rate",
-                        style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                        style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                       },
                       E.text(LOCALIZED_TEXT.seasonNewRateLabel),
                       E.div(
@@ -210,7 +209,7 @@ export class InfoPage extends EventEmitter {
                     E.div(
                       {
                         class: "season-details-new-net-rate-label",
-                        style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                        style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                       },
                       E.text(LOCALIZED_TEXT.seasonNewNetRateLabel),
                       E.div(
@@ -229,7 +228,7 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "season-details-new-rate-effective-date-label",
-                      style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                     },
                     E.text(LOCALIZED_TEXT.seasonNewRateEffectiveDateLabel),
                     E.div(
@@ -252,7 +251,7 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "season-details-new-rate-requirement",
-                      style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+                      style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral0};`,
                     },
                     E.text(this.getPricingFooterText(seasonDetails.state)),
                   ),
@@ -261,7 +260,7 @@ export class InfoPage extends EventEmitter {
           {
             clickable:
               seasonDetails.state === SeasonState.ARCHIVED ? false : true,
-            linesGap: 1,
+            linesGap: GAP_d_5X,
           },
         ),
       ),
@@ -269,7 +268,7 @@ export class InfoPage extends EventEmitter {
         ? []
         : [
             E.div({
-              style: `flex: 0 0 auto; height: 2rem;`,
+              style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
             }),
             assign(
               this.createDraftEpisodeButton,
@@ -285,18 +284,18 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "episode-details-upload-button-text",
-                      style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                     },
                     E.text(LOCALIZED_TEXT.seasonCreateDraftEpisodeLabel),
                   ),
                 ],
                 {
-                  customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: 1rem;`,
+                  customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_1X}rem;`,
                 },
               ),
             ),
             E.div({
-              style: `flex: 0 0 auto; height: 2rem;`,
+              style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
             }),
             assign(
               this.episodesListButton,
@@ -305,7 +304,7 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "season-details-draft-episodes",
-                      style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                     },
                     E.text(`${LOCALIZED_TEXT.seasonTotalDraftEpisodes[0]}`),
                     E.div(
@@ -319,7 +318,7 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "season-details-published-episodes",
-                      style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                      style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                     },
                     E.text(`${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[0]}`),
                     E.div(
@@ -332,13 +331,13 @@ export class InfoPage extends EventEmitter {
                   ),
                 ],
                 {
-                  linesGap: 1,
+                  linesGap: GAP_d_5X,
                 },
               ),
             ),
           ]),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       assign(
         this.seasonStateButton,
@@ -347,7 +346,7 @@ export class InfoPage extends EventEmitter {
             E.div(
               {
                 class: "season-details-state",
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
               },
               E.text(LOCALIZED_TEXT.seasonStateLabel),
               E.div(
@@ -360,7 +359,7 @@ export class InfoPage extends EventEmitter {
             E.div(
               {
                 class: "season-details-state-description",
-                style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+                style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral0};`,
               },
               E.text(
                 this.getStateFooterText(
@@ -373,36 +372,33 @@ export class InfoPage extends EventEmitter {
           {
             clickable:
               seasonDetails.state === SeasonState.ARCHIVED ? false : true,
-            linesGap: 1,
+            linesGap: GAP_d_5X,
           },
         ),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       E.div(
         {
           class: "season-details-last-change-time",
-          style: `align-self: flex-end; font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+          style: `align-self: flex-end; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
         },
         E.text(
           `${LOCALIZED_TEXT.seasonLastChangeTime}${formatLastChangeTimeLong(seasonDetails.lastChangeTimeMs)}`,
         ),
       ),
-      E.div({
-        style: `flex: 0 0 auto; height: .5rem;`,
-      }),
       E.div(
         {
           class: "season-details-created-time",
-          style: `align-self: flex-end; font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+          style: `align-self: flex-end; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
         },
         E.text(
           `${LOCALIZED_TEXT.seasonCreatedTime}${formatLastChangeTimeLong(seasonDetails.createdTimeMs)}`,
         ),
       ),
     );
-    this.backButton.val.on("action", () => this.emit("back"));
+    this.backButton.val.addAction(() => this.emit("back"));
 
     if (seasonDetails.state !== SeasonState.ARCHIVED) {
       this.coverImageButton.val.addEventListener("click", () =>

@@ -1,1 +1,0 @@
-export let COMMENT_LENGTH_LIMIT = 300;

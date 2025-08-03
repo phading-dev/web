@@ -1,9 +1,19 @@
-import { Ref } from "@selfage/ref";
 import { SCHEME } from "./color_scheme";
-import { FONT_S, ICON_XL } from "./sizes";
+import {
+  BORDER_RADIUS_S,
+  BORDER_WIDTH_2,
+  FONT_S,
+  GAP_5X,
+  GAP_d_25X,
+  GAP_d_5X,
+  GAP_d_75X,
+  ICON_XL,
+  PAGE_MAX_WIDTH_M,
+} from "./sizes";
 import { E } from "@selfage/element/factory";
+import { Ref } from "@selfage/ref";
 
-export let PAGE_NAVIGATION_PADDING_BOTTOM = 7; // rem
+export let PAGE_NAVIGATION_PADDING_BOTTOM = GAP_5X;
 
 export function eNavigationItemRef(
   ref: Ref<HTMLDivElement>,
@@ -14,7 +24,7 @@ export function eNavigationItemRef(
     ref,
     {
       class: "publisher-page-navigation-bar-home-button",
-      style: `flex: 1 0 0; padding: .7rem 0 .3rem 0; display: flex; flex-flow: column nowrap; align-items: center; gap: .3rem; cursor: pointer;`,
+      style: `flex: 1 0 0; padding: ${GAP_d_5X}rem 0 ${GAP_d_25X}rem 0; display: flex; flex-flow: column nowrap; align-items: center; gap: ${GAP_d_25X}rem; cursor: pointer;`,
     },
     E.div(
       {
@@ -46,12 +56,12 @@ export function eBottomNavigationBarRef(
     E.div(
       {
         class: "publisher-page-navigation-bar-content-container",
-        style: `background-color: ${SCHEME.neutral4}; box-shadow: 0 0 .3rem ${SCHEME.neutral1}; width: 100%; max-width: 60rem; border-top-left-radius: .5rem; border-top-right-radius: .5rem; display: flex; flex-flow: column nowrap;`,
+        style: `background-color: ${SCHEME.neutral4}; box-shadow: 0 0 ${BORDER_WIDTH_2}rem ${SCHEME.neutral1}; width: 100%; max-width: ${PAGE_MAX_WIDTH_M}rem; border-top-left-radius: ${BORDER_RADIUS_S}rem; border-top-right-radius: ${BORDER_RADIUS_S}rem; display: flex; flex-flow: column nowrap;`,
       },
       E.div(
         {
           class: "publisher-page-navigation-bar-level-one",
-          style: `display: flex; flex-flow: row nowrap; gap: 1rem;`,
+          style: `display: flex; flex-flow: row nowrap; gap: ${GAP_d_75X}rem;`,
         },
         ...items,
       ),

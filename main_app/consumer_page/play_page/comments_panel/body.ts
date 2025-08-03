@@ -1,13 +1,10 @@
 import EventEmitter = require("events");
-import {
-  BlockingButton,
-  FilledBlockingButton,
-} from "../../../../common/blocking_button";
+import { BlockingButton, FilledButton } from "../../../../common/button";
 import { SCHEME } from "../../../../common/color_scheme";
 import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
-import { BASIC_INPUT_STYLE } from "../../../../common/input_styles";
+import { COMMON_BASIC_INPUT_STYLE } from "../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
-import { FONT_M } from "../../../../common/sizes";
+import { FONT_M, GAP_d_5X, LINE_HEIGHT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { CommentWithAuthor } from "../common/comment_with_author";
 import { CommentEntry } from "./comment_entry";
@@ -53,33 +50,41 @@ export class CommentsPanel extends EventEmitter {
     this.body = E.div(
       {
         class: "comments-panel",
-        style: `flex-flow: column nowrap;  ${customStyle}`,
+        style: `flex-flow: column nowrap; ${customStyle}`,
       },
       E.divRef(
         this.commentInputLine,
         {
-          class: "comments-panel-input-line",
-          style: `flex: 0 0 auto; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; padding-bottom: .5rem; gap: 1rem;`,
+          class: "comments-panel-input-container",
+          style: `flex: 0 0 auto; width: 100%; display: flex; flex-flow: column nowrap; padding-bottom: ${GAP_d_5X}rem; gap: ${GAP_d_5X}rem;`,
         },
-        E.divRef(
-          this.pinTimestamp,
-          {
-            class: "comments-panel-input-timestamp",
-            style: `flex: 0 0 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
-          },
-          E.text(formatSecondsAsHHMMSS(0)),
-        ),
         E.inputRef(this.commentInput, {
           class: "comments-panel-input",
-          style: `${BASIC_INPUT_STYLE} flex: 1 0 0;`,
+          style: `${COMMON_BASIC_INPUT_STYLE} width: 100%;`,
           placeholder: LOCALIZED_TEXT.commentInputPlaceholder,
         }),
-        assign(
-          this.commentButton,
-          new FilledBlockingButton<PostCommentResponse>().append(
-            E.text(LOCALIZED_TEXT.commentButtonLabel),
+        E.div(
+          {
+            class: "comments-panel-input-actions",
+            style: `display: flex; flex-flow: row nowrap; align-items: center; justify-content: space-between;`,
+          },
+          E.divRef(
+            this.pinTimestamp,
+            {
+              class: "comments-panel-input-timestamp",
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral1};`,
+            },
+            E.text(formatSecondsAsHHMMSS(0)),
           ),
-        ).body,
+          assign(
+            this.commentButton,
+            new BlockingButton<PostCommentResponse>(
+              new FilledButton().append(
+                E.text(LOCALIZED_TEXT.commentButtonLabel),
+              ),
+            ),
+          ).body,
+        ),
       ),
     );
     this.show();
@@ -93,7 +98,7 @@ export class CommentsPanel extends EventEmitter {
     );
     this.commentButton.val.addAction(
       () => this.postComment(),
-      (response, error) => this.postPostComment(response, error),
+      (error, response) => this.postPostComment(error, response),
     );
   }
 
@@ -125,7 +130,7 @@ export class CommentsPanel extends EventEmitter {
     );
   }
 
-  private postPostComment(response?: PostCommentResponse, error?: Error): void {
+  private postPostComment(error?: Error, response?: PostCommentResponse): void {
     if (error) {
       console.error(error);
       this.emit("postCommentDone");

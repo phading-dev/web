@@ -40,9 +40,10 @@ export class UpdateAccountInfoPage extends EventEmitter {
     account: AccountAndUser,
   ) {
     super();
-    this.inputFormPage = new InputFormPage(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    this.inputFormPage = new InputFormPage({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.updateAccountInfoTitle),
         assign(
           this.accountNameInput,
@@ -67,18 +68,16 @@ export class UpdateAccountInfoPage extends EventEmitter {
             (value) => this.validateOrTakeDescriptionInput(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.updateButtonLabel,
-    )
-      .addBackButton()
-      .addPrimaryAction(
-        () => this.updateAccountInfo(),
-        (response, error) => this.postUpdateAccountInfo(error),
       )
-      .on("handlePrimarySuccess", () => this.emit("back"))
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.updateButtonLabel,
+        () => this.updateAccountInfo(),
+        (error) => this.postUpdateAccountInfo(error),
+      )
+      .addBackButton()
+      .addInputs(this.accountNameInput.val, this.descriptionInput.val)
       .on("primaryDone", () => this.emit("updated"))
-      .on("back", () => this.emit("back"))
-      .addInputs(this.accountNameInput.val, this.descriptionInput.val);
+      .on("back", () => this.emit("back"));
   }
 
   private validateOrTakeAccountNameInput(value: string): ValidationResult {
@@ -119,6 +118,7 @@ export class UpdateAccountInfoPage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.updateGenericError;
     } else {
+      this.emit("back");
       return "";
     }
   }

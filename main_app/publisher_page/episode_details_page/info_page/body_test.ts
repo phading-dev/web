@@ -808,8 +808,8 @@ TEST_RUNNER.run({
           {
             excludedAreas: [
               {
-                x: 300,
-                y: 325,
+                x: 310,
+                y: 330,
                 width: 100,
                 height: 100,
               },
@@ -971,7 +971,7 @@ TEST_RUNNER.run({
           {
             excludedAreas: [
               {
-                x: 300,
+                x: 310,
                 y: 425,
                 width: 100,
                 height: 100,
@@ -1154,7 +1154,7 @@ TEST_RUNNER.run({
           {
             excludedAreas: [
               {
-                x: 300,
+                x: 310,
                 y: 425,
                 width: 100,
                 height: 100,

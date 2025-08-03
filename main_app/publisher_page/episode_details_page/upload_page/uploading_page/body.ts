@@ -1,15 +1,26 @@
 import EventEmitter = require("events");
 import SparkMD5 = require("spark-md5");
-import { OUTLINE_BUTTON_STYLE } from "../../../../../common/button_styles";
+import {
+  Button,
+  IconButton,
+  OutlineButton,
+} from "../../../../../common/button";
 import { SCHEME } from "../../../../../common/color_scheme";
 import {
   calculateEstimatedUploadMoneyAndFormat,
   formatStorageEstimatedMonthlyPrice,
 } from "../../../../../common/formatter/price";
 import { formatBytesShort } from "../../../../../common/formatter/quantity";
-import { SimpleIconButton } from "../../../../../common/icon_button";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
-import { FONT_M, FONT_S } from "../../../../../common/sizes";
+import {
+  BORDER_RADIUS_M,
+  FONT_M,
+  FONT_S,
+  GAP_1X,
+  GAP_2X,
+  LINE_HEIGHT_M,
+  LINE_HEIGHT_S,
+} from "../../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../../common/web_service_client";
 import { ChunkedUpload } from "../common/chunked_upload";
 import { ePage } from "../common/elements";
@@ -26,7 +37,7 @@ import {
 } from "@phading/product_service_interface/show/web/publisher/client";
 import { ResumableUploadingState } from "@phading/video_service_interface/node/video_container";
 import { E } from "@selfage/element/factory";
-import { Ref } from "@selfage/ref";
+import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
 export interface UploadingPage {
@@ -58,11 +69,11 @@ export class UploadingPage extends EventEmitter {
   }
 
   public body: HTMLDivElement;
-  public backButton = new Ref<SimpleIconButton>();
+  public backButton = new Ref<IconButton>();
   private progressTip = new Ref<HTMLDivElement>();
   private progressBarFill = new Ref<HTMLDivElement>();
   private uploadingText = new Ref<Text>();
-  public cancelButton = new Ref<HTMLDivElement>();
+  public cancelButton = new Ref<Button>();
   public chunkedUpload: ChunkedUpload;
   private removed = false;
 
@@ -86,19 +97,19 @@ export class UploadingPage extends EventEmitter {
       this.backButton,
       LOCALIZED_TEXT.uploadingTitle,
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.divRef(this.progressTip, {
         class: "upload-page-progress-tip",
-        style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+        style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}; color: ${SCHEME.neutral0}; text-align: center;`,
       }),
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       E.div(
         {
           class: "upload-page-uploading-progress-bar",
-          style: `position: relative; width: 100%; height: 2rem; background-color: ${SCHEME.neutral2}; border-radius: 1rem; overflow: hidden;`,
+          style: `position: relative; width: 100%; height: 2rem; background-color: ${SCHEME.neutral2}; border-radius: ${BORDER_RADIUS_M}rem; overflow: hidden;`,
         },
         E.divRef(this.progressBarFill, {
           class: "upload-page-uploading-progress-bar-fill",
@@ -106,50 +117,46 @@ export class UploadingPage extends EventEmitter {
         }),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       E.div(
         {
           class: "upload-page-uploading-progress",
-          style: `width: 100%; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+          style: `width: 100%; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
         },
         E.textRef(this.uploadingText),
         E.text(` / ${formatBytesShort(this.file.size)}`),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
+      }),
+      E.div(
+        {
+          class: "upload-page-uploading-actions",
+          style: `display: flex; flex-flow: row nowrap; justify-content: flex-end; align-items: center;`,
+        },
+        assign(
+          this.cancelButton,
+          new OutlineButton().append(E.text(LOCALIZED_TEXT.cancelButtonLabel)),
+        ).body,
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       E.div(
         {
           class: "upload-page-pricing-tip",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(
           `${LOCALIZED_TEXT.uploadingEstimatedFees[0]}${calculateEstimatedUploadMoneyAndFormat(this.file.size, this.getNowDate())}${LOCALIZED_TEXT.uploadingEstimatedFees[1]}${formatStorageEstimatedMonthlyPrice(this.file.size, this.getNowDate())}${LOCALIZED_TEXT.uploadingEstimatedFees[2]}`,
         ),
       ),
-      E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
-      }),
-      E.div(
-        {
-          class: "upload-page-uploading-actions",
-          style: `display: flex; flex-flow: row nowrap; justify-content: flex-end; align-items: center; gap: 2rem;`,
-        },
-        E.divRef(
-          this.cancelButton,
-          {
-            class: "upload-page-uploading-cancel-button",
-            style: OUTLINE_BUTTON_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.cancelButtonLabel),
-        ),
-      ),
     );
     this.setProgress(0);
     this.upload();
-    this.backButton.val.on("action", () => this.emit("back"));
-    this.cancelButton.val.addEventListener("click", () => this.emit("cancel"));
+    this.backButton.val.addAction(() => this.emit("back"));
+    this.cancelButton.val.addAction(() => this.emit("cancel"));
   }
 
   private async upload() {

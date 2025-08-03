@@ -1,9 +1,15 @@
 import EventEmitter from "events";
-import { SimpleIconButton } from "../../../../common/icon_button";
+import { IconButton } from "../../../../common/button";
+import { SCHEME } from "../../../../common/color_scheme";
 import { createMinusIcon, createPlusIcon } from "../../../../common/icons";
-import { BASIC_INPUT_STYLE } from "../../../../common/input_styles";
+import { COMMON_BASIC_INPUT_WITHOUT_PADDING_STYLE } from "../../../../common/input_styles";
 import { NumberRange } from "../../../../common/number_range";
-import { ICON_BUTTON_M, ICON_M } from "../../../../common/sizes";
+import {
+  BORDER_RADIUS_S,
+  BORDER_WIDTH_1,
+  ICON_BUTTON_M,
+  ICON_M,
+} from "../../../../common/sizes";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
@@ -13,9 +19,9 @@ export interface RangedNumberInput {
 
 export class RangedNumberInput extends EventEmitter {
   public body: HTMLDivElement;
-  public minusButton = new Ref<SimpleIconButton>();
+  public minusButton = new Ref<IconButton>();
   public input = new Ref<HTMLInputElement>();
-  public plusButton = new Ref<SimpleIconButton>();
+  public plusButton = new Ref<IconButton>();
 
   public constructor(
     private numberRange: NumberRange,
@@ -26,33 +32,25 @@ export class RangedNumberInput extends EventEmitter {
     this.body = E.div(
       {
         class: "ranged-number-input",
-        style: `display: flex; flex-flow: row nowrap; align-items: center; gap: .5rem;`,
+        style: `border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; border-radius: ${BORDER_RADIUS_S}rem; display: flex; flex-flow: row nowrap; align-items: center;`,
       },
       assign(
         this.minusButton,
-        new SimpleIconButton(
-          ICON_BUTTON_M,
-          ICON_M,
-          createMinusIcon("currentColor"),
-        ),
+        new IconButton(ICON_BUTTON_M, ICON_M, createMinusIcon("currentColor")),
       ).body,
       E.inputRef(this.input, {
         class: "ranged-number-input-input",
-        style: `${BASIC_INPUT_STYLE} width: 4rem; text-align: center;`,
+        style: `${COMMON_BASIC_INPUT_WITHOUT_PADDING_STYLE} width: 3rem; text-align: center;`,
         value: `${value}`,
       }),
       assign(
         this.plusButton,
-        new SimpleIconButton(
-          ICON_BUTTON_M,
-          ICON_M,
-          createPlusIcon("currentColor"),
-        ),
+        new IconButton(ICON_BUTTON_M, ICON_M, createPlusIcon("currentColor")),
       ).body,
     );
     this.refreshButtons();
-    this.minusButton.val.on("action", () => this.decrement());
-    this.plusButton.val.on("action", () => this.increment());
+    this.minusButton.val.addAction(() => this.decrement());
+    this.plusButton.val.addAction(() => this.increment());
     this.input.val.addEventListener("blur", () => this.inputValue());
     this.input.val.addEventListener("keydown", (event) =>
       this.enterValue(event),

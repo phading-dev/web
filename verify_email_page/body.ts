@@ -1,5 +1,5 @@
 import EventEmitter = require("events");
-import { FILLED_BUTTON_STYLE } from "../common/button_styles";
+import { Button, FilledButton } from "../common/button";
 import { SCHEME } from "../common/color_scheme";
 import {
   createCheckmarkInACircleIcon,
@@ -7,16 +7,19 @@ import {
 } from "../common/icons";
 import { LOCAL_SESSION_STORAGE } from "../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../common/locales/localized_text";
+import { eFormTitle, ePageWithCenterForm } from "../common/page_elements";
 import {
+  FONT_M,
+  GAP_1X,
+  GAP_2X,
+  ICON_XXL,
+  LINE_HEIGHT_M,
   PAGE_MAX_WIDTH_M,
-  eFormTitle,
-  ePageWithCenterForm,
-} from "../common/page_elements";
-import { FONT_M, ICON_XXL } from "../common/sizes";
+} from "../common/sizes";
 import { SERVICE_CLIENT } from "../common/web_service_client";
 import { newVerifyEmailAndSignInRequest } from "@phading/user_service_interface/web/self/client";
 import { E } from "@selfage/element/factory";
-import { Ref } from "@selfage/ref";
+import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 import { LocalSessionStorage } from "@selfage/web_service_client/local_session_storage";
 
@@ -32,7 +35,7 @@ export class VerifyEmailPage extends EventEmitter {
 
   public body: HTMLDivElement;
   private card = new Ref<HTMLFormElement>();
-  public homeButton = new Ref<HTMLDivElement>();
+  public homeButton = new Ref<Button>();
   private removed = false;
 
   public constructor(
@@ -77,32 +80,30 @@ export class VerifyEmailPage extends EventEmitter {
         createExclamationMarkInACycle(SCHEME.error0),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       eFormTitle(LOCALIZED_TEXT.emailVerificationTokenExpiredTitle),
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.div(
         {
           class: "verify-email-text",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
         },
         E.text(LOCALIZED_TEXT.emailVerificationTokenExpiredBody),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 3rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
-      E.divRef(
+      assign(
         this.homeButton,
-        {
-          class: "verify-email-button",
-          style: `${FILLED_BUTTON_STYLE}`,
-        },
-        E.text(LOCALIZED_TEXT.continueButtonLabel),
-      ),
+        new FilledButton(`width: 100%;`).append(
+          E.text(LOCALIZED_TEXT.goToHomeButtonLabel),
+        ),
+      ).body,
     );
-    this.homeButton.val.addEventListener("click", () => {
+    this.homeButton.val.addAction(() => {
       this.emit("home");
     });
   }
@@ -117,32 +118,30 @@ export class VerifyEmailPage extends EventEmitter {
         createCheckmarkInACircleIcon(SCHEME.success1),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       eFormTitle(LOCALIZED_TEXT.emailVerifiedTitle),
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.div(
         {
           class: "verify-email-text",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-align: center;`,
         },
         E.text(LOCALIZED_TEXT.emailVerifiedBody),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 3rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
-      E.divRef(
+      assign(
         this.homeButton,
-        {
-          class: "verify-email-button",
-          style: `${FILLED_BUTTON_STYLE}`,
-        },
-        E.text(LOCALIZED_TEXT.goToHomeButtonLabel),
-      ),
+        new FilledButton(`width: 100%;`).append(
+          E.text(LOCALIZED_TEXT.goToHomeButtonLabel),
+        ),
+      ).body,
     );
-    this.homeButton.val.addEventListener("click", () => {
+    this.homeButton.val.addAction(() => {
       this.emit("home");
     });
   }

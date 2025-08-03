@@ -1,4 +1,5 @@
 import EventEmitter = require("events");
+import { CLICKABLE_TEXT_STYLE } from "../../../common/button";
 import { createBrandIcon } from "../../../common/icons";
 import { InputFormPage } from "../../../common/input_form_page/body";
 import { ValidationResult } from "../../../common/input_form_page/input_field";
@@ -6,8 +7,13 @@ import { PasswordInputWithErrorMsg } from "../../../common/input_form_page/passw
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { eFormTitle } from "../../../common/page_elements";
+import {
+  FONT_M,
+  GAP_1X,
+  GAP_d_25X,
+  LINE_HEIGHT_M,
+} from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
-import { SWITCH_TEXT_STYLE } from "../common/styles";
 import { newSignInRequest } from "@phading/user_service_interface/web/self/client";
 import {
   SignInRequestBody,
@@ -39,11 +45,16 @@ export class SignInPage extends EventEmitter {
 
   public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.inputFormPage = new InputFormPage<SignInResponse>(
-      "",
-      [
-        createBrandIcon(),
-        eFormTitle(LOCALIZED_TEXT.signInTitle),
+    this.inputFormPage = new InputFormPage<SignInResponse>()
+      .addLines(
+        E.div(
+          {
+            class: "sign-in-header",
+            style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_1X}rem;`,
+          },
+          createBrandIcon(),
+          eFormTitle(LOCALIZED_TEXT.signInTitle),
+        ),
         assign(
           this.userEmailInput,
           new TextInputWithErrorMsg(
@@ -67,33 +78,35 @@ export class SignInPage extends EventEmitter {
             (value) => this.validateOrTakePasswordInput(value),
           ),
         ).body,
-        E.divRef(
-          this.resetPasswordButton,
-          {
-            class: "sign-in-reset-password",
-            style: SWITCH_TEXT_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.forgotPasswordLink),
-        ),
-        E.divRef(
-          this.switchToSignUpButton,
-          {
-            class: "sign-in-switch-to-sign-up",
-            style: SWITCH_TEXT_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.switchToSignUpLink),
-        ),
-      ],
-      LOCALIZED_TEXT.signInButtonLabel,
-    )
-      .addPrimaryAction(
-        () => this.signIn(),
-        (response, error) => this.postSignIn(response, error),
       )
-      .on("handlePrimarySuccess", (response) =>
-        response.needsEmailVerification
-          ? this.emit("verifyEmail", this.request.userEmail)
-          : this.emit("auth", response.signedSession),
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.signInButtonLabel,
+        () => this.signIn(),
+        (error, response) => this.postSignIn(error, response),
+      )
+      .addLines(
+        E.div(
+          {
+            class: "sign-in-links",
+            style: `align-self: flex-end; display: flex; flex-flow: column nowrap; gap: ${GAP_d_25X}rem;`,
+          },
+          E.divRef(
+            this.resetPasswordButton,
+            {
+              class: "sign-in-reset-password",
+              style: `${CLICKABLE_TEXT_STYLE} font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem;`,
+            },
+            E.text(LOCALIZED_TEXT.forgotPasswordLink),
+          ),
+          E.divRef(
+            this.switchToSignUpButton,
+            {
+              class: "sign-in-switch-to-sign-up",
+              style: `${CLICKABLE_TEXT_STYLE} font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem;`,
+            },
+            E.text(LOCALIZED_TEXT.switchToSignUpLink),
+          ),
+        ),
       )
       .on("primaryDone", () => this.emit("signInDone"))
       .addInputs(this.userEmailInput.val, this.passwordInput.val);
@@ -136,12 +149,15 @@ export class SignInPage extends EventEmitter {
     return await this.serviceClient.send(newSignInRequest(this.request));
   }
 
-  private postSignIn(response: SignInResponse, error?: Error): string {
+  private postSignIn(error?: Error, response?: SignInResponse): string {
     if (error) {
       return LOCALIZED_TEXT.signInError;
     } else if (response.notAuthenticated) {
       return LOCALIZED_TEXT.incorrectCredentialError;
     } else {
+      response.needsEmailVerification
+        ? this.emit("verifyEmail", this.request.userEmail)
+        : this.emit("auth", response.signedSession);
       return "";
     }
   }

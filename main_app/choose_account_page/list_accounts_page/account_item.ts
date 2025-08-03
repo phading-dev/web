@@ -1,13 +1,21 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../common/color_scheme";
 import { createPlusIcon } from "../../../common/icons";
-import { AVATAR_M, FONT_M, LINE_HEIGHT_M } from "../../../common/sizes";
+import {
+  AVATAR_M,
+  BORDER_RADIUS_S,
+  BORDER_WIDTH_1,
+  FONT_M,
+  GAP_1X,
+  GAP_d_5X,
+  ICON_XXL,
+  LINE_HEIGHT_M,
+} from "../../../common/sizes";
 import { AccountSummary } from "@phading/user_service_interface/web/self/account";
 import { E } from "@selfage/element/factory";
 
-let ITEM_WIDTH = 17; // rem
-let ITEM_HEIGHT = 20; // rem
-let ITEM_BORDER_RADIUS = 1; // rem
+let ITEM_WIDTH = 11; // rem
+let ITEM_HEIGHT = 15; // rem
 
 export interface AccountItem {
   on(event: "choose", listener: (accountId: string) => void): this;
@@ -21,7 +29,7 @@ export class AccountItem extends EventEmitter {
     this.body = E.div(
       {
         class: "account-item",
-        style: `width: ${ITEM_WIDTH}rem; height: ${ITEM_HEIGHT}rem; box-sizing: border-box; padding: 2rem 1rem 1rem 1rem; display: flex; flex-flow: column nowrap; justify-content: space-between; align-items: center; border-radius: ${ITEM_BORDER_RADIUS}rem; border: .1rem solid ${SCHEME.neutral1}; cursor: pointer;`,
+        style: `width: ${ITEM_WIDTH}rem; height: ${ITEM_HEIGHT}rem; box-sizing: border-box; padding: ${GAP_1X}rem ${GAP_d_5X}rem ${GAP_d_5X}rem ${GAP_d_5X}rem; display: flex; flex-flow: column nowrap; justify-content: space-between; align-items: center; border-radius: ${BORDER_RADIUS_S}rem; border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; cursor: pointer;`,
       },
       E.image({
         class: "account-item-avatar",
@@ -63,12 +71,12 @@ export class AddAccountItem extends EventEmitter {
     this.body = E.div(
       {
         class: "add-account-item",
-        style: `width: ${ITEM_WIDTH}rem; height: ${ITEM_HEIGHT}rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center; border-radius: ${ITEM_BORDER_RADIUS}rem; border: .1rem solid ${SCHEME.neutral1}; cursor: pointer;`,
+        style: `width: ${ITEM_WIDTH}rem; height: ${ITEM_HEIGHT}rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center; border-radius: ${BORDER_RADIUS_S}rem; border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; cursor: pointer;`,
       },
       E.div(
         {
           class: "add-account-item-icon",
-          style: `width: 4rem; height: 4rem;`,
+          style: `width: ${ICON_XXL}rem; height: ${ICON_XXL}rem;`,
         },
         createPlusIcon(SCHEME.neutral1),
       ),

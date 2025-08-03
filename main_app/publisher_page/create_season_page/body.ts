@@ -31,9 +31,10 @@ export class CreateSeasonPage extends EventEmitter {
 
   public constructor(private serviceClient: WebServiceClient) {
     super();
-    this.inputFormPage = new InputFormPage<CreateSeasonResponse>(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    this.inputFormPage = new InputFormPage<CreateSeasonResponse>({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.createSeasonTitle),
         assign(
           this.seasonNameInput,
@@ -46,15 +47,11 @@ export class CreateSeasonPage extends EventEmitter {
             (value) => this.validateNameAndTake(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.createButtonLabel,
-    )
-      .addPrimaryAction(
-        () => this.create(),
-        (response, error) => this.postCreate(response, error),
       )
-      .on("handlePrimarySuccess", (response) =>
-        this.emit("viewSeason", response.seasonId),
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.createButtonLabel,
+        () => this.create(),
+        (error, response) => this.postCreate(error, response),
       )
       .on("primaryDone", () => this.emit("createDone"))
       .addInputs(this.seasonNameInput.val);
@@ -81,10 +78,11 @@ export class CreateSeasonPage extends EventEmitter {
     return this.serviceClient.send(newCreateSeasonRequest(this.request));
   }
 
-  private postCreate(response?: CreateSeasonResponse, error?: Error): string {
+  private postCreate(error?: Error, response?: CreateSeasonResponse): string {
     if (error) {
       return LOCALIZED_TEXT.createGenericError;
     } else {
+      this.emit("viewSeason", response.seasonId);
       return "";
     }
   }

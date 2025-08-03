@@ -5,7 +5,7 @@ import {
   formatMoney,
 } from "../../../common/formatter/price";
 import { formatWatchTimeSeconds } from "../../../common/formatter/quantity";
-import { BASIC_INPUT_STYLE } from "../../../common/input_styles";
+import { COMMON_BASIC_INPUT_STYLE } from "../../../common/input_styles";
 import {
   ExpandableLineItems,
   LineItemData,
@@ -15,15 +15,19 @@ import {
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import { OptionPill, RadioOptionsGroup } from "../../../common/option_buttons";
-import {
-  PAGE_MAX_WIDTH_L,
-  ePageWithTopDownCard,
-} from "../../../common/page_elements";
+import { ePageWithTopDownCard } from "../../../common/page_elements";
 import {
   DATE_INPUT_WIDTH,
+  FONT_L,
   FONT_M,
   FONT_S,
   FONT_WEIGHT_600,
+  GAP_1X,
+  GAP_2X,
+  GAP_d_5X,
+  LINE_HEIGHT_L,
+  LINE_HEIGHT_M,
+  PAGE_MAX_WIDTH_L,
 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
@@ -93,26 +97,26 @@ export class StatsPage extends EventEmitter {
       new Ref<HTMLDivElement>(),
       `max-width: ${PAGE_MAX_WIDTH_L}rem; padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem; display: flex; flex-flow: column nowrap;`,
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       E.div(
         {
           class: "stats-page-title",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600}; padding: 0 2rem;`,
+          style: `font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600}; padding: 0 ${GAP_1X}rem;`,
         },
         E.text(LOCALIZED_TEXT.statsTitle),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       E.div(
         {
           class: "stats-page-graunularity-pills",
-          style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: row wrap; justify-content: flex-end; align-items: center; gap: 1rem;`,
+          style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_1X}rem; display: flex; flex-flow: row wrap; justify-content: flex-end; align-items: center; gap: ${GAP_1X}rem;`,
         },
         E.div(
           {
-            style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_1X}rem;`,
           },
           assign(
             this.oneDayOption,
@@ -128,7 +132,7 @@ export class StatsPage extends EventEmitter {
         ),
         E.div(
           {
-            style: `display: flex; flex-flow: row nowrap; align-items: center; gap: 1rem;`,
+            style: `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_1X}rem;`,
           },
           assign(
             this.oneMonthOption,
@@ -144,16 +148,16 @@ export class StatsPage extends EventEmitter {
         ),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       E.inputRef(this.oneDayInput, {
-        class: "stats-page-one-day-input",
-        style: `${BASIC_INPUT_STYLE} width: ${DATE_INPUT_WIDTH}rem; align-self: flex-end; margin: 0 2rem;`,
+        class: "usage-page-one-day-input",
+        style: `${COMMON_BASIC_INPUT_STYLE} width: ${DATE_INPUT_WIDTH}rem; border-color: ${SCHEME.neutral1}; align-self: flex-end; margin: 0 ${GAP_1X}rem;`,
         type: "date",
       }),
       E.inputRef(this.oneMonthInput, {
-        class: "stats-page-one-month-input",
-        style: `${BASIC_INPUT_STYLE} width: ${DATE_INPUT_WIDTH}rem; align-self: flex-end; margin: 0 2rem;`,
+        class: "usage-page-one-month-input",
+        style: `${COMMON_BASIC_INPUT_STYLE} width: ${DATE_INPUT_WIDTH}rem; border-color: ${SCHEME.neutral1}; align-self: flex-end; margin: 0 ${GAP_1X}rem;`,
         type: "month",
       }),
       assign(
@@ -161,7 +165,7 @@ export class StatsPage extends EventEmitter {
         DateRangeInput.create(
           DateType.DAY,
           MAX_DAY_RANGE,
-          `width: 100%; box-sizing: border-box; padding: 0 2rem;`,
+          `width: 100%; box-sizing: border-box; padding: 0 ${GAP_1X}rem;`,
         ),
       ).body,
       assign(
@@ -169,22 +173,22 @@ export class StatsPage extends EventEmitter {
         DateRangeInput.create(
           DateType.MONTH,
           MAX_MONTH_RANGE,
-          `width: 100%; box-sizing: border-box; padding: 0 2rem;`,
+          `width: 100%; box-sizing: border-box; padding: 0 ${GAP_1X}rem;`,
         ),
       ).body,
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
       }),
       E.divRef(this.updateFrequencyNote, {
         class: "usage-update-frequency-note",
-        style: `align-self: flex-end; box-sizing: border-box; padding: 0 2rem; font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+        style: `align-self: flex-end; box-sizing: border-box; padding: 0 ${GAP_1X}rem; font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
       }),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.divRef(this.resultList, {
         class: "stats-page-result-list",
-        style: `width: 100%; box-sizing: border-box; padding: 0 2rem; display: flex; flex-flow: column nowrap; gap: 1.5rem;`,
+        style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_1X}rem; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
       }),
     );
 
@@ -341,7 +345,7 @@ export class StatsPage extends EventEmitter {
         E.div(
           {
             class: "stats-page-no-activities",
-            style: `width: 100%; text-align: center; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `width: 100%; text-align: center; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.noActivities),
         ),
@@ -545,7 +549,7 @@ export class StatsPage extends EventEmitter {
       E.div(
         {
           class: "stats-page-invalid-range",
-          style: `width: 100%; text-align: center; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          style: `width: 100%; text-align: center; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(LOCALIZED_TEXT.invaliRange),
       ),

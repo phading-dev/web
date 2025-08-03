@@ -5,7 +5,16 @@ import {
   OptionPill,
   RadioOptionsGroup,
 } from "../../../../common/option_buttons";
-import { FONT_M, FONT_WEIGHT_600 } from "../../../../common/sizes";
+import {
+  BORDER_WIDTH_2,
+  FONT_M,
+  FONT_WEIGHT_600,
+  GAP_1X,
+  GAP_2X,
+  GAP_d_5X,
+  LINE_HEIGHT_FOR_BUTTON_M,
+  LINE_HEIGHT_M,
+} from "../../../../common/sizes";
 import {
   DENSITY_RANGE,
   FONT_SIZE_RANGE,
@@ -28,12 +37,12 @@ function eSection(
   return E.div(
     {
       class: "settings-panel-section",
-      style: `display: flex; flex-flow: column nowrap; gap: 2rem;`,
+      style: `display: flex; flex-flow: column nowrap; gap: ${GAP_1X}rem;`,
     },
     E.div(
       {
         class: "settings-panel-section-title",
-        style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+        style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
       },
       E.text(title),
     ),
@@ -48,12 +57,12 @@ function eRadioOptionsLine(
   return E.div(
     {
       class: "settings-panel-comment-overlay-options-line",
-      style: `display: flex; flex-flow: row wrap; column-gap: 1.5rem; row-gap: 1rem; align-items: center; justify-content: flex-end;`,
+      style: `display: flex; flex-flow: row wrap; gap: ${GAP_d_5X}rem; align-items: flex-start; justify-content: flex-end;`,
     },
     E.div(
       {
         class: "settings-panel-comment-overlay-options-label",
-        style: `flex: 1 0 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        style: `flex: 1 0 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_FOR_BUTTON_M + BORDER_WIDTH_2 * 2}rem; color: ${SCHEME.neutral0};`,
       },
       E.text(label),
     ),
@@ -70,7 +79,7 @@ function eSingleInputLine(label: string, element: HTMLElement): HTMLDivElement {
     E.div(
       {
         class: "settings-panel-comment-overlay-single-input-label",
-        style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
       },
       E.text(label),
     ),
@@ -124,7 +133,7 @@ export class SettingsPanel extends EventEmitter {
     this.body = E.div(
       {
         class: "settings-panel",
-        style: `flex-flow: column nowrap; gap: 2rem; ${customeStyle}`,
+        style: `flex-flow: column nowrap; gap: ${GAP_2X}rem; padding-bottom: ${GAP_2X}rem; ${customeStyle}`,
       },
       eSection(
         LOCALIZED_TEXT.videoPlayGeneralSettingsLabel,
@@ -135,7 +144,7 @@ export class SettingsPanel extends EventEmitter {
             E.divRef(
               this.subtitleOptionsNotAvailable,
               {
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_FOR_BUTTON_M + BORDER_WIDTH_2 * 2}rem; color: ${SCHEME.neutral1};`,
               },
               E.text(LOCALIZED_TEXT.subtitleOptionsNotAvailable),
             ),
@@ -148,7 +157,7 @@ export class SettingsPanel extends EventEmitter {
             E.divRef(
               this.audioOptionsNotAvailable,
               {
-                style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral1};`,
+                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_FOR_BUTTON_M + BORDER_WIDTH_2 * 2}rem; color: ${SCHEME.neutral1};`,
               },
               E.text(LOCALIZED_TEXT.audioOptionsNotAvailable),
             ),

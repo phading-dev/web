@@ -2,6 +2,7 @@ import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import { eFullPage } from "../../../common/page_elements";
 import { ScrollLoadingSection } from "../../../common/scroll_loading_section";
+import { GAP_1X } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
   eContainerTitle,
@@ -40,11 +41,11 @@ export class ListTopRatedPage extends EventEmitter {
     this.body = eFullPage(
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       eContainerTitle(LOCALIZED_TEXT.topRatedTitle),
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       eSeasonItemContainerRef(this.contentContainer),
       assign(this.loadingSection, new ScrollLoadingSection()).body,

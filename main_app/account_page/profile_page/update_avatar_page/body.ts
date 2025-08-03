@@ -1,20 +1,31 @@
 import EventEmitter = require("events");
-import { FilledBlockingButton } from "../../../../common/blocking_button";
+import {
+  BlockingButton,
+  FilledButton,
+  IconButton,
+  createBackButton,
+} from "../../../../common/button";
 import { SCHEME } from "../../../../common/color_scheme";
 import { FileDropZone } from "../../../../common/file_drop_zone";
 import { formatBytesShort } from "../../../../common/formatter/quantity";
-import {
-  SimpleIconButton,
-  createBackButton,
-} from "../../../../common/icon_button";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
-  PAGE_MAX_WIDTH_M,
   eFormTitle,
   ePageWithCenterForm,
 } from "../../../../common/page_elements";
-import { AVATAR_M, AVATAR_S, FONT_M } from "../../../../common/sizes";
+import {
+  AVATAR_M,
+  AVATAR_S,
+  BORDER_WIDTH_1,
+  FONT_M,
+  GAP_1X,
+  GAP_2X,
+  GAP_d_25X,
+  GAP_d_5X,
+  LINE_HEIGHT_M,
+  PAGE_MAX_WIDTH_M,
+} from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { MAX_AVATAR_SIZE } from "@phading/constants/account";
 import { AccountAndUser } from "@phading/user_service_interface/web/self/account";
@@ -36,12 +47,12 @@ export class UpdateAvatarPage extends EventEmitter {
 
   public body: HTMLDivElement;
   private card = new Ref<HTMLFormElement>();
-  public backButton = new Ref<SimpleIconButton>();
+  public backButton = new Ref<IconButton>();
   public fileDropZone = new Ref<FileDropZone>();
   private loadErrorText = new Ref<HTMLDivElement>();
   private previewMediumImage = new Ref<HTMLImageElement>();
   private previewSmallImage = new Ref<HTMLImageElement>();
-  public uploadButton = new Ref<FilledBlockingButton>();
+  public uploadButton = new Ref<BlockingButton>();
   private uploadStatusText = new Ref<HTMLDivElement>();
   private loadIndex = 0;
   private file: File;
@@ -59,47 +70,40 @@ export class UpdateAvatarPage extends EventEmitter {
       assign(this.backButton, createBackButton()).body,
       eFormTitle(LOCALIZED_TEXT.updateAvatarTitle),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       assign(this.fileDropZone, new FileDropZone("width: 100%;")).body,
-      E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+      E.divRef(this.loadErrorText, {
+        class: "update-avatar-image-load-error",
+        style: `display: none; margin-top: ${GAP_d_25X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
       }),
-      E.divRef(
-        this.loadErrorText,
-        {
-          class: "update-avatar-image-load-error",
-          style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
-        },
-        E.text("1"),
-      ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.div(
         {
           class: "update-avatar-preview-label",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(LOCALIZED_TEXT.previewAvatarLabel),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       E.div(
         {
           class: "update-avatar-preview-line",
-          style: `display: flex; flex-flow: row nowrap; width: 100%; justify-content: center; align-items: flex-end; gap: 5rem;`,
+          style: `display: flex; flex-flow: row nowrap; width: 100%; justify-content: space-evenly; align-items: flex-end; gap: ${GAP_1X}rem;`,
         },
         E.div(
           {
             class: "update-avatar-preview-medium-container",
-            style: `display: flex; flex-flow: column nowrap; align-items: center; gap: 2rem;`,
+            style: `display: flex; flex-flow: column nowrap; align-items: center; gap: ${GAP_1X}rem;`,
           },
           E.div(
             {
               class: "update-avatar-preview-medium-cap",
-              style: `position: relative; width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: ${AVATAR_M}rem; border: .1rem solid ${SCHEME.neutral1}; overflow: hidden;`,
+              style: `position: relative; width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: ${AVATAR_M}rem; border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; overflow: hidden;`,
             },
             E.imageRef(this.previewMediumImage, {
               class: "update-avatar-preview-medium-image",
@@ -109,9 +113,9 @@ export class UpdateAvatarPage extends EventEmitter {
           E.div(
             {
               class: "update-avatar-preview-medium-label",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
-            E.text(`${AVATAR_M * 10} x ${AVATAR_M * 10}`),
+            E.text(`${AVATAR_M * 16} x ${AVATAR_M * 16}`),
           ),
         ),
         E.div(
@@ -132,42 +136,35 @@ export class UpdateAvatarPage extends EventEmitter {
           E.div(
             {
               class: "update-avatar-preview-small-label",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
-            E.text(`${AVATAR_S * 10} x ${AVATAR_S * 10}`),
+            E.text(`${AVATAR_S * 16} x ${AVATAR_S * 16}`),
           ),
         ),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
+      }),
+      E.divRef(this.uploadStatusText, {
+        class: "update-avatar-upload-status-text",
+        style: `display: none; margin-bottom: ${GAP_d_5X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
       }),
       assign(
         this.uploadButton,
-        new FilledBlockingButton("")
-          .append(E.text(LOCALIZED_TEXT.uploadAvatarLabel))
-          .disable(),
+        new BlockingButton(
+          new FilledButton("width: 100%;").append(E.text(LOCALIZED_TEXT.uploadAvatarLabel)),
+        ).disable(),
       ).body,
-      E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
-      }),
-      E.divRef(
-        this.uploadStatusText,
-        {
-          class: "update-avatar-upload-status-text",
-          style: `visibility: hidden; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
-        },
-        E.text("1"),
-      ),
     );
     if (account.avatarLargeUrl) {
       this.previewMediumImage.val.src = account.avatarLargeUrl;
       this.previewSmallImage.val.src = account.avatarLargeUrl;
     }
-    this.backButton.val.on("action", () => this.emit("back"));
+    this.backButton.val.addAction(() => this.emit("back"));
     this.fileDropZone.val.on("select", (file) => this.previewImage(file));
     this.uploadButton.val.addAction(
       () => this.uploadAvatar(),
-      (response, error) => this.postUploadAvatar(error),
+      (error) => this.postUploadAvatar(error),
     );
   }
 
@@ -175,10 +172,10 @@ export class UpdateAvatarPage extends EventEmitter {
     this.loadIndex++;
     let loadIndex = this.loadIndex;
 
-    this.loadErrorText.val.style.visibility = "hidden";
+    this.loadErrorText.val.style.display = "none";
     this.uploadButton.val.disable();
     if (file.size > this.maxAvatarSize) {
-      this.loadErrorText.val.style.visibility = "visible";
+      this.loadErrorText.val.style.display = "block";
       this.loadErrorText.val.textContent = `${LOCALIZED_TEXT.fileSizeTooLarge[0]}${formatBytesShort(this.maxAvatarSize)}${LOCALIZED_TEXT.fileSizeTooLarge[1]}`;
       return;
     }
@@ -209,7 +206,7 @@ export class UpdateAvatarPage extends EventEmitter {
         return;
       }
       console.error("Error loading image file:", error);
-      this.loadErrorText.val.style.visibility = "visible";
+      this.loadErrorText.val.style.display = "block";
       this.loadErrorText.val.textContent = LOCALIZED_TEXT.loadImageError;
       this.emit("imageLoaded");
       return;
@@ -226,7 +223,7 @@ export class UpdateAvatarPage extends EventEmitter {
   }
 
   private async uploadAvatar(): Promise<void> {
-    this.uploadStatusText.val.style.visibility = "hidden";
+    this.uploadStatusText.val.style.display = "none";
     await this.serviceClient.send(newUploadAccountAvatarRequest(this.file));
   }
 
@@ -234,7 +231,7 @@ export class UpdateAvatarPage extends EventEmitter {
     if (error) {
       console.error(error);
       this.uploadStatusText.val.textContent = LOCALIZED_TEXT.uploadAvatarError;
-      this.uploadStatusText.val.style.visibility = "visible";
+      this.uploadStatusText.val.style.display = "block";
     } else {
       this.emit("back");
     }

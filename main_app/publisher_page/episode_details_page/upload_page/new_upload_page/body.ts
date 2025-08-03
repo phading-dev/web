@@ -1,14 +1,21 @@
 import EventEmitter = require("events");
+import { IconButton } from "../../../../../common/button";
 import { SCHEME } from "../../../../../common/color_scheme";
 import { FileDropZone } from "../../../../../common/file_drop_zone";
 import {
   formatStoragePrice,
   formatUploadPrice,
 } from "../../../../../common/formatter/price";
-import { SimpleIconButton } from "../../../../../common/icon_button";
 import { createQuestionMarkIcon } from "../../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
-import { FONT_M, ICON_BUTTON_M, ICON_L } from "../../../../../common/sizes";
+import {
+  FONT_M,
+  GAP_2X,
+  GAP_d_25X,
+  ICON_BUTTON_M,
+  ICON_L,
+  LINE_HEIGHT_M,
+} from "../../../../../common/sizes";
 import { ePage } from "../common/elements";
 import { fileTypesToString } from "../common/file_types_to_string";
 import {
@@ -30,7 +37,7 @@ export class NewUploadPage extends EventEmitter {
   }
 
   public body: HTMLDivElement;
-  public backButton = new Ref<SimpleIconButton>();
+  public backButton = new Ref<IconButton>();
   public fileDropZone = new Ref<FileDropZone>();
   private errorMessage = new Ref<HTMLDivElement>();
   public videoQuestionMark = new Ref<HTMLDivElement>();
@@ -49,20 +56,20 @@ export class NewUploadPage extends EventEmitter {
       this.backButton,
       LOCALIZED_TEXT.startNewUploadTitle,
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       assign(this.fileDropZone, new FileDropZone()).body,
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
       }),
       E.divRef(this.errorMessage, {
         class: "upload-page-drop-zone-error-message",
-        style: `display: none; margin-bottom: .5rem; font-size: ${FONT_M}rem; color: ${SCHEME.error0};`,
+        style: `display: none; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
       }),
       E.div(
         {
           class: "upload-page-drop-zone-instructions",
-          style: `display: flex; flex-flow: row wrap; align-items: center; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          style: `display: flex; flex-flow: row wrap; align-items: center; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(LOCALIZED_TEXT.newUploadInstructions[0]),
         E.divRef(
@@ -97,12 +104,12 @@ export class NewUploadPage extends EventEmitter {
         this.videoTip,
         {
           class: "upload-page-drop-zone-video-tip",
-          style: `margin-top: .5rem; flex-flow: column nowrap; gap: .5rem;`,
+          style: `flex-flow: column nowrap;`,
         },
         E.div(
           {
             class: "upload-page-drop-zone-video-tip-text1",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(
             `${LOCALIZED_TEXT.videoFileTipOne[0]}${fileTypesToString(
@@ -113,21 +120,21 @@ export class NewUploadPage extends EventEmitter {
         E.div(
           {
             class: "upload-page-drop-zone-video-tip-text2",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.videoFileTipTwo),
         ),
         E.div(
           {
             class: "upload-page-drop-zone-video-tip-text3",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.videoFileTipThree),
         ),
         E.div(
           {
             class: "upload-page-drop-zone-video-tip-text4",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.videoFileTipFour),
         ),
@@ -136,12 +143,12 @@ export class NewUploadPage extends EventEmitter {
         this.audioTip,
         {
           class: "upload-page-drop-zone-audio-tip",
-          style: `margin-top: .5rem; flex-flow: column nowrap; gap: .5rem;`,
+          style: `flex-flow: column nowrap;`,
         },
         E.div(
           {
             class: "upload-page-drop-zone-audio-tip-text1",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(
             `${LOCALIZED_TEXT.audioFileTipOne[0]}${fileTypesToString(
@@ -152,14 +159,14 @@ export class NewUploadPage extends EventEmitter {
         E.div(
           {
             class: "upload-page-drop-zone-audio-tip-text2",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.audioFileTipTwo),
         ),
         E.div(
           {
             class: "upload-page-drop-zone-audio-tip-text3",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.audioFileTipThree),
         ),
@@ -168,12 +175,12 @@ export class NewUploadPage extends EventEmitter {
         this.subtitlesTip,
         {
           class: "upload-page-drop-zone-subtitles-tip",
-          style: `margin-top: .5rem; flex-flow: column nowrap; gap: .5rem;`,
+          style: `flex-flow: column nowrap;`,
         },
         E.div(
           {
             class: "upload-page-drop-zone-subtitles-tip-text1",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(
             `${LOCALIZED_TEXT.subtitlesFileTipOne[0]}${fileTypesToString(Array.from(ACCEPTED_SUBTITLE_ZIP_TYPES))}${LOCALIZED_TEXT.subtitlesFileTipOne[1]}`,
@@ -182,24 +189,24 @@ export class NewUploadPage extends EventEmitter {
         E.div(
           {
             class: "upload-page-drop-zone-subtitles-tip-text1",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.subtitlesFileTipTwo),
         ),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.div(
         {
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(
           `${LOCALIZED_TEXT.uploadPricing[0]}${formatUploadPrice(this.getNowDate())}${LOCALIZED_TEXT.uploadPricing[1]}${formatStoragePrice(this.getNowDate())}${LOCALIZED_TEXT.uploadPricing[2]}`,
         ),
       ),
     );
-    this.backButton.val.on("action", () => this.emit("back"));
+    this.backButton.val.addAction(() => this.emit("back"));
     this.fileDropZone.val.on("select", (file) => this.emit("upload", file));
     if (error) {
       this.errorMessage.val.textContent = error;

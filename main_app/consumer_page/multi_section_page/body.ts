@@ -2,6 +2,7 @@ import EventEmitter = require("events");
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../common/navigation_bar";
 import { eFullPage } from "../../../common/page_elements";
+import { GAP_1X, GAP_2X } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import {
   eContainerTitleClickableRef,
@@ -51,7 +52,7 @@ export class MultiSectionPage extends EventEmitter {
     this.body = eFullPage(
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
     );
     this.load();
@@ -90,11 +91,11 @@ export class MultiSectionPage extends EventEmitter {
               LOCALIZED_TEXT.continueWatchingTitle,
             ),
             E.div({
-              style: `flex: 0 0 auto; height: 1rem;`,
+              style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
             }),
             eContinueEpisodeItemContainerRef(continueWatchingContent),
             E.div({
-              style: `flex: 0 0 auto; height: 2rem;`,
+              style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
             }),
           ]
         : []),
@@ -103,18 +104,18 @@ export class MultiSectionPage extends EventEmitter {
         LOCALIZED_TEXT.recentPremieresTitle,
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       eSeasonItemContainerRef(recentPremieresContent),
       E.div({
-        style: `flex: 0 0 auto; height: 2rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       eContainerTitleClickableRef(
         this.topRatedButton,
         LOCALIZED_TEXT.topRatedTitle,
       ),
       E.div({
-        style: `flex: 0 0 auto; height: 1rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
       eSeasonItemContainerRef(topRatedContent),
     );

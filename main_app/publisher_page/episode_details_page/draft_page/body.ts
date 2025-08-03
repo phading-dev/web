@@ -75,9 +75,10 @@ export class DraftPage extends EventEmitter {
     this.inputFormPage = new InputFormPage<
       PublishEpisodeResponse,
       DeleteEpisodeResponse
-    >(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    >({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.draftEpisodeTitle),
         ...(errors.length > 0
           ? [assign(this.errorInput, new ErrorInput(errors.join(" "))).body]
@@ -94,28 +95,25 @@ export class DraftPage extends EventEmitter {
             (value) => this.validatePremiereTimeAndTake(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.publishButtonLabel,
-    )
-      .addBackButton()
-      .on("back", () => this.emit("back"))
-      .addPrimaryAction(
-        () => this.publish(),
-        (response, error) => this.postPublish(error),
       )
-      .on("handlePrimarySuccess", () => this.emit("back"))
-      .on("primaryDone", () => this.emit("published"))
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.publishButtonLabel,
+        () => this.publish(),
+        (error) => this.postPublish(error),
+      )
       .addSecondaryButton(
         LOCALIZED_TEXT.deleteButtonLabel,
         () => this.delete(),
-        (response, error) => this.postDelete(error),
+        (error) => this.postDelete(error),
       )
-      .on("handleSecondarySuccess", () => this.emit("delete"))
-      .on("secondaryDone", () => this.emit("deleted"))
+      .addBackButton()
       .addInputs(
         ...(this.errorInput.val ? [this.errorInput.val] : []),
         this.premiereTimeInput.val,
-      );
+      )
+      .on("back", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("published"))
+      .on("secondaryDone", () => this.emit("deleted"));
   }
 
   private validatePremiereTimeAndTake(value: string): ValidationResult {
@@ -145,6 +143,7 @@ export class DraftPage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.publishEpisodeGenericError;
     } else {
+      this.emit("back");
       return "";
     }
   }
@@ -162,6 +161,7 @@ export class DraftPage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.deleteGenericError;
     } else {
+      this.emit("delete");
       return "";
     }
   }

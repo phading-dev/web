@@ -1,7 +1,15 @@
 import EventEmitter = require("events");
 import { SCHEME } from "./color_scheme";
 import { TabSwitcher } from "./page_navigator";
-import { FONT_M, LINE_HEIGHT_M } from "./sizes";
+import {
+  BORDER_WIDTH_2,
+  FONT_M,
+  FONT_WEIGHT_600,
+  GAP_d_5X,
+  GAP_d_75X,
+  LINE_HEIGHT_FOR_BUTTON_M,
+  LINE_HEIGHT_M,
+} from "./sizes";
 import { E } from "@selfage/element/factory";
 
 interface OptionButton<ValueType> {
@@ -31,11 +39,11 @@ export class OptionPill<ValueType>
     this.body = E.div(
       {
         class: "option-pill-button",
-        style: `flex: 0 0 auto; font-size: ${FONT_M}rem; border-radius: ${LINE_HEIGHT_M}rem; padding: .6rem 1.2rem; border: .2rem solid; cursor: pointer; ${customStyle}`,
+        style: `flex: 0 0 auto; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_FOR_BUTTON_M}rem; border-radius: ${LINE_HEIGHT_FOR_BUTTON_M}rem; padding: 0 ${GAP_d_75X}rem; border: ${BORDER_WIDTH_2}rem solid; ${customStyle}`,
       },
       E.text(label),
     );
-
+    this.enable();
     this.lowlight();
     this.body.addEventListener("click", () => this.emit("select", this.value));
   }
@@ -45,14 +53,28 @@ export class OptionPill<ValueType>
   }
 
   public highlight(): this {
-    this.body.style.color = SCHEME.primary0;
+    this.body.style.color = SCHEME.primaryContrast0;
     this.body.style.borderColor = SCHEME.primary1;
+    this.body.style.backgroundColor = SCHEME.primary1;
     return this;
   }
 
   public lowlight(): this {
     this.body.style.color = SCHEME.neutral0;
     this.body.style.borderColor = SCHEME.neutral1;
+    this.body.style.backgroundColor = "transparent";
+    return this;
+  }
+
+  public enable(): this {
+    this.body.style.pointerEvents = "auto";
+    this.body.style.cursor = "pointer";
+    return this;
+  }
+
+  public disable(): this {
+    this.body.style.pointerEvents = "none";
+    this.body.style.cursor = "not-allowed";
     return this;
   }
 
@@ -76,7 +98,7 @@ export class OptionTab<ValueType>
     this.body = E.div(
       {
         class: "option-tab-button",
-        style: `flex: 0 0 auto; display: flex; justify-content: center; font-size: ${FONT_M}rem; padding: .8rem 1.2rem .7rem 1.2rem; cursor: pointer; border-bottom: .1rem solid; ${customStyle}`,
+        style: `flex: 0 0 auto; display: flex; justify-content: center; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem; padding: ${GAP_d_5X}rem ${GAP_d_75X}rem; cursor: pointer; border-bottom: ${BORDER_WIDTH_2}rem solid; ${customStyle}`,
       },
       E.text(label),
     );

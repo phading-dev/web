@@ -25,7 +25,7 @@ TEST_RUNNER.run({
         // Execute
         await setTabletView();
         this.container = E.div({
-          style: `width: 100%; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: row nowrap; gap: 1rem;`,
+          style: `width: 100%; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: row nowrap; gap: 10px;`,
         });
         document.body.append(this.container);
         let walkOption = new OptionPill("Walk", ValueType.WALK);
@@ -91,8 +91,8 @@ TEST_RUNNER.run({
           style: `width: 100%; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: row nowrap;`,
         });
         document.body.append(this.container);
-        let walkOption = new OptionTab("Walk", ValueType.WALK, "width: 10rem;");
-        let runOption = new OptionTab("Run", ValueType.RUN, "width: 10rem;");
+        let walkOption = new OptionTab("Walk", ValueType.WALK, "width: 100px;");
+        let runOption = new OptionTab("Run", ValueType.RUN, "width: 100px;");
 
         // Execute
         this.container.append(walkOption.body, runOption.body);

@@ -1,8 +1,8 @@
 import EventEmitter = require("events");
 import { SCHEME } from "./color_scheme";
-import { BASIC_INPUT_STYLE } from "./input_styles";
+import { COMMON_BASIC_INPUT_STYLE } from "./input_styles";
 import { LOCALIZED_TEXT } from "./locales/localized_text";
-import { DATE_INPUT_WIDTH, FONT_M } from "./sizes";
+import { DATE_INPUT_WIDTH, FONT_M, GAP_1_d_5X, GAP_d_75X, LINE_HEIGHT_M } from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 import { TzDate } from "@selfage/tz_date";
@@ -45,41 +45,41 @@ export class DateRangeInput extends EventEmitter {
     this.body = E.div(
       {
         class: "date-range-inputs",
-        style: `flex-flow: row wrap; align-items: center; justify-content: flex-end; column-gap: 2rem; row-gap: .5rem; ${customStyle}`,
+        style: `flex-flow: row wrap; align-items: center; justify-content: flex-end; column-gap: ${GAP_1_d_5X}rem; row-gap: ${GAP_d_75X}rem; ${customStyle}`,
       },
       E.div(
         {
           class: "statements-page-start-range-input-container",
-          style: `display: flex; flex-flow: row wrap; align-items: center; gap: 2rem;`,
+          style: `display: flex; flex-flow: row wrap; align-items: center; gap: ${GAP_1_d_5X}rem;`,
         },
         E.div(
           {
             class: "statements-page-start-range-input-label",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.rangeStart),
         ),
         E.inputRef(this.startRangeInput, {
           class: "statements-page-start-range-input",
-          style: `${BASIC_INPUT_STYLE} width: ${DATE_INPUT_WIDTH}rem;`,
+          style: `${COMMON_BASIC_INPUT_STYLE} border-color: ${SCHEME.neutral1}; width: ${DATE_INPUT_WIDTH}rem;`,
           type: typeString,
         }),
       ),
       E.div(
         {
           class: "statements-page-end-range-input-container",
-          style: `display: flex; flex-flow: row wrap; align-items: center; gap: 2rem;`,
+          style: `display: flex; flex-flow: row wrap; align-items: center; gap: ${GAP_1_d_5X}rem;`,
         },
         E.div(
           {
             class: "statements-page-end-range-input-label",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(LOCALIZED_TEXT.rangeEnd),
         ),
         E.inputRef(this.endRangeInput, {
           class: "statements-page-end-range-input",
-          style: `${BASIC_INPUT_STYLE} width: ${DATE_INPUT_WIDTH}rem;`,
+          style: `${COMMON_BASIC_INPUT_STYLE} border-color: ${SCHEME.neutral1}; width: ${DATE_INPUT_WIDTH}rem;`,
           type: typeString,
         }),
       ),

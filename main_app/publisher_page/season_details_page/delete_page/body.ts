@@ -6,7 +6,7 @@ import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_i
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import { eFormTitle } from "../../../../common/page_elements";
-import { FONT_M, FONT_WEIGHT_600 } from "../../../../common/sizes";
+import { FONT_M, FONT_WEIGHT_600, GAP_1X } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { MIN_GRADE_EFFECTIVE_GAP_DAY } from "@phading/constants/show";
 import { newDeleteSeasonRequest } from "@phading/product_service_interface/show/web/publisher/client";
@@ -34,39 +34,46 @@ export class DeletePage extends EventEmitter {
     public seasonId: string,
   ) {
     super();
-    this.inputFormPage = new InputFormPage<DeleteSeasonResponse>(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    this.inputFormPage = new InputFormPage<DeleteSeasonResponse>({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.seasonDraftStateTitle),
         E.div(
           {
-            class: "draft-state-page-footer",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            class: "draft-state-page-descriptions",
+            style: `display: flex; flex-flow: column nowrap; gap: ${GAP_1X}rem;`,
           },
-          E.text(LOCALIZED_TEXT.seasonStateDraftFooter),
-        ),
-        E.div(
-          {
-            class: "draft-state-page-description",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-          },
-          E.text(LOCALIZED_TEXT.seasonDraftStateDescription[0]),
           E.div(
             {
-              style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+              class: "draft-state-page-description-1",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
             },
-            E.text(
-              `${MIN_GRADE_EFFECTIVE_GAP_DAY}${LOCALIZED_TEXT.seasonDraftStateDescription[1]}`,
+            E.text(LOCALIZED_TEXT.seasonStateDraftFooter),
+          ),
+          E.div(
+            {
+              class: "draft-state-page-description-2",
+              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.seasonDraftStateDescription[0]),
+            E.div(
+              {
+                style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+              },
+              E.text(
+                `${MIN_GRADE_EFFECTIVE_GAP_DAY}${LOCALIZED_TEXT.seasonDraftStateDescription[1]}`,
+              ),
             ),
+            E.text(LOCALIZED_TEXT.seasonDraftStateDescription[2]),
+            E.div(
+              {
+                style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+              },
+              E.text(LOCALIZED_TEXT.seasonDraftStateDescription[3]),
+            ),
+            E.text(LOCALIZED_TEXT.seasonDraftStateDescription[4]),
           ),
-          E.text(LOCALIZED_TEXT.seasonDraftStateDescription[2]),
-          E.div(
-            {
-              style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
-            },
-            E.text(LOCALIZED_TEXT.seasonDraftStateDescription[3]),
-          ),
-          E.text(LOCALIZED_TEXT.seasonDraftStateDescription[4]),
         ),
         assign(
           this.seasonIdInput,
@@ -79,18 +86,16 @@ export class DeletePage extends EventEmitter {
             (value) => this.validateId(value),
           ),
         ).body,
-      ],
-      LOCALIZED_TEXT.deleteButtonLabel,
-    )
-      .addBackButton()
-      .on("back", () => this.emit("back"))
-      .addPrimaryAction(
-        () => this.delete(),
-        (response, error) => this.postDelete(error),
       )
-      .on("handlePrimarySuccess", () => this.emit("delete"))
-      .on("primaryDone", () => this.emit("deleted"))
-      .addInputs(this.seasonIdInput.val);
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.deleteButtonLabel,
+        () => this.delete(),
+        (error) => this.postDelete(error),
+      )
+      .addBackButton()
+      .addInputs(this.seasonIdInput.val)
+      .on("back", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("deleted"));
   }
 
   private validateId(value: string): ValidationResult {
@@ -117,6 +122,7 @@ export class DeletePage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.deleteGenericError;
     } else {
+      this.emit("delete");
       return "";
     }
   }

@@ -1,18 +1,15 @@
+import { IconButton, createBackButton } from "../../../../../common/button";
 import { SCHEME } from "../../../../../common/color_scheme";
-import {
-  SimpleIconButton,
-  createBackButton,
-} from "../../../../../common/icon_button";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../../common/navigation_bar";
 import {
-  PAGE_MAX_WIDTH_M,
   eFormTitle,
   ePageWithCenterForm,
 } from "../../../../../common/page_elements";
+import { PAGE_MAX_WIDTH_M } from "../../../../../common/sizes";
 import { Ref, assign } from "@selfage/ref";
 
 export function ePage(
-  backButton: Ref<SimpleIconButton>,
+  backButton: Ref<IconButton>,
   title: string,
   ...children: Array<HTMLElement>
 ): HTMLDivElement {

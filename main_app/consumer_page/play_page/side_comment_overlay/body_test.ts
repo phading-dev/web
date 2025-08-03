@@ -46,7 +46,7 @@ TEST_RUNNER.run({
   environment: {
     setUp() {
       container = E.div({
-        style: `width: 60rem; height: 40rem; background-color: white;`,
+        style: `width: 600px; height: 400px; background-color: white;`,
       });
       document.body.append(container);
     },
@@ -69,7 +69,7 @@ TEST_RUNNER.run({
 
         // Execute
         container.append(this.cut.body);
-        this.cut.add(createMultipleComments(commentCount, 4));
+        this.cut.add(createMultipleComments(commentCount, 3));
 
         // Verify
         await asyncAssertScreenshot(
@@ -82,7 +82,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.add(createMultipleComments(commentCount, 6));
+        this.cut.add(createMultipleComments(commentCount, 5));
 
         // Verify
         await asyncAssertScreenshot(
@@ -96,8 +96,8 @@ TEST_RUNNER.run({
             "/side_comment_overlay_comments_overflowed_diff.png",
           ),
         );
-        // Neesd to wait for the animation to finish.
-        assertThat(this.cut.body.children.length, eq(4), "comments left");
+        // Needs to wait for the animation to finish.
+        assertThat(this.cut.body.children.length, eq(3), "comments left");
       }
       public async tearDown() {
         this.cut.remove();
@@ -151,10 +151,10 @@ TEST_RUNNER.run({
             "/side_comment_overlay_updated_settings_diff.png",
           ),
         );
-        // Neesd to wait for the animation to finish.
+        // Needs to wait for the animation to finish.
         assertThat(
           this.cut.body.children.length,
-          eq(3),
+          eq(2),
           "comments left after update",
         );
       }

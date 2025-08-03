@@ -1,12 +1,19 @@
 import { SCHEME } from "../../../common/color_scheme";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { FONT_M, FONT_S } from "../../../common/sizes";
+import {
+  BORDER_RADIUS_S,
+  BORDER_WIDTH_1,
+  FONT_M,
+  FONT_S,
+  GAP_1X,
+  GAP_d_5X,
+} from "../../../common/sizes";
 import { getCardBrandName } from ".//card_brand_name";
 import { createCardBrandIcon } from "./card_brand_icons";
 import { PaymentMethodMasked } from "@phading/commerce_service_interface/web/payment/payment_method_masked";
 import { E } from "@selfage/element/factory";
 
-let CARD_BORDER_RADIUS = ".3rem";
+let CARD_ICON_WIDTH = 4.5; // rem
 
 // A card-like UI component for card-type payment method.
 export class CardPaymentItem {
@@ -30,22 +37,22 @@ export class CardPaymentItem {
     this.body = E.div(
       {
         class: "card-payment-card",
-        style: `display: flex; flex-flow: row nowrap; width: 100%; box-sizing: border-box; padding: 2rem; border: .1rem solid ${SCHEME.neutral1}; border-radius: ${CARD_BORDER_RADIUS};`,
+        style: `display: flex; flex-flow: row nowrap; width: 100%; box-sizing: border-box; padding: ${GAP_1X}rem; border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; border-radius: ${BORDER_RADIUS_S}rem;`,
       },
       E.div(
         {
           class: "card-payment-card-brand-icon",
-          style: `flex: 0 0 auto; width: 7rem;`,
+          style: `flex: 0 0 auto; width: ${CARD_ICON_WIDTH}rem;`,
         },
         createCardBrandIcon(cardMasked.brand),
       ),
       E.div({
-        style: `flex: 0 0 auto; width: 1.5rem;`,
+        style: `flex: 0 0 auto; width: ${GAP_1X}rem;`,
       }),
       E.div(
         {
           class: "card-payment-card-details",
-          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
+          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
         },
         E.div(
           {
@@ -83,30 +90,30 @@ export class AddCardPaymentItem {
     this.body = E.div(
       {
         class: "card-payment-card",
-        style: `display: flex; flex-flow: row nowrap; width: 100%; box-sizing: border-box; padding: 2rem; border: .1rem solid ${SCHEME.neutral1}; border-radius: ${CARD_BORDER_RADIUS};`,
+        style: `display: flex; flex-flow: row nowrap; width: 100%; box-sizing: border-box; padding: ${GAP_1X}rem; border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; border-radius: ${BORDER_RADIUS_S}rem;`,
       },
       E.div(
         {
           class: "card-payment-card-brand-icon",
-          style: `flex: 0 0 auto; width: 7rem;`,
+          style: `flex: 0 0 auto; width: ${CARD_ICON_WIDTH}rem;`,
         },
         createCardBrandIcon(),
       ),
       E.div({
-        style: `flex: 0 0 auto; width: 1.5rem;`,
+        style: `flex: 0 0 auto; width: ${GAP_1X}rem;`,
       }),
       E.div(
         {
           class: "card-payment-card-details",
-          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: .5rem;`,
+          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
         },
         E.div({
           class: "card-payment-card-digits",
-          style: `height: 1rem; width: 10rem; background-color: ${SCHEME.neutral1}; margin: .5rem 0;`,
+          style: `height: ${FONT_M}rem; width: 7rem; background-color: ${SCHEME.neutral1};`,
         }),
         E.div({
           class: "card-payment-card-expiration",
-          style: `height: 1rem; width: 7rem; background-color: ${SCHEME.neutral1}; margin: .5rem 0;`,
+          style: `height: ${FONT_S}rem; width: 4rem; background-color: ${SCHEME.neutral1};`,
         }),
       ),
     );

@@ -10,7 +10,7 @@ import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_i
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import { eFormTitle } from "../../../../common/page_elements";
-import { FONT_M } from "../../../../common/sizes";
+import { FONT_M, GAP_2X, LINE_HEIGHT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { eNewRateInputLabel } from "../common/elements";
 import { MAX_GRADE } from "@phading/constants/show";
@@ -56,9 +56,10 @@ export class UpdateDraftPricingPage extends EventEmitter {
     super();
     this.request.seasonId = seasonId;
 
-    this.inputFormPage = new InputFormPage(
-      `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
-      [
+    this.inputFormPage = new InputFormPage({
+      customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
+    })
+      .addLines(
         eFormTitle(LOCALIZED_TEXT.updateSeasonPricingTitle),
         assign(
           this.gradeInput,
@@ -77,12 +78,12 @@ export class UpdateDraftPricingPage extends EventEmitter {
         E.div(
           {
             class: "update-draft-pricing-preview-line",
-            style: `display: flex; flex-flow: row wrap; column-gap: 2rem; row-gap: 1rem;`,
+            style: `display: flex; flex-flow: row wrap; column-gap: ${GAP_2X}rem;`,
           },
           E.div(
             {
               class: "update-draft-pricing-new-rate",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.seasonNewRateLabel),
             E.textRef(this.pricingPreview),
@@ -90,24 +91,22 @@ export class UpdateDraftPricingPage extends EventEmitter {
           E.div(
             {
               class: "update-draft-pricing-net-rate",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(LOCALIZED_TEXT.seasonNewNetRateLabel),
             E.textRef(this.netPricingPreview),
           ),
         ),
-      ],
-      LOCALIZED_TEXT.updateButtonLabel,
-    )
-      .addBackButton()
-      .on("back", () => this.emit("back"))
-      .addPrimaryAction(
-        () => this.update(),
-        (response, error) => this.postUpdate(error),
       )
-      .on("handlePrimarySuccess", () => this.emit("back"))
-      .on("primaryDone", () => this.emit("updated"))
-      .addInputs(this.gradeInput.val);
+      .addButtonsContainerAndPrimaryButton(
+        LOCALIZED_TEXT.updateButtonLabel,
+        () => this.update(),
+        (error) => this.postUpdate(error),
+      )
+      .addBackButton()
+      .addInputs(this.gradeInput.val)
+      .on("back", () => this.emit("back"))
+      .on("primaryDone", () => this.emit("updated"));
   }
 
   private validateGradeAndPreviewAndTake(value: string): ValidationResult {
@@ -153,6 +152,7 @@ export class UpdateDraftPricingPage extends EventEmitter {
     if (error) {
       return LOCALIZED_TEXT.updateGenericError;
     } else {
+      this.emit("back");
       return "";
     }
   }

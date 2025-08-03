@@ -389,7 +389,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        window.scrollTo(0, 100);
+        window.scrollTo(0, 500);
 
         // Verify
         await asyncAssertScreenshot(
@@ -450,6 +450,9 @@ TEST_RUNNER.run({
           return {};
         };
 
+        // Prepare
+        window.scrollTo(0, 500);
+
         // Execute
         this.cut.ratingOneStarButton.val.click();
         await new Promise<void>((resolve) => this.cut.once("rated", resolve));
@@ -498,7 +501,7 @@ TEST_RUNNER.run({
           ),
           path.join(
             __dirname,
-            "./golden/watch_later_page_phone_1st_time_scrolled_to_bottom.png",
+            "./golden/watch_later_page_phone_1st_time_scrolled.png",
           ),
           path.join(
             __dirname,
@@ -571,7 +574,7 @@ TEST_RUNNER.run({
           ),
           path.join(
             __dirname,
-            "./golden/watch_later_page_phone_1st_time_scrolled_to_bottom.png",
+            "./golden/watch_later_page_phone_1st_time_scrolled.png",
           ),
           path.join(
             __dirname,
@@ -644,7 +647,7 @@ TEST_RUNNER.run({
           ),
           path.join(
             __dirname,
-            "./golden/watch_later_page_phone_1st_time_scrolled_to_bottom.png",
+            "./golden/watch_later_page_phone_1st_time_scrolled.png",
           ),
           path.join(
             __dirname,
@@ -717,7 +720,7 @@ TEST_RUNNER.run({
           ),
           path.join(
             __dirname,
-            "./golden/watch_later_page_phone_1st_time_scrolled_to_bottom.png",
+            "./golden/watch_later_page_phone_1st_time_scrolled.png",
           ),
           path.join(
             __dirname,
@@ -790,7 +793,7 @@ TEST_RUNNER.run({
           ),
           path.join(
             __dirname,
-            "./golden/watch_later_page_phone_1st_time_scrolled_to_bottom.png",
+            "./golden/watch_later_page_phone_1st_time_scrolled.png",
           ),
           path.join(
             __dirname,
@@ -874,7 +877,7 @@ TEST_RUNNER.run({
           ),
           path.join(
             __dirname,
-            "./golden/watch_later_page_phone_1st_time_scrolled_to_bottom.png",
+            "./golden/watch_later_page_phone_1st_time_scrolled.png",
           ),
           path.join(
             __dirname,
@@ -922,6 +925,7 @@ TEST_RUNNER.run({
         );
 
         // Prepare
+        window.scrollTo(0, document.body.scrollHeight);
         playSeasonId = undefined;
         playEpisodeId = undefined;
 
@@ -955,7 +959,7 @@ TEST_RUNNER.run({
           ),
           path.join(
             __dirname,
-            "./golden/watch_later_page_phone_1st_time_share_link_copied.png",
+            "./golden/watch_later_page_phone_1st_time_show_less_description.png",
           ),
           path.join(
             __dirname,

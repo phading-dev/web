@@ -1,10 +1,11 @@
 import { SCHEME } from "./color_scheme";
 import { E } from "@selfage/element/factory";
+import { FONT_XXXL } from "./sizes";
 
 export function createBrandIcon(): HTMLDivElement {
   return E.div(
     {
-      style: `align-self: center; display: flex; flex-flow: row nowrap; align-items: center; height: 4.5rem; font-size: 4.5rem; line-height: 1; color: ${SCHEME.neutral0};`,
+      style: `align-self: center; display: flex; flex-flow: row nowrap; align-items: center; height: ${FONT_XXXL}rem; font-size: ${FONT_XXXL}rem; line-height: 1; color: ${SCHEME.neutral0};`,
     },
     E.text("SEC"),
     createLogoIcon(SCHEME.logoBlue),

@@ -42,7 +42,7 @@ export class DarkScheme {
   get neutral1() {
     return GREY_85;
   }
-  // Disabled. Contrasted.
+  // Disabled. Placeholder. Contrasted.
   get neutral2() {
     return GREY_30;
   }
@@ -91,9 +91,6 @@ export class DarkScheme {
     return RED_50;
   }
   get anger() {
-    return RED_50;
-  }
-  get progress() {
     return RED_50;
   }
   get star() {
@@ -171,9 +168,6 @@ export class LightScheme {
     return RED_50;
   }
   get anger() {
-    return RED_50;
-  }
-  get progress() {
     return RED_50;
   }
   get star() {

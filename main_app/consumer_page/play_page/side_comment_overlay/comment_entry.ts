@@ -4,6 +4,7 @@ import { Comment } from "@phading/comment_service_interface/show/web/comment";
 import { CommentOverlaySettings } from "@phading/user_service_interface/web/self/video_player_settings";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
+import { BORDER_WIDTH_1, BORDER_WIDTH_2 } from "../../../../common/sizes";
 
 export class CommentEntry {
   public static create(
@@ -23,13 +24,13 @@ export class CommentEntry {
     this.body = E.div(
       {
         class: "comment-entry",
-        style: `position: relative; left: 100%; transition: left .2s; pointer-events: none; margin-bottom: .5rem;`,
+        style: `position: relative; left: 100%; transition: left .2s; padding-left: ${BORDER_WIDTH_2}rem; pointer-events: none;`,
       },
       E.divRef(
         this.content,
         {
           class: "comment-entry-content",
-          style: `color: ${SCHEME.neutral0}; text-shadow: -.1rem 0 .2rem ${SCHEME.neutral4}, 0 .1rem .2rem ${SCHEME.neutral4}, .1rem 0 .2rem ${SCHEME.neutral4}, 0 -.1rem .2rem ${SCHEME.neutral4};`,
+          style: `line-height: 1.2; color: ${SCHEME.neutral0}; text-shadow: -${BORDER_WIDTH_1}rem 0 ${BORDER_WIDTH_2}rem ${SCHEME.neutral4}, 0 ${BORDER_WIDTH_1}rem ${BORDER_WIDTH_2}rem ${SCHEME.neutral4}, ${BORDER_WIDTH_1}rem 0 ${BORDER_WIDTH_2}rem ${SCHEME.neutral4}, 0 -${BORDER_WIDTH_1}rem ${BORDER_WIDTH_2}rem ${SCHEME.neutral4};`,
         },
         E.text(comment.content),
       ),

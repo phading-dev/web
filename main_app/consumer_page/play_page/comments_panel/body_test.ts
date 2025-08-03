@@ -34,7 +34,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 35rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
+          style: `width: 350px; background-color: ${SCHEME.neutral4}; padding: 10px;`,
         });
         document.body.appendChild(this.container);
         let serviceClientMock = new WebServiceClientMock();
@@ -174,7 +174,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 60rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
+          style: `width: 600px; background-color: ${SCHEME.neutral4}; padding: 10px;`,
         });
         document.body.appendChild(this.container);
         let serviceClientMock = new WebServiceClientMock();

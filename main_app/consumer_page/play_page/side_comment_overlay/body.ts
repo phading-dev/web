@@ -14,7 +14,7 @@ export class SideCommentOverlay {
   public constructor(private settings: CommentOverlaySettings) {
     this.body = E.div({
       class: "side-comment-overlay",
-      style: `margin-left: auto; width: 100%; max-width: 30rem; height: 100%; overflow: hidden;`,
+      style: `margin-left: auto; width: 36%; max-width: 40rem; min-width: 10rem; height: 100%; overflow: hidden;`,
     });
   }
 

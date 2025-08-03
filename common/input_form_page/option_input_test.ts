@@ -8,6 +8,7 @@ import { E } from "@selfage/element/factory";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
 import { assertThat, eq } from "@selfage/test_matcher";
+import { mouseClick, mouseMove } from "@selfage/puppeteer_test_executor_api";
 
 normalizeBody();
 
@@ -54,10 +55,18 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        runOption.click();
+        cut.disable();
+        await mouseClick(110, 50);
 
         // Verify
-        assertThat(selectedValue, eq(ValueType.RUN), "selected value 2");
+        assertThat(selectedValue, eq(ValueType.WALK), "selected value after disable");
+
+        // Execute
+        cut.enable();
+        await mouseClick(110, 50);
+
+        // Verify
+        assertThat(selectedValue, eq(ValueType.RUN), "selected value after enable");
         await asyncAssertScreenshot(
           path.join(__dirname, "/option_input_select_second.png"),
           path.join(__dirname, "/golden/option_input_select_second.png"),
@@ -65,7 +74,8 @@ TEST_RUNNER.run({
           { fullPage: true },
         );
       }
-      public tearDown() {
+      public async tearDown() {
+        await mouseMove(-1, -1, 1)
         this.container.remove();
       }
     })(),

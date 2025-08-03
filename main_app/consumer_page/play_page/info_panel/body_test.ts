@@ -22,7 +22,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 35rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
+          style: `width: 350px; background-color: ${SCHEME.neutral4}; padding: 10px;`,
         });
         document.body.append(this.container);
         let cut = new InfoPanel(
@@ -101,7 +101,7 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.container.style.width = "60rem";
+        this.container.style.width = "600px";
 
         // Verify
         await asyncAssertScreenshot(
@@ -148,7 +148,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 35rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
+          style: `width: 350px; background-color: ${SCHEME.neutral4}; padding: 10px;`,
         });
         document.body.append(this.container);
         let cut = new InfoPanel(
@@ -189,7 +189,7 @@ TEST_RUNNER.run({
         // Prepare
         await setTabletView();
         this.container = E.div({
-          style: `width: 35rem; background-color: ${SCHEME.neutral4}; padding: 1rem;`,
+          style: `width: 350px; background-color: ${SCHEME.neutral4}; padding: 10px;`,
         });
         document.body.append(this.container);
         let cut = new InfoPanel(

@@ -254,7 +254,7 @@ TEST_RUNNER.run({
           () => new Date("2023-10-01T08:00:00Z"),
           "season1",
           99,
-          { effectiveDate: "2023-10-02", grade: 120 },
+          { effectiveDate: "2023-10-03", grade: 120 },
         );
 
         // Execute

@@ -50,12 +50,6 @@ TEST_RUNNER.run({
                     avatarLargeUrl: userImage,
                     name: "Second Consumer",
                   },
-                  {
-                    accountId: "publisher 2",
-                    accountType: AccountType.PUBLISHER,
-                    avatarLargeUrl: userImage,
-                    name: "Second Publisher",
-                  },
                 ],
               } as ListAccountsResponse;
             }

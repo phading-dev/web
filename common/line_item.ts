@@ -1,7 +1,13 @@
 import { SCHEME } from "./color_scheme";
 import { formatMoney } from "./formatter/price";
 import { createArrowIcon } from "./icons";
-import { FONT_M, ICON_S, LINE_HEIGHT_M } from "./sizes";
+import {
+  BORDER_WIDTH_2,
+  FONT_M,
+  GAP_d_75X,
+  ICON_S,
+  LINE_HEIGHT_M,
+} from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
 
@@ -14,7 +20,7 @@ export function eThreeColumns(
     E.div(
       {
         class: "row-column-label",
-        style: `flex: 1 0 0; overflow-wrap: anywhere; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem;`,
+        style: `flex: 1 0 0; overflow-wrap: anywhere; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
       },
       E.text(label),
     ),
@@ -28,7 +34,7 @@ export function eThreeColumns(
       E.div(
         {
           class: "row-column-value-1",
-          style: `overflow-wrap: anywhere; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem;`,
+          style: `overflow-wrap: anywhere; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(value1),
       ),
@@ -43,7 +49,7 @@ export function eThreeColumns(
       E.div(
         {
           class: "row-column-value-2",
-          style: `overflow-wrap: anywhere; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}rem;`,
+          style: `overflow-wrap: anywhere; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(value2),
       ),
@@ -58,7 +64,7 @@ export function eLineItemRow(
   return E.div(
     {
       class: "row-three-column",
-      style: `width: 100%; box-sizing: border-box; display: flex; flex-flow: row nowrap; align-items: flex-start; gap: 1rem; ${customStyle}`,
+      style: `width: 100%; box-sizing: border-box; display: flex; flex-flow: row nowrap; align-items: flex-start; gap: ${GAP_d_75X}rem; ${customStyle}`,
     },
     ...children,
   );
@@ -78,8 +84,6 @@ export interface LineItemsData {
 }
 
 export class ExpandableLineItems {
-  private static EXPANDED_ITEM_BORDER_THICKNESS = 0.3; // rem
-
   public body: HTMLDivElement;
   public totalLine = new Ref<HTMLDivElement>();
   private expandIcon = new Ref<HTMLDivElement>();
@@ -115,11 +119,11 @@ export class ExpandableLineItems {
           this.lineItemList,
           {
             class: "line-items-list",
-            style: `padding: 1rem 0 0 ${LINE_HEIGHT_M / 2 - ExpandableLineItems.EXPANDED_ITEM_BORDER_THICKNESS / 2}rem; width: 100%; box-sizing: border-box; flex-flow: column nowrap; gap: 1rem; transition: height .2s; overflow: hidden;`,
+            style: `padding-left: ${(LINE_HEIGHT_M - BORDER_WIDTH_2) / 2}rem; width: 100%; box-sizing: border-box; flex-flow: column nowrap; transition: height .2s; overflow: hidden;`,
           },
           ...data.items.map((item) => {
             return eLineItemRow(
-              `border-left: ${ExpandableLineItems.EXPANDED_ITEM_BORDER_THICKNESS}rem solid ${SCHEME.neutral1}; padding-left: ${LINE_HEIGHT_M / 2 - ExpandableLineItems.EXPANDED_ITEM_BORDER_THICKNESS / 2 + 1}rem;`,
+              `border-left: ${BORDER_WIDTH_2}rem solid ${SCHEME.neutral1}; padding-left: ${(LINE_HEIGHT_M - BORDER_WIDTH_2) / 2 + GAP_d_75X}rem;`,
               ...eThreeColumns(
                 item.label,
                 formatMoney(item.amount, item.currency),

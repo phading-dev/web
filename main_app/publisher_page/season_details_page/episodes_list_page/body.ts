@@ -1,23 +1,31 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../../../../common/color_scheme";
-import { calculateEstimatedShowCreditMoneyAndFormat, calculateEstimatedShowMoneyAndFormat } from "../../../../common/formatter/price";
+import {
+  calculateEstimatedShowCreditMoneyAndFormat,
+  calculateEstimatedShowMoneyAndFormat,
+} from "../../../../common/formatter/price";
 import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
 import {
-  SimpleIconButton,
+  IconButton,
   createBackButton,
-} from "../../../../common/icon_button";
-import { BASIC_INPUT_STYLE } from "../../../../common/input_styles";
+} from "../../../../common/button";
+import { COMMON_BASIC_INPUT_STYLE } from "../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
-import {
-  PAGE_MAX_WIDTH_L,
-  ePageWithTopDownCard,
-} from "../../../../common/page_elements";
+import { ePageWithTopDownCard } from "../../../../common/page_elements";
 import { ScrollLoadingSection } from "../../../../common/scroll_loading_section";
 import {
+  BORDER_WIDTH_1,
   FONT_M,
   FONT_S,
+  GAP_1X,
+  GAP_2X,
+  GAP_d_25X,
+  GAP_d_5X,
   ICON_BUTTON_L,
+  LINE_HEIGHT_M,
+  LINE_HEIGHT_S,
+  PAGE_MAX_WIDTH_L,
 } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import {
@@ -54,7 +62,7 @@ export class EpisodesListPage extends EventEmitter {
 
   public body: HTMLDivElement;
   private card = new Ref<HTMLDivElement>();
-  public backButton = new Ref<SimpleIconButton>();
+  public backButton = new Ref<IconButton>();
   public draftEpisodeElements = new Array<HTMLDivElement>();
   private listPublishedEpisodesStartFrom = new Ref<HTMLDivElement>();
   public publishedEpisodeElements = new Array<HTMLDivElement>();
@@ -71,7 +79,7 @@ export class EpisodesListPage extends EventEmitter {
     super();
     this.body = ePageWithTopDownCard(
       this.card,
-      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + 1}rem 2rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem 2rem; display: flex; flex-flow: column nowrap;`,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + GAP_d_5X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
     );
     this.loadDrafts();
   }
@@ -87,7 +95,7 @@ export class EpisodesListPage extends EventEmitter {
       E.div(
         {
           class: "season-details-draft-episodes-total",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding-bottom: 1rem; text-align: center; border-bottom: .1rem solid ${SCHEME.neutral1};`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding-bottom: ${GAP_d_25X}rem; text-align: center; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
         },
         E.text(
           `${LOCALIZED_TEXT.seasonTotalDraftEpisodes[0]}${draftEpisodes.length}${LOCALIZED_TEXT.seasonTotalDraftEpisodes[1]}`,
@@ -95,12 +103,12 @@ export class EpisodesListPage extends EventEmitter {
       ),
       ...draftEpisodes.map((episode) => this.eDraftEpisode(episode)),
       E.div({
-        style: `flex: 0 0 auto; height: 3rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       E.div(
         {
           class: "season-details-published-episodes-total",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding-bottom: 1rem; text-align: center; border-bottom: .1rem solid ${SCHEME.neutral1};`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding-bottom: ${GAP_d_25X}rem; text-align: center; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
         },
         E.text(
           `${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[0]}${this.seasonDetails.totalPublishedEpisodes}${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[1]}`,
@@ -113,24 +121,24 @@ export class EpisodesListPage extends EventEmitter {
               this.listPublishedEpisodesStartFrom,
               {
                 class: "season-details-published-episodes-start-from",
-                style: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: .5rem; padding: .5rem 0 1rem 0; border-bottom: .1rem solid ${SCHEME.neutral1};`,
+                style: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_d_25X}rem; padding: ${GAP_d_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
               },
               E.div(
                 {
                   class: "season-details-published-episodes-start-from-label",
-                  style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonPublishedEpisodesStartFromLabel),
               ),
               E.inputRef(this.listPublishedEpisodeIndexCursorInput, {
                 class: "season-details-published-episodes-start-from-input",
-                style: `${BASIC_INPUT_STYLE} width: 5rem; text-align: center;`,
+                style: `${COMMON_BASIC_INPUT_STYLE} width: 5rem; text-align: center;`,
               }),
             ),
             assign(this.scrollLoadingSection, new ScrollLoadingSection()).body,
           ]),
     );
-    this.backButton.val.on("action", () => this.emit("back"));
+    this.backButton.val.addAction(() => this.emit("back"));
     if (this.seasonDetails.totalPublishedEpisodes > 0) {
       this.scrollLoadingSection.val.addLoadAction(() =>
         this.loadPublishedEpisodes(),
@@ -151,7 +159,7 @@ export class EpisodesListPage extends EventEmitter {
     let body = E.div(
       {
         class: "season-details-draft-episode",
-        style: `cursor: pointer; display: flex; flex-flow: column nowrap; padding: 1.5rem 1rem; border-bottom: .1rem solid ${SCHEME.neutral1}; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+        style: `cursor: pointer; display: flex; flex-flow: column nowrap; padding: ${GAP_d_5X}rem ${GAP_1X}rem; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
       },
       E.text(episode.name),
     );
@@ -203,36 +211,36 @@ export class EpisodesListPage extends EventEmitter {
     let body = E.div(
       {
         class: "season-details-published-episode",
-        style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: 1rem; align-items: center; padding: 1rem; border-bottom: .1rem solid ${SCHEME.neutral1};`,
+        style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem; align-items: center; padding: ${GAP_d_5X}rem; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
       },
       E.div(
         {
           class: "season-details-published-episode-index",
-          style: `flex: 0 0 auto; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+          style: `flex: 0 0 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(`${LOCALIZED_TEXT.seasonPublishedEpisodeIndex}${episode.index}`),
       ),
       E.div(
         {
           class: "season-details-published-episode-info-column",
-          style: `display: flex; flex-flow: column nowrap; gap: .5rem;`,
+          style: `display: flex; flex-flow: column nowrap;`,
         },
         E.div(
           {
             class: "season-details-published-episode-name",
-            style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
           },
           E.text(episode.name),
         ),
         E.div(
           {
             class: "season-details-published-episode-secondary-info",
-            style: `display: flex; flex-flow: row wrap; column-gap: 2rem; row-gap: .5rem;`,
+            style: `display: flex; flex-flow: row wrap; column-gap: ${GAP_1X}rem;`,
           },
           E.div(
             {
               class: "season-details-published-episode-duration",
-              style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
               `${LOCALIZED_TEXT.seasonEpisodeDuration}${formatSecondsAsHHMMSS(episode.videoContainer.durationSec)}`,
@@ -241,7 +249,7 @@ export class EpisodesListPage extends EventEmitter {
           E.div(
             {
               class: "season-details-published-episode-earnings",
-              style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
               `${LOCALIZED_TEXT.seasonEpisodeEarnings}${calculateEstimatedShowMoneyAndFormat(
@@ -254,7 +262,7 @@ export class EpisodesListPage extends EventEmitter {
           E.div(
             {
               class: "season-details-published-episode-net-earnings",
-              style: `font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+              style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral0};`,
             },
             E.text(
               `${LOCALIZED_TEXT.seasonEpisodeNetEarnings}${calculateEstimatedShowCreditMoneyAndFormat(
