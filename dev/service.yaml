@@ -52,14 +52,46 @@ apiVersion: v1
 kind: Service
 metadata:
   name: web-ui
-  annotations:
-    cloud.google.com/neg: '{"ingress": true}'
-    beta.cloud.google.com/backend-config: '{"default": "web-ui-neg-health-check"}'
 spec:
   selector:
     app: web-ui-pod
   ports:
     - protocol: TCP
-      port: 80
+      port: 8080
       targetPort: 8080
   type: ClusterIP
+---
+apiVersion: networking.gke.io/v1
+kind: HealthCheckPolicy
+metadata:
+  name: web-ui-lb-health-check
+spec:
+  default:
+    config:
+      type: HTTP
+      httpHealthCheck:
+        port: 8080
+        requestPath: /healthz
+  targetRef:
+    group: ""
+    kind: Service
+    name: web-ui
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: web-ui-route-external
+spec:
+  parentRefs:
+  - name: phading-gateway-external
+    sectionName: https
+  hostnames:
+  - dev.secount.com
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: web-ui
+      port: 8080

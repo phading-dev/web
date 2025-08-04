@@ -1,8 +1,4 @@
 import { ENV_VARS } from "./env_vars";
-import {
-  K8S_SERVICE_NAME,
-  K8S_SERVICE_PORT,
-} from "@phading/web_interface/service_const";
 import { writeFileSync } from "fs";
 
 export function generate(env: string) {
@@ -117,18 +113,50 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ${K8S_SERVICE_NAME}
-  annotations:
-    cloud.google.com/neg: '{"ingress": true}'
-    beta.cloud.google.com/backend-config: '{"default": "${ENV_VARS.releaseServiceName}-neg-health-check"}'
+  name: ${ENV_VARS.releaseServiceName}
 spec:
   selector:
     app: ${ENV_VARS.releaseServiceName}-pod
   ports:
     - protocol: TCP
-      port: ${K8S_SERVICE_PORT}
+      port: ${ENV_VARS.port}
       targetPort: ${ENV_VARS.port}
   type: ClusterIP
+---
+apiVersion: networking.gke.io/v1
+kind: HealthCheckPolicy
+metadata:
+  name: ${ENV_VARS.releaseServiceName}-lb-health-check
+spec:
+  default:
+    config:
+      type: HTTP
+      httpHealthCheck:
+        port: ${ENV_VARS.port}
+        requestPath: /healthz
+  targetRef:
+    group: ""
+    kind: Service
+    name: ${ENV_VARS.releaseServiceName}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: ${ENV_VARS.releaseServiceName}-route-external
+spec:
+  parentRefs:
+  - name: ${ENV_VARS.externalGatewayName}
+    sectionName: https
+  hostnames:
+  - ${ENV_VARS.externalDomain}
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: ${ENV_VARS.releaseServiceName}
+      port: ${ENV_VARS.port}
 `;
   writeFileSync(`${env}/service.yaml`, serviceTemplate);
 
