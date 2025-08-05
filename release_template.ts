@@ -104,16 +104,6 @@ spec:
             cpu: "${ENV_VARS.cpu}"
             memory: "${ENV_VARS.memory}"
 ---
-apiVersion: cloud.google.com/v1
-kind: BackendConfig
-metadata:
-  name: ${ENV_VARS.releaseServiceName}-neg-health-check
-spec:
-  healthCheck:
-    port: ${ENV_VARS.port}
-    type: HTTP
-    requestPath: /healthz
----
 apiVersion: v1
 kind: Service
 metadata:

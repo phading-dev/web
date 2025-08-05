@@ -38,16 +38,6 @@ spec:
             cpu: "200m"
             memory: "256Mi"
 ---
-apiVersion: cloud.google.com/v1
-kind: BackendConfig
-metadata:
-  name: web-ui-neg-health-check
-spec:
-  healthCheck:
-    port: 8080
-    type: HTTP
-    requestPath: /healthz
----
 apiVersion: v1
 kind: Service
 metadata:
