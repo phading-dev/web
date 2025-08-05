@@ -73,7 +73,7 @@ export class SearchInput extends EventEmitter {
         E.div(
           {
             class: "search-input-option",
-            style: `display: flex; flex-flow: row nowrap; gap: ${GAP_1X}rem; align-items: center;`,
+            style: `display: flex; flex-flow: row wrap; gap: ${GAP_1X}rem; align-items: center;`,
           },
           assign(
             this.searchOptionSeason,
