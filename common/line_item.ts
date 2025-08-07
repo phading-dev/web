@@ -4,7 +4,7 @@ import { createArrowIcon } from "./icons";
 import {
   BORDER_WIDTH_2,
   FONT_M,
-  GAP_d_75X,
+  GAP_0_75X,
   ICON_S,
   LINE_HEIGHT_M,
 } from "./sizes";
@@ -64,7 +64,7 @@ export function eLineItemRow(
   return E.div(
     {
       class: "row-three-column",
-      style: `width: 100%; box-sizing: border-box; display: flex; flex-flow: row nowrap; align-items: flex-start; gap: ${GAP_d_75X}rem; ${customStyle}`,
+      style: `width: 100%; box-sizing: border-box; display: flex; flex-flow: row nowrap; align-items: flex-start; gap: ${GAP_0_75X}rem; ${customStyle}`,
     },
     ...children,
   );
@@ -123,7 +123,7 @@ export class ExpandableLineItems {
           },
           ...data.items.map((item) => {
             return eLineItemRow(
-              `border-left: ${BORDER_WIDTH_2}rem solid ${SCHEME.neutral1}; padding-left: ${(LINE_HEIGHT_M - BORDER_WIDTH_2) / 2 + GAP_d_75X}rem;`,
+              `border-left: ${BORDER_WIDTH_2}rem solid ${SCHEME.neutral1}; padding-left: ${(LINE_HEIGHT_M - BORDER_WIDTH_2) / 2 + GAP_0_75X}rem;`,
               ...eThreeColumns(
                 item.label,
                 formatMoney(item.amount, item.currency),

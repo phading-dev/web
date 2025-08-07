@@ -2,61 +2,155 @@ export default class Text {
   get locale() {
     return "en";
   }
-  get marketingConsumerTabButtonLabel() {
-    return `As a Viewer`;
+  get marketingFaqButtonLabel() {
+    return `FAQ`;
   }
-  get marketingPublisherTabButtonLabel() {
-    return `As a Creator`;
+  get marketingHeroTitle() {
+    return `Where Every Second Counts.`;
   }
-  get marketingExplanationTitle() {
-    return `How it works`;
+  get marketingHeroViewerTitle() {
+    return `Why overpay for subscriptions?`;
   }
-  get marketingConsumerCtaButtonLabel() {
-    return `Start watching`;
+  get marketingHeroViewerDescription() {
+    return `Pay only for what you watch, down to the second, and enjoy a truly uninterrupted, ad-free experience.`;
   }
-  get marketingConsumerTabTitle() {
-    return `Watch Without Subscriptions`;
+  get marketingHeroViewerActionButtonLabel() {
+    return [`Start with `, ` Credit`];
   }
-  get marketingConsumerTabMainMessage() {
-    return `Enjoy high quality content without any subscription fees. Pay only for the time you watch.`;
+  get marketingHeroPublisherTitle() {
+    return `Stop selling your content short.`;
   }
-  get marketingConsumerTabExplanationPoint1() {
-    return `• Watch movies, cartoons, documentaries, and tutorials without any subscription fees.`;
+  get marketingHeroPublisherDescription() {
+    return `Set your own price and earn directly from your audience. Take full control of your revenue.`;
   }
-  get marketingConsumerTabExplanationPoint2() {
-    return `• Each video displays an hourly rate, set by the publisher based on quality and popularity.`;
+  get marketingHeroPublisherActionButtonLabel() {
+    return `Become a Publisher`;
   }
-  get marketingConsumerTabExplanationPoint3() {
-    return `• You are charged per second of watch time.`;
+  get marketingHowSectionTitle() {
+    return `A Fairer Model for Everyone`;
   }
-  get marketingConsumerTabExplanationPoint4() {
-    return `• At the end of each month, your total watch time is calculated, and your payment method is charged accordingly.`;
+  get marketingHowSectionSubtitle() {
+    return `A simple, transparent system that benefits both creators and viewers.`;
   }
-  get marketingPublisherCtaButtonLabel() {
-    return `Start earning`;
+  get marketingHowSectionFirstCardTitle() {
+    return `1. Creators Publish & Price`;
   }
-  get marketingPublisherTabTitle() {
-    return `Monetize Your Video`;
+  get marketingHowSectionFirstCardDescription() {
+    return `Creators upload their video content and set their own hourly viewing rate. They are in complete control of their content's value.`;
   }
-  get marketingPublisherTabMainMessage() {
-    return `Take full control of your earnings. Publish your video and set your own price.`;
+  get marketingHowSectionSecondCardTitle() {
+    return `2. You Watch & Enjoy`;
   }
-  get marketingPublisherTabExplanationPoint1() {
-    return `• Upload any type of videos—movies, cartoons, documentaries, tutorials and more.`;
+  get marketingHowSectionSecondCardDescription() {
+    return `Discover unique content and stream it without ad interruptions. Your viewing fee is calculated to the exact second you watch.`;
   }
-  get marketingPublisherTabExplanationPoint2() {
-    return `• Set an hourly rate (e.g., $1.00/hour) for each video and update it anytime based on quality and popularity.`;
+  get marketingHowSectionThirdCardTitle() {
+    return `3. Creators Earn Directly`;
   }
-  get marketingPublisherTabExplanationPoint3() {
-    return `• You earn for every second watched.`;
+  get marketingHowSectionThirdCardDescription() {
+    return `A majority of your viewing fee goes directly to the creator. You’re not just a viewer; you’re a direct supporter of the content you love.`;
   }
-  get marketingPublisherTabExplanationPoint4() {
+  get marketingPublisherSectionTitle() {
+    return `Your Content. Your Price. Your Revenue.`;
+  }
+  get marketingPublisherSectionSubtitle() {
+    return `Tired of chasing algorithms or fighting for ad revenue? It's time to build a direct relationship with your audience and monetize your content on your own terms.`;
+  }
+  get marketingPublisherSectionActionButtonLabel() {
+    return `Start Earning on Secount`;
+  }
+  get marketingPublisherSectionFirstCardTitle() {
+    return `Direct Monetization`;
+  }
+  get marketingPublisherSectionFirstCardDescription() {
+    return `Forget ambiguous ad-splits. You set a price for your time and expertise. When people watch, you earn. It’s that simple.`;
+  }
+  get marketingPublisherSectionSecondCardTitle() {
+    return `You Always Own Your Content`;
+  }
+  get marketingPublisherSectionSecondCardDescription() {
+    return `We're a platform, not a publisher. You retain 100% ownership of your intellectual property. We just help you distribute and monetize it.`;
+  }
+  get marketingPublisherSectionThirdCardTitle() {
+    return `Transparent Revenue Share`;
+  }
+  get marketingPublisherSectionThirdCardDescription() {
     return [
-      `• At the end of each month, your earnings (after a `, // e.g. 20%
-      ` platform fee and `,
-      `service fees`, // Wrap in a link
-      `) are calculated and paid out.`, // TODO: Mention within X days.
+      `You receive the lion's share of the revenue. Our simple platform fee covers all transaction costs. `,
+      `See our Pricing Page for a full breakdown.`,
     ];
+  }
+  get marketingViewerSectionTitle() {
+    return `Pay for What You Actually Watch. Nothing More.`;
+  }
+  get marketingViewerSectionSubtitle() {
+    return `Your time is valuable. Your attention is valuable. With Secount, you're in control.`
+  }
+  get marketingViewerSectionActionButtonLabel() {
+    return `Browse Content & Start Watching`;
+  }
+  get marketingViewerSectionFirstCardTitle() {
+    return `True Pay-Per-Second Viewing`;
+  }
+  get marketingViewerSectionFirstCardDescription() {
+    return `Our per-second metering ensures you only pay for what you use. If a video is $1.00/hour and you watch for 6 minutes, you pay exactly $0.10.`;
+  }
+  get marketingViewerSectionSecondCardTitle() {
+    return `Directly Fund Your Favorite Creators`;
+  }
+  get marketingViewerSectionSecondCardDescription() {
+    return `Know exactly where your money is going. By watching on Secount, you're providing a stable, predictable income stream for the creators who make the content you love.`;
+  }
+  get marketingViewerSectionThirdCardTitle() {
+    return `Discover Unique Content`;
+  }
+  get marketingViewerSectionThirdCardDescription() {
+    return `Find independent films, in-depth tutorials, expert documentaries, and more premium content that might not thrive on other platforms.`;
+  }
+  get faqSectionTitle() {
+    return `Frequently Asked Questions`;
+  }
+  get faqSectionRevenueShareQuestion() {
+    return `What is the exact revenue share and what are the fees?`;
+  }
+  get faqSectionRevenueShareAnswer() {
+    return [`We believe in full transparency. Our current Publisher Revenue Share, along with any fees for services like video storage, are always detailed on our `, `Pricing Page`, `.`];
+  }
+  get faqSectionNetflixComparisonQuestion() {
+    return `So, it's not a subscription like Netflix or Disney+?`
+  }
+  get faqSectionNetflixComparisonAnswer() {
+    return `Correct! There are no monthly or annual fees. Secount is a pure pay-as-you-go platform. You add a payment method to your account, and you are only charged for the cumulative duration of content you've watched at the end of each month.`;
+  }
+  get faqSectionYouTubeComparisonQuestion() {
+    return `How is this different from YouTube or Patreon?`;
+  }
+  get faqSectionYouTubeComparisonAnswer() {
+    return `Secount puts control back where it belongs. Unlike YouTube, where the platform dictates payment rates, Secount empowers creators to set their own price. And instead of juggling multiple Patreon subscriptions for unpredictable content, Secount unifies your support on a single platform, letting you pay directly for the specific content you choose to watch.`
+  }
+  get faqSectionPayoutQuestion() {
+    return `How do creators get paid?`;
+  }
+  get faqSectionPayoutAnswer() {
+    return `We partner with Stripe for secure and reliable payouts. Creators connect their Stripe account and receive their earnings directly into their US-based bank account. (We're working hard to expand payout support to more countries soon!)`
+  }
+  get faqSectionTryItQuestion() {
+    return `Can I try it before I commit?`;
+  }
+  get faqSectionTryItAnswer() {
+    return [`Yes! We offer a one-time promotional credit for `, ` when you add a valid payment method to your account for the first time. Use it to explore the platform on us.`];
+  }
+  get joinSectionTitle() {
+    return `Ready to Join the New Content Economy?`
+  }
+  get joinSectionDescription() {
+    return `Whether you're a creator ready to earn your worth or a viewer looking for a better way to watch, your journey starts here. Join Secount and make every second count.`
+  }
+  get joinSectionActionButtonLabel() {
+    return `Sign Up for Secount Today`;
+  }
+  get publisherPricing() {
+    return `Publisher Pricing`;
   }
   get signUpViewerSubtitle() {
     return [`Why overpay for subscriptions?`, `Make every second count.`];
@@ -374,7 +468,7 @@ export default class Text {
     return `For security, we'll sign you out. Please verify your new email address once you've signed back in.`;
   }
   get userEmailNotAvailableError() {
-    return `This email address is not available. Please try another.`
+    return `This email address is not available. Please try another.`;
   }
   get incorrectPasswordError() {
     return `Incorrect password. Please try again.`;

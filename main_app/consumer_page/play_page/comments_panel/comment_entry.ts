@@ -4,7 +4,7 @@ import {
   AVATAR_S,
   FONT_S,
   FONT_WEIGHT_600,
-  GAP_d_25X,
+  GAP_0_25X,
   LINE_HEIGHT_S,
 } from "../../../../common/sizes";
 import { CommentWithAuthor } from "../common/comment_with_author";
@@ -22,11 +22,11 @@ export class CommentEntry extends EventEmitter {
     this.body = E.div(
       {
         class: "comment-entry",
-        style: `position: relative; margin: ${GAP_d_25X}rem 0; min-height: ${AVATAR_S}rem;`,
+        style: `position: relative; margin: ${GAP_0_25X}rem 0; min-height: ${AVATAR_S}rem;`,
       },
       E.image({
         class: "comment-entry-author-avatar",
-        style: `float: left; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: ${AVATAR_S}rem; margin: ${GAP_d_25X}rem ${GAP_d_25X}rem ${GAP_d_25X}rem 0;`,
+        style: `float: left; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; border-radius: ${AVATAR_S}rem; margin: ${GAP_0_25X}rem ${GAP_0_25X}rem ${GAP_0_25X}rem 0;`,
         src: comment.author.avatarSmallUrl,
       }),
       E.div(

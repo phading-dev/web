@@ -1,6 +1,7 @@
 import EventEmitter = require("events");
 import { TabSwitcher } from "./common/page_navigator";
 import { MainApp } from "./main_app/body";
+import { MarketingPage } from "./marketing_page/body";
 import { ReplacePrimaryPaymentMethodAction } from "./replace_primary_payment_method_action/action";
 import { ResetPasswordPage } from "./reset_password_page/body";
 import { VerifyEmailPage } from "./verify_email_page/body";
@@ -17,6 +18,7 @@ export class App extends EventEmitter {
   public static create(documentBody: HTMLElement): App {
     return new App(
       MainApp.create,
+      MarketingPage.create,
       ReplacePrimaryPaymentMethodAction.create,
       ResetPasswordPage.create,
       VerifyEmailPage.create,
@@ -26,6 +28,7 @@ export class App extends EventEmitter {
 
   private pageSwitcher = new TabSwitcher();
   public mainApp: MainApp;
+  public marketingPage: MarketingPage;
   public replacePrimaryPaymentMethodAction: ReplacePrimaryPaymentMethodAction;
   public resetPasswordPage: ResetPasswordPage;
   public verifyEmailPage: VerifyEmailPage;
@@ -33,12 +36,18 @@ export class App extends EventEmitter {
 
   public constructor(
     private createMainApp: typeof MainApp.create,
+    private createMarketingPage: typeof MarketingPage.create,
     private createReplacePrimaryPaymentMethodAction: typeof ReplacePrimaryPaymentMethodAction.create,
     private createResetPasswordPage: typeof ResetPasswordPage.create,
     private createVerifyEmailPage: typeof VerifyEmailPage.create,
     private documentBody: HTMLElement,
   ) {
     super();
+  }
+
+  private pushRl(rl: AppRl): void {
+    this.emit("pushRl", rl);
+    this.applyRl(rl);
   }
 
   private replaceRl(rl: AppRl): void {
@@ -55,12 +64,20 @@ export class App extends EventEmitter {
       !this.rl.main &&
       !this.rl.replacePrimaryPaymentMethod &&
       !this.rl.resetPassword &&
-      !this.rl.verifyEmail
+      !this.rl.verifyEmail &&
+      !this.rl.marketing
     ) {
-      this.rl.main = {};
+      this.rl.marketing = {};
     }
 
-    if (this.rl.main) {
+    if (this.rl.marketing) {
+      if (!this.marketingPage) {
+        this.pageSwitcher.goTo(
+          () => this.addMarketingPage(),
+          () => this.removeMarketingPage(),
+        );
+      }
+    } else if (this.rl.main) {
       if (!this.mainApp) {
         this.pageSwitcher.goTo(
           () => this.addMainApp(),
@@ -123,6 +140,18 @@ export class App extends EventEmitter {
   private removeMainApp(): void {
     this.mainApp.remove();
     this.mainApp = undefined;
+  }
+
+  private addMarketingPage(): void {
+    this.marketingPage = this.createMarketingPage().on("home", () =>
+      this.pushRl({ main: {} }),
+    );
+    this.documentBody.append(this.marketingPage.body);
+  }
+
+  private removeMarketingPage(): void {
+    this.marketingPage.remove();
+    this.marketingPage = undefined;
   }
 
   private addReplacePrimaryPaymentMethodAction(accountId: string): void {

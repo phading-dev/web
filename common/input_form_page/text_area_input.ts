@@ -5,7 +5,7 @@ import {
   INPUT_SIDE_PADDING,
   NULLIFIED_INPUT_STYLE,
 } from "../input_styles";
-import { BORDER_WIDTH_1, FONT_M, FONT_S, GAP_d_25X, GAP_d_5X, LINE_HEIGHT_M, LINE_HEIGHT_S } from "../sizes";
+import { BORDER_WIDTH_1, FONT_M, FONT_S, GAP_0_25X, GAP_0_5X, LINE_HEIGHT_M, LINE_HEIGHT_S } from "../sizes";
 import { InputField, ValidationResult } from "./input_field";
 import { E, ElementAttributeMap } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -40,13 +40,13 @@ export class TextAreaInputWithErrorMsg
         E.text(label),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
       }),
       E.textareaRef(
         this.textAreaInput,
         {
           class: "text-input-input",
-          style: `${NULLIFIED_INPUT_STYLE} font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; color-scheme: ${SCHEME.name}; border: ${BORDER_WIDTH_1}rem solid; border-radius: ${INPUT_BORDER_RADIUS}rem; padding: ${GAP_d_5X}rem ${INPUT_SIDE_PADDING}rem; width: 100%; box-sizing: border-box;`,
+          style: `${NULLIFIED_INPUT_STYLE} font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; color-scheme: ${SCHEME.name}; border: ${BORDER_WIDTH_1}rem solid; border-radius: ${INPUT_BORDER_RADIUS}rem; padding: ${GAP_0_5X}rem ${INPUT_SIDE_PADDING}rem; width: 100%; box-sizing: border-box;`,
           rows: "3",
           ...otherInputAttributes,
         },

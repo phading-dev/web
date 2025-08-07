@@ -5,7 +5,7 @@ import {
   BORDER_WIDTH_1,
   FONT_M,
   FONT_WEIGHT_600,
-  GAP_1_d_25X,
+  GAP_1_25X,
   ICON_BUTTON_M,
   ICON_XL,
   LINE_HEIGHT_FOR_BUTTON_M,
@@ -14,7 +14,7 @@ import { E } from "@selfage/element/factory";
 
 export let BUTTON_BORDER_RADIUS = BORDER_RADIUS_S;
 export let NULLIFIED_BUTTON_STYLE = `padding: 0; margin: 0; outline: none; border: 0; background-color: initial;`;
-export let COMMENT_BUTTON_WITHOUT_BORDER_STYLE = `${NULLIFIED_BUTTON_STYLE} flex: 0 0 auto; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_FOR_BUTTON_M}rem; padding: 0 ${GAP_1_d_25X}rem; box-sizing: border-box;`;
+export let COMMENT_BUTTON_WITHOUT_BORDER_STYLE = `${NULLIFIED_BUTTON_STYLE} flex: 0 0 auto; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_FOR_BUTTON_M}rem; padding: 0 ${GAP_1_25X}rem; box-sizing: border-box;`;
 export let COMMON_BUTTON_STYLE = `${COMMENT_BUTTON_WITHOUT_BORDER_STYLE} border: ${BORDER_WIDTH_1}rem solid transparent; border-radius: ${BUTTON_BORDER_RADIUS}rem;`;
 export let COMMON_FILLED_BUTTON_STYLE = `${COMMON_BUTTON_STYLE} color: ${SCHEME.primaryContrast0};`;
 

@@ -9,8 +9,8 @@ import {
   FONT_S,
   GAP_1X,
   GAP_2X,
-  GAP_d_25X,
-  GAP_d_5X,
+  GAP_0_25X,
+  GAP_0_5X,
   ICON_XXL,
   LINE_HEIGHT_M,
   LINE_HEIGHT_S,
@@ -80,7 +80,7 @@ export class SendEmailVerificationPage extends EventEmitter {
         E.text(email),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
       }),
       E.div(
         {
@@ -100,12 +100,12 @@ export class SendEmailVerificationPage extends EventEmitter {
         E.text(LOCALIZED_TEXT.emailVerificationNotReceived),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
       }),
       E.div(
         {
           class: "email-verification-actions",
-          style: `display: flex; flex-flow: column nowrap; align-items: center; gap: ${GAP_d_25X}rem;`,
+          style: `display: flex; flex-flow: column nowrap; align-items: center; gap: ${GAP_0_25X}rem;`,
         },
         E.divRef(this.actionError, {
           class: "email-verification-action-error",

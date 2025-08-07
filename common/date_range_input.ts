@@ -2,7 +2,13 @@ import EventEmitter = require("events");
 import { SCHEME } from "./color_scheme";
 import { COMMON_BASIC_INPUT_STYLE } from "./input_styles";
 import { LOCALIZED_TEXT } from "./locales/localized_text";
-import { DATE_INPUT_WIDTH, FONT_M, GAP_1_d_5X, GAP_d_75X, LINE_HEIGHT_M } from "./sizes";
+import {
+  DATE_INPUT_WIDTH,
+  FONT_M,
+  GAP_0_75X,
+  GAP_1_5X,
+  LINE_HEIGHT_M,
+} from "./sizes";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
 import { TzDate } from "@selfage/tz_date";
@@ -45,12 +51,12 @@ export class DateRangeInput extends EventEmitter {
     this.body = E.div(
       {
         class: "date-range-inputs",
-        style: `flex-flow: row wrap; align-items: center; justify-content: flex-end; column-gap: ${GAP_1_d_5X}rem; row-gap: ${GAP_d_75X}rem; ${customStyle}`,
+        style: `flex-flow: row wrap; align-items: center; justify-content: flex-end; column-gap: ${GAP_1_5X}rem; row-gap: ${GAP_0_75X}rem; ${customStyle}`,
       },
       E.div(
         {
           class: "statements-page-start-range-input-container",
-          style: `display: flex; flex-flow: row wrap; align-items: center; gap: ${GAP_1_d_5X}rem;`,
+          style: `display: flex; flex-flow: row wrap; align-items: center; gap: ${GAP_1_5X}rem;`,
         },
         E.div(
           {
@@ -68,7 +74,7 @@ export class DateRangeInput extends EventEmitter {
       E.div(
         {
           class: "statements-page-end-range-input-container",
-          style: `display: flex; flex-flow: row wrap; align-items: center; gap: ${GAP_1_d_5X}rem;`,
+          style: `display: flex; flex-flow: row wrap; align-items: center; gap: ${GAP_1_5X}rem;`,
         },
         E.div(
           {

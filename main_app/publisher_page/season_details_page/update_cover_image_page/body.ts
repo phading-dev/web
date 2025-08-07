@@ -19,8 +19,8 @@ import {
   FONT_M,
   GAP_1X,
   GAP_2X,
-  GAP_d_25X,
-  GAP_d_5X,
+  GAP_0_25X,
+  GAP_0_5X,
   LINE_HEIGHT_M,
   PAGE_MAX_WIDTH_M,
 } from "../../../../common/sizes";
@@ -84,7 +84,7 @@ export class UpdateCoverImagePage extends EventEmitter {
       }),
       assign(this.fileDropZone, new FileDropZone("width: 100%;")).body,
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
       }),
       assign(
         this.loadErrorMessage,
@@ -130,7 +130,7 @@ export class UpdateCoverImagePage extends EventEmitter {
         this.submitErrorMessage,
         {
           class: "update-cover-image-submit-error-message",
-          style: `display: none; margin-bottom: ${GAP_d_5X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
+          style: `display: none; margin-bottom: ${GAP_0_5X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
         },
         E.text("1"),
       ),

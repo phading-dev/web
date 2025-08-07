@@ -21,8 +21,8 @@ import {
   FONT_M,
   GAP_1X,
   GAP_2X,
-  GAP_d_25X,
-  GAP_d_5X,
+  GAP_0_25X,
+  GAP_0_5X,
   LINE_HEIGHT_M,
   PAGE_MAX_WIDTH_M,
 } from "../../../../common/sizes";
@@ -75,7 +75,7 @@ export class UpdateAvatarPage extends EventEmitter {
       assign(this.fileDropZone, new FileDropZone("width: 100%;")).body,
       E.divRef(this.loadErrorText, {
         class: "update-avatar-image-load-error",
-        style: `display: none; margin-top: ${GAP_d_25X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
+        style: `display: none; margin-top: ${GAP_0_25X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
       }),
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
@@ -147,7 +147,7 @@ export class UpdateAvatarPage extends EventEmitter {
       }),
       E.divRef(this.uploadStatusText, {
         class: "update-avatar-upload-status-text",
-        style: `display: none; margin-bottom: ${GAP_d_5X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
+        style: `display: none; margin-bottom: ${GAP_0_5X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
       }),
       assign(
         this.uploadButton,

@@ -42,7 +42,7 @@ export class DarkScheme {
   get neutral1() {
     return GREY_85;
   }
-  // Disabled. Placeholder. Contrasted.
+  // Disabled. Placeholder. Contrasted. Divider.
   get neutral2() {
     return GREY_30;
   }

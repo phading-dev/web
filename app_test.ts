@@ -5,6 +5,7 @@ import { LOCAL_SESSION_STORAGE } from "./common/local_session_storage";
 import { normalizeBody } from "./common/normalize_body";
 import { setTabletView } from "./common/view_port";
 import { MainAppMock } from "./main_app/body_mock";
+import { MarketingPage } from "./marketing_page/body";
 import { ReplacePrimaryPaymentMethodActionMock } from "./replace_primary_payment_method_action/action_mock";
 import { ResetPasswordPageMock } from "./reset_password_page/body_mock";
 import { VerifyEmailPageMock } from "./verify_email_page/body_mock";
@@ -23,6 +24,7 @@ function createApp(): [App, Array<AppRl>] {
   let rls = new Array<AppRl>();
   let app = new App(
     (appendBodies) => new MainAppMock(() => nowDate, appendBodies),
+    () => new MarketingPage(),
     (accountId) => new ReplacePrimaryPaymentMethodActionMock(accountId),
     (appendBodies, tokenId) => new ResetPasswordPageMock(appendBodies, tokenId),
     (tokenId) => new VerifyEmailPageMock(tokenId),
@@ -37,7 +39,7 @@ TEST_RUNNER.run({
   name: "AppTest",
   cases: [
     new (class implements TestCase {
-      public name = "MainApp_PushRl_ReplaceRl";
+      public name = "DefaultMarketingPage_MainApp_PushRl_ReplaceRl";
       private cut: App;
       public async execute() {
         // Prepare
@@ -50,6 +52,28 @@ TEST_RUNNER.run({
         await this.cut.applyRl();
 
         // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/app_marketing.png"),
+          path.join(__dirname, "/golden/app_marketing.png"),
+          path.join(__dirname, "/app_marketing_diff.png"),
+        );
+
+        // Execute
+        this.cut.marketingPage.emit("home");
+
+        // Verify
+        assertThat(
+          rls,
+          isArray([
+            eqMessage(
+              {
+                main: {},
+              },
+              APP_RL,
+            ),
+          ]),
+          "new rls",
+        );
         await asyncAssertScreenshot(
           path.join(__dirname, "/app_home.png"),
           path.join(__dirname, "/golden/app_home.png"),
@@ -65,6 +89,12 @@ TEST_RUNNER.run({
         assertThat(
           rls,
           isArray([
+            eqMessage(
+              {
+                main: {},
+              },
+              APP_RL,
+            ),
             eqMessage(
               {
                 main: {
@@ -86,6 +116,12 @@ TEST_RUNNER.run({
         assertThat(
           rls,
           isArray([
+            eqMessage(
+              {
+                main: {},
+              },
+              APP_RL,
+            ),
             eqMessage(
               {
                 main: {

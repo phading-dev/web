@@ -24,7 +24,7 @@ import {
   FONT_S,
   FONT_WEIGHT_600,
   GAP_1X,
-  GAP_d_5X,
+  GAP_0_5X,
   ICON_BUTTON_M,
   ICON_L,
   ICON_M,
@@ -132,13 +132,13 @@ export class InfoPanel extends EventEmitter {
         E.text(`${LOCALIZED_TEXT.currentMeteringExplained}`),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
       }),
       E.divRef(
         this.seasonInfoButton,
         {
           class: "info-panel-season-info-row",
-          style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem;`,
+          style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem;`,
         },
         E.div(
           {
@@ -205,13 +205,13 @@ export class InfoPanel extends EventEmitter {
           E.text(LOCALIZED_TEXT.nextEpisode),
         ),
         E.div({
-          style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+          style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
         }),
         E.divRef(
           this.nextEpisodeButton,
           {
             class: "info-panel-next-episode",
-            style: `cursor: ${this.nextEpisode.canPlay ? "pointer" : "default"}; border: ${BORDER_WIDTH_2}rem solid ${this.nextEpisode.canPlay ? SCHEME.primary1 : SCHEME.neutral2}; border-radius: ${BORDER_RADIUS_S}rem; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem; padding: ${GAP_d_5X}rem;`,
+            style: `cursor: ${this.nextEpisode.canPlay ? "pointer" : "default"}; border: ${BORDER_WIDTH_2}rem solid ${this.nextEpisode.canPlay ? SCHEME.primary1 : SCHEME.neutral2}; border-radius: ${BORDER_RADIUS_S}rem; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem; padding: ${GAP_0_5X}rem;`,
           },
           E.div(
             {
@@ -252,7 +252,7 @@ export class InfoPanel extends EventEmitter {
                     ),
                   ),
                   E.div({
-                    style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
+                    style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
                   }),
                   E.div(
                     {

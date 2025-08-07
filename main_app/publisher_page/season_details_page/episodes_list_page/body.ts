@@ -20,8 +20,8 @@ import {
   FONT_S,
   GAP_1X,
   GAP_2X,
-  GAP_d_25X,
-  GAP_d_5X,
+  GAP_0_25X,
+  GAP_0_5X,
   ICON_BUTTON_L,
   LINE_HEIGHT_M,
   LINE_HEIGHT_S,
@@ -79,7 +79,7 @@ export class EpisodesListPage extends EventEmitter {
     super();
     this.body = ePageWithTopDownCard(
       this.card,
-      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + GAP_d_5X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + GAP_0_5X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
     );
     this.loadDrafts();
   }
@@ -95,7 +95,7 @@ export class EpisodesListPage extends EventEmitter {
       E.div(
         {
           class: "season-details-draft-episodes-total",
-          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding-bottom: ${GAP_d_25X}rem; text-align: center; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding-bottom: ${GAP_0_25X}rem; text-align: center; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
         },
         E.text(
           `${LOCALIZED_TEXT.seasonTotalDraftEpisodes[0]}${draftEpisodes.length}${LOCALIZED_TEXT.seasonTotalDraftEpisodes[1]}`,
@@ -108,7 +108,7 @@ export class EpisodesListPage extends EventEmitter {
       E.div(
         {
           class: "season-details-published-episodes-total",
-          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding-bottom: ${GAP_d_25X}rem; text-align: center; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; width: 100%; box-sizing: border-box; padding-bottom: ${GAP_0_25X}rem; text-align: center; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
         },
         E.text(
           `${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[0]}${this.seasonDetails.totalPublishedEpisodes}${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[1]}`,
@@ -121,7 +121,7 @@ export class EpisodesListPage extends EventEmitter {
               this.listPublishedEpisodesStartFrom,
               {
                 class: "season-details-published-episodes-start-from",
-                style: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_d_25X}rem; padding: ${GAP_d_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
+                style: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_0_25X}rem; padding: ${GAP_0_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
               },
               E.div(
                 {
@@ -159,7 +159,7 @@ export class EpisodesListPage extends EventEmitter {
     let body = E.div(
       {
         class: "season-details-draft-episode",
-        style: `cursor: pointer; display: flex; flex-flow: column nowrap; padding: ${GAP_d_5X}rem ${GAP_1X}rem; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+        style: `cursor: pointer; display: flex; flex-flow: column nowrap; padding: ${GAP_0_5X}rem ${GAP_1X}rem; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
       },
       E.text(episode.name),
     );
@@ -211,7 +211,7 @@ export class EpisodesListPage extends EventEmitter {
     let body = E.div(
       {
         class: "season-details-published-episode",
-        style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem; align-items: center; padding: ${GAP_d_5X}rem; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
+        style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem; align-items: center; padding: ${GAP_0_5X}rem; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
       },
       E.div(
         {

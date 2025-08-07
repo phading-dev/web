@@ -24,7 +24,7 @@ import {
   FONT_WEIGHT_600,
   GAP_1X,
   GAP_2X,
-  GAP_d_5X,
+  GAP_0_5X,
   LINE_HEIGHT_L,
   LINE_HEIGHT_M,
   PAGE_MAX_WIDTH_L,
@@ -177,7 +177,7 @@ export class StatsPage extends EventEmitter {
         ),
       ).body,
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
       }),
       E.divRef(this.updateFrequencyNote, {
         class: "usage-update-frequency-note",
@@ -188,7 +188,7 @@ export class StatsPage extends EventEmitter {
       }),
       E.divRef(this.resultList, {
         class: "stats-page-result-list",
-        style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_1X}rem; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
+        style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_1X}rem; display: flex; flex-flow: column nowrap; gap: ${GAP_0_5X}rem;`,
       }),
     );
 

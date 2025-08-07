@@ -10,7 +10,7 @@ import {
   BORDER_WIDTH_1,
   FONT_M,
   FONT_S,
-  GAP_d_25X,
+  GAP_0_25X,
   ICON_BUTTON_M,
   ICON_L,
   LINE_HEIGHT_M,
@@ -52,7 +52,7 @@ export class PasswordInputWithErrorMsg
         E.text(label),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
       }),
       E.divRef(
         this.inputContainer,

@@ -14,8 +14,8 @@ import {
   FONT_S,
   FONT_WEIGHT_600,
   GAP_1X,
-  GAP_d_25X,
-  GAP_d_5X,
+  GAP_0_25X,
+  GAP_0_5X,
   ICON_L,
   LINE_HEIGHT_L,
   LINE_HEIGHT_M,
@@ -33,7 +33,7 @@ export function eContainerTitle(title: string): HTMLDivElement {
   return E.div(
     {
       class: "container-title",
-      style: `padding: 0 ${GAP_d_5X}rem; font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+      style: `padding: 0 ${GAP_0_5X}rem; font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
     },
     E.text(title),
   );
@@ -65,7 +65,7 @@ export function eSeasonItemContainerRef(
 ): HTMLDivElement {
   return E.divRef(ref, {
     class: "season-item-container-content",
-    style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_d_5X}rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: ${GAP_1X}rem;`,
+    style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_0_5X}rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: ${GAP_1X}rem;`,
   });
 }
 
@@ -81,7 +81,7 @@ export function eSeasonItem(
     },
     eCoverImage("100%", season.coverImageUrl),
     E.div({
-      style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+      style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
     }),
     E.div(
       {
@@ -105,7 +105,7 @@ export function eContinueEpisodeItemContainerRef(
 ): HTMLDivElement {
   return E.divRef(ref, {
     class: "continue-watching-content",
-    style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_d_5X}rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: ${GAP_1X}rem;`,
+    style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_0_5X}rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: ${GAP_1X}rem;`,
   });
 }
 
@@ -128,12 +128,12 @@ export function eContinueEpisodeItem(
       eCoverImage("100%", season.coverImageUrl),
     ),
     E.div({
-      style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
+      style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
     }),
     E.div(
       {
         class: "continue-episode-info",
-        style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: ${GAP_d_25X}rem;`,
+        style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: ${GAP_0_25X}rem;`,
       },
       E.div(
         {
@@ -152,7 +152,7 @@ export function eContinueEpisodeItem(
       E.div(
         {
           class: "continue-episode-progress-line",
-          style: `width: 100%; display: flex; flex-flow: row wrap; align-items: center; gap: ${GAP_d_5X}rem;`,
+          style: `width: 100%; display: flex; flex-flow: row wrap; align-items: center; gap: ${GAP_0_5X}rem;`,
         },
         E.div(
           {
@@ -184,7 +184,7 @@ export function ePublisherItemContainerRef(
 ): HTMLDivElement {
   return E.divRef(ref, {
     class: "publishers-content",
-    style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_d_5X}rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); gap: ${GAP_1X}rem;`,
+    style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_0_5X}rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); gap: ${GAP_1X}rem;`,
   });
 }
 
@@ -195,7 +195,7 @@ export function ePublisherItem(
   return E.div(
     {
       class: "publisher-item",
-      style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem; ${customStyle}`,
+      style: `cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem; ${customStyle}`,
     },
     E.image({
       class: "publisher-item-avatar",
@@ -223,7 +223,7 @@ export function ePublisherItem(
         E.text(`${AT_USER}${publisher.accountId}`),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
       }),
       E.div(
         {
@@ -243,7 +243,7 @@ export function ePublisherContextItem(
   return E.div(
     {
       class: "publisher-context-item-container",
-      style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_d_5X}rem; display: flex; flex-flow: row nowrap; justify-content: center; ${customStyle}`,
+      style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_0_5X}rem; display: flex; flex-flow: row nowrap; justify-content: center; ${customStyle}`,
     },
     E.div(
       {
@@ -252,7 +252,7 @@ export function ePublisherContextItem(
       },
       E.image({
         class: "publisher-context-item-avatar",
-        style: `float: left; margin: 0 ${GAP_d_5X}rem ${GAP_d_25X}rem 0; width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: 100%;`,
+        style: `float: left; margin: 0 ${GAP_0_5X}rem ${GAP_0_25X}rem 0; width: ${AVATAR_M}rem; height: ${AVATAR_M}rem; border-radius: 100%;`,
         src: publisher.avatarLargeUrl,
         alt: publisher.name,
       }),
@@ -271,7 +271,7 @@ export function ePublisherContextItem(
         E.text(`${AT_USER}${publisher.accountId}`),
       ),
       E.div({
-        style: `height: ${GAP_d_5X}rem;`,
+        style: `height: ${GAP_0_5X}rem;`,
       }),
       E.div(
         {

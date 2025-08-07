@@ -27,8 +27,8 @@ import {
   FONT_M,
   FONT_WEIGHT_600,
   GAP_2X,
-  GAP_d_25X,
-  GAP_d_5X,
+  GAP_0_25X,
+  GAP_0_5X,
   ICON_BUTTON_M,
   ICON_L,
   ICON_M,
@@ -95,7 +95,7 @@ export class VideoTrackEditor extends EventEmitter {
   public constructor(videoTrack: VideoTrack) {
     super();
     this.body = E.div({
-      style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
+      style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
     });
     this.videoTrack = copyMessage(videoTrack, VIDEO_TRACK);
     this.videoTrack.staging = undefined; // Only copy non-staging values
@@ -114,7 +114,7 @@ export class VideoTrackEditor extends EventEmitter {
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -124,7 +124,7 @@ export class VideoTrackEditor extends EventEmitter {
             E.text(formatSecondsAsHHMMSS(this.videoTrack.durationSec)),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -134,7 +134,7 @@ export class VideoTrackEditor extends EventEmitter {
             E.text(this.videoTrack.resolution),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           assign(
             this.deleteTrackButton,
@@ -159,11 +159,11 @@ export class VideoTrackEditor extends EventEmitter {
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           eTransitionArrow(),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -173,7 +173,7 @@ export class VideoTrackEditor extends EventEmitter {
             E.text(this.videoTrack.resolution),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: ${GAP_d_5X + ICON_BUTTON_M}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_0_5X + ICON_BUTTON_M}rem;`,
           }),
         ),
       );
@@ -201,7 +201,7 @@ export class VideoTrackEditor extends EventEmitter {
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateDeletingLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -211,7 +211,7 @@ export class VideoTrackEditor extends EventEmitter {
             E.text(formatSecondsAsHHMMSS(this.videoTrack.durationSec)),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -221,7 +221,7 @@ export class VideoTrackEditor extends EventEmitter {
             E.text(this.videoTrack.resolution),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           assign(
             this.dropStagingButton,
@@ -264,7 +264,7 @@ export class VideoTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -274,7 +274,7 @@ export class VideoTrackEditor extends EventEmitter {
             E.text(formatSecondsAsHHMMSS(this.videoTrack.durationSec)),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -284,7 +284,7 @@ export class VideoTrackEditor extends EventEmitter {
             E.text(this.videoTrack.resolution),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           assign(
             this.dropStagingButton,
@@ -355,7 +355,7 @@ export class AudioTrackEditor extends EventEmitter {
   public constructor(audioTrack: AudioTrack) {
     super();
     this.body = E.div({
-      style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
+      style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
     });
     this.audioTrack = copyMessage(audioTrack, AUDIO_TRACK);
     this.audioTrack.staging = undefined; // Only copy non-staging values
@@ -374,7 +374,7 @@ export class AudioTrackEditor extends EventEmitter {
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -384,7 +384,7 @@ export class AudioTrackEditor extends EventEmitter {
             E.text(this.audioTrack.committed.name),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -398,7 +398,7 @@ export class AudioTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           assign(
             this.editTrackButton,
@@ -409,7 +409,7 @@ export class AudioTrackEditor extends EventEmitter {
             ),
           ).body,
           E.div({
-            style: `flex: 0 0 auto; width: ${GAP_d_25X}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_0_25X}rem;`,
           }),
           assign(
             this.deleteTrackButton,
@@ -434,11 +434,11 @@ export class AudioTrackEditor extends EventEmitter {
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           eTransitionArrow(),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -452,7 +452,7 @@ export class AudioTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M * 2}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M * 2}rem;`,
           }),
         ),
       );
@@ -482,7 +482,7 @@ export class AudioTrackEditor extends EventEmitter {
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateDeletingLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -492,7 +492,7 @@ export class AudioTrackEditor extends EventEmitter {
             E.text(this.audioTrack.committed.name),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -506,7 +506,7 @@ export class AudioTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M}rem;`,
           }),
           assign(
             this.dropStagingButton,
@@ -552,7 +552,7 @@ export class AudioTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.inputRef(this.nameInput, {
             class: "update-tracks-audio-adding-name",
@@ -561,13 +561,13 @@ export class AudioTrackEditor extends EventEmitter {
             maxlength: `${MAX_AUDIO_TRACK_NAME_LENGTH}`,
           }),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.divRef(
             this.isDefaultToggleButton,
             {
               class: "update-tracks-audio-default-button",
-              style: `cursor: pointer; box-sizing: border-box; height: ${ICON_BUTTON_M}rem; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_d_25X}rem;`,
+              style: `cursor: pointer; box-sizing: border-box; height: ${ICON_BUTTON_M}rem; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_0_25X}rem;`,
             },
             E.divRef(
               this.isDefaultText,
@@ -590,7 +590,7 @@ export class AudioTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 0 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M}rem;`,
           }),
           assign(
             this.dropStagingButton,
@@ -715,7 +715,7 @@ export class SubtitleTrackEditor extends EventEmitter {
   public constructor(subtitleTrack: any) {
     super();
     this.body = E.div({
-      style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
+      style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
     });
     this.subtitleTrack = copyMessage(subtitleTrack, SUBTITLE_TRACK);
     this.subtitleTrack.staging = undefined; // Only copy non-staging values
@@ -734,7 +734,7 @@ export class SubtitleTrackEditor extends EventEmitter {
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -744,7 +744,7 @@ export class SubtitleTrackEditor extends EventEmitter {
             E.text(this.subtitleTrack.committed.name),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           assign(
             this.editTrackButton,
@@ -755,7 +755,7 @@ export class SubtitleTrackEditor extends EventEmitter {
             ),
           ).body,
           E.div({
-            style: `flex: 0 0 auto; width: ${GAP_d_25X}rem;`,
+            style: `flex: 0 0 auto; width: ${GAP_0_25X}rem;`,
           }),
           assign(
             this.deleteTrackButton,
@@ -780,11 +780,11 @@ export class SubtitleTrackEditor extends EventEmitter {
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           eTransitionArrow(),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M * 2}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M * 2}rem;`,
           }),
         ),
       );
@@ -814,7 +814,7 @@ export class SubtitleTrackEditor extends EventEmitter {
             E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateDeletingLabel),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.div(
             {
@@ -824,7 +824,7 @@ export class SubtitleTrackEditor extends EventEmitter {
             E.text(this.subtitleTrack.committed.name),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M}rem;`,
           }),
           assign(
             this.dropStagingButton,
@@ -870,7 +870,7 @@ export class SubtitleTrackEditor extends EventEmitter {
             ),
           ),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
           }),
           E.inputRef(this.nameInput, {
             class: "update-tracks-subtitle-adding-name",
@@ -879,7 +879,7 @@ export class SubtitleTrackEditor extends EventEmitter {
             maxlength: `${MAX_SUBTITLE_TRACK_NAME_LENGTH}`,
           }),
           E.div({
-            style: `flex: 1 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M}rem;`,
+            style: `flex: 1 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M}rem;`,
           }),
           assign(
             this.dropStagingButton,
@@ -1028,7 +1028,7 @@ export class UpdateTracksPage extends EventEmitter {
             E.div(
               {
                 class: "update-tracks-videos-header",
-                style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center;`,
+                style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center;`,
               },
               E.div(
                 {
@@ -1038,7 +1038,7 @@ export class UpdateTracksPage extends EventEmitter {
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
               ),
               E.div({
-                style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+                style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
               }),
               E.div(
                 {
@@ -1048,7 +1048,7 @@ export class UpdateTracksPage extends EventEmitter {
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackVideoDurationLabel),
               ),
               E.div({
-                style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+                style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
               }),
               E.div(
                 {
@@ -1058,7 +1058,7 @@ export class UpdateTracksPage extends EventEmitter {
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackVideoResolutionLabel),
               ),
               E.div({
-                style: `flex: 0 0 auto; width: ${GAP_d_5X + ICON_BUTTON_M}rem;`,
+                style: `flex: 0 0 auto; width: ${GAP_0_5X + ICON_BUTTON_M}rem;`,
               }),
             ),
           ]),
@@ -1078,7 +1078,7 @@ export class UpdateTracksPage extends EventEmitter {
             E.div(
               {
                 class: "update-tracks-audio-tracks-header",
-                style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center;`,
+                style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center;`,
               },
               E.div(
                 {
@@ -1088,7 +1088,7 @@ export class UpdateTracksPage extends EventEmitter {
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
               ),
               E.div({
-                style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+                style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
               }),
               E.div(
                 {
@@ -1098,7 +1098,7 @@ export class UpdateTracksPage extends EventEmitter {
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
               ),
               E.div({
-                style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+                style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
               }),
               E.div(
                 {
@@ -1108,7 +1108,7 @@ export class UpdateTracksPage extends EventEmitter {
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultLabel),
               ),
               E.div({
-                style: `flex: 0 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M * 2}rem;`,
+                style: `flex: 0 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M * 2}rem;`,
               }),
             ),
           ]),
@@ -1128,7 +1128,7 @@ export class UpdateTracksPage extends EventEmitter {
             E.div(
               {
                 class: "update-tracks-subtitle-tracks-header",
-                style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center;`,
+                style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center;`,
               },
               E.div(
                 {
@@ -1138,7 +1138,7 @@ export class UpdateTracksPage extends EventEmitter {
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
               ),
               E.div({
-                style: `flex: 1 0 auto; width: ${GAP_d_5X}rem;`,
+                style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
               }),
               E.div(
                 {
@@ -1148,7 +1148,7 @@ export class UpdateTracksPage extends EventEmitter {
                 E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
               ),
               E.div({
-                style: `flex: 1 0 auto; width: ${GAP_d_5X + GAP_d_25X + ICON_BUTTON_M * 2}rem;`,
+                style: `flex: 1 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M * 2}rem;`,
               }),
             ),
           ]),
@@ -1161,7 +1161,7 @@ export class UpdateTracksPage extends EventEmitter {
       E.div(
         {
           class: "update-tracks-video-actions",
-          style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
+          style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_0_5X}rem;`,
         },
         E.divRef(this.actionError, {
           class: "update-tracks-action-error",

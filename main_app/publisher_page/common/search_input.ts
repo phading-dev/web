@@ -12,7 +12,7 @@ import {
   BORDER_RADIUS_S,
   BORDER_WIDTH_1,
   GAP_1X,
-  GAP_d_5X,
+  GAP_0_5X,
   ICON_BUTTON_M,
   ICON_L,
   PAGE_MAX_WIDTH_M,
@@ -53,7 +53,7 @@ export class SearchInput extends EventEmitter {
     this.body = E.div(
       {
         class: "search-input",
-        style: `padding: 0 ${GAP_d_5X}rem; display: flex; flex-flow: row nowrap; justify-content: center;`,
+        style: `padding: 0 ${GAP_0_5X}rem; display: flex; flex-flow: row nowrap; justify-content: center;`,
       },
       E.div(
         {

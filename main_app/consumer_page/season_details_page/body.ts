@@ -51,8 +51,8 @@ import {
   FONT_WEIGHT_600,
   GAP_1X,
   GAP_2X,
-  GAP_d_25X,
-  GAP_d_5X,
+  GAP_0_25X,
+  GAP_0_5X,
   ICON_BUTTON_L,
   ICON_BUTTON_M,
   ICON_L,
@@ -162,7 +162,7 @@ export class SeasonDetailsPage extends EventEmitter {
     super();
     this.body = ePageWithTopDownCard(
       this.card,
-      `max-width: ${PAGE_MAX_WIDTH_XL}rem; padding: ${ICON_BUTTON_L + GAP_d_5X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
+      `max-width: ${PAGE_MAX_WIDTH_XL}rem; padding: ${ICON_BUTTON_L + GAP_0_5X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
     );
     this.load();
   }
@@ -269,7 +269,7 @@ export class SeasonDetailsPage extends EventEmitter {
             this.continueEpisodeButton,
             {
               class: "season-details-continue-episode",
-              style: `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem; padding: ${GAP_1X}rem; border-radius: ${BORDER_RADIUS_S}rem; border: ${BORDER_WIDTH_2}rem solid ${continueEpisode.canPlay ? SCHEME.primary1 : SCHEME.neutral2}; cursor: ${continueEpisode.canPlay ? "pointer" : "default"};`,
+              style: `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem; padding: ${GAP_1X}rem; border-radius: ${BORDER_RADIUS_S}rem; border: ${BORDER_WIDTH_2}rem solid ${continueEpisode.canPlay ? SCHEME.primary1 : SCHEME.neutral2}; cursor: ${continueEpisode.canPlay ? "pointer" : "default"};`,
             },
             E.div(
               {
@@ -285,7 +285,7 @@ export class SeasonDetailsPage extends EventEmitter {
             E.div(
               {
                 class: "season-details-continue-episode-info",
-                style: `flex: 1; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
+                style: `flex: 1; display: flex; flex-flow: column nowrap; gap: ${GAP_0_5X}rem;`,
               },
               E.div(
                 {
@@ -320,7 +320,7 @@ export class SeasonDetailsPage extends EventEmitter {
                   ),
                 ),
                 E.div({
-                  style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
+                  style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
                 }),
                 E.div(
                   {
@@ -355,7 +355,7 @@ export class SeasonDetailsPage extends EventEmitter {
                 createFilledStarIcon(SCHEME.star),
               ),
               E.div({
-                style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
+                style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
               }),
               E.div(
                 {
@@ -399,7 +399,7 @@ export class SeasonDetailsPage extends EventEmitter {
               this.watchLaterButton,
               new BlockingButton(
                 new OutlineButton(
-                  `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem;`,
+                  `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
                 ).append(
                   E.div(
                     {
@@ -416,7 +416,7 @@ export class SeasonDetailsPage extends EventEmitter {
               this.removeWatchLaterButton,
               new BlockingButton(
                 new OutlineButton(
-                  `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem;`,
+                  `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
                 ).append(
                   E.div(
                     {
@@ -432,7 +432,7 @@ export class SeasonDetailsPage extends EventEmitter {
             assign(
               this.shareButton,
               new OutlineButton(
-                `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem;`,
+                `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
               ).append(
                 E.div(
                   {
@@ -453,11 +453,11 @@ export class SeasonDetailsPage extends EventEmitter {
             eRowBoxWithArrow([
               E.div(
                 {
-                  style: `display: flex; flex-flow: row nowrap; align-items: flex-start; gap: ${GAP_d_5X}rem;`,
+                  style: `display: flex; flex-flow: row nowrap; align-items: flex-start; gap: ${GAP_0_5X}rem;`,
                 },
                 E.image({
                   class: "publisher-item-avatar",
-                  style: `flex: 0 0 auto; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; margin-top: ${GAP_d_25X}rem; border-radius: 100%;`,
+                  style: `flex: 0 0 auto; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; margin-top: ${GAP_0_25X}rem; border-radius: 100%;`,
                   src: publisher.avatarSmallUrl,
                   alt: publisher.name,
                 }),
@@ -496,7 +496,7 @@ export class SeasonDetailsPage extends EventEmitter {
             E.text(seasonDetails.description),
           ),
           E.div({
-            style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+            style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
           }),
           E.divRef(
             this.showMoreDescriptionButton,
@@ -528,7 +528,7 @@ export class SeasonDetailsPage extends EventEmitter {
         E.div(
           {
             class: "season-details-total-episodes",
-            style: `width: 100%; text-align: center; font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; padding: ${GAP_d_5X}rem 0; color: ${SCHEME.neutral0}; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
+            style: `width: 100%; text-align: center; font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; padding: ${GAP_0_5X}rem 0; color: ${SCHEME.neutral0}; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1};`,
           },
           E.text(
             `${LOCALIZED_TEXT.totalEpisodes[0]}${seasonDetails.totalEpisodes}${LOCALIZED_TEXT.totalEpisodes[1]}`,
@@ -693,7 +693,7 @@ export class SeasonDetailsPage extends EventEmitter {
     let body = E.div(
       {
         class: "season-details-episode-item",
-        style: `padding: ${GAP_d_5X}rem ${GAP_1X}rem; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem; align-items: center; cursor: ${episode.canPlay ? "pointer" : "default"};`,
+        style: `padding: ${GAP_0_5X}rem ${GAP_1X}rem; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem; align-items: center; cursor: ${episode.canPlay ? "pointer" : "default"};`,
       },
       E.div(
         {
@@ -731,7 +731,7 @@ export class SeasonDetailsPage extends EventEmitter {
                 createCircularProgressIcon(SCHEME.primary1, SCHEME.neutral2, 0),
               ),
               E.div({
-                style: `flex: 0 0 auto; width: ${GAP_d_5X}rem;`,
+                style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
               }),
               E.div(
                 {
@@ -986,7 +986,7 @@ export class LoadMoreEpisodesButton extends Button {
 
   public constructor(label: string) {
     super(
-      `${COMMENT_BUTTON_WITHOUT_BORDER_STYLE} width: 100%; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_d_5X}rem;`,
+      `${COMMENT_BUTTON_WITHOUT_BORDER_STYLE} width: 100%; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_0_5X}rem;`,
     );
     this.append(
       E.div(

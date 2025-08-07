@@ -11,7 +11,7 @@ import {
   FONT_WEIGHT_600,
   GAP_1X,
   GAP_2X,
-  GAP_d_5X,
+  GAP_0_5X,
   LINE_HEIGHT_FOR_BUTTON_M,
   LINE_HEIGHT_M,
 } from "../../../../common/sizes";
@@ -57,7 +57,7 @@ function eRadioOptionsLine(
   return E.div(
     {
       class: "settings-panel-comment-overlay-options-line",
-      style: `display: flex; flex-flow: row wrap; gap: ${GAP_d_5X}rem; align-items: flex-start; justify-content: flex-end;`,
+      style: `display: flex; flex-flow: row wrap; gap: ${GAP_0_5X}rem; align-items: flex-start; justify-content: flex-end;`,
     },
     E.div(
       {

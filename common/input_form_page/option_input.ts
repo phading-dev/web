@@ -1,7 +1,7 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
 import { OptionPill, RadioOptionsGroup } from "../option_buttons";
-import { FONT_M, GAP_1X, GAP_d_25X, LINE_HEIGHT_M } from "../sizes";
+import { FONT_M, GAP_1X, GAP_0_25X, LINE_HEIGHT_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 
@@ -32,7 +32,7 @@ export class RadioOptionInput<ValueType>
         E.text(label),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
       }),
       E.div(
         {

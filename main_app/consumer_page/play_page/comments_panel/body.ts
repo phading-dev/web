@@ -4,7 +4,7 @@ import { SCHEME } from "../../../../common/color_scheme";
 import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
 import { COMMON_BASIC_INPUT_STYLE } from "../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
-import { FONT_M, GAP_d_5X, LINE_HEIGHT_M } from "../../../../common/sizes";
+import { FONT_M, GAP_0_5X, LINE_HEIGHT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { CommentWithAuthor } from "../common/comment_with_author";
 import { CommentEntry } from "./comment_entry";
@@ -56,7 +56,7 @@ export class CommentsPanel extends EventEmitter {
         this.commentInputLine,
         {
           class: "comments-panel-input-container",
-          style: `flex: 0 0 auto; width: 100%; display: flex; flex-flow: column nowrap; padding-bottom: ${GAP_d_5X}rem; gap: ${GAP_d_5X}rem;`,
+          style: `flex: 0 0 auto; width: 100%; display: flex; flex-flow: column nowrap; padding-bottom: ${GAP_0_5X}rem; gap: ${GAP_0_5X}rem;`,
         },
         E.inputRef(this.commentInput, {
           class: "comments-panel-input",

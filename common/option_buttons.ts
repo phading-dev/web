@@ -5,8 +5,8 @@ import {
   BORDER_WIDTH_2,
   FONT_M,
   FONT_WEIGHT_600,
-  GAP_d_5X,
-  GAP_d_75X,
+  GAP_0_5X,
+  GAP_0_25X,
   LINE_HEIGHT_FOR_BUTTON_M,
   LINE_HEIGHT_M,
 } from "./sizes";
@@ -39,7 +39,7 @@ export class OptionPill<ValueType>
     this.body = E.div(
       {
         class: "option-pill-button",
-        style: `flex: 0 0 auto; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_FOR_BUTTON_M}rem; border-radius: ${LINE_HEIGHT_FOR_BUTTON_M}rem; padding: 0 ${GAP_d_75X}rem; border: ${BORDER_WIDTH_2}rem solid; ${customStyle}`,
+        style: `flex: 0 0 auto; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_FOR_BUTTON_M}rem; border-radius: ${LINE_HEIGHT_FOR_BUTTON_M}rem; padding: 0 ${GAP_0_25X}rem; border: ${BORDER_WIDTH_2}rem solid; ${customStyle}`,
       },
       E.text(label),
     );
@@ -98,7 +98,7 @@ export class OptionTab<ValueType>
     this.body = E.div(
       {
         class: "option-tab-button",
-        style: `flex: 0 0 auto; display: flex; justify-content: center; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem; padding: ${GAP_d_5X}rem ${GAP_d_75X}rem; cursor: pointer; border-bottom: ${BORDER_WIDTH_2}rem solid; ${customStyle}`,
+        style: `flex: 0 0 auto; display: flex; justify-content: center; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem; padding: ${GAP_0_5X}rem ${GAP_0_25X}rem; cursor: pointer; border-bottom: ${BORDER_WIDTH_2}rem solid; ${customStyle}`,
       },
       E.text(label),
     );

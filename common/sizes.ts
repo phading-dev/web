@@ -14,6 +14,8 @@ export let LINE_HEIGHT_S = 1.25; // rem
 export let LINE_HEIGHT_M = 1.5; // rem
 export let LINE_HEIGHT_L = 1.75; // rem
 export let LINE_HEIGHT_XL = 2; // rem
+export let LINE_HEIGHT_XXL = 2.5; // rem
+export let LINE_HEIGHT_XXXL = 3; // rem
 export let LINE_HEIGHT_FOR_BUTTON_M = 2.5; // rem. The same as ICON_BUTTON_M
 
 export let ICON_XS = .625; // rem
@@ -30,12 +32,12 @@ export let ICON_BUTTON_XL = 4; // rem
 export let DATE_INPUT_WIDTH = 13; // rem
 export let DATETIME_INPUT_WIDTH = 16; // rem
 
-export let GAP_d_25X = .25; // rem
-export let GAP_d_5X = .5; // rem
-export let GAP_d_75X = .75; // rem
+export let GAP_0_25X = .25; // rem
+export let GAP_0_5X = .5; // rem
+export let GAP_0_75X = .75; // rem
 export let GAP_1X = 1; // rem
-export let GAP_1_d_25X = 1.25; // rem
-export let GAP_1_d_5X = 1.5; // rem
+export let GAP_1_25X = 1.25; // rem
+export let GAP_1_5X = 1.5; // rem
 export let GAP_2X = 2; // rem
 export let GAP_5X = 5; // rem
 export let GAP_6X = 6; // rem

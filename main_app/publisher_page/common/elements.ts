@@ -8,7 +8,7 @@ import {
 import { createFilledStarIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { eCoverImage } from "../../../common/season_cover_image";
-import { BORDER_WIDTH_1, FONT_M, FONT_S, FONT_WEIGHT_600, GAP_1X, GAP_d_5X, ICON_M, LINE_HEIGHT_M, LINE_HEIGHT_S } from "../../../common/sizes";
+import { BORDER_WIDTH_1, FONT_M, FONT_S, FONT_WEIGHT_600, GAP_1X, GAP_0_5X, ICON_M, LINE_HEIGHT_M, LINE_HEIGHT_S } from "../../../common/sizes";
 import { SeasonSummary } from "@phading/product_service_interface/show/web/publisher/summary";
 import { E } from "@selfage/element/factory";
 
@@ -20,7 +20,7 @@ export function ePublishedSeasonItem(
   return E.div(
     {
       class: "published-season-item",
-      style: `margin: 0 ${GAP_1X}rem; cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem; padding: ${GAP_d_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; ${customStyle}`,
+      style: `margin: 0 ${GAP_1X}rem; cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem; padding: ${GAP_0_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; ${customStyle}`,
     },
     E.div(
       {
@@ -72,7 +72,7 @@ export function ePublishedSeasonItem(
           createFilledStarIcon(SCHEME.star),
         ),
         E.div({
-          style: `flex: 0 0 ${GAP_d_5X}rem;`,
+          style: `flex: 0 0 ${GAP_0_5X}rem;`,
         }),
         E.div(
           {
@@ -114,7 +114,7 @@ export function eTakenDownSeasonItem(
   return E.div(
     {
       class: "published-season-item",
-      style: `margin: 0 ${GAP_1X}rem; cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem; padding: ${GAP_d_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; ${customStyle}`,
+      style: `margin: 0 ${GAP_1X}rem; cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem; padding: ${GAP_0_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; ${customStyle}`,
     },
     E.div(
       {
@@ -174,7 +174,7 @@ export function eDraftSeasonItem(
   return E.div(
     {
       class: "draft-season-item",
-      style: `margin: 0 ${GAP_1X}rem; cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem; padding: ${GAP_d_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; ${customStyle}`,
+      style: `margin: 0 ${GAP_1X}rem; cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem; padding: ${GAP_0_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; ${customStyle}`,
     },
     E.div(
       {
@@ -234,7 +234,7 @@ export function eArchivedSeasonItem(
   return E.div(
     {
       class: "archived-season-item",
-      style: `margin: 0 ${GAP_1X}rem; cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem; padding: ${GAP_d_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; ${customStyle}`,
+      style: `margin: 0 ${GAP_1X}rem; cursor: pointer; display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem; padding: ${GAP_0_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; ${customStyle}`,
     },
     E.div(
       {

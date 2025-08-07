@@ -14,9 +14,10 @@ import {
   FONT_L,
   FONT_M,
   FONT_WEIGHT_600,
+  FONT_XXXL,
   GAP_1X,
   GAP_2X,
-  GAP_d_5X,
+  GAP_0_5X,
   LINE_HEIGHT_L,
   LINE_HEIGHT_M,
 } from "../../../common/sizes";
@@ -75,7 +76,7 @@ export class SignUpPage extends EventEmitter {
             class: "sign-up-header",
             style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_1X}rem;`,
           },
-          createBrandIcon(),
+          createBrandIcon(FONT_XXXL),
           assign(
             this.subtitleViewer,
             E.div(
@@ -220,7 +221,7 @@ export class SignUpPage extends EventEmitter {
             {},
             E.div(
               {
-                style: `display: inline; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; margin: 0 ${GAP_d_5X}rem 0 ${GAP_2X}rem;`,
+                style: `display: inline; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; margin: 0 ${GAP_0_5X}rem 0 ${GAP_2X}rem;`,
               },
               E.text("•"),
             ),
@@ -238,7 +239,7 @@ export class SignUpPage extends EventEmitter {
             {},
             E.div(
               {
-                style: `display: inline; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; margin: 0 ${GAP_d_5X}rem 0 ${GAP_2X}rem;`,
+                style: `display: inline; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; margin: 0 ${GAP_0_5X}rem 0 ${GAP_2X}rem;`,
               },
               E.text("•"),
             ),
@@ -257,7 +258,7 @@ export class SignUpPage extends EventEmitter {
             {},
             E.div(
               {
-                style: `display: inline; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; margin: 0 ${GAP_d_5X}rem 0 ${GAP_2X}rem;`,
+                style: `display: inline; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; margin: 0 ${GAP_0_5X}rem 0 ${GAP_2X}rem;`,
               },
               E.text("•"),
             ),

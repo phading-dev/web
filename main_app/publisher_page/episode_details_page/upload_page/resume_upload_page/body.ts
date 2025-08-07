@@ -10,7 +10,7 @@ import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import {
   FONT_M,
   GAP_2X,
-  GAP_d_25X,
+  GAP_0_25X,
   LINE_HEIGHT_M,
 } from "../../../../../common/sizes";
 import { ePage } from "../common/elements";
@@ -44,7 +44,7 @@ export class ResumeUploadPage extends EventEmitter {
       }),
       assign(this.fileDropZone, new FileDropZone()).body,
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
       }),
       E.divRef(this.errorMessage, {
         class: "upload-page-drop-zone-error-message",

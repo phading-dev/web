@@ -11,8 +11,8 @@ import {
   FONT_WEIGHT_600,
   GAP_1X,
   GAP_2X,
-  GAP_d_25X,
-  GAP_d_5X,
+  GAP_0_25X,
+  GAP_0_5X,
   LINE_HEIGHT_M,
   PAGE_MAX_WIDTH_L,
 } from "../../../common/sizes";
@@ -74,7 +74,7 @@ export class PayoutPage extends EventEmitter {
           E.text(LOCALIZED_TEXT.payoutManagementTitle),
         ),
         E.div({
-          style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+          style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
         }),
         E.div(
           {
@@ -103,7 +103,7 @@ export class PayoutPage extends EventEmitter {
         E.text(LOCALIZED_TEXT.payoutManagementTitle),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
       }),
       E.div(
         {
@@ -126,7 +126,7 @@ export class PayoutPage extends EventEmitter {
         E.text(LOCALIZED_TEXT.payoutActivitiesTitle),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
       }),
       assign(
         this.monthRangeInput,
@@ -141,7 +141,7 @@ export class PayoutPage extends EventEmitter {
       }),
       E.divRef(this.payoutActivityList, {
         class: "payout-page-payout-activities-list",
-        style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
+        style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_0_5X}rem;`,
       }),
     );
     this.monthRangeInput.val.setValues(

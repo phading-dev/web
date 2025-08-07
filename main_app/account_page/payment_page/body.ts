@@ -19,9 +19,9 @@ import {
   FONT_WEIGHT_600,
   GAP_1X,
   GAP_2X,
-  GAP_d_25X,
-  GAP_d_5X,
-  GAP_d_75X,
+  GAP_0_25X,
+  GAP_0_5X,
+  GAP_0_75X,
   ICON_L,
   LINE_HEIGHT_M,
   LINE_HEIGHT_S,
@@ -107,7 +107,7 @@ export class PaymentPage extends EventEmitter {
           E.text(LOCALIZED_TEXT.paymentStatusTitle),
         ),
         E.div({
-          style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+          style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
         }),
         E.div(
           {
@@ -137,12 +137,12 @@ export class PaymentPage extends EventEmitter {
         E.text(LOCALIZED_TEXT.paymentStatusTitle),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
       }),
       E.div(
         {
           class: "payment-page-status-line",
-          style: `display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem; align-items: center;`,
+          style: `display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem; align-items: center;`,
         },
         E.div(
           {
@@ -164,12 +164,12 @@ export class PaymentPage extends EventEmitter {
       profile.balanceAmount !== 0
         ? [
             E.div({
-              style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+              style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
             }),
             E.div(
               {
                 class: "payment-page-balance-line",
-                style: `display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem; align-items: center;`,
+                style: `display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem; align-items: center;`,
               },
               E.div(
                 {
@@ -203,12 +203,12 @@ export class PaymentPage extends EventEmitter {
       PaymentsOverallState.WITH_FAILED_PAYMENTS
         ? [
             E.div({
-              style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+              style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
             }),
             E.div(
               {
                 class: "payment-page-retry-payments-line",
-                style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: ${GAP_d_5X}rem; align-items: center; justify-content: flex-start;`,
+                style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: ${GAP_0_5X}rem; align-items: center; justify-content: flex-start;`,
               },
               assign(
                 this.retryPaymentsButton,
@@ -233,12 +233,12 @@ export class PaymentPage extends EventEmitter {
       profile.paymentsOverallState === PaymentsOverallState.ALL_PAID
         ? [
             E.div({
-              style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+              style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
             }),
             E.div(
               {
                 class: "payment-page-reactivate-line",
-                style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: ${GAP_d_5X}rem; align-items: center; justify-content: flex-start;`,
+                style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: ${GAP_0_5X}rem; align-items: center; justify-content: flex-start;`,
               },
               assign(
                 this.reactivateButton,
@@ -270,7 +270,7 @@ export class PaymentPage extends EventEmitter {
         E.text(LOCALIZED_TEXT.paymentMethodTitle),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
       }),
       profile.primaryPaymentMethod
         ? new CardPaymentItem(
@@ -281,7 +281,7 @@ export class PaymentPage extends EventEmitter {
       ...(profile.canClaimInitCredit
         ? [
             E.div({
-              style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+              style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
             }),
             E.div(
               {
@@ -307,12 +307,12 @@ export class PaymentPage extends EventEmitter {
           ]
         : []),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_75X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_75X}rem;`,
       }),
       E.div(
         {
           class: "payment-page-add-payment-method-line",
-          style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: ${GAP_d_5X}rem; align-items: center; justify-content: flex-start;`,
+          style: `width: 100%; display: flex; flex-flow: row-reverse wrap; gap: ${GAP_0_5X}rem; align-items: center; justify-content: flex-start;`,
         },
         assign(
           this.addPaymentMethodButton,
@@ -346,7 +346,7 @@ export class PaymentPage extends EventEmitter {
         E.text(LOCALIZED_TEXT.paymentActivitiesTitle),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
       }),
       assign(
         this.monthRangeInput,
@@ -361,7 +361,7 @@ export class PaymentPage extends EventEmitter {
       }),
       E.divRef(this.paymentActivityList, {
         class: "payment-page-payment-activities-list",
-        style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
+        style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_0_5X}rem;`,
       }),
     );
     this.monthRangeInput.val.setValues(

@@ -7,7 +7,7 @@ import { TabSwitcher } from "../../../common/page_navigator";
 import { getRootFontSize } from "../../../common/root_font_size";
 import {
   GAP_5X,
-  GAP_d_5X,
+  GAP_0_5X,
   ICON_BUTTON_M,
   ICON_L,
   PAGE_MAX_WIDTH_M,
@@ -191,7 +191,7 @@ export class PlayPage extends EventEmitter {
         },
         E.divRef(this.commentOverlayContainer, {
           class: "play-page-comment-overlay-container",
-          style: `position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding: ${GAP_d_5X}rem 0 ${GAP_5X}rem;`,
+          style: `position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding: ${GAP_0_5X}rem 0 ${GAP_5X}rem;`,
         }),
         ...assign(
           this.player,
@@ -209,7 +209,7 @@ export class PlayPage extends EventEmitter {
         this.panelContainer,
         {
           class: "play-page-panels",
-          style: `flex: 0 0 auto; max-width: ${PAGE_MAX_WIDTH_M}rem; background-color: ${SCHEME.neutral4}; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; padding: 0 ${GAP_d_5X}rem ${GAP_d_5X}rem ${GAP_d_5X}rem; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
+          style: `flex: 0 0 auto; max-width: ${PAGE_MAX_WIDTH_M}rem; background-color: ${SCHEME.neutral4}; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; padding: 0 ${GAP_0_5X}rem ${GAP_0_5X}rem ${GAP_0_5X}rem; flex-flow: column nowrap; gap: ${GAP_0_5X}rem;`,
         },
         assign(
           this.closePanelButton,

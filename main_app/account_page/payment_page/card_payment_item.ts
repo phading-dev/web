@@ -6,7 +6,7 @@ import {
   FONT_M,
   FONT_S,
   GAP_1X,
-  GAP_d_5X,
+  GAP_0_5X,
 } from "../../../common/sizes";
 import { getCardBrandName } from ".//card_brand_name";
 import { createCardBrandIcon } from "./card_brand_icons";
@@ -52,7 +52,7 @@ export class CardPaymentItem {
       E.div(
         {
           class: "card-payment-card-details",
-          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
+          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: ${GAP_0_5X}rem;`,
         },
         E.div(
           {
@@ -105,7 +105,7 @@ export class AddCardPaymentItem {
       E.div(
         {
           class: "card-payment-card-details",
-          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
+          style: `flex: 1 0 0; display: flex; flex-flow: column nowrap; gap: ${GAP_0_5X}rem;`,
         },
         E.div({
           class: "card-payment-card-digits",

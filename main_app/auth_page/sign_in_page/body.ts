@@ -9,8 +9,9 @@ import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { eFormTitle } from "../../../common/page_elements";
 import {
   FONT_M,
+  FONT_XXXL,
   GAP_1X,
-  GAP_d_25X,
+  GAP_0_25X,
   LINE_HEIGHT_M,
 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
@@ -52,7 +53,7 @@ export class SignInPage extends EventEmitter {
             class: "sign-in-header",
             style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_1X}rem;`,
           },
-          createBrandIcon(),
+          createBrandIcon(FONT_XXXL),
           eFormTitle(LOCALIZED_TEXT.signInTitle),
         ),
         assign(
@@ -88,7 +89,7 @@ export class SignInPage extends EventEmitter {
         E.div(
           {
             class: "sign-in-links",
-            style: `align-self: flex-end; display: flex; flex-flow: column nowrap; gap: ${GAP_d_25X}rem;`,
+            style: `align-self: flex-end; display: flex; flex-flow: column nowrap; gap: ${GAP_0_25X}rem;`,
           },
           E.divRef(
             this.resetPasswordButton,

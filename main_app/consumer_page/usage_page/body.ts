@@ -13,7 +13,7 @@ import { OptionPill, RadioOptionsGroup } from "../../../common/option_buttons";
 import {
   ePageWithTopDownCard,
 } from "../../../common/page_elements";
-import { DATE_INPUT_WIDTH, FONT_M, FONT_S, GAP_1X, GAP_2X, GAP_d_5X, LINE_HEIGHT_M, LINE_HEIGHT_S, PAGE_MAX_WIDTH_L } from "../../../common/sizes";
+import { DATE_INPUT_WIDTH, FONT_M, FONT_S, GAP_1X, GAP_2X, GAP_0_5X, LINE_HEIGHT_M, LINE_HEIGHT_S, PAGE_MAX_WIDTH_L } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { ENV_VARS } from "../../../env_vars";
 import { ActivityTab, ActivityTabsOption } from "../common/tabs";
@@ -155,7 +155,7 @@ export class UsagePage extends EventEmitter {
         ),
       ).body,
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
       }),
       E.divRef(this.updateFrequencyNote, {
         class: "usage-update-frequency-note",
@@ -166,7 +166,7 @@ export class UsagePage extends EventEmitter {
       }),
       E.divRef(this.resultList, {
         class: "usage-page-result-list",
-        style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_1X}rem; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
+        style: `width: 100%; box-sizing: border-box; padding: 0 ${GAP_1X}rem; display: flex; flex-flow: column nowrap; gap: ${GAP_0_5X}rem;`,
       }),
     );
     this.tabs.val.setValue(ActivityTab.USAGE).on("select", (tab) => {

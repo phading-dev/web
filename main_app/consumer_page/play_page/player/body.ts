@@ -26,10 +26,10 @@ import {
   FONT_M,
   FONT_S,
   GAP_1X,
-  GAP_1_d_5X,
-  GAP_d_25X,
-  GAP_d_5X,
-  GAP_d_75X,
+  GAP_1_5X,
+  GAP_0_25X,
+  GAP_0_5X,
+  GAP_0_75X,
   ICON_BUTTON_M,
   ICON_BUTTON_XL,
   ICON_XL,
@@ -147,7 +147,7 @@ export class Player extends EventEmitter {
       }),
       E.divRef(this.bottomError, {
         class: "player-bottom-error",
-        style: `opacity: 0; position: absolute; bottom: 0; left: 0; width: 100%; padding: ${GAP_d_5X}rem; box-sizing: border-box; text-align: center; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; background-color: ${SCHEME.neutral4};`,
+        style: `opacity: 0; position: absolute; bottom: 0; left: 0; width: 100%; padding: ${GAP_0_5X}rem; box-sizing: border-box; text-align: center; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; background-color: ${SCHEME.neutral4};`,
       }),
       E.divRef(
         this.controlsContainer,
@@ -314,7 +314,7 @@ export class Player extends EventEmitter {
           this.progressBar,
           {
             class: "player-progress-bar",
-            style: `position: relative; width: 100%; height: .75rem; margin-top: ${GAP_1_d_5X}rem; box-sizing: border-box; transition: padding .2s linear; touch-action: none; cursor: pointer;`,
+            style: `position: relative; width: 100%; height: .75rem; margin-top: ${GAP_1_5X}rem; box-sizing: border-box; transition: padding .2s linear; touch-action: none; cursor: pointer;`,
           },
           E.div(
             {
@@ -332,13 +332,13 @@ export class Player extends EventEmitter {
           ),
           E.divRef(this.pointedTimestamp, {
             class: "player-pointed-timestamp",
-            style: `position: absolute; bottom: 100%; padding-bottom: ${GAP_d_5X}rem; font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
+            style: `position: absolute; bottom: 100%; padding-bottom: ${GAP_0_5X}rem; font-size: ${FONT_S}rem; color: ${SCHEME.neutral0};`,
           }),
         ),
         E.div(
           {
             class: "player-progress-line",
-            style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem ${GAP_d_75X}rem ${GAP_d_5X}rem ${GAP_d_75X}rem; display: flex; flex-flow: row nowrap; justify-content: space-between; align-items: center;`,
+            style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem ${GAP_0_75X}rem ${GAP_0_5X}rem ${GAP_0_75X}rem; display: flex; flex-flow: row nowrap; justify-content: space-between; align-items: center;`,
           },
           E.div(
             {

@@ -21,8 +21,8 @@ import {
   FONT_WEIGHT_600,
   GAP_1X,
   GAP_2X,
-  GAP_d_25X,
-  GAP_d_5X,
+  GAP_0_25X,
+  GAP_0_5X,
   ICON_BUTTON_L,
   ICON_L,
   LINE_HEIGHT_L,
@@ -109,7 +109,7 @@ export class InfoPage extends EventEmitter {
     super();
     this.body = ePageWithTopDownCard(
       this.card,
-      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + GAP_d_5X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + GAP_0_5X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
     );
     this.load();
   }
@@ -166,7 +166,7 @@ export class InfoPage extends EventEmitter {
                   ),
                 ],
                 {
-                  linesGap: GAP_d_25X,
+                  linesGap: GAP_0_25X,
                   customeStyle: `margin-top: ${GAP_1X}rem;`,
                 },
               ),
@@ -286,7 +286,7 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "episode-details-video-tracks",
-                      style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem;`,
+                      style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
                     },
                     E.div(
                       {
@@ -331,7 +331,7 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "episode-details-audio-tracks",
-                      style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem;`,
+                      style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
                     },
                     E.div(
                       {
@@ -372,7 +372,7 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "episode-details-subtitle-tracks",
-                      style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem;`,
+                      style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
                     },
                     E.div(
                       {
@@ -407,7 +407,7 @@ export class InfoPage extends EventEmitter {
     return E.div(
       {
         class: "episode-details-video-track",
-        style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem;`,
+        style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem;`,
       },
       E.div(
         {
@@ -441,7 +441,7 @@ export class InfoPage extends EventEmitter {
     return E.div(
       {
         class: "episode-details-audio-track",
-        style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem;`,
+        style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem;`,
       },
       E.div(
         {
@@ -457,7 +457,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "episode-details-audio-track-name",
-          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_25X}rem;`,
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: ${GAP_0_25X}rem;`,
         },
         ...(Boolean(audioTrack.committed) &&
         Boolean(audioTrack.staging) &&
@@ -483,7 +483,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "episode-details-audio-default",
-          style: `flex: 0 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_25X}rem;`,
+          style: `flex: 0 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: ${GAP_0_25X}rem;`,
         },
         ...(Boolean(audioTrack.committed) &&
         Boolean(audioTrack.staging) &&
@@ -519,7 +519,7 @@ export class InfoPage extends EventEmitter {
     return E.div(
       {
         class: "episode-details-subtitle-track",
-        style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_5X}rem;`,
+        style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; gap: ${GAP_0_5X}rem;`,
       },
       E.div(
         {
@@ -535,7 +535,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "episode-details-subtitle-track-name",
-          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: ${GAP_d_25X}rem;`,
+          style: `flex: 1 1 auto; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; display: flex; flex-flow: row nowrap; gap: ${GAP_0_25X}rem;`,
         },
         ...(Boolean(subtitleTrack.committed) &&
         Boolean(subtitleTrack.staging) &&
@@ -654,7 +654,7 @@ export class InfoPage extends EventEmitter {
         E.div(
           {
             class: "episode-details-video-container-failures",
-            style: `margin-top: ${GAP_d_25X}rem; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.error0};`,
+            style: `margin-top: ${GAP_0_25X}rem; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.error0};`,
           },
           this.eProcessingFailureText(videoContainer.lastProcessingFailure),
         ),
@@ -723,7 +723,7 @@ export class InfoPage extends EventEmitter {
               ),
             ],
             {
-              linesGap: GAP_d_25X,
+              linesGap: GAP_0_25X,
             },
           ),
         );
@@ -756,7 +756,7 @@ export class InfoPage extends EventEmitter {
               ),
             ],
             {
-              linesGap: GAP_d_5X,
+              linesGap: GAP_0_5X,
             },
           ),
         );
@@ -795,7 +795,7 @@ export class InfoPage extends EventEmitter {
       E.div(
         {
           class: "episode-details-storage-size",
-          style: `width: 100%; box-sizing: border-box; padding: ${GAP_d_25X}rem; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_d_5X}rem;`,
+          style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
         },
         E.div(
           {

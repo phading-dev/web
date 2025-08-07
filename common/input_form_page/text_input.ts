@@ -1,7 +1,7 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
 import { COMMON_BASIC_INPUT_STYLE } from "../input_styles";
-import { FONT_M, FONT_S, GAP_d_25X, LINE_HEIGHT_M, LINE_HEIGHT_S } from "../sizes";
+import { FONT_M, FONT_S, GAP_0_25X, LINE_HEIGHT_M, LINE_HEIGHT_S } from "../sizes";
 import { InputField, ValidationResult } from "./input_field";
 import { E, ElementAttributeMap } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -32,7 +32,7 @@ export class TextInputWithErrorMsg extends EventEmitter implements InputField {
         E.text(label),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_25X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
       }),
       E.inputRef(this.input, {
         class: "text-input-input",

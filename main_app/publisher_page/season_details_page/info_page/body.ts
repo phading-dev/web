@@ -20,7 +20,7 @@ import {
   FONT_WEIGHT_600,
   GAP_1X,
   GAP_2X,
-  GAP_d_5X,
+  GAP_0_5X,
   ICON_BUTTON_L,
   ICON_L,
   LINE_HEIGHT_M,
@@ -91,7 +91,7 @@ export class InfoPage extends EventEmitter {
     super();
     this.body = ePageWithTopDownCard(
       this.card,
-      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + GAP_d_5X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
+      `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${ICON_BUTTON_L + GAP_0_5X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
     );
     this.load();
   }
@@ -260,7 +260,7 @@ export class InfoPage extends EventEmitter {
           {
             clickable:
               seasonDetails.state === SeasonState.ARCHIVED ? false : true,
-            linesGap: GAP_d_5X,
+            linesGap: GAP_0_5X,
           },
         ),
       ),
@@ -331,7 +331,7 @@ export class InfoPage extends EventEmitter {
                   ),
                 ],
                 {
-                  linesGap: GAP_d_5X,
+                  linesGap: GAP_0_5X,
                 },
               ),
             ),
@@ -372,7 +372,7 @@ export class InfoPage extends EventEmitter {
           {
             clickable:
               seasonDetails.state === SeasonState.ARCHIVED ? false : true,
-            linesGap: GAP_d_5X,
+            linesGap: GAP_0_5X,
           },
         ),
       ),

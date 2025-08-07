@@ -7,7 +7,7 @@ import {
   BORDER_WIDTH_1,
   FONT_M,
   GAP_1X,
-  GAP_d_5X,
+  GAP_0_5X,
   ICON_XXL,
   LINE_HEIGHT_M,
 } from "../../../common/sizes";
@@ -29,7 +29,7 @@ export class AccountItem extends EventEmitter {
     this.body = E.div(
       {
         class: "account-item",
-        style: `width: ${ITEM_WIDTH}rem; height: ${ITEM_HEIGHT}rem; box-sizing: border-box; padding: ${GAP_1X}rem ${GAP_d_5X}rem ${GAP_d_5X}rem ${GAP_d_5X}rem; display: flex; flex-flow: column nowrap; justify-content: space-between; align-items: center; border-radius: ${BORDER_RADIUS_S}rem; border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; cursor: pointer;`,
+        style: `width: ${ITEM_WIDTH}rem; height: ${ITEM_HEIGHT}rem; box-sizing: border-box; padding: ${GAP_1X}rem ${GAP_0_5X}rem ${GAP_0_5X}rem ${GAP_0_5X}rem; display: flex; flex-flow: column nowrap; justify-content: space-between; align-items: center; border-radius: ${BORDER_RADIUS_S}rem; border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; cursor: pointer;`,
       },
       E.image({
         class: "account-item-avatar",

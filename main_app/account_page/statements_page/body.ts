@@ -10,7 +10,7 @@ import {
   FONT_WEIGHT_600,
   GAP_1X,
   GAP_2X,
-  GAP_d_5X,
+  GAP_0_5X,
   PAGE_MAX_WIDTH_L,
 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
@@ -73,7 +73,7 @@ export class StatementsPage extends EventEmitter {
         ),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_d_5X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
       }),
       assign(
         this.monthRangeInput,
@@ -88,7 +88,7 @@ export class StatementsPage extends EventEmitter {
       }),
       E.divRef(this.statementsList, {
         class: "statements-page-list",
-        style: `display: flex; flex-flow: column nowrap; width: 100%; gap: ${GAP_d_5X}rem;`,
+        style: `display: flex; flex-flow: column nowrap; width: 100%; gap: ${GAP_0_5X}rem;`,
       }),
     );
     this.monthRangeInput.val.setValues(

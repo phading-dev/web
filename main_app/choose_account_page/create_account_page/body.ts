@@ -9,7 +9,7 @@ import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_inpu
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { OptionPill } from "../../../common/option_buttons";
 import { eFormTitle } from "../../../common/page_elements";
-import { FONT_M, GAP_2X, GAP_d_5X, LINE_HEIGHT_M } from "../../../common/sizes";
+import { FONT_M, GAP_2X, GAP_0_5X, LINE_HEIGHT_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { MAX_NAME_LENGTH } from "@phading/constants/account";
 import { AccountType } from "@phading/user_service_interface/account_type";
@@ -96,7 +96,7 @@ export class CreateAccountPage extends EventEmitter {
             {},
             E.div(
               {
-                style: `display: inline; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; margin: 0 ${GAP_d_5X}rem 0 ${GAP_2X}rem;`,
+                style: `display: inline; color: ${SCHEME.neutral0}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; margin: 0 ${GAP_0_5X}rem 0 ${GAP_2X}rem;`,
               },
               E.text("•"),
             ),

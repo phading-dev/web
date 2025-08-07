@@ -8,7 +8,7 @@ import {
   createBackButton,
 } from "../button";
 import { ePageWithCenterForm } from "../page_elements";
-import { FONT_M, GAP_2X, GAP_d_5X, LINE_HEIGHT_M, PAGE_MAX_WIDTH_M } from "../sizes";
+import { FONT_M, GAP_2X, GAP_0_5X, LINE_HEIGHT_M, PAGE_MAX_WIDTH_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -71,7 +71,7 @@ export class InputFormPage<
         this.buttonsContainer,
         {
           class: "input-form-buttons-container",
-          style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_d_5X}rem;`,
+          style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_0_5X}rem;`,
         },
         E.divRef(this.actionError, {
           class: "input-form-action-error",

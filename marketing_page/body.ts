@@ -1,305 +1,691 @@
-import backgoundImage = require("./background.png");
 import EventEmitter = require("events");
-import { FILLED_BUTTON_STYLE } from "../common/button_styles";
-import { SCHEME } from "../common/color_scheme";
-import { LOCALIZED_TEXT } from "../common/locales/localized_text";
-import { PageNavigator } from "../common/page_navigator";
-import { PAGE_BACKGROUND_STYLE } from "../common/page_style";
-import { FONT_L, FONT_M, FONT_WEIGHT_600 } from "../common/sizes";
-import { ENV_VARS } from "../env_vars";
-import { ProductID } from "@phading/price";
-import { resolvePrice } from "@phading/price_config";
-import { AccountType } from "@phading/user_service_interface/account_type";
 import {
-  MarketingPage as MarketingPageUrl,
-  Tab,
-} from "@phading/web_interface/marketing/page";
+  Button,
+  CLICKABLE_TEXT_STYLE,
+  FilledButton,
+  OutlineButton,
+  TextButton,
+} from "../common/button";
+import { SCHEME } from "../common/color_scheme";
+import {
+  createBrandIcon,
+  createCoinsHandIcon,
+  createPlayIcon,
+  createPriceTagIcon,
+} from "../common/icons";
+import { LOCALIZED_TEXT } from "../common/locales/localized_text";
+import { getRootFontSize } from "../common/root_font_size";
+import {
+  BORDER_RADIUS_S,
+  BORDER_WIDTH_1,
+  FONT_L,
+  FONT_M,
+  FONT_WEIGHT_600,
+  FONT_XL,
+  FONT_XXL,
+  FONT_XXXL,
+  GAP_0_5X,
+  GAP_0_75X,
+  GAP_1X,
+  GAP_1_25X,
+  GAP_1_5X,
+  GAP_2X,
+  ICON_XXL,
+  LINE_HEIGHT_FOR_BUTTON_M,
+  LINE_HEIGHT_L,
+  LINE_HEIGHT_M,
+  LINE_HEIGHT_XL,
+  LINE_HEIGHT_XXL,
+  LINE_HEIGHT_XXXL,
+} from "../common/sizes";
+import { ENV_VARS } from "../env_vars";
+import { getDollarAmount } from "@phading/price_config/amount_conversion";
+import { AccountType } from "@phading/user_service_interface/account_type";
 import { E } from "@selfage/element/factory";
-import { Ref } from "@selfage/ref";
+import { Ref, assign } from "@selfage/ref";
 
 export interface MarketingPage {
-  on(event: "signUp", listener: (accountType: AccountType) => void): this;
-  on(event: "goToServiceFee", listener: () => void): this;
+  on(event: "home", listener: (accountType: AccountType) => void): this;
 }
 
 export class MarketingPage extends EventEmitter {
   public static create(): MarketingPage {
-    return new MarketingPage(() => new Date());
+    return new MarketingPage();
   }
 
-  private static TAB_BUTTON_NORMAL_STYLE = `flex-basis: 12rem; padding: 1rem 2rem; text-align: center; cursor: pointer; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`;
-  private static TAB_CONTENT_STYLE = `flex-flow: column nowrap; padding: 3rem; max-width: 80rem;`;
-  private static TAB_CONTENT_TITLE_STYLE = `align-self: center; font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600}; margin-bottom: 2rem;`;
-  private static TAB_CONTENT_MAIN_MESSAGE_STYLE = `font-size: ${FONT_L}rem; color: ${SCHEME.neutral0}; margin-bottom: 2rem;`;
-  private static TAB_CONTENT_EXPLANATION_TITLE_STYLE = `align-self: center; margin-top: 4rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`;
-  private static TAB_CONTENT_EXPLANATION_POINT_STYLE = `margin-top: 1rem; font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`;
+  private static MAX_WIDTH = 60; // rem
+  private static LAYOUT_BREAKPOINT = 40; // rem
 
   public body: HTMLDivElement;
-  public consumerTabButton = new Ref<HTMLDivElement>();
-  public publisherTabButton = new Ref<HTMLDivElement>();
-  public consumerSignInButton = new Ref<HTMLDivElement>();
-  public publisherSignInButton = new Ref<HTMLDivElement>();
-  public serviceFeesLink = new Ref<HTMLAnchorElement>();
-  private consumerTabContent = new Ref<HTMLDivElement>();
-  private publisherTabContent = new Ref<HTMLDivElement>();
-  private tabNavigator: PageNavigator<Tab>;
-  private url: MarketingPageUrl;
+  public faqButton = new Ref<Button>();
+  public signInButton = new Ref<Button>();
+  public heroViewerButton = new Ref<Button>();
+  public heroPublisherButton = new Ref<Button>();
+  public publisherStartButton = new Ref<Button>();
+  public viewerStartButton = new Ref<Button>();
+  public joinButton = new Ref<Button>();
+  private heroSectionCards = new Ref<HTMLDivElement>();
+  private howSectionCards = new Ref<HTMLDivElement>();
+  private publisherSectionCentered = new Ref<HTMLDivElement>();
+  private viewerSectionCentered = new Ref<HTMLDivElement>();
+  private faqSectionCentered = new Ref<HTMLDivElement>();
+  private resizeObserver: ResizeObserver;
 
-  public constructor(private getDateNow: () => Date) {
+  public constructor() {
     super();
-    let debitPrice = resolvePrice(
-      ProductID.SHOW,
-      ENV_VARS.defaultCurrency,
-      toMonthISOString(this.getDateNow()),
-    );
-    let creditPrice = resolvePrice(
-      ProductID.SHOW_CREDIT,
-      ENV_VARS.defaultCurrency,
-      toMonthISOString(this.getDateNow()),
-    );
-    let cutPercentage = Math.round(
-      ((debitPrice.amount - creditPrice.amount) / debitPrice.amount) * 100,
-    );
+    let creditFormatter = new Intl.NumberFormat([navigator.language], {
+      style: "currency",
+      currency: ENV_VARS.defaultCurrency,
+      minimumFractionDigits: 0,
+    });
     this.body = E.div(
       {
         class: "marketing-page",
-        style: `${PAGE_BACKGROUND_STYLE} background-image: url(${backgoundImage}); background-size: cover; background-position: center;`,
       },
       E.div(
         {
-          name: "marketing-page-tabs",
-          style: `width: 100%; display: flex; flex-flow: row nowrap; justify-content: center; padding-bottom: 2rem;`,
+          class: "marketing-page-nav",
+          style: `margin: 0 auto; padding: ${GAP_1X}rem ${GAP_1_5X}rem; background-color: ${SCHEME.neutral4}; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral2}; display: flex; flex-flow: row nowrap; align-items: center;`,
         },
-        E.divRef(
-          this.consumerTabButton,
+        E.div(
           {
-            name: "marketing-page-consumer-tab-button",
-            style: `${MarketingPage.TAB_BUTTON_NORMAL_STYLE} border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;`,
+            class: "marketing-page-nav-logo",
+            style: `padding: ${(LINE_HEIGHT_FOR_BUTTON_M - FONT_XXL) / 2}rem 0;`,
           },
-          E.text(LOCALIZED_TEXT.marketingConsumerTabButtonLabel),
+          createBrandIcon(FONT_XXL),
         ),
-        E.divRef(
-          this.publisherTabButton,
+        E.div({
+          style: `flex: 1 0 0;`,
+        }),
+        assign(
+          this.faqButton,
+          new TextButton(`margin-right: ${GAP_1_5X}rem`).append(
+            E.text(LOCALIZED_TEXT.marketingFaqButtonLabel),
+          ),
+        ).body,
+        assign(
+          this.signInButton,
+          new FilledButton().append(E.text(LOCALIZED_TEXT.signInButtonLabel)),
+        ).body,
+      ),
+      E.div(
+        {
+          class: "marketing-page-hero-section",
+          style: `padding: 5rem 0; display: flex; flex-flow: column nowrap; align-items: center; background-color: ${SCHEME.neutral4};`,
+        },
+        E.div(
           {
-            name: "marketing-page-publisher-tab-button",
-            style: `${MarketingPage.TAB_BUTTON_NORMAL_STYLE} border-top-right-radius: .5rem; border-bottom-right-radius: .5rem;`,
+            class: "marketing-page-hero-section-centered",
+            style: `width: 100%; max-width: ${MarketingPage.MAX_WIDTH}rem; padding: 0 ${GAP_1_5X}rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; align-items: center;`,
           },
-          E.text(LOCALIZED_TEXT.marketingPublisherTabButtonLabel),
+          E.div(
+            {
+              class: "marketing-page-hero-section-title",
+              style: `text-align: center; font-size: ${FONT_XXXL}rem; line-height: ${LINE_HEIGHT_XXXL}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.marketingHeroTitle),
+          ),
+          E.div({
+            style: `flex: 0 0 auto; height: 3rem;`,
+          }),
+          E.divRef(
+            this.heroSectionCards,
+            {
+              class: "marketing-page-hero-section-cards",
+              style: `display: flex; flex-flow: column nowrap; align-items: flex-start; gap: ${GAP_2X}rem;`,
+            },
+            this.eHeroCard(
+              LOCALIZED_TEXT.marketingHeroViewerTitle,
+              LOCALIZED_TEXT.marketingHeroViewerDescription,
+              assign(
+                this.heroViewerButton,
+                new FilledButton().append(
+                  E.text(
+                    `${LOCALIZED_TEXT.marketingHeroViewerActionButtonLabel[0]}${creditFormatter.format(getDollarAmount(ENV_VARS.initCreditAmount, ENV_VARS.defaultCurrency))}${LOCALIZED_TEXT.marketingHeroViewerActionButtonLabel[1]}`,
+                  ),
+                ),
+              ).body,
+            ),
+            this.eHeroCard(
+              LOCALIZED_TEXT.marketingHeroPublisherTitle,
+              LOCALIZED_TEXT.marketingHeroPublisherDescription,
+              assign(
+                this.heroPublisherButton,
+                new OutlineButton().append(
+                  E.text(
+                    LOCALIZED_TEXT.marketingHeroPublisherActionButtonLabel,
+                  ),
+                ),
+              ).body,
+            ),
+          ),
         ),
       ),
-      E.divRef(
-        this.consumerTabContent,
+      E.div(
         {
-          name: "marketing-page-consumer-tab-content",
-          style: MarketingPage.TAB_CONTENT_STYLE,
+          class: "marketing-page-how-section",
+          style: `padding: 5rem 0; display: flex; flex-flow: column nowrap; align-items: center; background-color: ${SCHEME.neutral3}; display: flex; flex-flow: column nowrap; align-items: center;`,
         },
         E.div(
           {
-            name: "marketing-page-consumer-tab-title",
-            style: MarketingPage.TAB_CONTENT_TITLE_STYLE,
+            class: "marketing-page-how-section-centered",
+            style: `width: 100%; max-width: ${MarketingPage.MAX_WIDTH}rem; padding: 0 ${GAP_1_5X}rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; align-items: center;`,
           },
-          E.text(LOCALIZED_TEXT.marketingConsumerTabTitle),
-        ),
-        E.div(
-          {
-            name: "marketing-page-consumer-tab-main-message",
-            style: MarketingPage.TAB_CONTENT_MAIN_MESSAGE_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.marketingConsumerTabMainMessage),
-        ),
-        E.divRef(
-          this.consumerSignInButton,
-          {
-            name: "marketing-page-consumer-cta-button",
-            style: `${FILLED_BUTTON_STYLE} align-self: center;`,
-          },
-          E.text(LOCALIZED_TEXT.marketingConsumerCtaButtonLabel),
-        ),
-        E.div(
-          {
-            name: "marketing-page-consumer-explanation-title",
-            style: MarketingPage.TAB_CONTENT_EXPLANATION_TITLE_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.marketingExplanationTitle),
-        ),
-        E.div(
-          {
-            name: "marketing-page-consumer-explanation-point-one",
-            style: MarketingPage.TAB_CONTENT_EXPLANATION_POINT_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.marketingConsumerTabExplanationPoint1),
-        ),
-        E.div(
-          {
-            name: "marketing-page-consumer-explanation-point-two",
-            style: MarketingPage.TAB_CONTENT_EXPLANATION_POINT_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.marketingConsumerTabExplanationPoint2),
-        ),
-        E.div(
-          {
-            name: "marketing-page-consumer-explanation-point-three",
-            style: MarketingPage.TAB_CONTENT_EXPLANATION_POINT_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.marketingConsumerTabExplanationPoint3),
-        ),
-        E.div(
-          {
-            name: "marketing-page-consumer-explanation-point-four",
-            style: MarketingPage.TAB_CONTENT_EXPLANATION_POINT_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.marketingConsumerTabExplanationPoint4),
+          E.div(
+            {
+              class: "marketing-page-how-section-title",
+              style: `text-align: center; font-size: ${FONT_XXL}rem; line-height: ${LINE_HEIGHT_XXL}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.marketingHowSectionTitle),
+          ),
+          E.div({
+            style: `flex: 0 0 auto; height: ${GAP_0_75X}rem;`,
+          }),
+          E.div(
+            {
+              class: "marketing-page-how-section-subtitle",
+              style: `text-align: center; font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.marketingHowSectionSubtitle),
+          ),
+          E.div({
+            style: `flex: 0 0 auto; height: 3rem;`,
+          }),
+          E.divRef(
+            this.howSectionCards,
+            {
+              class: "marketing-page-how-section-cards",
+              style: `display: flex; flex-flow: column nowrap; align-items: flex-start; gap: 3rem;`,
+            },
+            this.eHowCard(
+              createPriceTagIcon(SCHEME.primary1),
+              LOCALIZED_TEXT.marketingHowSectionFirstCardTitle,
+              LOCALIZED_TEXT.marketingHowSectionFirstCardDescription,
+            ),
+            this.eHowCard(
+              createPlayIcon(SCHEME.primary1),
+              LOCALIZED_TEXT.marketingHowSectionSecondCardTitle,
+              LOCALIZED_TEXT.marketingHowSectionSecondCardDescription,
+            ),
+            this.eHowCard(
+              createCoinsHandIcon(SCHEME.primary1),
+              LOCALIZED_TEXT.marketingHowSectionThirdCardTitle,
+              LOCALIZED_TEXT.marketingHowSectionThirdCardDescription,
+            ),
+          ),
         ),
       ),
-      E.divRef(
-        this.publisherTabContent,
+      E.div(
         {
-          name: "marketing-page-publisher-tab-content",
-          style: MarketingPage.TAB_CONTENT_STYLE,
+          class: "marketing-page-publisher-section",
+          style: `padding: 5rem 0; display: flex; flex-flow: column nowrap; align-items: center; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: column nowrap; align-items: center;`,
+        },
+        E.divRef(
+          this.publisherSectionCentered,
+          {
+            class: "marketing-page-publisher-section-centered",
+            style: `width: 100%; max-width: ${MarketingPage.MAX_WIDTH}rem; padding: 0 ${GAP_1_5X}rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; align-items: center; gap: 3rem;`,
+          },
+          E.div(
+            {
+              class: "marketing-page-publisher-section-top",
+              style: `width: 100%; flex: 1 1 auto; display: flex; flex-flow: column nowrap; align-items: center;`,
+            },
+            E.div(
+              {
+                class: "marketing-page-publisher-section-top-title",
+                style: `text-align: center; font-size: ${FONT_XXL}rem; line-height: ${LINE_HEIGHT_XXL}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+              },
+              E.text(LOCALIZED_TEXT.marketingPublisherSectionTitle),
+            ),
+            E.div({
+              style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
+            }),
+            E.div(
+              {
+                class: "marketing-page-publisher-section-top-subtitle",
+                style: `text-align: center; font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; color: ${SCHEME.neutral0};`,
+              },
+              E.text(LOCALIZED_TEXT.marketingPublisherSectionSubtitle),
+            ),
+            E.div({
+              style: `flex: 0 0 auto; height: ${GAP_1_5X}rem;`,
+            }),
+            assign(
+              this.publisherStartButton,
+              new FilledButton().append(
+                E.text(
+                  LOCALIZED_TEXT.marketingPublisherSectionActionButtonLabel,
+                ),
+              ),
+            ).body,
+          ),
+          E.div(
+            {
+              class: "marketing-page-publisher-section-bottom",
+              style: `width: 100%; flex: 1 1 auto; display: flex; flex-flow: column nowrap; align-items: center; gap: ${GAP_2X}rem;`,
+            },
+            this.ePublisherCard(
+              LOCALIZED_TEXT.marketingPublisherSectionFirstCardTitle,
+              E.text(
+                LOCALIZED_TEXT.marketingPublisherSectionFirstCardDescription,
+              ),
+            ),
+            this.ePublisherCard(
+              LOCALIZED_TEXT.marketingPublisherSectionSecondCardTitle,
+              E.text(
+                LOCALIZED_TEXT.marketingPublisherSectionSecondCardDescription,
+              ),
+            ),
+            this.ePublisherCard(
+              LOCALIZED_TEXT.marketingPublisherSectionThirdCardTitle,
+              E.text(
+                LOCALIZED_TEXT.marketingPublisherSectionThirdCardDescription[0],
+              ),
+              E.a(
+                {
+                  href: "/pricing",
+                  target: "_blank",
+                  style: `${CLICKABLE_TEXT_STYLE}`,
+                },
+                E.text(
+                  LOCALIZED_TEXT
+                    .marketingPublisherSectionThirdCardDescription[1],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      E.div(
+        {
+          class: "marketing-page-viewer-section",
+          style: `padding: 5rem 0; display: flex; flex-flow: column nowrap; align-items: center; background-color: ${SCHEME.neutral3}; display: flex; flex-flow: column nowrap; align-items: center;`,
+        },
+        E.divRef(
+          this.viewerSectionCentered,
+          {
+            class: "marketing-page-viewer-section-centered",
+            style: `width: 100%; max-width: ${MarketingPage.MAX_WIDTH}rem; padding: 0 ${GAP_1_5X}rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; align-items: center; gap: 3rem;`,
+          },
+          E.div(
+            {
+              class: "marketing-page-viewer-section-top",
+              style: `width: 100%; flex: 1 1 auto; display: flex; flex-flow: column nowrap; align-items: center;`,
+            },
+            E.div(
+              {
+                class: "marketing-page-viewer-section-top-title",
+                style: `text-align: center; font-size: ${FONT_XXL}rem; line-height: ${LINE_HEIGHT_XXL}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+              },
+              E.text(LOCALIZED_TEXT.marketingViewerSectionTitle),
+            ),
+            E.div({
+              style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
+            }),
+            E.div(
+              {
+                class: "marketing-page-viewer-section-top-subtitle",
+                style: `text-align: center; font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; color: ${SCHEME.neutral0};`,
+              },
+              E.text(LOCALIZED_TEXT.marketingViewerSectionSubtitle),
+            ),
+            E.div({
+              style: `flex: 0 0 auto; height: ${GAP_1_5X}rem;`,
+            }),
+            assign(
+              this.viewerStartButton,
+              new FilledButton().append(
+                E.text(LOCALIZED_TEXT.marketingViewerSectionActionButtonLabel),
+              ),
+            ).body,
+          ),
+          E.div(
+            {
+              class: "marketing-page-viewer-section-bottom",
+              style: `width: 100%; flex: 1 1 auto; display: flex; flex-flow: column nowrap; align-items: center; gap: ${GAP_2X}rem;`,
+            },
+            this.eViewerCard(
+              LOCALIZED_TEXT.marketingViewerSectionFirstCardTitle,
+              LOCALIZED_TEXT.marketingViewerSectionFirstCardDescription,
+            ),
+            this.eViewerCard(
+              LOCALIZED_TEXT.marketingViewerSectionSecondCardTitle,
+              LOCALIZED_TEXT.marketingViewerSectionSecondCardDescription,
+            ),
+            this.eViewerCard(
+              LOCALIZED_TEXT.marketingViewerSectionThirdCardTitle,
+              LOCALIZED_TEXT.marketingViewerSectionThirdCardDescription,
+            ),
+          ),
+        ),
+      ),
+      E.div(
+        {
+          class: "marketing-page-faq-section",
+          style: `padding: 5rem 0; display: flex; flex-flow: column nowrap; align-items: center; background-color: ${SCHEME.neutral4}; display: flex; flex-flow: column nowrap; align-items: center;`,
+        },
+        E.divRef(
+          this.faqSectionCentered,
+          {
+            class: "marketing-page-faq-section-centered",
+            style: `width: 100%; max-width: ${MarketingPage.MAX_WIDTH}rem; padding: 0 ${GAP_1_5X}rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; align-items: center; gap: ${GAP_1X}rem;`,
+          },
+          E.div(
+            {
+              class: "marketing-page-faq-section-title",
+              style: `margin-bottom: ${GAP_2X}rem; text-align: center; font-size: ${FONT_XXL}rem; line-height: ${LINE_HEIGHT_XXL}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.faqSectionTitle),
+          ),
+          this.eFaqCard(
+            LOCALIZED_TEXT.faqSectionNetflixComparisonQuestion,
+            E.text(LOCALIZED_TEXT.faqSectionNetflixComparisonAnswer),
+          ),
+          this.eFaqCard(
+            LOCALIZED_TEXT.faqSectionYouTubeComparisonQuestion,
+            E.text(LOCALIZED_TEXT.faqSectionYouTubeComparisonAnswer),
+          ),
+          this.eFaqCard(
+            LOCALIZED_TEXT.faqSectionPayoutQuestion,
+            E.text(LOCALIZED_TEXT.faqSectionPayoutAnswer),
+          ),
+          this.eFaqCard(
+            LOCALIZED_TEXT.faqSectionRevenueShareQuestion,
+            E.text(LOCALIZED_TEXT.faqSectionRevenueShareAnswer[0]),
+            E.a(
+              {
+                href: "/pricing",
+                target: "_blank",
+                style: `${CLICKABLE_TEXT_STYLE}`,
+              },
+              E.text(LOCALIZED_TEXT.faqSectionRevenueShareAnswer[1]),
+            ),
+            E.text(LOCALIZED_TEXT.faqSectionRevenueShareAnswer[2]),
+          ),
+          this.eFaqCard(
+            LOCALIZED_TEXT.faqSectionTryItQuestion,
+            E.text(
+              `${LOCALIZED_TEXT.faqSectionTryItAnswer[0]}${creditFormatter.format(getDollarAmount(ENV_VARS.initCreditAmount, ENV_VARS.defaultCurrency))}${LOCALIZED_TEXT.faqSectionTryItAnswer[1]}`,
+            ),
+          ),
+        ),
+      ),
+      E.div(
+        {
+          class: "marketing-page-join-section",
+          style: `padding: 5rem 0; display: flex; flex-flow: column nowrap; align-items: center; background-color: ${SCHEME.neutral3}; display: flex; flex-flow: column nowrap; align-items: center;`,
         },
         E.div(
           {
-            name: "marketing-page-publisher-tab-title",
-            style: MarketingPage.TAB_CONTENT_TITLE_STYLE,
+            class: "marketing-page-join-section-centered",
+            style: `width: 100%; max-width: ${MarketingPage.MAX_WIDTH}rem; padding: 0 ${GAP_1_5X}rem; box-sizing: border-box; display: flex; flex-flow: column nowrap; align-items: center;`,
           },
-          E.text(LOCALIZED_TEXT.marketingPublisherTabTitle),
+          E.div(
+            {
+              class: "marketing-page-join-section-title",
+              style: `text-align: center; font-size: ${FONT_XXL}rem; line-height: ${LINE_HEIGHT_XXL}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.joinSectionTitle),
+          ),
+          E.div({
+            style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
+          }),
+          E.div(
+            {
+              class: "marketing-page-join-section-description",
+              style: `text-align: center; font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; color: ${SCHEME.neutral0};`,
+            },
+            E.text(LOCALIZED_TEXT.joinSectionDescription),
+          ),
+          E.div({
+            style: `flex: 0 0 auto; height: ${GAP_1_5X}rem;`,
+          }),
+          assign(
+            this.joinButton,
+            new FilledButton().append(
+              E.text(LOCALIZED_TEXT.joinSectionActionButtonLabel),
+            ),
+          ).body,
         ),
+      ),
+      E.div(
+        {
+          class: "marketing-page-footer",
+          style: `margin: 0 auto; padding: ${GAP_1_5X}rem; background-color: ${SCHEME.neutral4}; border-top: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral2}; display: flex; flex-flow: column nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
+        },
         E.div(
           {
-            name: "marketing-page-publisher-tab-main-message",
-            style: MarketingPage.TAB_CONTENT_MAIN_MESSAGE_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.marketingPublisherTabMainMessage),
-        ),
-        E.divRef(
-          this.publisherSignInButton,
-          {
-            name: "marketing-page-publisher-cta-button",
-            style: `${FILLED_BUTTON_STYLE} align-self: center;`,
-          },
-          E.text(LOCALIZED_TEXT.marketingPublisherCtaButtonLabel),
-        ),
-        E.div(
-          {
-            name: "marketing-page-publisher-explanation-title",
-            style: MarketingPage.TAB_CONTENT_EXPLANATION_TITLE_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.marketingExplanationTitle),
-        ),
-        E.div(
-          {
-            name: "marketing-page-publisher-explanation-point-one",
-            style: MarketingPage.TAB_CONTENT_EXPLANATION_POINT_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.marketingPublisherTabExplanationPoint1),
-        ),
-        E.div(
-          {
-            name: "marketing-page-publisher-explanation-point-two",
-            style: MarketingPage.TAB_CONTENT_EXPLANATION_POINT_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.marketingPublisherTabExplanationPoint2),
-        ),
-        E.div(
-          {
-            name: "marketing-page-publisher-explanation-point-three",
-            style: MarketingPage.TAB_CONTENT_EXPLANATION_POINT_STYLE,
-          },
-          E.text(LOCALIZED_TEXT.marketingPublisherTabExplanationPoint3),
-        ),
-        E.div(
-          {
-            name: "marketing-page-publisher-explanation-point-four",
-            style: MarketingPage.TAB_CONTENT_EXPLANATION_POINT_STYLE,
+            class: "marketing-page-footer-text",
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral1};`,
           },
           E.text(
-            `${LOCALIZED_TEXT.marketingPublisherTabExplanationPoint4[0]}${cutPercentage}%${LOCALIZED_TEXT.marketingPublisherTabExplanationPoint4[1]}`,
+            `© ${ENV_VARS.emailFooterYearAndCompany} All rights reserved.`,
           ),
-          E.aRef(
-            this.serviceFeesLink,
+        ),
+        E.div(
+          {
+            class: "marketing-page-footer-links",
+            style: `display: flex; flex-flow: row wrap; justify-content: center; align-items: center; column-gap: ${GAP_1X}rem; row-gap: ${GAP_0_5X}rem;`,
+          },
+          E.a(
             {
-              name: "marketing-page-publisher-explanation-point-four-link",
-              style: `color: ${SCHEME.primary1}; text-decoration: underline; cursor: pointer;`,
+              href: "/terms",
+              target: "_blank",
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral1}; cursor: pointer;`,
             },
-            E.text(LOCALIZED_TEXT.marketingPublisherTabExplanationPoint4[2]),
+            E.text(LOCALIZED_TEXT.termsOfService),
           ),
-          E.text(LOCALIZED_TEXT.marketingPublisherTabExplanationPoint4[3]),
+          E.a(
+            {
+              href: "/privacy",
+              target: "_blank",
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral1}; cursor: pointer;`,
+            },
+            E.text(LOCALIZED_TEXT.privacyPolicy),
+          ),
+          E.a(
+            {
+              href: "/publisher",
+              target: "_blank",
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral1}; cursor: pointer;`,
+            },
+            E.text(LOCALIZED_TEXT.publisherAgreement),
+          ),
+          E.a(
+            {
+              href: "/pricing",
+              target: "_blank",
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral1}; cursor: pointer;`,
+            },
+            E.text(LOCALIZED_TEXT.publisherPricing),
+          ),
         ),
       ),
     );
-    this.hideTab(Tab.CONSUMER);
-    this.hideTab(Tab.PUBLISHER);
-
-    this.tabNavigator = new PageNavigator<Tab>(
-      (tab) => this.showTab(tab),
-      (tab) => this.hideTab(tab),
+    this.resizeObserver = new ResizeObserver((entries) =>
+      this.resize(entries[0]),
     );
-    // No need to bubble up state.
-    this.consumerTabButton.val.addEventListener("click", () =>
-      this.applyUrl({
-        tab: Tab.CONSUMER,
+    this.resizeObserver.observe(this.body);
+
+    this.faqButton.val.addAction(() =>
+      this.faqSectionCentered.val.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
       }),
     );
-    this.publisherTabButton.val.addEventListener("click", () =>
-      this.applyUrl({
-        tab: Tab.PUBLISHER,
+    this.signInButton.val.addAction(() => this.emit("home"));
+    this.heroViewerButton.val.addAction(() => this.emit("home"));
+    this.heroPublisherButton.val.addAction(() => this.emit("home"));
+    this.publisherStartButton.val.addAction(() => this.emit("home"));
+    this.viewerStartButton.val.addAction(() => this.emit("home"));
+    this.joinButton.val.addAction(() => this.emit("home"));
+  }
+
+  private eHeroCard(
+    title: string,
+    body: string,
+    button: HTMLElement,
+  ): HTMLDivElement {
+    return E.div(
+      {
+        class: "marketing-page-hero-section-card",
+        style: `width: 100%; box-sizing: border-box; padding: ${GAP_1X}rem; border-radius: ${BORDER_RADIUS_S}rem; border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral2}; background-color: ${SCHEME.neutral3}; display: flex; flex-flow: column nowrap; align-items: center;`,
+      },
+      E.div(
+        {
+          class: "marketing-page-hero-section-card-title",
+          style: `margin-bottom: ${GAP_0_75X}rem; text-align: center; font-size: ${FONT_XL}rem; line-height: ${LINE_HEIGHT_XL}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+        },
+        E.text(title),
+      ),
+      E.div(
+        {
+          class: "marketing-page-hero-section-card-description",
+          style: `margin-bottom: ${GAP_1_5X}rem; text-align: center; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(body),
+      ),
+      button,
+    );
+  }
+
+  private eHowCard(
+    icon: SVGSVGElement,
+    title: string,
+    description: string,
+  ): HTMLDivElement {
+    return E.div(
+      {
+        class: "marketing-page-how-section-first-card",
+        style: `width: 100%; box-sizing: border-box; display: flex; flex-flow: column nowrap; align-items: center;`,
+      },
+      E.div(
+        {
+          class: "marketing-page-how-section-first-card-icon",
+          style: `height: ${ICON_XXL}rem; width: ${ICON_XXL}rem;`,
+        },
+        icon,
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
+      E.div(
+        {
+          class: "marketing-page-how-section-first-card-title",
+          style: `text-align: center; font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+        },
+        E.text(title),
+      ),
+      E.div({
+        style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
+      }),
+      E.div(
+        {
+          class: "marketing-page-how-section-first-card-description",
+          style: `text-align: center; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(description),
+      ),
     );
-    this.consumerSignInButton.val.addEventListener("click", () =>
-      this.emit("signUp", AccountType.CONSUMER),
-    );
-    this.publisherSignInButton.val.addEventListener("click", () =>
-      this.emit("signUp", AccountType.PUBLISHER),
-    );
-    this.serviceFeesLink.val.addEventListener("click", (event) => {
-      event.preventDefault();
-      this.emit("goToServiceFee");
-    });
   }
 
-  public applyUrl(newUrl?: MarketingPageUrl): this {
-    if (!newUrl) {
-      newUrl = {};
-    }
-    if (!newUrl.tab) {
-      newUrl.tab = Tab.CONSUMER;
-    }
-    this.url = newUrl;
-    this.tabNavigator.goTo(this.url.tab);
-    return this;
+  private ePublisherCard(
+    title: string,
+    ...bodies: Array<Node>
+  ): HTMLDivElement {
+    return E.div(
+      {
+        class: "marketing-page-publisher-section-bottom-card",
+        style: `padding: ${GAP_1_5X}rem; border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral2}; border-radius: ${BORDER_RADIUS_S}rem; background-color: ${SCHEME.neutral3};`,
+      },
+      E.div(
+        {
+          class: "marketing-page-publisher-section-bottom-card-title",
+          style: `margin-bottom: ${GAP_0_5X}rem; font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+        },
+        E.text(title),
+      ),
+      E.div(
+        {
+          class: "marketing-page-publisher-section-bottom-card-body",
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        ...bodies,
+      ),
+    );
   }
 
-  private showTab(tab: Tab): void {
-    switch (tab) {
-      case Tab.CONSUMER:
-        this.consumerTabButton.val.style.fontWeight = `${FONT_WEIGHT_600}`;
-        this.consumerTabButton.val.style.backgroundColor = `${SCHEME.neutral4}`;
-        this.consumerTabContent.val.style.display = "flex";
-        break;
-      case Tab.PUBLISHER:
-        this.publisherTabButton.val.style.fontWeight = `${FONT_WEIGHT_600}`;
-        this.publisherTabButton.val.style.backgroundColor = `${SCHEME.neutral4}`;
-        this.publisherTabContent.val.style.display = "flex";
-        break;
-    }
+  private eViewerCard(title: string, description: string): HTMLDivElement {
+    return E.div(
+      {
+        class: "marketing-page-viewer-section-bottom-card",
+        style: `padding: ${GAP_1_5X}rem; border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral2}; border-radius: ${BORDER_RADIUS_S}rem; background-color: ${SCHEME.neutral4};`,
+      },
+      E.div(
+        {
+          class: "marketing-page-viewer-section-bottom-card-title",
+          style: `margin-bottom: ${GAP_0_5X}rem; font-size: ${FONT_L}rem; line-height: ${LINE_HEIGHT_L}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+        },
+        E.text(title),
+      ),
+      E.div(
+        {
+          class: "marketing-page-viewer-section-bottom-card-body",
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        E.text(description),
+      ),
+    );
   }
 
-  private hideTab(tab: Tab): void {
-    switch (tab) {
-      case Tab.CONSUMER:
-        this.consumerTabButton.val.style.fontWeight = "normal";
-        this.consumerTabButton.val.style.backgroundColor = `${SCHEME.neutral3}`;
-        this.consumerTabContent.val.style.display = "none";
-        break;
-      case Tab.PUBLISHER:
-        this.publisherTabButton.val.style.fontWeight = "normal";
-        this.publisherTabButton.val.style.backgroundColor = `${SCHEME.neutral3}`;
-        this.publisherTabContent.val.style.display = "none";
-        break;
+  private eFaqCard(title: string, ...bodies: Array<Node>): HTMLDivElement {
+    return E.div(
+      {
+        class: "marketing-page-faq-card",
+        style: `padding: ${GAP_1_25X}rem; border: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral2}; border-radius: ${BORDER_RADIUS_S}rem; background-color: ${SCHEME.neutral3};`,
+      },
+      E.div(
+        {
+          class: "marketing-page-faq-card-title",
+          style: `margin-bottom: ${GAP_0_5X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+        },
+        E.text(title),
+      ),
+      E.div(
+        {
+          class: "marketing-page-faq-card-body",
+          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+        },
+        ...bodies,
+      ),
+    );
+  }
+
+  private resize(entry: ResizeObserverEntry): void {
+    let newWidth: number;
+    if (entry.borderBoxSize) {
+      newWidth = entry.borderBoxSize[0].inlineSize;
+    } else {
+      newWidth = entry.contentRect.width;
+    }
+    if (newWidth < MarketingPage.LAYOUT_BREAKPOINT * getRootFontSize()) {
+      this.faqButton.val.hide();
+      this.heroSectionCards.val.style.flexFlow = "column nowrap";
+      this.howSectionCards.val.style.flexFlow = "column nowrap";
+      this.publisherSectionCentered.val.style.flexFlow = "column nowrap";
+      this.viewerSectionCentered.val.style.flexFlow = "column nowrap";
+    } else {
+      this.faqButton.val.show();
+      this.heroSectionCards.val.style.flexFlow = "row nowrap";
+      this.howSectionCards.val.style.flexFlow = "row nowrap";
+      this.publisherSectionCentered.val.style.flexFlow = "row nowrap";
+      this.viewerSectionCentered.val.style.flexFlow = "row nowrap";
     }
   }
 
   public remove(): void {
+    this.resizeObserver.disconnect();
     this.body.remove();
   }
 }

@@ -4,9 +4,9 @@ import {
   BORDER_WIDTH_2,
   FONT_S,
   GAP_5X,
-  GAP_d_25X,
-  GAP_d_5X,
-  GAP_d_75X,
+  GAP_0_25X,
+  GAP_0_5X,
+  GAP_0_75X,
   ICON_XL,
   PAGE_MAX_WIDTH_M,
 } from "./sizes";
@@ -24,7 +24,7 @@ export function eNavigationItemRef(
     ref,
     {
       class: "publisher-page-navigation-bar-home-button",
-      style: `flex: 1 0 0; padding: ${GAP_d_5X}rem 0 ${GAP_d_25X}rem 0; display: flex; flex-flow: column nowrap; align-items: center; gap: ${GAP_d_25X}rem; cursor: pointer;`,
+      style: `flex: 1 0 0; padding: ${GAP_0_5X}rem 0 ${GAP_0_25X}rem 0; display: flex; flex-flow: column nowrap; align-items: center; gap: ${GAP_0_25X}rem; cursor: pointer;`,
     },
     E.div(
       {
@@ -61,7 +61,7 @@ export function eBottomNavigationBarRef(
       E.div(
         {
           class: "publisher-page-navigation-bar-level-one",
-          style: `display: flex; flex-flow: row nowrap; gap: ${GAP_d_75X}rem;`,
+          style: `display: flex; flex-flow: row nowrap; gap: ${GAP_0_75X}rem;`,
         },
         ...items,
       ),

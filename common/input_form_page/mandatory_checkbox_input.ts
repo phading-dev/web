@@ -1,7 +1,7 @@
 import EventEmitter = require("events");
 import { SCHEME } from "../color_scheme";
 import { createBoxIcon, createCheckedBoxIcon } from "../icons";
-import { FONT_M, GAP_d_5X, ICON_M, LINE_HEIGHT_M } from "../sizes";
+import { FONT_M, GAP_0_5X, ICON_M, LINE_HEIGHT_M } from "../sizes";
 import { InputField } from "./input_field";
 import { E } from "@selfage/element/factory";
 import { Ref } from "@selfage/ref";
@@ -17,7 +17,7 @@ export class MandatoryCheckboxInput extends EventEmitter implements InputField {
     this.body = E.div(
       {
         class: "checkbox-input",
-        style: `width: 100%; display: flex; flex-flow: row nowrap; align-items: flex-start; gap: ${GAP_d_5X}rem; ${customStyle}`,
+        style: `width: 100%; display: flex; flex-flow: row nowrap; align-items: flex-start; gap: ${GAP_0_5X}rem; ${customStyle}`,
       },
       E.divRef(
         this.boxIcon,

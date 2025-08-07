@@ -1,13 +1,13 @@
 import { SCHEME } from "./color_scheme";
 import { createArrowIcon } from "./icons";
-import { BORDER_RADIUS_S, BORDER_WIDTH_1, FONT_M, FONT_S, GAP_1X, GAP_d_25X, ICON_M, LINE_HEIGHT_M, LINE_HEIGHT_S } from "./sizes";
+import { BORDER_RADIUS_S, BORDER_WIDTH_1, FONT_M, FONT_S, GAP_1X, GAP_0_25X, ICON_M, LINE_HEIGHT_M, LINE_HEIGHT_S } from "./sizes";
 import { E } from "@selfage/element/factory";
 
 export function eLabelAndText(label: string, value?: string): HTMLDivElement {
   return E.div(
     {
       class: "label-and-text",
-      style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_d_25X}rem;`,
+      style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_0_25X}rem;`,
     },
     E.div(
       {
