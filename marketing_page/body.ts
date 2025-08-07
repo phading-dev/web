@@ -57,6 +57,7 @@ export class MarketingPage extends EventEmitter {
   private static LAYOUT_BREAKPOINT = 40; // rem
 
   public body: HTMLDivElement;
+  public logoButton = new Ref<HTMLDivElement>();
   public faqButton = new Ref<Button>();
   public signInButton = new Ref<Button>();
   public heroViewerButton = new Ref<Button>();
@@ -87,10 +88,11 @@ export class MarketingPage extends EventEmitter {
           class: "marketing-page-nav",
           style: `margin: 0 auto; padding: ${GAP_1X}rem ${GAP_1_5X}rem; background-color: ${SCHEME.neutral4}; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral2}; display: flex; flex-flow: row nowrap; align-items: center;`,
         },
-        E.div(
+        E.divRef(
+          this.logoButton,
           {
             class: "marketing-page-nav-logo",
-            style: `padding: ${(LINE_HEIGHT_FOR_BUTTON_M - FONT_XXL) / 2}rem 0;`,
+            style: `padding: ${(LINE_HEIGHT_FOR_BUTTON_M - FONT_XXL) / 2}rem 0; cursor: pointer;`,
           },
           createBrandIcon(FONT_XXL),
         ),
@@ -508,6 +510,7 @@ export class MarketingPage extends EventEmitter {
     );
     this.resizeObserver.observe(this.body);
 
+    this.logoButton.val.addEventListener("click", () => this.emit("home"));
     this.faqButton.val.addAction(() =>
       this.faqSectionCentered.val.scrollIntoView({
         behavior: "smooth",
