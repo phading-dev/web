@@ -98,7 +98,7 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "SetDoublePlaybackRate_Start_Stop";
+      public name = "SetInitPlaybackRate_Start_UpdatePlaybackRate_Stop";
       public async execute() {
         // Prepare
         let serviceClientMock = new WebServiceClientMock();
@@ -118,6 +118,8 @@ TEST_RUNNER.run({
         // Execute
         meter.start();
         now = 3000;
+        meter.setPlaybackSpeed(1);
+        now = 7000;
         meter.stop();
         let newReading = await new Promise<number>((resolve) => {
           meter.once("newReading", resolve);
@@ -130,13 +132,13 @@ TEST_RUNNER.run({
             {
               seasonId: "season 1",
               episodeId: "episode 1",
-              watchTimeMs: 4000, // (3000 - 1000) * 2
+              watchTimeMs: 8000, // (3000 - 1000) * 2 + (7000 - 3000) * 1
             },
             RECORD_WATCH_TIME_REQUEST_BODY,
           ),
           "RC body",
         );
-        assertThat(newReading, eq(4000), "newReading");
+        assertThat(newReading, eq(8000), "newReading");
       }
     })(),
     new (class implements TestCase {
@@ -173,6 +175,18 @@ TEST_RUNNER.run({
           eq(RECORD_WATCH_TIME),
           "RC",
         );
+        assertThat(
+          serviceClientMock.request.body,
+          eqMessage(
+            {
+              seasonId: "season 1",
+              episodeId: "episode 1",
+              watchTimeMs: 11000, // 23000 - 12000
+            },
+            RECORD_WATCH_TIME_REQUEST_BODY,
+          ),
+          "RC body",
+        );
 
         // Prepare
         now = 23000;
@@ -195,7 +209,7 @@ TEST_RUNNER.run({
             },
             RECORD_WATCH_TIME_REQUEST_BODY,
           ),
-          "RC body",
+          "RC body 2",
         );
         assertThat(newReading, eq(22000), "newReading");
       }

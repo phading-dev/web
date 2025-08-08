@@ -41,7 +41,12 @@ export class WatchTimeMeter extends EventEmitter {
   }
 
   public setPlaybackSpeed(playbackSpeed: number): this {
-    this.playbackSpeed = playbackSpeed;
+    if (this.meterStartMs == null) {
+      this.playbackSpeed = playbackSpeed;
+    } else {
+      this.accumulateWatchTimeMs();
+      this.playbackSpeed = playbackSpeed;
+    }
     return this;
   }
 
