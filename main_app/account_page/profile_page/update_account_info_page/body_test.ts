@@ -16,7 +16,7 @@ import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 normalizeBody();
 
 TEST_RUNNER.run({
-  name: "UpateContactEmailPageTest",
+  name: "UpdateAccountInfoPageTest",
   cases: [
     new (class implements TestCase {
       public name = "Default_UpdateFailed_UpdateSuccess";

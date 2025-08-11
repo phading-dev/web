@@ -1,6 +1,6 @@
 import path = require("path");
 import { normalizeBody } from "../normalize_body";
-import { eFormTitle } from "../page_elements";
+import { eCenteredTitle } from "../page_elements";
 import { setDesktopView, setPhoneView, setTabletView } from "../view_port";
 import { InputFormPage } from "./body";
 import { ErrorInput } from "./error_input";
@@ -46,7 +46,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut = new InputFormPage<Response>()
-          .addLines(eFormTitle("A title"), input.body)
+          .addLines(eCenteredTitle("A title"), input.body)
           .addButtonsContainerAndPrimaryButton(
             "Update",
             async () => {
@@ -184,7 +184,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut = new InputFormPage<Response>()
-          .addLines(eFormTitle("A title"), input.body)
+          .addLines(eCenteredTitle("A title"), input.body)
           .addButtonsContainerAndPrimaryButton(
             "Update",
             async () => {
@@ -289,7 +289,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut = new InputFormPage<Response>()
-          .addLines(eFormTitle("A title"), input.body)
+          .addLines(eCenteredTitle("A title"), input.body)
           .addButtonsContainerAndPrimaryButton(
             "Update",
             async () => {
@@ -346,7 +346,7 @@ TEST_RUNNER.run({
 
         // Execute
         this.cut = new InputFormPage<Response>()
-          .addLines(eFormTitle("A title"), ...inputs.map((input) => input.body))
+          .addLines(eCenteredTitle("A title"), ...inputs.map((input) => input.body))
           .addButtonsContainerAndPrimaryButton(
             "Update",
             async () => {

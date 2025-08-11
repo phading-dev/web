@@ -41,7 +41,7 @@ export class TextInputWithErrorMsg extends EventEmitter implements InputField {
       }),
       E.divRef(this.errorMsg, {
         class: "input-error-message",
-        style: `position: absolute; right: 0; top: 100%; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.error0};`,
+        style: `position: absolute; right: 0; top: 100%; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.bad0};`,
       }),
     );
 
@@ -69,7 +69,7 @@ export class TextInputWithErrorMsg extends EventEmitter implements InputField {
       this.valid = true;
     } else {
       if (result.errorMsg) {
-        this.input.val.style.borderColor = SCHEME.error0;
+        this.input.val.style.borderColor = SCHEME.bad1;
         this.errorMsg.val.textContent = result.errorMsg;
         this.errorMsg.val.style.display = "block";
       }

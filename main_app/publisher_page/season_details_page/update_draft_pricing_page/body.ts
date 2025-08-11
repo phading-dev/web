@@ -9,8 +9,14 @@ import { ValidationResult } from "../../../../common/input_form_page/input_field
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
-import { eFormTitle } from "../../../../common/page_elements";
-import { FONT_M, GAP_2X, LINE_HEIGHT_M } from "../../../../common/sizes";
+import { eCenteredTitle } from "../../../../common/page_elements";
+import {
+  FONT_M,
+  FONT_S,
+  FONT_WEIGHT_600,
+  LINE_HEIGHT_M,
+  LINE_HEIGHT_S,
+} from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { eNewRateInputLabel } from "../common/elements";
 import { MAX_GRADE } from "@phading/constants/show";
@@ -60,41 +66,55 @@ export class UpdateDraftPricingPage extends EventEmitter {
       customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     })
       .addLines(
-        eFormTitle(LOCALIZED_TEXT.updateSeasonPricingTitle),
-        assign(
-          this.gradeInput,
-          new TextInputWithErrorMsg(
-            eNewRateInputLabel(this.getNowDate()),
-            "",
-            {
-              type: "number",
-              min: "1",
-              max: `${MAX_GRADE}`,
-              value: `${grade}`,
-            },
-            (value) => this.validateGradeAndPreviewAndTake(value),
-          ),
-        ).body,
+        eCenteredTitle(LOCALIZED_TEXT.updateSeasonPricingTitle),
         E.div(
           {
-            class: "update-draft-pricing-preview-line",
-            style: `display: flex; flex-flow: row wrap; column-gap: ${GAP_2X}rem;`,
+            style: `display: flex; flex-flow: column nowrap; gap: ${LINE_HEIGHT_S}rem;`,
           },
+          assign(
+            this.gradeInput,
+            new TextInputWithErrorMsg(
+              eNewRateInputLabel(this.getNowDate()),
+              "",
+              {
+                type: "number",
+                min: "1",
+                max: `${MAX_GRADE}`,
+                value: `${grade}`,
+              },
+              (value) => this.validateGradeAndPreviewAndTake(value),
+            ),
+          ).body,
           E.div(
             {
-              class: "update-draft-pricing-new-rate",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+              class: "update-draft-pricing-preview-line",
             },
-            E.text(LOCALIZED_TEXT.seasonNewRateLabel),
-            E.textRef(this.pricingPreview),
-          ),
-          E.div(
-            {
-              class: "update-draft-pricing-net-rate",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(LOCALIZED_TEXT.seasonNewNetRateLabel),
-            E.textRef(this.netPricingPreview),
+            E.div(
+              {
+                class: "update-draft-pricing-new-rate",
+                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+              },
+              E.text(LOCALIZED_TEXT.seasonNewRateLabel),
+              E.div(
+                {
+                  style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+                },
+                E.textRef(this.pricingPreview),
+              ),
+            ),
+            E.div(
+              {
+                class: "update-draft-pricing-net-rate",
+                style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
+              },
+              E.text(LOCALIZED_TEXT.seasonNewNetRateLabel),
+              E.div(
+                {
+                  style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+                },
+                E.textRef(this.netPricingPreview),
+              ),
+            ),
           ),
         ),
       )

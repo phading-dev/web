@@ -4,7 +4,7 @@ import { ValidationResult } from "../../../../common/input_form_page/input_field
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
-import { eFormTitle } from "../../../../common/page_elements";
+import { eCenteredTitle } from "../../../../common/page_elements";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { newUpdateEpisodeIndexRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
@@ -49,7 +49,7 @@ export class UpdateIndexPage extends EventEmitter {
       customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     })
       .addLines(
-        eFormTitle(LOCALIZED_TEXT.updateEpisodeIndexTitle),
+        eCenteredTitle(LOCALIZED_TEXT.updateEpisodeIndexTitle),
         assign(
           this.episodeIndexInput,
           new TextInputWithErrorMsg(

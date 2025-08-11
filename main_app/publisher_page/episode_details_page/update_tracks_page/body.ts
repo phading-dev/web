@@ -19,7 +19,7 @@ import { COMMON_BASIC_INPUT_STYLE } from "../../../../common/input_styles";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
-  eFormTitle,
+  eCenteredTitle,
   ePageWithCenterForm,
 } from "../../../../common/page_elements";
 import {
@@ -1014,7 +1014,7 @@ export class UpdateTracksPage extends EventEmitter {
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       `max-width: ${PAGE_MAX_WIDTH_L}rem; display: flex; flex-flow: column nowrap;`,
       assign(this.backButton, createBackButton()).body,
-      eFormTitle(LOCALIZED_TEXT.updateTracksTitle),
+      eCenteredTitle(LOCALIZED_TEXT.updateTracksTitle),
       ...(videoContainer.videos.length === 0
         ? []
         : [
@@ -1165,7 +1165,7 @@ export class UpdateTracksPage extends EventEmitter {
         },
         E.divRef(this.actionError, {
           class: "update-tracks-action-error",
-          style: `display: none; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; text-align: center; self-align: center;`,
+          style: `display: none; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0}; text-align: center; self-align: center;`,
         }),
         assign(
           this.commitStagingButton,

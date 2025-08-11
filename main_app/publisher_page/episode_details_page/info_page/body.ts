@@ -1,14 +1,11 @@
 import EventEmitter = require("events");
 import Hls from "hls.js";
+import { IconButton, createBackButton } from "../../../../common/button";
 import { SCHEME } from "../../../../common/color_scheme";
 import { formatPremiereTimeLong } from "../../../../common/formatter/date";
 import { formatStorageEstimatedMonthlyPrice } from "../../../../common/formatter/price";
 import { formatBytesShort } from "../../../../common/formatter/quantity";
 import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
-import {
-  IconButton,
-  createBackButton,
-} from "../../../../common/button";
 import { createUploadIcon } from "../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
@@ -19,10 +16,10 @@ import {
   FONT_M,
   FONT_S,
   FONT_WEIGHT_600,
-  GAP_1X,
-  GAP_2X,
   GAP_0_25X,
   GAP_0_5X,
+  GAP_1X,
+  GAP_2X,
   ICON_BUTTON_L,
   ICON_L,
   LINE_HEIGHT_L,
@@ -37,6 +34,7 @@ import {
 } from "../../../../common/value_box";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { EpisodeState } from "@phading/product_service_interface/show/episode_state";
+import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import { newGetEpisodeRequest } from "@phading/product_service_interface/show/web/publisher/client";
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import {
@@ -167,7 +165,7 @@ export class InfoPage extends EventEmitter {
                 ],
                 {
                   linesGap: GAP_0_25X,
-                  customeStyle: `margin-top: ${GAP_1X}rem;`,
+                  customStyle: `margin-top: ${GAP_1X}rem;`,
                 },
               ),
             ),
@@ -233,7 +231,7 @@ export class InfoPage extends EventEmitter {
               ),
             ],
             {
-              customeStyle: `margin-top: ${GAP_1X}rem; display: flex; flex-flow: row nowrap; justify-content: center;`,
+              customStyle: `margin-top: ${GAP_1X}rem; display: flex; flex-flow: row nowrap; justify-content: center;`,
             },
           ),
         ),
@@ -396,7 +394,7 @@ export class InfoPage extends EventEmitter {
           ],
           {
             linesGap: 0,
-            customeStyle: `margin-top: ${GAP_1X}rem;`,
+            customStyle: `margin-top: ${GAP_1X}rem;`,
           },
         ),
       ),
@@ -586,7 +584,7 @@ export class InfoPage extends EventEmitter {
             ),
           ],
           {
-            customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_1X}rem;`,
+            customStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_1X}rem;`,
           },
         ),
       );
@@ -611,7 +609,7 @@ export class InfoPage extends EventEmitter {
             ),
           ],
           {
-            customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_1X}rem;`,
+            customStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_1X}rem;`,
           },
         ),
       );
@@ -632,7 +630,7 @@ export class InfoPage extends EventEmitter {
             ),
           ],
           {
-            customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center;`,
+            customStyle: `display: flex; flex-flow: row nowrap; justify-content: center;`,
           },
         ),
       );
@@ -654,7 +652,7 @@ export class InfoPage extends EventEmitter {
         E.div(
           {
             class: "episode-details-video-container-failures",
-            style: `margin-top: ${GAP_0_25X}rem; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.error0};`,
+            style: `margin-top: ${GAP_0_25X}rem; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.bad0};`,
           },
           this.eProcessingFailureText(videoContainer.lastProcessingFailure),
         ),
@@ -705,7 +703,7 @@ export class InfoPage extends EventEmitter {
                 E.text(LOCALIZED_TEXT.seasonEpisodeStateLabel),
                 E.div(
                   {
-                    style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+                    style: `display: inline; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.fair0};`,
                   },
                   E.text(LOCALIZED_TEXT.seasonEpisodeStateDraft),
                 ),
@@ -724,6 +722,7 @@ export class InfoPage extends EventEmitter {
             ],
             {
               linesGap: GAP_0_25X,
+              clickable: Boolean(episode.videoContainerCached),
             },
           ),
         );
@@ -740,9 +739,13 @@ export class InfoPage extends EventEmitter {
                 E.text(LOCALIZED_TEXT.seasonEpisodeStateLabel),
                 E.div(
                   {
-                    style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+                    style: `display: inline; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.great0};`,
                   },
-                  E.text(LOCALIZED_TEXT.seasonEpisodeStatePublished),
+                  E.text(
+                    episode.seasonState === SeasonState.DRAFT
+                      ? LOCALIZED_TEXT.seasonEpisodeStateReady
+                      : LOCALIZED_TEXT.seasonEpisodeStatePublished,
+                  ),
                 ),
               ),
               E.div(

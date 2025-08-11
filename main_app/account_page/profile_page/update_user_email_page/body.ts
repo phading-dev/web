@@ -6,7 +6,7 @@ import { PasswordInputWithErrorMsg } from "../../../../common/input_form_page/pa
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
-import { eFormTitle } from "../../../../common/page_elements";
+import { eCenteredTitle } from "../../../../common/page_elements";
 import { FONT_S } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { MAX_EMAIL_LENGTH } from "@phading/constants/account";
@@ -45,7 +45,7 @@ export class UpdateUserEmailPage extends EventEmitter {
       customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     })
       .addLines(
-        eFormTitle(LOCALIZED_TEXT.updateEmailTitle),
+        eCenteredTitle(LOCALIZED_TEXT.updateEmailTitle),
         E.input({
           name: "update-password-user-email",
           style: `display: none;`,

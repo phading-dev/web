@@ -6,7 +6,7 @@ import { ValidationResult } from "../../common/input_form_page/input_field";
 import { PasswordInputWithErrorMsg } from "../../common/input_form_page/password_input";
 import { LOCAL_SESSION_STORAGE } from "../../common/local_session_storage";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
-import { eFormTitle } from "../../common/page_elements";
+import { eCenteredTitle } from "../../common/page_elements";
 import { GAP_1X, ICON_XXL } from "../../common/sizes";
 import { SERVICE_CLIENT } from "../../common/web_service_client";
 import { MAX_PASSWORD_LENGTH } from "@phading/constants/account";
@@ -57,7 +57,7 @@ export class ResetPage extends EventEmitter {
             },
             createLockIcon(SCHEME.primary1),
           ),
-          eFormTitle(LOCALIZED_TEXT.resetPasswordTitle),
+          eCenteredTitle(LOCALIZED_TEXT.resetPasswordTitle),
         ),
         assign(
           this.newPasswordInput,

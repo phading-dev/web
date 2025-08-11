@@ -83,6 +83,7 @@ TEST_RUNNER.run({
         // Execute
         document.body.append(this.cut.body);
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
+        // await new Promise((resolve) => setTimeout(resolve, 1000000));
 
         // Verify
         assertThat(
@@ -109,76 +110,35 @@ TEST_RUNNER.run({
           path.join(__dirname, "/info_page_tablet_empty_draft.png"),
           path.join(__dirname, "/golden/info_page_tablet_empty_draft.png"),
           path.join(__dirname, "/info_page_tablet_empty_draft_diff.png"),
-        );
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_tablet_empty_draft_scrolled.png"),
-          path.join(
-            __dirname,
-            "/golden/info_page_tablet_empty_draft_scrolled.png",
-          ),
-          path.join(
-            __dirname,
-            "/info_page_tablet_empty_draft_scrolled_diff.png",
-          ),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
         await setDesktopView();
-        window.scrollTo(0, 0);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/info_page_desktop_empty_draft.png"),
           path.join(__dirname, "/golden/info_page_desktop_empty_draft.png"),
           path.join(__dirname, "/info_page_desktop_empty_draft_diff.png"),
-        );
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_desktop_empty_draft_scrolled.png"),
-          path.join(
-            __dirname,
-            "/golden/info_page_desktop_empty_draft_scrolled.png",
-          ),
-          path.join(
-            __dirname,
-            "/info_page_desktop_empty_draft_scrolled_diff.png",
-          ),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
         await setPhoneView();
-        window.scrollTo(0, 0);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/info_page_phone_empty_draft.png"),
           path.join(__dirname, "/golden/info_page_phone_empty_draft.png"),
           path.join(__dirname, "/info_page_phone_empty_draft_diff.png"),
-        );
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_phone_empty_draft_scrolled.png"),
-          path.join(
-            __dirname,
-            "/golden/info_page_phone_empty_draft_scrolled.png",
-          ),
-          path.join(
-            __dirname,
-            "/info_page_phone_empty_draft_scrolled_diff.png",
-          ),
+          {
+            fullPage: true,
+          },
         );
 
         // Prepare
@@ -232,22 +192,52 @@ TEST_RUNNER.run({
         assertThat(createDraftEpisode, eq(true), "Create draft episode");
 
         // Prepare
-        this.cut.on("viewEpisodes", (season) => {
+        seasonCaptured = undefined;
+        this.cut.on("viewDraftEpisodes", (season) => {
           seasonCaptured = season;
         });
 
         // Execute
-        this.cut.episodesListButton.val.click();
+        this.cut.draftEpisodesListButton.val.click();
 
         // Verify
-        assertThat(seasonCaptured.grade, eq(1), "View episodes season grade");
+        assertThat(
+          seasonCaptured.grade,
+          eq(1),
+          "View draft episodes season grade",
+        );
+
+        // Prepare
+        seasonCaptured = undefined;
+        this.cut.on("viewPublishedEpisodes", (season) => {
+          seasonCaptured = season;
+        });
+
+        // Execute
+        this.cut.publishedEpisodesListButton.val.click();
+
+        // Verify
+        assertThat(
+          seasonCaptured.grade,
+          eq(1),
+          "View published episodes season grade",
+        );
+        // Prepare
+        let publishSeason: SeasonDetails;
+        this.cut.on("publishSeason", (season) => (publishSeason = season));
+
+        // Execute
+        this.cut.seasonStateButton.val.click();
+
+        // Verify
+        assertThat(publishSeason.grade, eq(1), "Publish season grade");
 
         // Prepare
         let deleteSeason: SeasonDetails;
         this.cut.on("deleteSeason", (season) => (deleteSeason = season));
 
         // Execute
-        this.cut.seasonStateButton.val.click();
+        this.cut.dangerZoneButton.val.click();
 
         // Verify
         assertThat(deleteSeason.grade, eq(1), "Delete season grade");
@@ -263,7 +253,6 @@ TEST_RUNNER.run({
         assertThat(back, eq(true), "Back");
       }
       public tearDown() {
-        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),
@@ -313,50 +302,35 @@ TEST_RUNNER.run({
           path.join(__dirname, "/info_page_tablet_published.png"),
           path.join(__dirname, "/golden/info_page_tablet_published.png"),
           path.join(__dirname, "/info_page_tablet_published_diff.png"),
-        );
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_tablet_published_scrolled.png"),
-          path.join(
-            __dirname,
-            "/golden/info_page_tablet_published_scrolled.png",
-          ),
-          path.join(__dirname, "/info_page_tablet_published_scrolled_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Prepare
         await setDesktopView();
-        window.scrollTo(0, document.body.scrollHeight);
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_desktop_published_scrolled.png"),
-          path.join(
-            __dirname,
-            "/golden/info_page_desktop_published_scrolled.png",
-          ),
-          path.join(
-            __dirname,
-            "/info_page_desktop_published_scrolled_diff.png",
-          ),
+          path.join(__dirname, "/info_page_desktop_published.png"),
+          path.join(__dirname, "/golden/info_page_desktop_published.png"),
+          path.join(__dirname, "/info_page_desktop_published_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
         await setPhoneView();
-        window.scrollTo(0, document.body.scrollHeight);
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_phone_published_scrolled.png"),
-          path.join(
-            __dirname,
-            "/golden/info_page_phone_published_scrolled.png",
-          ),
-          path.join(__dirname, "/info_page_phone_published_scrolled_diff.png"),
+          path.join(__dirname, "/info_page_phone_published.png"),
+          path.join(__dirname, "/golden/info_page_phone_published.png"),
+          path.join(__dirname, "/info_page_phone_published_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Prepare
@@ -380,13 +354,12 @@ TEST_RUNNER.run({
         this.cut.on("archiveSeason", (season) => (archiveSeason = season));
 
         // Execute
-        this.cut.seasonStateButton.val.click();
+        this.cut.dangerZoneButton.val.click();
 
         // Verify
         assertThat(archiveSeason.grade, eq(599), "Archive season grade");
       }
       public tearDown() {
-        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),
@@ -428,28 +401,31 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
         // Somehow need to await again for the body to be fully loaded
         await new Promise((resolve) => setTimeout(resolve, 100));
-        window.scrollTo(0, document.body.scrollHeight);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/info_page_tablet_next_grade.png"),
           path.join(__dirname, "/golden/info_page_tablet_next_grade.png"),
           path.join(__dirname, "/info_page_tablet_next_grade_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
         await setPhoneView();
-        window.scrollTo(0, document.body.scrollHeight);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/info_page_phone_next_grade.png"),
           path.join(__dirname, "/golden/info_page_phone_next_grade.png"),
           path.join(__dirname, "/info_page_phone_next_grade_diff.png"),
+          {
+            fullPage: true,
+          },
         );
       }
       public tearDown() {
-        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),
@@ -488,28 +464,31 @@ TEST_RUNNER.run({
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
         // Somehow need to await again for the body to be fully loaded
         await new Promise((resolve) => setTimeout(resolve, 100));
-        window.scrollTo(0, document.body.scrollHeight);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/info_page_tablet_taken_down.png"),
           path.join(__dirname, "/golden/info_page_tablet_taken_down.png"),
           path.join(__dirname, "/info_page_tablet_taken_down_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
         await setPhoneView();
-        window.scrollTo(0, document.body.scrollHeight);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/info_page_phone_taken_down.png"),
           path.join(__dirname, "/golden/info_page_phone_taken_down.png"),
           path.join(__dirname, "/info_page_phone_taken_down_diff.png"),
+          {
+            fullPage: true,
+          },
         );
       }
       public tearDown() {
-        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),

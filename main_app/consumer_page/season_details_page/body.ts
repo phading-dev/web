@@ -49,10 +49,10 @@ import {
   FONT_M,
   FONT_S,
   FONT_WEIGHT_600,
-  GAP_1X,
-  GAP_2X,
   GAP_0_25X,
   GAP_0_5X,
+  GAP_1X,
+  GAP_2X,
   ICON_BUTTON_L,
   ICON_BUTTON_M,
   ICON_L,
@@ -450,11 +450,8 @@ export class SeasonDetailsPage extends EventEmitter {
           }),
           assign(
             this.publisherButton,
-            eRowBoxWithArrow([
-              E.div(
-                {
-                  style: `display: flex; flex-flow: row nowrap; align-items: flex-start; gap: ${GAP_0_5X}rem;`,
-                },
+            eRowBoxWithArrow(
+              [
                 E.image({
                   class: "publisher-item-avatar",
                   style: `flex: 0 0 auto; width: ${AVATAR_S}rem; height: ${AVATAR_S}rem; margin-top: ${GAP_0_25X}rem; border-radius: 100%;`,
@@ -481,8 +478,11 @@ export class SeasonDetailsPage extends EventEmitter {
                     E.text(`${AT_USER}${publisher.accountId}`),
                   ),
                 ),
-              ),
-            ]),
+              ],
+              {
+                columnGap: GAP_0_5X,
+              },
+            ),
           ),
           E.div({
             style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,

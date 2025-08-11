@@ -185,7 +185,7 @@ export class UploadingPage extends EventEmitter {
     } catch (e) {
       console.error(e);
       this.progressTip.val.textContent = LOCALIZED_TEXT.uploadingStartError;
-      this.progressTip.val.style.color = SCHEME.error0;
+      this.progressTip.val.style.color = SCHEME.bad0;
       this.emit("failed");
       return;
     }
@@ -214,7 +214,7 @@ export class UploadingPage extends EventEmitter {
     } catch (e) {
       console.error(e);
       this.progressTip.val.textContent = LOCALIZED_TEXT.uploadingGenericError;
-      this.progressTip.val.style.color = SCHEME.error0;
+      this.progressTip.val.style.color = SCHEME.bad0;
       this.emit("failed");
       return;
     }

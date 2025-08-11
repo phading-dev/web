@@ -84,7 +84,7 @@ export default class Text {
     return `Pay for What You Actually Watch. Nothing More.`;
   }
   get marketingViewerSectionSubtitle() {
-    return `Your time is valuable. Your attention is valuable. With Secount, you're in control.`
+    return `Your time is valuable. Your attention is valuable. With Secount, you're in control.`;
   }
   get marketingViewerSectionActionButtonLabel() {
     return `Browse Content & Start Watching`;
@@ -114,10 +114,14 @@ export default class Text {
     return `What is the exact revenue share and what are the fees?`;
   }
   get faqSectionRevenueShareAnswer() {
-    return [`We believe in full transparency. Our current Publisher Revenue Share, along with any fees for services like video storage, are always detailed on our `, `Pricing Page`, `.`];
+    return [
+      `We believe in full transparency. Our current Publisher Revenue Share, along with any fees for services like video storage, are always detailed on our `,
+      `Pricing Page`,
+      `.`,
+    ];
   }
   get faqSectionNetflixComparisonQuestion() {
-    return `So, it's not a subscription like Netflix or Disney+?`
+    return `So, it's not a subscription like Netflix or Disney+?`;
   }
   get faqSectionNetflixComparisonAnswer() {
     return `Correct! There are no monthly or annual fees. Secount is a pure pay-as-you-go platform. You add a payment method to your account, and you are only charged for the cumulative duration of content you've watched at the end of each month.`;
@@ -126,25 +130,28 @@ export default class Text {
     return `How is this different from YouTube or Patreon?`;
   }
   get faqSectionYouTubeComparisonAnswer() {
-    return `Secount puts control back where it belongs. Unlike YouTube, where the platform dictates payment rates, Secount empowers creators to set their own price. And instead of juggling multiple Patreon subscriptions for unpredictable content, Secount unifies your support on a single platform, letting you pay directly for the specific content you choose to watch.`
+    return `Secount puts control back where it belongs. Unlike YouTube, where the platform dictates payment rates, Secount empowers creators to set their own price. And instead of juggling multiple Patreon subscriptions for unpredictable content, Secount unifies your support on a single platform, letting you pay directly for the specific content you choose to watch.`;
   }
   get faqSectionPayoutQuestion() {
     return `How do creators get paid?`;
   }
   get faqSectionPayoutAnswer() {
-    return `We partner with Stripe for secure and reliable payouts. Creators connect their Stripe account and receive their earnings directly into their US-based bank account. (We're working hard to expand payout support to more countries soon!)`
+    return `We partner with Stripe for secure and reliable payouts. Creators connect their Stripe account and receive their earnings directly into their US-based bank account. (We're working hard to expand payout support to more countries soon!)`;
   }
   get faqSectionTryItQuestion() {
     return `Can I try it before I commit?`;
   }
   get faqSectionTryItAnswer() {
-    return [`Yes! We offer a one-time promotional credit for `, ` when you add a valid payment method to your account for the first time. Use it to explore the platform on us.`];
+    return [
+      `Yes! We offer a one-time promotional credit for `,
+      ` when you add a valid payment method to your account for the first time. Use it to explore the platform on us.`,
+    ];
   }
   get joinSectionTitle() {
-    return `Ready to Join the New Content Economy?`
+    return `Ready to Join the New Content Economy?`;
   }
   get joinSectionDescription() {
-    return `Whether you're a creator ready to earn your worth or a viewer looking for a better way to watch, your journey starts here. Join Secount and make every second count.`
+    return `Whether you're a creator ready to earn your worth or a viewer looking for a better way to watch, your journey starts here. Join Secount and make every second count.`;
   }
   get joinSectionActionButtonLabel() {
     return `Sign Up for Secount Today`;
@@ -840,6 +847,9 @@ export default class Text {
   get totalPublishedEpisodes() {
     return [``, ` published episodes`];
   }
+  get seasonDangerZone() {
+    return `Danger zone`;
+  }
   get seasonLastChangeTime() {
     return `Last updated: `;
   }
@@ -867,17 +877,11 @@ export default class Text {
   get seasonNetRateLabel() {
     return `Net earnings rate: `;
   }
-  get seasonDraftPricingFooter() {
-    return `Before publishing, you can change the rate anytime.`;
-  }
   get seasonPublishedPricingFooter() {
     return [
       `In order to maintain stable pricing, at least `,
       `-day notice is required to change the rate.`,
     ];
-  }
-  get seasonArchivedPricingFooter() {
-    return `Rate cannot be changed anymore.`;
   }
   get seasonNewRateLabel() {
     return `New rate: `;
@@ -889,19 +893,22 @@ export default class Text {
     return `Effective date: `;
   }
   get seasonStateLabel() {
-    return `State: `;
+    return `Status: `;
   }
   get seasonStateDraftLabel() {
     return `Draft`;
   }
-  get seasonStateDraftFooter() {
-    return `Not visible to the public. It will be published when the first episode is published.`;
+  get seasonStateDraftNotReadyFooter() {
+    return `At least one episode must be ready to publish.`;
+  }
+  get seasonStateDraftReadyFooter() {
+    return `Ready to publish?`;
   }
   get seasonStatePublishedLabel() {
     return `Published`;
   }
   get seasonStatePublishedFooter() {
-    return `All information except draft episodes is visible to the public.`;
+    return `Visible to the public.`;
   }
   get seasonStateTakenDownLabel() {
     return `Taken down`;
@@ -924,6 +931,12 @@ export default class Text {
   get seasonTotalDraftEpisodes() {
     return [``, ` draft episodes`];
   }
+  get seasonDraftEpisodes() {
+    return `Draft episodes`;
+  }
+  get seasonDraftEpisodesEmpty() {
+    return `No draft episodes yet.`;
+  }
   get seasonCreateDraftEpisodeLabel() {
     return `Add a new episode`;
   }
@@ -939,14 +952,29 @@ export default class Text {
   get seasonTotalPublishedEpisodes() {
     return [``, ` published episodes`];
   }
+  get seasonTotalReadyEpisodes() {
+    return [``, ` ready-to-publish episodes`];
+  }
+  get seasonPublishedEpisodes() {
+    return `Published episodes`;
+  }
+  get seasonReadyEpisodes() {
+    return `Ready-to-publish episodes`;
+  }
   get seasonPublishedEpisodeIndex() {
-    return `# `;
+    return `#`;
   }
   get seasonPublishedEpisodesStartFromLabel() {
-    return `Latest from #`;
+    return `Jump to #`;
   }
-  get seasonAllPublishedEpisodesLoaded() {
-    return `All published episodes are listed.`;
+  get seasonPublishedEpisodesSortByLabel() {
+    return `Sort by`;
+  }
+  get seasonPublishedEpisodesSortByNewestOption() {
+    return `Newest first`;
+  }
+  get seasonPublishedEpisodesSortByOldestOption() {
+    return `Oldest first`;
   }
   get seasonEpisodeNameLabel() {
     return `Episode name`;
@@ -958,7 +986,7 @@ export default class Text {
     return `To solely determine the order of the episodes.`;
   }
   get seasonEpisodeStateLabel() {
-    return `State: `;
+    return `Status: `;
   }
   get seasonEpisodeStateDraft() {
     return `Draft`;
@@ -971,6 +999,9 @@ export default class Text {
   }
   get seasonEpisodeStatePublished() {
     return `Published`;
+  }
+  get seasonEpisodeStateReady() {
+    return `Ready`;
   }
   get seasonHasPremieredAt() {
     return `Has premiered at `;
@@ -1226,11 +1257,17 @@ export default class Text {
   get reachedMaximumPublishedEpisodeError() {
     return `Too many published episodes in one season.`;
   }
-  get publishButtonLabel() {
+  get publishEpisodeButtonLabel() {
     return `Publish`;
   }
   get publishEpisodeGenericError() {
     return `Failed to publish the episode. Please try again later.`;
+  }
+  get deleteEpisodeButtonLabel() {
+    return `Delete`;
+  }
+  get deleteEpisodeGenericError() {
+    return `Failed to delete the episode. Please try again later.`;
   }
   get publishedEpisodeTitle() {
     return `Update or unpublish episode`;
@@ -1238,7 +1275,7 @@ export default class Text {
   get publishedEpisodeUpdatePremiereTimeLabel() {
     return [`Premiere time (`, `)`];
   }
-  get unpublishButtonLabel() {
+  get unpublishEpisodeButtonLabel() {
     return `Unpublish`;
   }
   get unpublishEpisodeGenericError() {
@@ -1314,17 +1351,29 @@ export default class Text {
   get updateSeasonCoverImageUnableToLoadError() {
     return `Failed to read the cover image. Please ensure the file is a valid image and try again.`;
   }
-  get seasonDraftStateTitle() {
-    return `Draft state`;
+  get seasonPublishTitle() {
+    return `Publish season`;
   }
-  get seasonDraftStateDescription() {
+  get seasonPublishDescription() {
     return [
       `Once published, the pricing can only be adjusted with a `,
       `-day notice`,
-      `. And the season itself `,
+      `. The season itself `,
       `cannot be unpublished`,
-      ` and can only be archived. Episodes can be unpublished individually until the last one.`,
+      `.`
     ];
+  }
+  get seasonPublishConfirmation() {
+    return `Are you sure you want to publish this season?`;
+  }
+  get seasonPublishButtonLabel() {
+    return `Confirm and Publish`;
+  }
+  get seasonPublishGenericError() {
+    return `Failed to publish the season. Please try again later.`;
+  }
+  get seasonDeleteTitle() {
+    return `Delete season`;
   }
   get seasonDeleteInstruction() {
     return [
@@ -1332,20 +1381,11 @@ export default class Text {
       `" below and click "Delete". This action cannot be undone.`,
     ];
   }
-  get deleteButtonLabel() {
+  get seasonDeleteButtonLabel() {
     return `Delete`;
   }
-  get deleteGenericError() {
-    return `Failed to delete. Please try again later.`;
-  }
-  get seasonPublishedStateTitle() {
-    return `Published state`;
-  }
-  get seasonPublishedStateDescription() {
-    return `It can only be archived. Once archived, the season's name and pricing remain visible to the public.`;
-  }
-  get seasonTakenDownStateTitle() {
-    return `Taken down state`;
+  get seasonDeleteGenericError() {
+    return `Failed to delete the season. Please try again later.`;
   }
   get seasonTakenDownStateDescription() {
     return [
@@ -1353,17 +1393,23 @@ export default class Text {
       `. It can still be archived. Once archived, the season's name and pricing remain visible to the public.`,
     ];
   }
+  get seasonArchiveTitle() {
+    return `Archive season`;
+  }
+  get seasonArchiveDescription() {
+    return `Once archived, the season's name and pricing remain visible to the public for accounting purposes.`;
+  }
   get seasonArchiveInstructions() {
     return [
       `To archive, please type "`,
       `" below and click "Archive". This action cannot be undone.`,
     ];
   }
-  get archiveButtonLabel() {
+  get seasonArchiveButtonLabel() {
     return `Archive`;
   }
-  get archiveGenericError() {
-    return `Failed to archive. Please try again later.`;
+  get seasonArchiveGenericError() {
+    return `Failed to archive the season. Please try again later.`;
   }
   get updateSeasonPricingTitle() {
     return `Update pricing`;
@@ -1388,7 +1434,11 @@ export default class Text {
     return `New rate should be different from the current rate.`;
   }
   get updateSeasonNewRateEffectiveDateLabel() {
-    return [`Effective date (`, `)`];
+    return [
+      `Effective date (`,
+      `). In order to maintain stable pricing, at least `,
+      `-day notice is required to change the rate.`,
+    ];
   }
   get updateSeasonNewRateEffectiveDateInvalidError() {
     return `Effective date is invalid.`;
@@ -1397,6 +1447,9 @@ export default class Text {
     return `Effective date is too soon.`;
   }
   get updateSeasonDeleteNewRateButtonLabel() {
-    return `Delete new rate`;
+    return `Cancel new rate`;
+  }
+  get updateSeasonDeleteNewRateGenericError() {
+    return `Failed to cancel the new rate. Please try again later.`;
   }
 }

@@ -6,8 +6,9 @@ import { ArchivePage } from "./archive_page/body";
 import { SeasonDetailsPage } from "./body";
 import { CreateEpisodePage } from "./create_episode_page/body";
 import { DeletePage } from "./delete_page/body";
-import { EpisodesListPageMock } from "./episodes_list_page/body_mock";
+import { DraftEpisodesListPageMock } from "./draft_episodes_list_page/body_mock";
 import { InfoPageMock } from "./info_page/body_mock";
+import { PublishedEpisodesListPageMock } from "./published_episodes_list_page/body_mock";
 import { UpdateCoverImagePage } from "./update_cover_image_page/body";
 import { UpdateDraftPricingPage } from "./update_draft_pricing_page/body";
 import { UpdateInfoPage } from "./update_info_page/body";
@@ -47,8 +48,9 @@ TEST_RUNNER.run({
         // Execute
         this.cut = new SeasonDetailsPage(
           (seasonId) => new InfoPageMock(() => nowDate, seasonId),
+          (seasonId) => new DraftEpisodesListPageMock(seasonId),
           (seasonId, season) =>
-            new EpisodesListPageMock(() => nowDate, seasonId, season),
+            new PublishedEpisodesListPageMock(() => nowDate, seasonId, season),
           (seasonId, season) =>
             new UpdateCoverImagePage(
               undefined,
@@ -73,7 +75,7 @@ TEST_RUNNER.run({
               nextGrade,
             ),
           (seasonId) => new DeletePage(undefined, seasonId),
-          (seasonId, season) => new ArchivePage(undefined, seasonId, season),
+          (seasonId) => new ArchivePage(undefined, seasonId),
           (seasonId) => new CreateEpisodePage(undefined, seasonId),
           (...bodies) => document.body.append(...bodies),
           "season1",
@@ -317,23 +319,24 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.infoPage.emit("viewEpisodes", seasonDetails);
+        this.cut.infoPage.emit("viewDraftEpisodes", seasonDetails);
 
         // Verify
         assertThat(
-          this.cut.episodesListPage.seasonId,
+          this.cut.draftEpisodesListPage.seasonId,
           eq("season1"),
-          "episodesListPage.seasonId",
-        );
-        assertThat(
-          this.cut.episodesListPage.seasonDetails.grade,
-          eq(seasonDetails.grade),
-          "episodesListPage.season.grade",
+          "draftEpisodesListPage.seasonId",
         );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/season_details_page_episodes_list.png"),
-          path.join(__dirname, "/golden/season_details_page_episodes_list.png"),
-          path.join(__dirname, "/season_details_page_episodes_list_diff.png"),
+          path.join(__dirname, "/season_details_page_draft_episodes_list.png"),
+          path.join(
+            __dirname,
+            "/golden/season_details_page_draft_episodes_list.png",
+          ),
+          path.join(
+            __dirname,
+            "/season_details_page_draft_episodes_list_diff.png",
+          ),
         );
 
         // Prepare
@@ -341,25 +344,81 @@ TEST_RUNNER.run({
         episodeId = undefined;
 
         // Execute
-        this.cut.episodesListPage.emit("viewEpisode", "episode1");
+        this.cut.draftEpisodesListPage.emit("viewEpisode", "episode1");
 
         // Verify
         assertThat(seasonId, eq("season1"), "viewEpisode seasonId");
         assertThat(episodeId, eq("episode1"), "viewEpisode episodeId");
 
         // Execute
-        this.cut.episodesListPage.emit("back");
+        this.cut.draftEpisodesListPage.emit("back");
 
         // Verify
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/season_details_page_back_from_episodes_list.png",
+            "/season_details_page_back_from_draft_episodes_list.png",
           ),
           path.join(__dirname, "/golden/season_details_page_default.png"),
           path.join(
             __dirname,
-            "/season_details_page_back_from_episodes_list_diff.png",
+            "/season_details_page_back_from_draft_episodes_list_diff.png",
+          ),
+        );
+
+        // Execute
+        this.cut.infoPage.emit("viewPublishedEpisodes", seasonDetails);
+
+        // Verify
+        assertThat(
+          this.cut.publishedEpisodesListPage.seasonId,
+          eq("season1"),
+          "publishedEpisodesListPage.seasonId",
+        );
+        assertThat(
+          this.cut.publishedEpisodesListPage.seasonDetails.name,
+          eq(seasonDetails.name),
+          "publishedEpisodesListPage.seasonDetails.name",
+        );
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/season_details_page_published_episodes_list.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/season_details_page_published_episodes_list.png",
+          ),
+          path.join(
+            __dirname,
+            "/season_details_page_published_episodes_list_diff.png",
+          ),
+        );
+
+        // Prepare
+        seasonId = undefined;
+        episodeId = undefined;
+
+        // Execute
+        this.cut.publishedEpisodesListPage.emit("viewEpisode", "episode1");
+
+        // Verify
+        assertThat(seasonId, eq("season1"), "viewEpisode seasonId");
+        assertThat(episodeId, eq("episode1"), "viewEpisode episodeId");
+
+        // Execute
+        this.cut.publishedEpisodesListPage.emit("back");
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/season_details_page_back_from_published_episodes_list.png",
+          ),
+          path.join(__dirname, "/golden/season_details_page_default.png"),
+          path.join(
+            __dirname,
+            "/season_details_page_back_from_published_episodes_list_diff.png",
           ),
         );
 

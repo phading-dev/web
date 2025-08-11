@@ -8,7 +8,7 @@ import { RadioOptionInput } from "../../../common/input_form_page/option_input";
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
 import { OptionPill } from "../../../common/option_buttons";
-import { eFormTitle } from "../../../common/page_elements";
+import { eCenteredTitle } from "../../../common/page_elements";
 import { FONT_M, GAP_2X, GAP_0_5X, LINE_HEIGHT_M } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { MAX_NAME_LENGTH } from "@phading/constants/account";
@@ -46,7 +46,7 @@ export class CreateAccountPage extends EventEmitter {
     super();
     this.inputFormPage = new InputFormPage<CreateAccountResponse>()
       .addLines(
-        eFormTitle(LOCALIZED_TEXT.createAccountTitle),
+        eCenteredTitle(LOCALIZED_TEXT.createAccountTitle),
         assign(
           this.accountNameInput,
           new TextInputWithErrorMsg(

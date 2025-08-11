@@ -3,7 +3,7 @@ import { Button, FilledButton } from "../../common/button";
 import { SCHEME } from "../../common/color_scheme";
 import { createCheckmarkInACircleIcon } from "../../common/icons";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
-import { eFormTitle, ePageWithCenterForm } from "../../common/page_elements";
+import { eCenteredTitle, ePageWithCenterForm } from "../../common/page_elements";
 import {
   FONT_M,
   GAP_1X,
@@ -38,12 +38,12 @@ export class ResetSuccessPage extends EventEmitter {
           class: "reset-success-icon",
           style: `height: ${ICON_XXL}rem;`,
         },
-        createCheckmarkInACircleIcon(SCHEME.success1),
+        createCheckmarkInACircleIcon(SCHEME.great1),
       ),
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
-      eFormTitle(LOCALIZED_TEXT.resetPasswordSuccessTitle),
+      eCenteredTitle(LOCALIZED_TEXT.resetPasswordSuccessTitle),
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),

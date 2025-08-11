@@ -26,7 +26,7 @@ export function ePageWithCenterForm(
   );
 }
 
-export function eFormTitle(text: string): HTMLDivElement {
+export function eCenteredTitle(text: string): HTMLDivElement {
   return E.div(
     {
       class: "input-form-title",

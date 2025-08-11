@@ -19,7 +19,8 @@ TEST_RUNNER.run({
   name: "UpdateDraftPricingPageTest",
   cases: [
     new (class implements TestCase {
-      public name = "Default_EmptyValue_LargestValue_UpdateError_Updated_Back";
+      public name =
+        "PhoneView_Default_TabletView_EmptyValue_PhoneView_InvalidValue_TooLargeValue_TabletView_LargestValue_UpdateError_Updated_Back";
       private cut: UpdateDraftPricingPage;
       public async execute() {
         // Prepare
@@ -37,14 +38,14 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/update_draft_pricing_phone_page_default.png"),
+          path.join(__dirname, "/update_draft_pricing_page_phone_default.png"),
           path.join(
             __dirname,
-            "/golden/update_draft_pricing_phone_page_default.png",
+            "/golden/update_draft_pricing_page_phone_default.png",
           ),
           path.join(
             __dirname,
-            "/update_draft_pricing_phone_page_default_diff.png",
+            "/update_draft_pricing_page_phone_default_diff.png",
           ),
         );
 
@@ -75,20 +76,26 @@ TEST_RUNNER.run({
           ),
         );
 
+        // Prepare
+        await setPhoneView();
+
         // Execute
         this.cut.gradeInput.val.value = "0.9";
         this.cut.gradeInput.val.dispatchInput();
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/update_draft_pricing_page_rate_invalid.png"),
           path.join(
             __dirname,
-            "/golden/update_draft_pricing_page_rate_invalid.png",
+            "/update_draft_pricing_page_phone_rate_invalid.png",
           ),
           path.join(
             __dirname,
-            "/update_draft_pricing_page_rate_invalid_diff.png",
+            "/golden/update_draft_pricing_page_phone_rate_invalid.png",
+          ),
+          path.join(
+            __dirname,
+            "/update_draft_pricing_page_phone_rate_invalid_diff.png",
           ),
         );
 
@@ -98,16 +105,22 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/update_draft_pricing_page_rate_too_large.png"),
           path.join(
             __dirname,
-            "/golden/update_draft_pricing_page_rate_too_large.png",
+            "/update_draft_pricing_page_phone_rate_too_large.png",
           ),
           path.join(
             __dirname,
-            "/update_draft_pricing_page_rate_too_large_diff.png",
+            "/golden/update_draft_pricing_page_phone_rate_too_large.png",
+          ),
+          path.join(
+            __dirname,
+            "/update_draft_pricing_page_phone_rate_too_large_diff.png",
           ),
         );
+
+        // Prepare
+        await setTabletView();
 
         // Execute
         this.cut.gradeInput.val.value = "9999";

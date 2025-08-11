@@ -5,7 +5,7 @@ import { InputFormPage } from "../../../common/input_form_page/body";
 import { ValidationResult } from "../../../common/input_form_page/input_field";
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { eFormTitle } from "../../../common/page_elements";
+import { eCenteredTitle } from "../../../common/page_elements";
 import { GAP_1X, ICON_XXL } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
 import { newSendPasswordResetEmailRequest } from "@phading/user_service_interface/web/self/client";
@@ -47,7 +47,7 @@ export class SendPasswordResetPage extends EventEmitter {
             },
             createLockIcon(SCHEME.primary1),
           ),
-          eFormTitle(LOCALIZED_TEXT.sendPasswordResetTitle),
+          eCenteredTitle(LOCALIZED_TEXT.sendPasswordResetTitle),
         ),
         assign(
           this.emailInput,

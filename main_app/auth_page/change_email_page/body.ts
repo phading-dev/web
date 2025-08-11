@@ -6,7 +6,7 @@ import { ValidationResult } from "../../../common/input_form_page/input_field";
 import { PasswordInputWithErrorMsg } from "../../../common/input_form_page/password_input";
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { eFormTitle } from "../../../common/page_elements";
+import { eCenteredTitle } from "../../../common/page_elements";
 import {
   FONT_M,
   FONT_WEIGHT_600,
@@ -61,7 +61,7 @@ export class ChangeEmailPage extends EventEmitter {
             },
             createAccountOutlineIcon(SCHEME.primary1),
           ),
-          eFormTitle(LOCALIZED_TEXT.changeEmailTitle),
+          eCenteredTitle(LOCALIZED_TEXT.changeEmailTitle),
           E.div(
             {
               class: "change-email-current-email",

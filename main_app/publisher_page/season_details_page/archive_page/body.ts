@@ -5,13 +5,10 @@ import { ValidationResult } from "../../../../common/input_form_page/input_field
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
-import { eFormTitle } from "../../../../common/page_elements";
-import { FONT_M, GAP_1X } from "../../../../common/sizes";
+import { eCenteredTitle } from "../../../../common/page_elements";
+import { FONT_M, GAP_1X, LINE_HEIGHT_M } from "../../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
-import { ENV_VARS } from "../../../../env_vars";
-import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import { newArchiveSeasonRequest } from "@phading/product_service_interface/show/web/publisher/client";
-import { SeasonDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import { ArchiveSeasonResponse } from "@phading/product_service_interface/show/web/publisher/interface";
 import { E } from "@selfage/element/factory";
 import { Ref, assign } from "@selfage/ref";
@@ -23,8 +20,8 @@ export interface ArchivePage {
 }
 
 export class ArchivePage extends EventEmitter {
-  public static create(seasonId: string, season: SeasonDetails): ArchivePage {
-    return new ArchivePage(SERVICE_CLIENT, seasonId, season);
+  public static create(seasonId: string): ArchivePage {
+    return new ArchivePage(SERVICE_CLIENT, seasonId);
   }
 
   public inputFormPage: InputFormPage<ArchiveSeasonResponse>;
@@ -33,68 +30,39 @@ export class ArchivePage extends EventEmitter {
   public constructor(
     private serviceClient: WebServiceClient,
     public seasonId: string,
-    public season: SeasonDetails,
   ) {
     super();
-    if (
-      season.state !== SeasonState.PUBLISHED &&
-      season.state !== SeasonState.TAKEN_DOWN
-    ) {
-      throw new Error(
-        `Cannot archive season with state ${SeasonState[season.state]}, expected PUBLISHED or TAKEN_DOWN.`,
-      );
-    }
     this.inputFormPage = new InputFormPage<ArchiveSeasonResponse>({
       customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     })
       .addLines(
-        eFormTitle(
-          season.state === SeasonState.PUBLISHED
-            ? LOCALIZED_TEXT.seasonPublishedStateTitle
-            : LOCALIZED_TEXT.seasonTakenDownStateTitle,
-        ),
+        eCenteredTitle(LOCALIZED_TEXT.seasonArchiveTitle),
         E.div(
           {
-            class: "published-state-page-descriptions",
             style: `display: flex; flex-flow: column nowrap; gap: ${GAP_1X}rem;`,
           },
           E.div(
             {
-              class: "published-state-page-description-1",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
+              class: "archive-page-details",
+              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
             },
-            E.text(
-              season.state === SeasonState.PUBLISHED
-                ? LOCALIZED_TEXT.seasonStatePublishedFooter
-                : `${LOCALIZED_TEXT.seasonStateTakenDownFooter}${season.takenDownReason}`,
-            ),
+            E.text(LOCALIZED_TEXT.seasonArchiveDescription),
           ),
-          E.div(
-            {
-              class: "published-state-page-description-2",
-              style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              season.state === SeasonState.PUBLISHED
-                ? LOCALIZED_TEXT.seasonPublishedStateDescription
-                : `${LOCALIZED_TEXT.seasonTakenDownStateDescription[0]}${ENV_VARS.supportEmail}${LOCALIZED_TEXT.seasonTakenDownStateDescription[1]}`,
+          assign(
+            this.seasonIdInput,
+            new TextInputWithErrorMsg(
+              `${LOCALIZED_TEXT.seasonArchiveInstructions[0]}${this.seasonId}${LOCALIZED_TEXT.seasonArchiveInstructions[1]}`,
+              "",
+              {
+                type: "text",
+              },
+              (value) => this.validateId(value),
             ),
-          ),
+          ).body,
         ),
-        assign(
-          this.seasonIdInput,
-          new TextInputWithErrorMsg(
-            `${LOCALIZED_TEXT.seasonArchiveInstructions[0]}${this.seasonId}${LOCALIZED_TEXT.seasonArchiveInstructions[1]}`,
-            "",
-            {
-              type: "text",
-            },
-            (value) => this.validateId(value),
-          ),
-        ).body,
       )
       .addButtonsContainerAndPrimaryButton(
-        LOCALIZED_TEXT.archiveButtonLabel,
+        LOCALIZED_TEXT.seasonArchiveButtonLabel,
         () => this.archive(),
         (error) => this.postArchive(error),
       )
@@ -126,7 +94,7 @@ export class ArchivePage extends EventEmitter {
 
   private postArchive(error?: Error): string {
     if (error) {
-      return LOCALIZED_TEXT.archiveGenericError;
+      return LOCALIZED_TEXT.seasonArchiveGenericError;
     } else {
       this.emit("back");
       return "";

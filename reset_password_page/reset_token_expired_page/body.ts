@@ -3,7 +3,7 @@ import { Button, FilledButton } from "../../common/button";
 import { SCHEME } from "../../common/color_scheme";
 import { createExclamationMarkInACycle } from "../../common/icons";
 import { LOCALIZED_TEXT } from "../../common/locales/localized_text";
-import { eFormTitle, ePageWithCenterForm } from "../../common/page_elements";
+import { eCenteredTitle, ePageWithCenterForm } from "../../common/page_elements";
 import {
   FONT_M,
   GAP_1X,
@@ -38,12 +38,12 @@ export class ResetTokenExpiredPage extends EventEmitter {
           class: "reset-token-expired-icon",
           style: `height: ${ICON_XXL}rem;`,
         },
-        createExclamationMarkInACycle(SCHEME.error0),
+        createExclamationMarkInACycle(SCHEME.bad0),
       ),
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
-      eFormTitle(LOCALIZED_TEXT.resetPasswordTokenExpiredTitle),
+      eCenteredTitle(LOCALIZED_TEXT.resetPasswordTokenExpiredTitle),
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),

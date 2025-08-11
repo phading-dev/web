@@ -4,7 +4,7 @@ import { ValidationResult } from "../../../../common/input_form_page/input_field
 import { PasswordInputWithErrorMsg } from "../../../../common/input_form_page/password_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
-import { eFormTitle } from "../../../../common/page_elements";
+import { eCenteredTitle } from "../../../../common/page_elements";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { MAX_PASSWORD_LENGTH } from "@phading/constants/account";
 import { newUpdatePasswordRequest } from "@phading/user_service_interface/web/self/client";
@@ -41,7 +41,7 @@ export class UpdatePasswordPage extends EventEmitter {
       customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     })
       .addLines(
-        eFormTitle(LOCALIZED_TEXT.updatePasswordTitle),
+        eCenteredTitle(LOCALIZED_TEXT.updatePasswordTitle),
         E.input({
           name: "update-password-user-email",
           style: `display: none;`,

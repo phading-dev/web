@@ -147,7 +147,7 @@ export class Player extends EventEmitter {
       }),
       E.divRef(this.bottomError, {
         class: "player-bottom-error",
-        style: `opacity: 0; position: absolute; bottom: 0; left: 0; width: 100%; padding: ${GAP_0_5X}rem; box-sizing: border-box; text-align: center; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; background-color: ${SCHEME.neutral4};`,
+        style: `opacity: 0; position: absolute; bottom: 0; left: 0; width: 100%; padding: ${GAP_0_5X}rem; box-sizing: border-box; text-align: center; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0}; background-color: ${SCHEME.neutral4};`,
       }),
       E.divRef(
         this.controlsContainer,

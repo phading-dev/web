@@ -15,12 +15,16 @@ let BLUE_60 = "rgb(51,187,255)";
 let BLUE_50 = "rgb(0,170,255)";
 let BLUE_40 = "rgb(0,136,204)";
 let BLUE_20 = "rgb(0,68,102)";
-let RED_50 = "rgb(255,0,0)";
+let RED_70 = "rgb(255,102,102)";
+let RED_60 = "rgb(255, 51, 51)";
+let RED_40 = "rgb(204,0,0)";
+let RED_30 = "rgb(153,0,0)";
 let ORANGE_60 = "rgb(255,153,51)";
 let ORANGE_40 = "rgb(204,102,0)";
+let GREEN_70 = "rgb(102,255,102)";
 let GREEN_60 = "rgb(51,255,51)";
-let GREEN_50 = "rgb(0,255,0)";
 let GREEN_40 = "rgb(0,204,0)";
+let GREEN_30 = "rgb(0,153,0)";
 let YELLOW_50 = "rgb(255,255,0)";
 let GOLD = "rgb(239,191,4)";
 
@@ -75,23 +79,20 @@ export class DarkScheme {
   get link() {
     return BLUE_60;
   }
-  get error0() {
-    return RED_50;
+  get great0() {
+    return GREEN_40;
   }
-  get warning0() {
-    return ORANGE_60;
+  get great1() {
+    return GREEN_30;
   }
-  get success0() {
-    return GREEN_60;
+  get fair0() {
+    return ORANGE_40;
   }
-  get success1() {
-    return GREEN_50;
+  get bad0() {
+    return RED_40;
   }
-  get heart() {
-    return RED_50;
-  }
-  get anger() {
-    return RED_50;
+  get bad1() {
+    return RED_30;
   }
   get star() {
     return YELLOW_50;
@@ -152,23 +153,20 @@ export class LightScheme {
   get link() {
     return BLUE_40;
   }
-  get error0() {
-    return RED_50;
+  get great0() {
+    return GREEN_60;
   }
-  get warning0() {
-    return ORANGE_40;
+  get great1() {
+    return GREEN_70;
   }
-  get success0() {
-    return GREEN_40;
+  get fair0() {
+    return ORANGE_60;
   }
-  get success1() {
-    return GREEN_50;
+  get bad0() {
+    return RED_60;
   }
-  get heart() {
-    return RED_50;
-  }
-  get anger() {
-    return RED_50;
+  get bad1() {
+    return RED_70;
   }
   get star() {
     return YELLOW_50;

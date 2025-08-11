@@ -31,12 +31,12 @@ export function eColumnBoxWithArrow(
   options: {
     clickable?: boolean;
     linesGap?: number; // in rem
-    customeStyle?: string;
+    customStyle?: string;
   } = {},
 ): HTMLDivElement {
   options.clickable = options.clickable ?? true;
   options.linesGap = options.linesGap ?? GAP_1X;
-  options.customeStyle = options.customeStyle ?? "";
+  options.customStyle = options.customStyle ?? "";
   return eBox(
     [
       E.div(
@@ -56,7 +56,7 @@ export function eColumnBoxWithArrow(
     ],
     {
       clickable: options.clickable,
-      customeStyle: `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_1X}rem; ${options.customeStyle}`,
+      customStyle: `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_1X}rem; ${options.customStyle}`,
     },
   );
 }
@@ -67,16 +67,22 @@ export function eRowBoxWithArrow(
     clickable?: boolean;
     columnGap?: number; // in rem
     justifyContent?: string;
-    customeStyle?: string;
+    customStyle?: string;
   } = {},
 ): HTMLDivElement {
   options.clickable = options.clickable ?? true;
   options.columnGap = options.columnGap ?? GAP_1X;
-  options.justifyContent = options.justifyContent ?? "space-between";
-  options.customeStyle = options.customeStyle ?? "";
+  options.justifyContent = options.justifyContent ?? "flex-start";
+  options.customStyle = options.customStyle ?? "";
   return eBox(
     [
+      E.div(
+        {
+          class: "box-lines",
+          style: `flex: 1 0 0; display: flex; flex-flow: row nowrap; gap: ${options.columnGap}rem; align-items: center; justify-content: ${options.justifyContent};`,
+        },
       ...children,
+      ),
       E.div(
         {
           class: "box-edit-icon",
@@ -87,7 +93,7 @@ export function eRowBoxWithArrow(
     ],
     {
       clickable: options.clickable,
-      customeStyle: `display: flex; flex-flow: row nowrap; justify-content: ${options.justifyContent}; align-items: center; gap: ${options.columnGap}rem; ${options.customeStyle}`,
+      customStyle: `display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_1X}rem; ${options.customStyle}`,
     },
   );
 }
@@ -96,15 +102,15 @@ export function eBox(
   children: Array<HTMLElement>,
   options: {
     clickable?: boolean;
-    customeStyle?: string;
+    customStyle?: string;
   } = {},
 ): HTMLDivElement {
   options.clickable = options.clickable ?? true;
-  options.customeStyle = options.customeStyle ?? "";
+  options.customStyle = options.customStyle ?? "";
   return E.div(
     {
       class: "box",
-      style: `border: ${BORDER_WIDTH_1}rem solid ${options.clickable ? SCHEME.neutral1 : SCHEME.neutral2}; border-radius: ${BORDER_RADIUS_S}rem; padding: ${GAP_1X}rem; ${options.clickable ? "cursor: pointer" : ""}; ${options.customeStyle}`,
+      style: `border: ${BORDER_WIDTH_1}rem solid ${options.clickable ? SCHEME.neutral1 : SCHEME.neutral2}; border-radius: ${BORDER_RADIUS_S}rem; padding: ${GAP_1X}rem; ${options.clickable ? "cursor: pointer; pointer-events: none;" : ""} ${options.customStyle}`,
     },
     ...children,
   );

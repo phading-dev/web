@@ -3,7 +3,6 @@ import path = require("path");
 import { normalizeBody } from "../../../../common/normalize_body";
 import { setTabletView } from "../../../../common/view_port";
 import { ArchivePage } from "./body";
-import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import {
   ARCHIVE_SEASON,
   ARCHIVE_SEASON_REQUEST_BODY,
@@ -21,7 +20,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "PublishedState_InvalidInput_ValidInput_ArchiveError_Archived_Back";
+        "Default_InvalidInput_ValidInput_ArchiveError_Archived_Back";
       private cut: ArchivePage;
       public async execute() {
         // Prepare
@@ -30,9 +29,6 @@ TEST_RUNNER.run({
         this.cut = new ArchivePage(
           serviceClientMock,
           "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx",
-          {
-            state: SeasonState.PUBLISHED,
-          },
         );
 
         // Execute
@@ -40,9 +36,9 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/archive_page_published.png"),
-          path.join(__dirname, "/golden/archive_page_published.png"),
-          path.join(__dirname, "/archive_page_published_diff.png"),
+          path.join(__dirname, "/archive_page_default.png"),
+          path.join(__dirname, "/golden/archive_page_default.png"),
+          path.join(__dirname, "/archive_page_default_diff.png"),
         );
 
         // Execute
@@ -122,36 +118,6 @@ TEST_RUNNER.run({
 
         // Verify
         assertThat(back, eq(true), "Back when clicked back button");
-      }
-      public tearDown() {
-        this.cut.remove();
-      }
-    })(),
-    new (class implements TestCase {
-      public name = "TakenDownState";
-      private cut: ArchivePage;
-      public async execute() {
-        // Prepare
-        await setTabletView();
-        let serviceClientMock = new WebServiceClientMock();
-        this.cut = new ArchivePage(
-          serviceClientMock,
-          "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx",
-          {
-            state: SeasonState.TAKEN_DOWN,
-            takenDownReason: "Fake reason",
-          },
-        );
-
-        // Execute
-        document.body.append(this.cut.body);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/archive_page_taken_down.png"),
-          path.join(__dirname, "/golden/archive_page_taken_down.png"),
-          path.join(__dirname, "/archive_page_taken_down_diff.png"),
-        );
       }
       public tearDown() {
         this.cut.remove();

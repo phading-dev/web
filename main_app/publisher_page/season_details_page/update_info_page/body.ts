@@ -5,7 +5,7 @@ import { TextAreaInputWithErrorMsg } from "../../../../common/input_form_page/te
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
-import { eFormTitle } from "../../../../common/page_elements";
+import { eCenteredTitle } from "../../../../common/page_elements";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import {
   MAX_EPISODE_NAME_LENGTH,
@@ -49,7 +49,7 @@ export class UpdateInfoPage extends EventEmitter {
       customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     })
       .addLines(
-        eFormTitle(LOCALIZED_TEXT.updateSeasonInfoTitle),
+        eCenteredTitle(LOCALIZED_TEXT.updateSeasonInfoTitle),
         assign(
           this.nameInput,
           new TextInputWithErrorMsg(

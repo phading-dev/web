@@ -83,7 +83,7 @@ export class ListAccountsPage extends EventEmitter {
         this.errorMessage,
         {
           class: "list-accounts-error-message",
-          style: `padding-top: ${GAP_1X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; display: ${this.error ? "block" : "none"};`,
+          style: `padding-top: ${GAP_1X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0}; display: ${this.error ? "block" : "none"};`,
         },
         E.text(this.error ?? "1"),
       ),

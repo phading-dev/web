@@ -69,7 +69,7 @@ export class CardPaymentItem {
           {
             class: "card-payment-card-expiration",
             style: `font-size: ${FONT_S}rem; color: ${
-              isCardExpired ? SCHEME.error0 : SCHEME.neutral0
+              isCardExpired ? SCHEME.bad0 : SCHEME.neutral0
             };`,
           },
           E.text(

@@ -42,15 +42,15 @@ export class ScrollLoadingSection extends EventEmitter {
         createLoadingIcon(SCHEME.neutral1),
       ),
     );
-  }
-
-  public addLoadAction(loadFn: () => Promise<boolean>): this {
-    this.loadFn = loadFn;
     this.loadingObserver = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
         this.load();
       }
     });
+  }
+
+  public setLoadAction(loadFn: () => Promise<boolean>): this {
+    this.loadFn = loadFn;
     return this;
   }
 
@@ -62,7 +62,6 @@ export class ScrollLoadingSection extends EventEmitter {
       this.hasMore = await this.loadFn();
     } catch (e) {
       console.log(e);
-      this.hasMore = false;
     }
     if (this.hasMore) {
       this.loadingObserver.observe(this.body);
@@ -73,6 +72,6 @@ export class ScrollLoadingSection extends EventEmitter {
   }
 
   public stopLoading(): void {
-    this.loadingObserver?.disconnect();
+    this.loadingObserver.disconnect();
   }
 }

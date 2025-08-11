@@ -3,7 +3,7 @@ import { CLICKABLE_TEXT_STYLE } from "../../../common/button";
 import { SCHEME } from "../../../common/color_scheme";
 import { createEmailIcon } from "../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { eFormTitle, ePageWithCenterForm } from "../../../common/page_elements";
+import { eCenteredTitle, ePageWithCenterForm } from "../../../common/page_elements";
 import {
   FONT_M,
   FONT_S,
@@ -61,7 +61,7 @@ export class SendEmailVerificationPage extends EventEmitter {
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
-      eFormTitle(LOCALIZED_TEXT.emailVerificationTitle),
+      eCenteredTitle(LOCALIZED_TEXT.emailVerificationTitle),
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
@@ -109,7 +109,7 @@ export class SendEmailVerificationPage extends EventEmitter {
         },
         E.divRef(this.actionError, {
           class: "email-verification-action-error",
-          style: `display: none; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.error0};`,
+          style: `display: none; font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.bad0};`,
         }),
         E.divRef(this.resendCountDown, {
           class: "email-verification-resend-countdown",

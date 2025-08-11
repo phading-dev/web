@@ -65,7 +65,7 @@ export class SearchPage extends EventEmitter {
       .on("list", (state) => this.emit("listSeasons", state));
 
     this.loadingSection.val
-      .addLoadAction(() => this.load())
+      .setLoadAction(() => this.load())
       .on("loaded", () => this.emit("loaded"))
       .load();
   }

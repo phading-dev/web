@@ -44,7 +44,7 @@ TEST_RUNNER.run({
         let itemLength = 2;
 
         // Execute
-        cut.val.addLoadAction(async () => {
+        cut.val.setLoadAction(async () => {
           await new Promise((resolve) => setTimeout(resolve));
           Array.from({ length: itemLength }).forEach(() => {
             cut.val.body.before(item());

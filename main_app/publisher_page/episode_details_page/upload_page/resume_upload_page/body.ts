@@ -48,7 +48,7 @@ export class ResumeUploadPage extends EventEmitter {
       }),
       E.divRef(this.errorMessage, {
         class: "upload-page-drop-zone-error-message",
-        style: `display: none; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
+        style: `display: none; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0};`,
       }),
       E.div(
         {

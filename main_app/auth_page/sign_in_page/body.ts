@@ -6,7 +6,7 @@ import { ValidationResult } from "../../../common/input_form_page/input_field";
 import { PasswordInputWithErrorMsg } from "../../../common/input_form_page/password_input";
 import { TextInputWithErrorMsg } from "../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../common/locales/localized_text";
-import { eFormTitle } from "../../../common/page_elements";
+import { eCenteredTitle } from "../../../common/page_elements";
 import {
   FONT_M,
   FONT_XXXL,
@@ -54,7 +54,7 @@ export class SignInPage extends EventEmitter {
             style: `width: 100%; display: flex; flex-flow: column nowrap; gap: ${GAP_1X}rem;`,
           },
           createBrandIcon(FONT_XXXL),
-          eFormTitle(LOCALIZED_TEXT.signInTitle),
+          eCenteredTitle(LOCALIZED_TEXT.signInTitle),
         ),
         assign(
           this.userEmailInput,

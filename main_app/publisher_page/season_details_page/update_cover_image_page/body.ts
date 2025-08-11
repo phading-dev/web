@@ -1,26 +1,27 @@
 import EventEmitter = require("events");
-import { BlockingButton, FilledButton } from "../../../../common/button";
-import { SCHEME } from "../../../../common/color_scheme";
-import { FileDropZone } from "../../../../common/file_drop_zone";
-import { formatBytesShort } from "../../../../common/formatter/quantity";
 import {
+  BlockingButton,
+  FilledButton,
   IconButton,
   createBackButton,
 } from "../../../../common/button";
+import { SCHEME } from "../../../../common/color_scheme";
+import { FileDropZone } from "../../../../common/file_drop_zone";
+import { formatBytesShort } from "../../../../common/formatter/quantity";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
-  eFormTitle,
+  eCenteredTitle,
   ePageWithCenterForm,
 } from "../../../../common/page_elements";
 import { eCoverImage } from "../../../../common/season_cover_image";
 import {
   BORDER_WIDTH_1,
   FONT_M,
-  GAP_1X,
-  GAP_2X,
   GAP_0_25X,
   GAP_0_5X,
+  GAP_1X,
+  GAP_2X,
   LINE_HEIGHT_M,
   PAGE_MAX_WIDTH_M,
 } from "../../../../common/sizes";
@@ -78,7 +79,7 @@ export class UpdateCoverImagePage extends EventEmitter {
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       `max-width: ${PAGE_MAX_WIDTH_M}rem; display: flex; flex-flow: column nowrap; align-items: center;`,
       assign(this.backButton, createBackButton()).body,
-      eFormTitle(LOCALIZED_TEXT.updateSeasonCoverImageTitle),
+      eCenteredTitle(LOCALIZED_TEXT.updateSeasonCoverImageTitle),
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
@@ -90,7 +91,7 @@ export class UpdateCoverImagePage extends EventEmitter {
         this.loadErrorMessage,
         E.div({
           class: "update-cover-image-load-error-message",
-          style: `display: none; align-self: flex-start; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
+          style: `display: none; align-self: flex-start; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0};`,
         }),
       ),
       E.div(
@@ -130,14 +131,16 @@ export class UpdateCoverImagePage extends EventEmitter {
         this.submitErrorMessage,
         {
           class: "update-cover-image-submit-error-message",
-          style: `display: none; margin-bottom: ${GAP_0_5X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
+          style: `display: none; margin-bottom: ${GAP_0_5X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0};`,
         },
         E.text("1"),
       ),
       assign(
         this.submitButton,
         new BlockingButton<UploadCoverImageResponse>(
-          new FilledButton("width: 100%;").append(E.text(LOCALIZED_TEXT.updateButtonLabel)),
+          new FilledButton("width: 100%;").append(
+            E.text(LOCALIZED_TEXT.updateButtonLabel),
+          ),
         ).disable(),
       ).body,
     );

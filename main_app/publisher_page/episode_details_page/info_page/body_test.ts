@@ -9,6 +9,7 @@ import {
 } from "../../../../common/view_port";
 import { InfoPage } from "./body";
 import { EpisodeState } from "@phading/product_service_interface/show/episode_state";
+import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import { GetEpisodeResponse } from "@phading/product_service_interface/show/web/publisher/interface";
 import { ProcessingFailureReason } from "@phading/video_service_interface/node/last_processing_failure";
@@ -33,6 +34,7 @@ TEST_RUNNER.run({
         let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
+            seasonState: SeasonState.DRAFT,
             episodeName:
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.DRAFT,
@@ -68,6 +70,9 @@ TEST_RUNNER.run({
           path.join(__dirname, "/info_page_tablet_draft.png"),
           path.join(__dirname, "/golden/info_page_tablet_draft.png"),
           path.join(__dirname, "/info_page_tablet_draft_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
@@ -78,6 +83,9 @@ TEST_RUNNER.run({
           path.join(__dirname, "/info_page_desktop_draft.png"),
           path.join(__dirname, "/golden/info_page_desktop_draft.png"),
           path.join(__dirname, "/info_page_desktop_draft_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
@@ -88,6 +96,9 @@ TEST_RUNNER.run({
           path.join(__dirname, "/info_page_phone_draft.png"),
           path.join(__dirname, "/golden/info_page_phone_draft.png"),
           path.join(__dirname, "/info_page_phone_draft_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Prepare
@@ -156,6 +167,7 @@ TEST_RUNNER.run({
         let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
+            seasonState: SeasonState.DRAFT,
             episodeName:
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.DRAFT,
@@ -194,6 +206,9 @@ TEST_RUNNER.run({
           path.join(__dirname, "/info_page_tablet_draft_uploading.png"),
           path.join(__dirname, "/golden/info_page_tablet_draft_uploading.png"),
           path.join(__dirname, "/info_page_tablet_draft_uploading_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Prepare
@@ -224,6 +239,7 @@ TEST_RUNNER.run({
         let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
+            seasonState: SeasonState.DRAFT,
             episodeName:
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.DRAFT,
@@ -269,6 +285,9 @@ TEST_RUNNER.run({
           path.join(__dirname, "/info_page_tablet_draft_formatting.png"),
           path.join(__dirname, "/golden/info_page_tablet_draft_formatting.png"),
           path.join(__dirname, "/info_page_tablet_draft_formatting_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
@@ -291,6 +310,7 @@ TEST_RUNNER.run({
         let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
+            seasonState: SeasonState.DRAFT,
             episodeName:
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.DRAFT,
@@ -335,6 +355,9 @@ TEST_RUNNER.run({
             __dirname,
             "/info_page_tablet_draft_formatting_subtitle_diff.png",
           ),
+          {
+            fullPage: true,
+          },
         );
       }
       public tearDown() {
@@ -351,6 +374,7 @@ TEST_RUNNER.run({
         let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
+            seasonState: SeasonState.DRAFT,
             episodeName:
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.DRAFT,
@@ -405,6 +429,9 @@ TEST_RUNNER.run({
             __dirname,
             "/info_page_tablet_draft_processing_failures_diff.png",
           ),
+          {
+            fullPage: true,
+          },
         );
       }
       public tearDown() {
@@ -422,6 +449,7 @@ TEST_RUNNER.run({
         let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
+            seasonState: SeasonState.DRAFT,
             episodeName:
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.DRAFT,
@@ -495,25 +523,9 @@ TEST_RUNNER.run({
             __dirname,
             "/info_page_tablet_draft_pending_tracks_diff.png",
           ),
-        );
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/info_page_tablet_draft_pending_tracks_scrolled.png",
-          ),
-          path.join(
-            __dirname,
-            "/golden/info_page_tablet_draft_pending_tracks_scrolled.png",
-          ),
-          path.join(
-            __dirname,
-            "/info_page_tablet_draft_pending_tracks_scrolled_diff.png",
-          ),
+          {
+            fullPage: true,
+          },
         );
 
         // Prepare
@@ -531,7 +543,6 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),
@@ -545,6 +556,7 @@ TEST_RUNNER.run({
         let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
+            seasonState: SeasonState.DRAFT,
             episodeName:
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.DRAFT,
@@ -610,6 +622,9 @@ TEST_RUNNER.run({
           path.join(__dirname, "/info_page_tablet_draft_committing.png"),
           path.join(__dirname, "/golden/info_page_tablet_draft_committing.png"),
           path.join(__dirname, "/info_page_tablet_draft_committing_diff.png"),
+          {
+            fullPage: true,
+          },
         );
 
         // Execute
@@ -632,6 +647,7 @@ TEST_RUNNER.run({
         let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
+            seasonState: SeasonState.DRAFT,
             episodeName:
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.DRAFT,
@@ -708,29 +724,12 @@ TEST_RUNNER.run({
             __dirname,
             "/info_page_tablet_draft_committing_with_pending_tracks_diff.png",
           ),
-        );
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/info_page_tablet_draft_committing_with_pending_tracks_scrolled.png",
-          ),
-          path.join(
-            __dirname,
-            "/golden/info_page_tablet_draft_committing_with_pending_tracks_scrolled.png",
-          ),
-          path.join(
-            __dirname,
-            "/info_page_tablet_draft_committing_with_pending_tracks_scrolled_diff.png",
-          ),
+          {
+            fullPage: true,
+          },
         );
       }
       public tearDown() {
-        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),
@@ -744,6 +743,7 @@ TEST_RUNNER.run({
         let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
+            seasonState: SeasonState.DRAFT,
             episodeName:
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.DRAFT,
@@ -806,6 +806,7 @@ TEST_RUNNER.run({
           path.join(__dirname, "/golden/info_page_tablet_committed.png"),
           path.join(__dirname, "/info_page_tablet_committed_diff.png"),
           {
+            fullPage: true,
             excludedAreas: [
               {
                 x: 310,
@@ -818,77 +819,46 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_tablet_committed_scrolled.png"),
-          path.join(
-            __dirname,
-            "/golden/info_page_tablet_committed_scrolled.png",
-          ),
-          path.join(__dirname, "/info_page_tablet_committed_scrolled_diff.png"),
-        );
-
-        // Execute
         await setDesktopView();
-        window.scrollTo(0, 0);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/info_page_desktop_committed.png"),
           path.join(__dirname, "/golden/info_page_desktop_committed.png"),
           path.join(__dirname, "/info_page_desktop_committed_diff.png"),
-        );
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_desktop_committed_scrolled.png"),
-          path.join(
-            __dirname,
-            "/golden/info_page_desktop_committed_scrolled.png",
-          ),
-          path.join(
-            __dirname,
-            "/info_page_desktop_committed_scrolled_diff.png",
-          ),
+          {
+            fullPage: true,
+            excludedAreas: [
+              {
+                x: 560,
+                y: 360,
+                width: 100,
+                height: 100,
+              },
+            ],
+          },
         );
 
         // Execute
         await setPhoneView();
-        window.scrollTo(0, 0);
 
         // Verify
         await asyncAssertScreenshot(
           path.join(__dirname, "/info_page_phone_committed.png"),
           path.join(__dirname, "/golden/info_page_phone_committed.png"),
           path.join(__dirname, "/info_page_phone_committed_diff.png"),
-        );
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_phone_committed_scrolled.png"),
-          path.join(
-            __dirname,
-            "/golden/info_page_phone_committed_scrolled.png",
-          ),
-          path.join(__dirname, "/info_page_phone_committed_scrolled_diff.png"),
+          {
+            fullPage: true,
+          },
         );
       }
       public tearDown() {
-        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),
     new (class implements TestCase {
       public name =
-        "TabletView_PublishedButCannotPlay_EditIndex_EditPublishedState";
+        "TabletView_SeasonDraftEpisodePublishedButCannotPlay_EditIndex_EditPublishedState";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -897,6 +867,7 @@ TEST_RUNNER.run({
         let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
+            seasonState: SeasonState.DRAFT,
             episodeName:
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.PUBLISHED,
@@ -959,16 +930,11 @@ TEST_RUNNER.run({
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_tablet_published_premieres.png"),
-          path.join(
-            __dirname,
-            "/golden/info_page_tablet_published_premieres.png",
-          ),
-          path.join(
-            __dirname,
-            "/info_page_tablet_published_premieres_diff.png",
-          ),
+          path.join(__dirname, "/info_page_tablet_ready_premieres.png"),
+          path.join(__dirname, "/golden/info_page_tablet_ready_premieres.png"),
+          path.join(__dirname, "/info_page_tablet_ready_premieres_diff.png"),
           {
+            fullPage: true,
             excludedAreas: [
               {
                 x: 310,
@@ -978,22 +944,6 @@ TEST_RUNNER.run({
               },
             ],
           },
-        );
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/info_page_tablet_published_premieres_scrolled.png"),
-          path.join(
-            __dirname,
-            "/golden/info_page_tablet_published_premieres_scrolled.png",
-          ),
-          path.join(
-            __dirname,
-            "/info_page_tablet_published_premieres_scrolled_diff.png",
-          ),
         );
 
         // Prepare
@@ -1024,12 +974,12 @@ TEST_RUNNER.run({
         );
       }
       public tearDown() {
-        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),
     new (class implements TestCase {
-      public name = "TabletView_PublishedAndCanPlayAndPendingTracks";
+      public name =
+        "TabletView_SeasonAndEpisodePublishedAndCanPlayAndPendingTracks";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -1038,6 +988,7 @@ TEST_RUNNER.run({
         let response: GetEpisodeResponse = {
           episode: {
             seasonName: "Re-Zero: Starting Life in Another World",
+            seasonState: SeasonState.PUBLISHED,
             episodeName:
               "The End of the Beginning and the Beginning of the End",
             state: EpisodeState.PUBLISHED,
@@ -1141,17 +1092,18 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/info_page_tablet_premiered_pending_tracks.png",
+            "/info_page_tablet_published_premiered_pending_tracks.png",
           ),
           path.join(
             __dirname,
-            "/golden/info_page_tablet_premiered_pending_tracks.png",
+            "/golden/info_page_tablet_published_premiered_pending_tracks.png",
           ),
           path.join(
             __dirname,
-            "/info_page_tablet_premiered_pending_tracks_diff.png",
+            "/info_page_tablet_published_premiered_pending_tracks_diff.png",
           ),
           {
+            fullPage: true,
             excludedAreas: [
               {
                 x: 310,
@@ -1162,38 +1114,8 @@ TEST_RUNNER.run({
             ],
           },
         );
-
-        // Execute
-        window.scrollTo(0, document.body.scrollHeight);
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(
-            __dirname,
-            "/info_page_tablet_premiered_pending_tracks_scrolled.png",
-          ),
-          path.join(
-            __dirname,
-            "/golden/info_page_tablet_premiered_pending_tracks_scrolled.png",
-          ),
-          path.join(
-            __dirname,
-            "/info_page_tablet_premiered_pending_tracks_scrolled_diff.png",
-          ),
-          {
-            excludedAreas: [
-              {
-                x: 350,
-                y: 70,
-                width: 15,
-                height: 15,
-              },
-            ],
-          },
-        );
       }
       public tearDown() {
-        window.scrollTo(0, 0);
         this.cut.remove();
       }
     })(),

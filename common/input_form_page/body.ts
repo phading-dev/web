@@ -75,7 +75,7 @@ export class InputFormPage<
         },
         E.divRef(this.actionError, {
           class: "input-form-action-error",
-          style: `display: none; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; text-align: center; align-self: center;`,
+          style: `display: none; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0}; text-align: center; align-self: center;`,
         }),
         assign(
           this.primaryButton,

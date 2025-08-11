@@ -18,11 +18,11 @@ import {
   FONT_M,
   FONT_S,
   FONT_WEIGHT_600,
-  GAP_1X,
-  GAP_2X,
+  GAP_0_25X,
   GAP_0_5X,
+  GAP_1X,
   ICON_BUTTON_L,
-  ICON_L,
+  ICON_M,
   LINE_HEIGHT_M,
   LINE_HEIGHT_S,
   PAGE_MAX_WIDTH_L,
@@ -34,7 +34,6 @@ import {
 } from "../../../../common/value_box";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { ENV_VARS } from "../../../../env_vars";
-import { MIN_GRADE_EFFECTIVE_GAP_DAY } from "@phading/constants/show";
 import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import {
   newGetSeasonRequest,
@@ -58,10 +57,18 @@ export interface InfoPage {
     event: "editSeasonPublishedPricing",
     listener: (season: SeasonDetails) => void,
   ): this;
+  on(event: "publishSeason", listener: (season: SeasonDetails) => void): this;
   on(event: "deleteSeason", listener: (season: SeasonDetails) => void): this;
   on(event: "archiveSeason", listener: (season: SeasonDetails) => void): this;
   on(event: "createDraftEpisode", listener: () => void): this;
-  on(event: "viewEpisodes", listener: (season: SeasonDetails) => void): this;
+  on(
+    event: "viewDraftEpisodes",
+    listener: (season: SeasonDetails) => void,
+  ): this;
+  on(
+    event: "viewPublishedEpisodes",
+    listener: (season: SeasonDetails) => void,
+  ): this;
   on(event: "loaded", listener: () => void): this;
 }
 
@@ -79,8 +86,10 @@ export class InfoPage extends EventEmitter {
   public seasonInfoButton = new Ref<HTMLDivElement>();
   public seasonPricingButton = new Ref<HTMLDivElement>();
   public createDraftEpisodeButton = new Ref<HTMLDivElement>();
-  public episodesListButton = new Ref<HTMLDivElement>();
+  public draftEpisodesListButton = new Ref<HTMLDivElement>();
+  public publishedEpisodesListButton = new Ref<HTMLDivElement>();
   public seasonStateButton = new Ref<HTMLDivElement>();
+  public dangerZoneButton = new Ref<HTMLDivElement>();
   private season: SeasonDetails;
 
   public constructor(
@@ -121,7 +130,7 @@ export class InfoPage extends EventEmitter {
               eColumnBoxWithArrow(
                 [eCoverImage(`100%`, seasonDetails.coverImageUrl)],
                 {
-                  customeStyle: `margin-bottom: ${GAP_1X}rem; align-self: center; width: 100%; max-width: 30rem; box-sizing: border-box;`,
+                  customStyle: `margin-bottom: ${GAP_1X}rem; align-self: center; width: 100%; max-width: 30rem; box-sizing: border-box;`,
                 },
               ),
             ),
@@ -152,7 +161,6 @@ export class InfoPage extends EventEmitter {
             E.div(
               {
                 class: "season-details-current-rate-line",
-                style: `display: flex; flex-flow: row wrap; column-gap: ${GAP_2X}rem;`,
               },
               E.div(
                 {
@@ -170,7 +178,7 @@ export class InfoPage extends EventEmitter {
               E.div(
                 {
                   class: "season-details-current-net-rate",
-                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
                 },
                 E.text(LOCALIZED_TEXT.seasonNetRateLabel),
                 E.div(
@@ -181,12 +189,12 @@ export class InfoPage extends EventEmitter {
                 ),
               ),
             ),
-            ...(seasonDetails.nextGrade
-              ? [
+            ...(!seasonDetails.nextGrade
+              ? []
+              : [
                   E.div(
                     {
                       class: "season-details-new-rate-line",
-                      style: `display: flex; flex-flow: row wrap; column-gap: ${GAP_2X}rem;`,
                     },
                     E.div(
                       {
@@ -209,7 +217,7 @@ export class InfoPage extends EventEmitter {
                     E.div(
                       {
                         class: "season-details-new-net-rate-label",
-                        style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                        style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
                       },
                       E.text(LOCALIZED_TEXT.seasonNewNetRateLabel),
                       E.div(
@@ -224,36 +232,27 @@ export class InfoPage extends EventEmitter {
                         ),
                       ),
                     ),
-                  ),
-                  E.div(
-                    {
-                      class: "season-details-new-rate-effective-date-label",
-                      style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-                    },
-                    E.text(LOCALIZED_TEXT.seasonNewRateEffectiveDateLabel),
                     E.div(
                       {
-                        style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+                        class: "season-details-new-rate-effective-date-label",
+                        style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
                       },
+                      E.text(LOCALIZED_TEXT.seasonNewRateEffectiveDateLabel),
+                      E.div(
+                        {
+                          style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+                        },
+                        E.text(
+                          TzDate.fromLocalDateString(
+                            seasonDetails.nextGrade.effectiveDate,
+                            ENV_VARS.timezoneNegativeOffset,
+                          ).toLocalDateISOString(),
+                        ),
+                      ),
                       E.text(
-                        TzDate.fromLocalDateString(
-                          seasonDetails.nextGrade.effectiveDate,
-                          ENV_VARS.timezoneNegativeOffset,
-                        ).toLocalDateISOString(),
+                        ` (${formatNegativeTimezoneOffset(ENV_VARS.timezoneNegativeOffset)})`,
                       ),
                     ),
-                    E.text(
-                      ` (${formatNegativeTimezoneOffset(ENV_VARS.timezoneNegativeOffset)})`,
-                    ),
-                  ),
-                ]
-              : [
-                  E.div(
-                    {
-                      class: "season-details-new-rate-requirement",
-                      style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral0};`,
-                    },
-                    E.text(this.getPricingFooterText(seasonDetails.state)),
                   ),
                 ]),
           ],
@@ -277,20 +276,20 @@ export class InfoPage extends EventEmitter {
                   E.div(
                     {
                       class: "episode-details-upload-button-icon",
-                      style: `width: ${ICON_L}rem; height: ${ICON_L}rem;`,
+                      style: `width: ${ICON_M}rem; height: ${ICON_M}rem;`,
                     },
                     createPlusIcon(SCHEME.neutral1),
                   ),
                   E.div(
                     {
                       class: "episode-details-upload-button-text",
-                      style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                      style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
                     },
                     E.text(LOCALIZED_TEXT.seasonCreateDraftEpisodeLabel),
                   ),
                 ],
                 {
-                  customeStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_1X}rem;`,
+                  customStyle: `display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_0_5X}rem;`,
                 },
               ),
             ),
@@ -298,42 +297,49 @@ export class InfoPage extends EventEmitter {
               style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
             }),
             assign(
-              this.episodesListButton,
-              eColumnBoxWithArrow(
-                [
+              this.draftEpisodesListButton,
+              eColumnBoxWithArrow([
+                E.div(
+                  {
+                    class: "season-details-draft-episodes",
+                    style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(`${LOCALIZED_TEXT.seasonTotalDraftEpisodes[0]}`),
                   E.div(
                     {
-                      class: "season-details-draft-episodes",
-                      style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                      style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
                     },
-                    E.text(`${LOCALIZED_TEXT.seasonTotalDraftEpisodes[0]}`),
-                    E.div(
-                      {
-                        style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
-                      },
-                      E.text(`${draftEpisodes.length}`),
-                    ),
-                    E.text(`${LOCALIZED_TEXT.seasonTotalDraftEpisodes[1]}`),
+                    E.text(`${draftEpisodes.length}`),
+                  ),
+                  E.text(`${LOCALIZED_TEXT.seasonTotalDraftEpisodes[1]}`),
+                ),
+              ]),
+            ),
+            E.div({
+              style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
+            }),
+            assign(
+              this.publishedEpisodesListButton,
+              eColumnBoxWithArrow([
+                E.div(
+                  {
+                    class: "season-details-published-episodes",
+                    style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(
+                    `${seasonDetails.state === SeasonState.DRAFT ? LOCALIZED_TEXT.seasonTotalReadyEpisodes[0] : LOCALIZED_TEXT.seasonTotalPublishedEpisodes[0]}`,
                   ),
                   E.div(
                     {
-                      class: "season-details-published-episodes",
-                      style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                      style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
                     },
-                    E.text(`${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[0]}`),
-                    E.div(
-                      {
-                        style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
-                      },
-                      E.text(`${seasonDetails.totalPublishedEpisodes}`),
-                    ),
-                    E.text(`${LOCALIZED_TEXT.seasonTotalPublishedEpisodes[1]}`),
+                    E.text(`${seasonDetails.totalPublishedEpisodes}`),
                   ),
-                ],
-                {
-                  linesGap: GAP_0_5X,
-                },
-              ),
+                  E.text(
+                    `${seasonDetails.state === SeasonState.DRAFT ? LOCALIZED_TEXT.seasonTotalReadyEpisodes[1] : LOCALIZED_TEXT.seasonTotalPublishedEpisodes[1]}`,
+                  ),
+                ),
+              ]),
             ),
           ]),
       E.div({
@@ -351,7 +357,7 @@ export class InfoPage extends EventEmitter {
               E.text(LOCALIZED_TEXT.seasonStateLabel),
               E.div(
                 {
-                  style: `display: inline; font-weight: ${FONT_WEIGHT_600};`,
+                  style: `display: inline; font-weight: ${FONT_WEIGHT_600}; color: ${seasonDetails.state === SeasonState.DRAFT ? SCHEME.fair0 : seasonDetails.state === SeasonState.PUBLISHED ? SCHEME.great0 : SCHEME.bad0}`,
                 },
                 E.text(this.getStateText(seasonDetails.state)),
               ),
@@ -359,23 +365,40 @@ export class InfoPage extends EventEmitter {
             E.div(
               {
                 class: "season-details-state-description",
-                style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral0};`,
+                style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
               },
-              E.text(
-                this.getStateFooterText(
-                  seasonDetails.state,
-                  seasonDetails.takenDownReason,
-                ),
-              ),
+              E.text(this.getStateFooterText(seasonDetails)),
             ),
           ],
           {
             clickable:
-              seasonDetails.state === SeasonState.ARCHIVED ? false : true,
-            linesGap: GAP_0_5X,
+              seasonDetails.state === SeasonState.DRAFT &&
+              seasonDetails.totalPublishedEpisodes > 0
+                ? true
+                : false,
+            linesGap: GAP_0_25X,
           },
         ),
       ),
+      ...(seasonDetails.state === SeasonState.ARCHIVED
+        ? []
+        : [
+            E.div({
+              style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
+            }),
+            assign(
+              this.dangerZoneButton,
+              eColumnBoxWithArrow([
+                E.div(
+                  {
+                    class: "season-details-danger-zone",
+                    style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0};`,
+                  },
+                  E.text(LOCALIZED_TEXT.seasonDangerZone),
+                ),
+              ]),
+            ),
+          ]),
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
@@ -400,49 +423,42 @@ export class InfoPage extends EventEmitter {
     );
     this.backButton.val.addAction(() => this.emit("back"));
 
-    if (seasonDetails.state !== SeasonState.ARCHIVED) {
-      this.coverImageButton.val.addEventListener("click", () =>
-        this.emit("editCoverImage", this.season),
-      );
-      this.seasonInfoButton.val.addEventListener("click", () =>
-        this.emit("editSeasonInfo", this.season),
-      );
-      this.seasonPricingButton.val.addEventListener("click", () =>
-        this.emit(
-          seasonDetails.state === SeasonState.DRAFT
-            ? "editSeasonDraftPricing"
-            : "editSeasonPublishedPricing",
-          this.season,
-        ),
-      );
-      this.createDraftEpisodeButton.val.addEventListener("click", () =>
-        this.emit("createDraftEpisode"),
-      );
-      this.episodesListButton.val.addEventListener("click", () =>
-        this.emit("viewEpisodes", this.season),
-      );
-      this.seasonStateButton.val.addEventListener("click", () =>
-        this.emit(
-          seasonDetails.state === SeasonState.DRAFT
-            ? "deleteSeason"
-            : "archiveSeason",
-          this.season,
-        ),
-      );
-    }
+    this.coverImageButton.val?.addEventListener("click", () =>
+      this.emit("editCoverImage", this.season),
+    );
+    this.seasonInfoButton.val?.addEventListener("click", () =>
+      this.emit("editSeasonInfo", this.season),
+    );
+    this.seasonPricingButton.val?.addEventListener("click", () =>
+      this.emit(
+        seasonDetails.state === SeasonState.DRAFT
+          ? "editSeasonDraftPricing"
+          : "editSeasonPublishedPricing",
+        this.season,
+      ),
+    );
+    this.createDraftEpisodeButton.val?.addEventListener("click", () =>
+      this.emit("createDraftEpisode"),
+    );
+    this.draftEpisodesListButton.val?.addEventListener("click", () =>
+      this.emit("viewDraftEpisodes", this.season),
+    );
+    this.publishedEpisodesListButton.val?.addEventListener("click", () =>
+      this.emit("viewPublishedEpisodes", this.season),
+    );
+    this.seasonStateButton.val?.addEventListener("click", () =>
+      // Only DRAFT state can be changed for now.
+      this.emit("publishSeason", this.season),
+    );
+    this.dangerZoneButton.val?.addEventListener("click", () =>
+      this.emit(
+        seasonDetails.state === SeasonState.DRAFT
+          ? "deleteSeason"
+          : "archiveSeason",
+        this.season,
+      ),
+    );
     this.emit("loaded");
-  }
-
-  private getPricingFooterText(state: SeasonState): string {
-    switch (state) {
-      case SeasonState.PUBLISHED:
-      case SeasonState.TAKEN_DOWN:
-        return `${LOCALIZED_TEXT.seasonPublishedPricingFooter[0]}${MIN_GRADE_EFFECTIVE_GAP_DAY}${LOCALIZED_TEXT.seasonPublishedPricingFooter[1]}`;
-      case SeasonState.ARCHIVED:
-        return LOCALIZED_TEXT.seasonArchivedPricingFooter;
-      case SeasonState.DRAFT:
-        return LOCALIZED_TEXT.seasonDraftPricingFooter;
-    }
   }
 
   private getStateText(state: SeasonState): string {
@@ -458,19 +474,20 @@ export class InfoPage extends EventEmitter {
     }
   }
 
-  private getStateFooterText(
-    state: SeasonState,
-    takenDownReason?: string,
-  ): string {
-    switch (state) {
+  private getStateFooterText(season: SeasonDetails): string {
+    switch (season.state) {
       case SeasonState.PUBLISHED:
         return LOCALIZED_TEXT.seasonStatePublishedFooter;
       case SeasonState.ARCHIVED:
         return LOCALIZED_TEXT.seasonStateArchivedFooter;
       case SeasonState.DRAFT:
-        return LOCALIZED_TEXT.seasonStateDraftFooter;
+        if (season.totalPublishedEpisodes === 0) {
+          return LOCALIZED_TEXT.seasonStateDraftNotReadyFooter;
+        } else {
+          return LOCALIZED_TEXT.seasonStateDraftReadyFooter;
+        }
       case SeasonState.TAKEN_DOWN:
-        return `${LOCALIZED_TEXT.seasonStateTakenDownFooter}${takenDownReason}`;
+        return `${LOCALIZED_TEXT.seasonStateTakenDownFooter}${season.takenDownReason}`;
     }
   }
 

@@ -59,7 +59,7 @@ export class HistoryPage extends EventEmitter {
       }
     });
     this.loadingSection.val
-      .addLoadAction(() => this.load())
+      .setLoadAction(() => this.load())
       .on("loaded", () => this.emit("loaded"))
       .load();
   }

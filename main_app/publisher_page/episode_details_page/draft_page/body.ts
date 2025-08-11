@@ -5,7 +5,7 @@ import { ValidationResult } from "../../../../common/input_form_page/input_field
 import { TextInputWithErrorMsg } from "../../../../common/input_form_page/text_input";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
-import { eFormTitle } from "../../../../common/page_elements";
+import { eCenteredTitle } from "../../../../common/page_elements";
 import { SERVICE_CLIENT } from "../../../../common/web_service_client";
 import { MAX_NUM_OF_PUBLISHED_EPISODES_PER_SEASON } from "@phading/constants/show";
 import {
@@ -79,7 +79,7 @@ export class DraftPage extends EventEmitter {
       customPageStyle: `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
     })
       .addLines(
-        eFormTitle(LOCALIZED_TEXT.draftEpisodeTitle),
+        eCenteredTitle(LOCALIZED_TEXT.draftEpisodeTitle),
         ...(errors.length > 0
           ? [assign(this.errorInput, new ErrorInput(errors.join(" "))).body]
           : []),
@@ -97,12 +97,12 @@ export class DraftPage extends EventEmitter {
         ).body,
       )
       .addButtonsContainerAndPrimaryButton(
-        LOCALIZED_TEXT.publishButtonLabel,
+        LOCALIZED_TEXT.publishEpisodeButtonLabel,
         () => this.publish(),
         (error) => this.postPublish(error),
       )
       .addSecondaryButton(
-        LOCALIZED_TEXT.deleteButtonLabel,
+        LOCALIZED_TEXT.deleteEpisodeButtonLabel,
         () => this.delete(),
         (error) => this.postDelete(error),
       )
@@ -159,7 +159,7 @@ export class DraftPage extends EventEmitter {
 
   private postDelete(error?: Error): string {
     if (error) {
-      return LOCALIZED_TEXT.deleteGenericError;
+      return LOCALIZED_TEXT.deleteEpisodeGenericError;
     } else {
       this.emit("delete");
       return "";

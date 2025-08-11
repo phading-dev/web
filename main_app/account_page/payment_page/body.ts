@@ -222,7 +222,7 @@ export class PaymentPage extends EventEmitter {
                 this.retryPaymentsErrorMessage,
                 {
                   class: "payment-page-retry-payments-error-message",
-                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0}; visibility: hidden;`,
                 },
                 E.text("1"),
               ),
@@ -252,7 +252,7 @@ export class PaymentPage extends EventEmitter {
                 this.reactivateErrorMessage,
                 {
                   class: "payment-page-retry-payments-error-message",
-                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
+                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0}; visibility: hidden;`,
                 },
                 E.text("1"),
               ),
@@ -330,7 +330,7 @@ export class PaymentPage extends EventEmitter {
           this.addPaymentMethodErrorMessage,
           {
             class: "payment-page-add-payment-method-error-message",
-            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0}; visibility: hidden;`,
+            style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0}; visibility: hidden;`,
           },
           E.text("1"),
         ),
@@ -393,12 +393,12 @@ export class PaymentPage extends EventEmitter {
         switch (profile.paymentsOverallState) {
           case PaymentsOverallState.ALL_PAID:
           case PaymentsOverallState.WITH_PROCESSING_PAYMENTS:
-            return createCheckmarkIcon(SCHEME.success0);
+            return createCheckmarkIcon(SCHEME.great1);
           case PaymentsOverallState.WITH_FAILED_PAYMENTS:
-            return createExclamationMarkInACycle(SCHEME.warning0);
+            return createExclamationMarkInACycle(SCHEME.fair0);
         }
       case PaymentProfileState.SUSPENDED:
-        return createForbiddenIcon(SCHEME.error0);
+        return createForbiddenIcon(SCHEME.bad0);
     }
   }
 

@@ -51,7 +51,7 @@ export class ListTopRatedPage extends EventEmitter {
       assign(this.loadingSection, new ScrollLoadingSection()).body,
     );
     this.loadingSection.val
-      .addLoadAction(() => this.load())
+      .setLoadAction(() => this.load())
       .on("loaded", () => this.emit("loaded"))
       .load();
   }

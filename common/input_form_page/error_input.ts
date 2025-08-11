@@ -12,7 +12,7 @@ export class ErrorInput extends EventEmitter implements InputField {
     this.body = E.div(
       {
         class: "forced-invalid-input",
-        style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
+        style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0};`,
       },
       E.text(error),
     );

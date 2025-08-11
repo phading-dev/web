@@ -11,7 +11,7 @@ import { formatBytesShort } from "../../../../common/formatter/quantity";
 import { LOCALIZED_TEXT } from "../../../../common/locales/localized_text";
 import { PAGE_NAVIGATION_PADDING_BOTTOM } from "../../../../common/navigation_bar";
 import {
-  eFormTitle,
+  eCenteredTitle,
   ePageWithCenterForm,
 } from "../../../../common/page_elements";
 import {
@@ -68,14 +68,14 @@ export class UpdateAvatarPage extends EventEmitter {
       `padding-bottom: ${PAGE_NAVIGATION_PADDING_BOTTOM}rem;`,
       `max-width: ${PAGE_MAX_WIDTH_M}rem; display: flex; flex-flow: column nowrap; align-items: center;`,
       assign(this.backButton, createBackButton()).body,
-      eFormTitle(LOCALIZED_TEXT.updateAvatarTitle),
+      eCenteredTitle(LOCALIZED_TEXT.updateAvatarTitle),
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
       assign(this.fileDropZone, new FileDropZone("width: 100%;")).body,
       E.divRef(this.loadErrorText, {
         class: "update-avatar-image-load-error",
-        style: `display: none; margin-top: ${GAP_0_25X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
+        style: `display: none; margin-top: ${GAP_0_25X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0};`,
       }),
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
@@ -147,7 +147,7 @@ export class UpdateAvatarPage extends EventEmitter {
       }),
       E.divRef(this.uploadStatusText, {
         class: "update-avatar-upload-status-text",
-        style: `display: none; margin-bottom: ${GAP_0_5X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.error0};`,
+        style: `display: none; margin-bottom: ${GAP_0_5X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.bad0};`,
       }),
       assign(
         this.uploadButton,
