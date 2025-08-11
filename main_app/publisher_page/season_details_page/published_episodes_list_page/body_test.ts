@@ -3,6 +3,7 @@ import path = require("path");
 import { normalizeBody } from "../../../../common/normalize_body";
 import { setPhoneView, setTabletView } from "../../../../common/view_port";
 import { PublishedEpisodesListPage } from "./body";
+import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import {
   LIST_PUBLISHED_EPISODES_REQUEST_BODY,
   ListPublishedEpisodesResponse,
@@ -69,7 +70,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "PhoneView_TabletView_ScrolledToLoadMore_ReloadFromNewCursor_ReloadFromNewOrder_ViewEpisode_Back";
+        "SeasonPublished_PhoneView_TabletView_ScrolledToLoadMore_ReloadFromNewCursor_ReloadFromNewOrder_ViewEpisode_Back";
       private cut: PublishedEpisodesListPage;
       public async execute() {
         // Prepare
@@ -158,7 +159,7 @@ TEST_RUNNER.run({
           "season1",
           {
             grade: 599,
-            totalPublishedEpisodes: 10,
+            state: SeasonState.PUBLISHED,
           },
         );
 
@@ -182,15 +183,15 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/published_episodes_list_page_phone_default.png",
+            "/published_episodes_list_page_phone_published.png",
           ),
           path.join(
             __dirname,
-            "/golden/published_episodes_list_page_phone_default.png",
+            "/golden/published_episodes_list_page_phone_published.png",
           ),
           path.join(
             __dirname,
-            "/published_episodes_list_page_phone_default_diff.png",
+            "/published_episodes_list_page_phone_published_diff.png",
           ),
         );
 
@@ -201,15 +202,15 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/published_episodes_list_page_tablet_default.png",
+            "/published_episodes_list_page_tablet_published.png",
           ),
           path.join(
             __dirname,
-            "/golden/published_episodes_list_page_tablet_default.png",
+            "/golden/published_episodes_list_page_tablet_published.png",
           ),
           path.join(
             __dirname,
-            "/published_episodes_list_page_tablet_default_diff.png",
+            "/published_episodes_list_page_tablet_published_diff.png",
           ),
         );
 
@@ -261,15 +262,15 @@ TEST_RUNNER.run({
         await asyncAssertScreenshot(
           path.join(
             __dirname,
-            "/published_episodes_list_page_tablet_default_scrolled.png",
+            "/published_episodes_list_page_tablet_published_scrolled.png",
           ),
           path.join(
             __dirname,
-            "/golden/published_episodes_list_page_tablet_default_scrolled.png",
+            "/golden/published_episodes_list_page_tablet_published_scrolled.png",
           ),
           path.join(
             __dirname,
-            "/published_episodes_list_page_tablet_default_scrolled_diff.png",
+            "/published_episodes_list_page_tablet_published_scrolled_diff.png",
           ),
         );
 
@@ -414,6 +415,48 @@ TEST_RUNNER.run({
       }
       public tearDown() {
         window.scrollTo(0, 0);
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name =
+        "SeasonDraft_PhoneView_TabletView_ScrolledToLoadMore_ReloadFromNewCursor_ReloadFromNewOrder_ViewEpisode_Back";
+      private cut: PublishedEpisodesListPage;
+      public async execute() {
+        // Prepare
+        await setPhoneView();
+        let serviceClientMock = new WebServiceClientMock();
+        serviceClientMock.response = {
+          episodes: [],
+        } as ListPublishedEpisodesResponse;
+        this.cut = new PublishedEpisodesListPage(
+          serviceClientMock,
+          () => new Date("2024-12-23T08:00:00Z"),
+          "season1",
+          {
+            grade: 599,
+            state: SeasonState.DRAFT,
+          },
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/published_episodes_list_page_phone_ready.png"),
+          path.join(
+            __dirname,
+            "/golden/published_episodes_list_page_phone_ready.png",
+          ),
+          path.join(
+            __dirname,
+            "/published_episodes_list_page_phone_ready_diff.png",
+          ),
+        );
+      }
+      public tearDown() {
         this.cut.remove();
       }
     })(),
