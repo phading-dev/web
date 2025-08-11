@@ -110,7 +110,7 @@ export function eBox(
   return E.div(
     {
       class: "box",
-      style: `border: ${BORDER_WIDTH_1}rem solid ${options.clickable ? SCHEME.neutral1 : SCHEME.neutral2}; border-radius: ${BORDER_RADIUS_S}rem; padding: ${GAP_1X}rem; ${options.clickable ? "cursor: pointer; pointer-events: none;" : ""} ${options.customStyle}`,
+      style: `border: ${BORDER_WIDTH_1}rem solid ${options.clickable ? SCHEME.neutral1 : SCHEME.neutral2}; border-radius: ${BORDER_RADIUS_S}rem; padding: ${GAP_1X}rem; ${options.clickable ? "cursor: pointer;" : "pointer-events: none;"} ${options.customStyle}`,
     },
     ...children,
   );
