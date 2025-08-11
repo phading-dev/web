@@ -8,6 +8,7 @@ import { CreateEpisodePage } from "./create_episode_page/body";
 import { DeletePage } from "./delete_page/body";
 import { DraftEpisodesListPageMock } from "./draft_episodes_list_page/body_mock";
 import { InfoPageMock } from "./info_page/body_mock";
+import { PublishPage } from "./publish_page/body";
 import { PublishedEpisodesListPageMock } from "./published_episodes_list_page/body_mock";
 import { UpdateCoverImagePage } from "./update_cover_image_page/body";
 import { UpdateDraftPricingPage } from "./update_draft_pricing_page/body";
@@ -74,6 +75,8 @@ TEST_RUNNER.run({
               grade,
               nextGrade,
             ),
+          (seasonId, season) =>
+            new PublishPage(undefined, () => nowDate, seasonId, season),
           (seasonId) => new DeletePage(undefined, seasonId),
           (seasonId) => new ArchivePage(undefined, seasonId),
           (seasonId) => new CreateEpisodePage(undefined, seasonId),
@@ -376,9 +379,9 @@ TEST_RUNNER.run({
           "publishedEpisodesListPage.seasonId",
         );
         assertThat(
-          this.cut.publishedEpisodesListPage.seasonDetails.name,
+          this.cut.publishedEpisodesListPage.season.name,
           eq(seasonDetails.name),
-          "publishedEpisodesListPage.seasonDetails.name",
+          "publishedEpisodesListPage.season.name",
         );
         await asyncAssertScreenshot(
           path.join(
@@ -419,6 +422,39 @@ TEST_RUNNER.run({
           path.join(
             __dirname,
             "/season_details_page_back_from_published_episodes_list_diff.png",
+          ),
+        );
+
+        // Execute
+        this.cut.infoPage.emit("publishSeason", seasonDetails);
+
+        // Verify
+        assertThat(
+          this.cut.publishPage.seasonId,
+          eq("season1"),
+          "publishPage.seasonId",
+        );
+        assertThat(
+          this.cut.publishPage.season.name,
+          eq(seasonDetails.name),
+          "publishPage.seasonDetails.name",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/season_details_page_publish.png"),
+          path.join(__dirname, "/golden/season_details_page_publish.png"),
+          path.join(__dirname, "/season_details_page_publish_diff.png"),
+        );
+
+        // Execute
+        this.cut.publishPage.emit("back");
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/season_details_page_back_from_publish.png"),
+          path.join(__dirname, "/golden/season_details_page_default.png"),
+          path.join(
+            __dirname,
+            "/season_details_page_back_from_publish_diff.png",
           ),
         );
 

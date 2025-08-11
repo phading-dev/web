@@ -6,6 +6,7 @@ import { CreateEpisodePage } from "./create_episode_page/body";
 import { DeletePage } from "./delete_page/body";
 import { DraftEpisodesListPage } from "./draft_episodes_list_page/body";
 import { InfoPage } from "./info_page/body";
+import { PublishPage } from "./publish_page/body";
 import { PublishedEpisodesListPage } from "./published_episodes_list_page/body";
 import { UpdateCoverImagePage } from "./update_cover_image_page/body";
 import { UpdateDraftPricingPage } from "./update_draft_pricing_page/body";
@@ -34,6 +35,7 @@ export class SeasonDetailsPage extends EventEmitter {
       UpdateInfoPage.create,
       UpdateDraftPricingPage.create,
       UpdatePublishedPricingPage.create,
+      PublishPage.create,
       DeletePage.create,
       ArchivePage.create,
       CreateEpisodePage.create,
@@ -50,6 +52,7 @@ export class SeasonDetailsPage extends EventEmitter {
   public updateInfoPage: UpdateInfoPage;
   public updateDraftPricingPage: UpdateDraftPricingPage;
   public updatePublishedPricingPage: UpdatePublishedPricingPage;
+  public publishPage: PublishPage;
   public deletePage: DeletePage;
   public archivePage: ArchivePage;
   public createEpisodePage: CreateEpisodePage;
@@ -62,6 +65,7 @@ export class SeasonDetailsPage extends EventEmitter {
     private createUpdateInfoPage: typeof UpdateInfoPage.create,
     private createUpdateDraftPricingPage: typeof UpdateDraftPricingPage.create,
     private createUpdatePublishedPricingPage: typeof UpdatePublishedPricingPage.create,
+    private createPublishPage: typeof PublishPage.create,
     private createDeletePage: typeof DeletePage.create,
     private createArchivePage: typeof ArchivePage.create,
     private createCreateEpisodePage: typeof CreateEpisodePage.create,
@@ -100,6 +104,12 @@ export class SeasonDetailsPage extends EventEmitter {
         this.pageSwitcher.goTo(
           () => this.addUpdatePublishedPricingPage(season),
           () => this.updatePublishedPricingPage.remove(),
+        ),
+      )
+      .on("publishSeason", (season) =>
+        this.pageSwitcher.goTo(
+          () => this.addPublishPage(season),
+          () => this.publishPage.remove(),
         ),
       )
       .on("deleteSeason", () =>
@@ -218,6 +228,18 @@ export class SeasonDetailsPage extends EventEmitter {
     this.appendBodies(this.updatePublishedPricingPage.body);
   }
 
+  private addPublishPage(season: SeasonDetails): void {
+    this.publishPage = this.createPublishPage(this.seasonId, season).on(
+      "back",
+      () =>
+        this.pageSwitcher.goTo(
+          () => this.addInfoPage(),
+          () => this.infoPage.remove(),
+        ),
+    );
+    this.appendBodies(this.publishPage.body);
+  }
+
   private addDeletePage(): void {
     this.deletePage = this.createDeletePage(this.seasonId)
       .on("back", () =>
@@ -231,13 +253,11 @@ export class SeasonDetailsPage extends EventEmitter {
   }
 
   private addArchivePage(): void {
-    this.archivePage = this.createArchivePage(this.seasonId).on(
-      "back",
-      () =>
-        this.pageSwitcher.goTo(
-          () => this.addInfoPage(),
-          () => this.infoPage.remove(),
-        ),
+    this.archivePage = this.createArchivePage(this.seasonId).on("back", () =>
+      this.pageSwitcher.goTo(
+        () => this.addInfoPage(),
+        () => this.infoPage.remove(),
+      ),
     );
     this.appendBodies(this.archivePage.body);
   }

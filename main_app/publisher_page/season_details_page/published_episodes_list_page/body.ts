@@ -79,7 +79,7 @@ export class PublishedEpisodesListPage extends EventEmitter {
     private serviceClient: WebServiceClient,
     private getNowDate: () => Date,
     public seasonId: string,
-    public seasonDetails: SeasonDetails,
+    public season: SeasonDetails,
   ) {
     super();
     this.body = ePageWithTopDownCard(
@@ -87,7 +87,7 @@ export class PublishedEpisodesListPage extends EventEmitter {
       `max-width: ${PAGE_MAX_WIDTH_L}rem; padding: ${GAP_2X}rem ${GAP_1X}rem ${PAGE_NAVIGATION_PADDING_BOTTOM}rem ${GAP_1X}rem; display: flex; flex-flow: column nowrap;`,
       assign(this.backButton, createBackButton()).body,
       eCenteredTitle(
-        this.seasonDetails.state === SeasonState.DRAFT
+        this.season.state === SeasonState.DRAFT
           ? LOCALIZED_TEXT.seasonReadyEpisodes
           : LOCALIZED_TEXT.seasonPublishedEpisodes,
       ),
@@ -187,7 +187,7 @@ export class PublishedEpisodesListPage extends EventEmitter {
     if (
       isNaN(cursor) ||
       cursor < 1 ||
-      cursor >= this.seasonDetails.totalPublishedEpisodes
+      cursor >= this.season.totalPublishedEpisodes
     ) {
       this.listPublishedEpisodeIndexCursorInput.val.value = "";
       this.listPublishedEpisodeIndexCursor = undefined;
@@ -252,7 +252,7 @@ export class PublishedEpisodesListPage extends EventEmitter {
               },
               E.text(
                 `${LOCALIZED_TEXT.seasonEpisodeEarnings}${calculateEstimatedShowMoneyAndFormat(
-                  this.seasonDetails.grade,
+                  this.season.grade,
                   episode.videoContainer.durationSec,
                   nowDate,
                 )}`,
@@ -265,7 +265,7 @@ export class PublishedEpisodesListPage extends EventEmitter {
               },
               E.text(
                 `${LOCALIZED_TEXT.seasonEpisodeNetEarnings}${calculateEstimatedShowCreditMoneyAndFormat(
-                  this.seasonDetails.grade,
+                  this.season.grade,
                   episode.videoContainer.durationSec,
                   nowDate,
                 )}`,

@@ -54,7 +54,7 @@ TEST_RUNNER.run({
   cases: [
     new (class implements TestCase {
       public name =
-        "TabletView_DraftSeasonWithoutEpisodes_DesktopView_PhoneView_EditCoverImage_EditSeasonInfo_EditSeasonPricing_CreateDraftEpisode_ViewEpisodes_EditSeasonState_Back";
+        "TabletView_DraftSeasonWithoutEpisodes_DesktopView_PhoneView_EditCoverImage_EditSeasonInfo_EditSeasonPricing_CreateDraftEpisode_ViewDraftEpisodes_ViewPublishedEpisodes_DeleteSeason_Back";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -83,7 +83,6 @@ TEST_RUNNER.run({
         // Execute
         document.body.append(this.cut.body);
         await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
-        // await new Promise((resolve) => setTimeout(resolve, 1000000));
 
         // Verify
         assertThat(
@@ -222,15 +221,6 @@ TEST_RUNNER.run({
           eq(1),
           "View published episodes season grade",
         );
-        // Prepare
-        let publishSeason: SeasonDetails;
-        this.cut.on("publishSeason", (season) => (publishSeason = season));
-
-        // Execute
-        this.cut.seasonStateButton.val.click();
-
-        // Verify
-        assertThat(publishSeason.grade, eq(1), "Publish season grade");
 
         // Prepare
         let deleteSeason: SeasonDetails;
@@ -257,8 +247,72 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
+      public name = "TabletView_DraftSeasonWithReadyEpisodes_PublishSeason";
+      private cut: InfoPage;
+      public async execute() {
+        // Prepare
+        await setTabletView();
+        let serviceClientMock = new InfoPageServiceClientMock();
+        serviceClientMock.getSeasonResponse = {
+          seasonDetails: {
+            name: "Re-Zero: Starting Life in Another World Season 1",
+            description: "",
+            state: SeasonState.DRAFT,
+            grade: 1,
+            totalPublishedEpisodes: 1,
+            lastChangeTimeMs: new Date("2024-12-01T18:00:00Z").getTime(),
+            createdTimeMs: new Date("2024-01-01T12:00:00Z").getTime(),
+          },
+        };
+        serviceClientMock.listDraftEpisodesResponse = {
+          episodes: [],
+        };
+        this.cut = new InfoPage(
+          serviceClientMock,
+          () => new Date("2024-12-23T08:00:00Z"),
+          "season1",
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise<void>((resolve) => this.cut.once("loaded", resolve));
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/info_page_tablet_draft_with_ready_episodes.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/info_page_tablet_draft_with_ready_episodes.png",
+          ),
+          path.join(
+            __dirname,
+            "/info_page_tablet_draft_with_ready_episodes_diff.png",
+          ),
+          {
+            fullPage: true,
+          },
+        );
+
+        // Prepare
+        let publishSeason: SeasonDetails;
+        this.cut.on("publishSeason", (season) => (publishSeason = season));
+
+        // Execute
+        this.cut.seasonStateButton.val.click();
+
+        // Verify
+        assertThat(publishSeason.grade, eq(1), "Publish season grade");
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
       public name =
-        "TabletView_PublishedSeasonWithDraftEpisodes_DesktopView_PhoneView_EditSeasonPricing_EditSeasonState";
+        "TabletView_PublishedSeasonWithEpisodes_DesktopView_PhoneView_EditSeasonPricing_EditSeasonState";
       private cut: InfoPage;
       public async execute() {
         // Prepare
