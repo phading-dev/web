@@ -40,6 +40,7 @@ export class PlayerPage extends EventEmitter {
     this.hls = new Hls();
     this.hls.loadSource(videoUrl);
     this.hls.attachMedia(this.video.val);
+    this.backButton.val.addAction(() => this.emit("back"));
   }
 
   public remove(): void {

@@ -20,7 +20,6 @@ import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 normalizeBody();
 
-// Test case: 1000 published episodes and not allowed more
 TEST_RUNNER.run({
   name: "EpisodeDetailsInfoPageTest",
   cases: [

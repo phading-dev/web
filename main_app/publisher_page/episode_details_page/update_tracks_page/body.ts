@@ -1015,14 +1015,14 @@ export class UpdateTracksPage extends EventEmitter {
           class: "update-tracks-all-tracks",
           style: `display: flex; flex-flow: column nowrap; gap: 3rem;`,
         },
-        E.div(
-          {
-            class: "update-tracks-video-tracks",
-            style: `display: flex; flex-flow: column nowrap;`,
-          },
-          ...(videoContainer.videos.length === 0
-            ? []
-            : [
+        ...(videoContainer.videos.length === 0
+          ? []
+          : [
+              E.div(
+                {
+                  class: "update-tracks-video-tracks",
+                  style: `display: flex; flex-flow: column nowrap;`,
+                },
                 E.div(
                   {
                     class: "update-tracks-videos-title",
@@ -1033,16 +1033,16 @@ export class UpdateTracksPage extends EventEmitter {
                 ...videoContainer.videos.map((videoTrack) =>
                   this.createVideoTrackEditor(videoTrack),
                 ),
-              ]),
-        ),
-        E.div(
-          {
-            class: "update-tracks-audio-tracks",
-            style: `display: flex; flex-flow: column nowrap;`,
-          },
-          ...(videoContainer.audios.length === 0
-            ? []
-            : [
+              ),
+            ]),
+        ...(videoContainer.audios.length === 0
+          ? []
+          : [
+              E.div(
+                {
+                  class: "update-tracks-audio-tracks",
+                  style: `display: flex; flex-flow: column nowrap;`,
+                },
                 E.div(
                   {
                     class: "update-tracks-audio-tracks-title",
@@ -1053,16 +1053,16 @@ export class UpdateTracksPage extends EventEmitter {
                 ...videoContainer.audios.map((audioTrack) =>
                   this.createAudioTrackEditor(audioTrack),
                 ),
-              ]),
-        ),
-        E.div(
-          {
-            class: "update-tracks-subtitle-tracks",
-            style: `display: flex; flex-flow: column nowrap;`,
-          },
-          ...(videoContainer.subtitles.length === 0
-            ? []
-            : [
+              ),
+            ]),
+        ...(videoContainer.subtitles.length === 0
+          ? []
+          : [
+              E.div(
+                {
+                  class: "update-tracks-subtitle-tracks",
+                  style: `display: flex; flex-flow: column nowrap;`,
+                },
                 E.div(
                   {
                     class: "update-tracks-subtitle-tracks-title",
@@ -1073,8 +1073,8 @@ export class UpdateTracksPage extends EventEmitter {
                 ...videoContainer.subtitles.map((subtitleTrack) =>
                   this.createSubtitleTrackEditor(subtitleTrack),
                 ),
-              ]),
-        ),
+              ),
+            ]),
       ),
       E.div({
         style: `flex: 0 0 auto; height: 2rem;`,
