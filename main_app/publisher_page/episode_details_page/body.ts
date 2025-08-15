@@ -1,11 +1,14 @@
 import EventEmitter = require("events");
 import { AddBodiesFn } from "../../../common/add_bodies_fn";
 import { TabSwitcher } from "../../../common/page_navigator";
-import { DraftPage } from "./draft_page/body";
+import { DeletePage } from "./delete_page/body";
 import { InfoPage } from "./info_page/body";
-import { PublishedPage } from "./published_page/body";
+import { PlayerPage } from "./player_page/body";
+import { PublishPage } from "./publish_page/body";
+import { UnpublishPage } from "./unpublish_page/body";
 import { UpdateIndexPage } from "./update_index_page/body";
 import { UpdateInfoPage } from "./update_info_page/body";
+import { UpdatePremiereTimePage } from "./update_premiere_time_page/body";
 import { UpdateTracksPage } from "./update_tracks_page/body";
 import { UploadPage } from "./upload_page/body";
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
@@ -21,11 +24,14 @@ export class EpisodeDetailsPage extends EventEmitter {
     episodeId: string,
   ): EpisodeDetailsPage {
     return new EpisodeDetailsPage(
-      DraftPage.create,
+      DeletePage.create,
       InfoPage.create,
-      PublishedPage.create,
+      PlayerPage.create,
+      PublishPage.create,
+      UnpublishPage.create,
       UpdateIndexPage.create,
       UpdateInfoPage.create,
+      UpdatePremiereTimePage.create,
       UpdateTracksPage.create,
       UploadPage.create,
       appendBodies,
@@ -35,20 +41,26 @@ export class EpisodeDetailsPage extends EventEmitter {
   }
 
   private pageSwitcher = new TabSwitcher();
-  public draftPage: DraftPage;
+  public deletePage: DeletePage;
   public infoPage: InfoPage;
-  public publishedPage: PublishedPage;
+  public playerPage: PlayerPage;
+  public publishPage: PublishPage;
+  public unpublishPage: UnpublishPage;
   public updateIndexPage: UpdateIndexPage;
   public updateInfoPage: UpdateInfoPage;
+  public updatePremiereTimePage: UpdatePremiereTimePage;
   public updateTracksPage: UpdateTracksPage;
   public uploadPage: UploadPage;
 
   public constructor(
-    private createDraftPage: typeof DraftPage.create,
+    private createDeletePage: typeof DeletePage.create,
     private createInfoPage: typeof InfoPage.create,
-    private createPublishedPage: typeof PublishedPage.create,
+    private createPlayerPage: typeof PlayerPage.create,
+    private createPublishPage: typeof PublishPage.create,
+    private createUnpublishPage: typeof UnpublishPage.create,
     private createUpdateIndexPage: typeof UpdateIndexPage.create,
     private createUpdateInfoPage: typeof UpdateInfoPage.create,
+    private createUpdatePremiereTimePage: typeof UpdatePremiereTimePage.create,
     private createUpdateTracksPage: typeof UpdateTracksPage.create,
     private createUploadPage: typeof UploadPage.create,
     private appendBodies: AddBodiesFn,
@@ -62,12 +74,8 @@ export class EpisodeDetailsPage extends EventEmitter {
     );
   }
 
-  private addDraftPage(episode: EpisodeDetails): void {
-    this.draftPage = this.createDraftPage(
-      this.seasonId,
-      this.episodeId,
-      episode,
-    )
+  private addDeletePage(episode: EpisodeDetails): void {
+    this.deletePage = this.createDeletePage(this.seasonId, this.episodeId)
       .on("back", () =>
         this.pageSwitcher.goTo(
           () => this.addInfoPage(),
@@ -75,7 +83,7 @@ export class EpisodeDetailsPage extends EventEmitter {
         ),
       )
       .on("delete", () => this.emit("viewSeason", this.seasonId));
-    this.appendBodies(this.draftPage.body);
+    this.appendBodies(this.deletePage.body);
   }
 
   private addInfoPage(): void {
@@ -93,16 +101,10 @@ export class EpisodeDetailsPage extends EventEmitter {
           () => this.updateIndexPage.remove(),
         ),
       )
-      .on("editDraftState", (episode) =>
+      .on("watch", (episode) =>
         this.pageSwitcher.goTo(
-          () => this.addDraftPage(episode),
-          () => this.draftPage.remove(),
-        ),
-      )
-      .on("editPublishedState", (episode) =>
-        this.pageSwitcher.goTo(
-          () => this.addPublishedPage(episode),
-          () => this.publishedPage.remove(),
+          () => this.addPlayerPage(episode),
+          () => this.playerPage.remove(),
         ),
       )
       .on("upload", (episode) =>
@@ -116,22 +118,67 @@ export class EpisodeDetailsPage extends EventEmitter {
           () => this.addUpdateTracksPage(episode),
           () => this.updateTracksPage.remove(),
         ),
+      )
+      .on("publish", (episode) =>
+        this.pageSwitcher.goTo(
+          () => this.addPublishPage(episode),
+          () => this.publishPage.remove(),
+        ),
+      )
+      .on("updatePremiereTime", (episode) =>
+        this.pageSwitcher.goTo(
+          () => this.addUpdatePremiereTimePage(episode),
+          () => this.updatePremiereTimePage.remove(),
+        ),
+      )
+      .on("delete", (episode) =>
+        this.pageSwitcher.goTo(
+          () => this.addDeletePage(episode),
+          () => this.deletePage.remove(),
+        ),
+      )
+      .on("unpublish", (episode) =>
+        this.pageSwitcher.goTo(
+          () => this.addUnpublishPage(episode),
+          () => this.unpublishPage.remove(),
+        ),
       );
     this.appendBodies(this.infoPage.body);
   }
 
-  private addPublishedPage(episode: EpisodeDetails): void {
-    this.publishedPage = this.createPublishedPage(
+  private addPlayerPage(episode: EpisodeDetails): void {
+    this.playerPage = this.createPlayerPage(episode.videoUrl).on("back", () =>
+      this.pageSwitcher.goTo(
+        () => this.addInfoPage(),
+        () => this.infoPage.remove(),
+      ),
+    );
+    this.appendBodies(this.playerPage.body);
+  }
+
+  private addPublishPage(episode: EpisodeDetails): void {
+    this.publishPage = this.createPublishPage(this.seasonId, this.episodeId).on(
+      "back",
+      () =>
+        this.pageSwitcher.goTo(
+          () => this.addInfoPage(),
+          () => this.infoPage.remove(),
+        ),
+    );
+    this.appendBodies(this.publishPage.body);
+  }
+
+  private addUnpublishPage(episode: EpisodeDetails): void {
+    this.unpublishPage = this.createUnpublishPage(
       this.seasonId,
       this.episodeId,
-      episode,
     ).on("back", () =>
       this.pageSwitcher.goTo(
         () => this.addInfoPage(),
         () => this.infoPage.remove(),
       ),
     );
-    this.appendBodies(this.publishedPage.body);
+    this.appendBodies(this.unpublishPage.body);
   }
 
   private addUpdateIndexPage(episode: EpisodeDetails): void {
@@ -160,6 +207,20 @@ export class EpisodeDetailsPage extends EventEmitter {
       ),
     );
     this.appendBodies(this.updateInfoPage.body);
+  }
+
+  private addUpdatePremiereTimePage(episode: EpisodeDetails): void {
+    this.updatePremiereTimePage = this.createUpdatePremiereTimePage(
+      this.seasonId,
+      this.episodeId,
+      episode,
+    ).on("back", () =>
+      this.pageSwitcher.goTo(
+        () => this.addInfoPage(),
+        () => this.infoPage.remove(),
+      ),
+    );
+    this.appendBodies(this.updatePremiereTimePage.body);
   }
 
   private addUpdateTracksPage(episode: EpisodeDetails): void {

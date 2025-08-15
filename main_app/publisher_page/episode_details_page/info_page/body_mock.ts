@@ -1,5 +1,6 @@
 import { InfoPage } from "./body";
 import { EpisodeState } from "@phading/product_service_interface/show/episode_state";
+import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import { GetEpisodeResponse } from "@phading/product_service_interface/show/web/publisher/interface";
 import { ClientRequestInterface } from "@selfage/service_descriptor/client_request_interface";
 import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
@@ -18,6 +19,7 @@ export class InfoPageMock extends InfoPage {
           let response: GetEpisodeResponse = {
             episode: {
               seasonName: "Re-Zero: Starting Life in Another World",
+              seasonState: SeasonState.DRAFT,
               episodeName:
                 "The End of the Beginning and the Beginning of the End",
               state: EpisodeState.DRAFT,

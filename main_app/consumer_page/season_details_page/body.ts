@@ -25,13 +25,13 @@ import { formatSecondsAsHHMMSS } from "../../../common/formatter/timestamp";
 import {
   createBookmarkIcon,
   createCheckmarkIcon,
+  createCircleWithArrowIcon,
   createCircularProgressIcon,
   createClockIcon,
   createFilledBookmarkIcon,
   createFilledStarIcon,
   createPlayIcon,
   createPlusIcon,
-  createReplayIcon,
   createShareIcon,
   createStarIcon,
 } from "../../../common/icons";
@@ -278,7 +278,7 @@ export class SeasonDetailsPage extends EventEmitter {
               },
               continueEpisode.canPlay
                 ? rewatching
-                  ? createReplayIcon(SCHEME.neutral1)
+                  ? createCircleWithArrowIcon(SCHEME.neutral1)
                   : createPlayIcon(SCHEME.neutral1)
                 : createClockIcon(SCHEME.neutral1),
             ),

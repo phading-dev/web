@@ -895,6 +895,9 @@ export default class Text {
   get seasonStateLabel() {
     return `Status: `;
   }
+  get seasonStateTitleLabel() {
+    return `Status`;
+  }
   get seasonStateDraftLabel() {
     return `Draft`;
   }
@@ -979,29 +982,35 @@ export default class Text {
   get seasonEpisodeNameLabel() {
     return `Episode name`;
   }
-  get seasonEpisodeIndex() {
-    return [`Index: `, ` of `, ``];
+  get seasonEpisodeIndexLabel() {
+    return `Index`;
   }
-  get seasonEpisodeIndexFooter() {
-    return `To solely determine the order of the episodes.`;
+  get seasonEpisodeIndexOfTotal() {
+    return [``, ` of `, ``];
   }
   get seasonEpisodeStateLabel() {
-    return `Status: `;
+    return `Status`;
   }
   get seasonEpisodeStateDraft() {
     return `Draft`;
   }
   get seasonEpisodeStateNoVideoFooter() {
-    return `You need to upload and finalize a video before publishing.`;
+    return `Compile a video first and then publish the episode.`;
   }
-  get seasonEpisodeStateDraftFooter() {
-    return `The finalized video is not visible to the public.`;
+  get seasonEpisodeStatePublishFooter() {
+    return `Set premiere time and publish episode.`;
+  }
+  get seasonEpisodeStateTooManyEpisodesFooter() {
+    return [`This season has reached the maximum of `, ` published episodes.`];
   }
   get seasonEpisodeStatePublished() {
     return `Published`;
   }
   get seasonEpisodeStateReady() {
     return `Ready`;
+  }
+  get seasonEpisodeSeasonNotPublished() {
+    return `This episode is not visible until the season is published.`;
   }
   get seasonHasPremieredAt() {
     return `Has premiered at `;
@@ -1033,38 +1042,26 @@ export default class Text {
   get seasonEpisodeVideoProcessingLabel() {
     return `Processing...Click to refresh.`;
   }
-  get seasonEpisodeVideoComittingVideo() {
-    return `Video is being finalized...Click to refresh.`;
+  get seasonEpisodeVideoComittingVideoLabel() {
+    return `Video is being compiled...Click to refresh.`;
   }
-  get seasonEpisodeNoVersion() {
-    return `Finalize the first version.`;
+  get seasonEpisodeWatchVideoLabel() {
+    return `Watch compiled video`;
   }
-  get seasonEpisodeCommittedVersionLabel() {
-    return [`Version `, ` finalized.`];
+  get seasonEpisodeTracksTitle() {
+    return `Tracks`;
   }
-  get seasonEpisodeCommittedVersionNoChangesFooter() {
-    return `Everything is up to date.`;
+  get seasonEpisodeVideoTrackSummary() {
+    return [``, ` video tracks`];
   }
-  get seasonEpisodeCommittedVersionPendingChangesFooter() {
-    return `There are pending changes to finalize.`;
+  get seasonEpisodeAudioTrackSummary() {
+    return [``, ` audio tracks`];
   }
-  get seasonEpisodeCommittingVersionLabel() {
-    return [`Version `, ` finalizing...`];
-  }
-  get seasonEpisodeCommittingFirstVersionLabel() {
-    return `You can publish the episode once finalized.`;
-  }
-  get seasonEpisodeCommittingVersionNoMoreChangesFooter() {
-    return `The old video is still available while the new one is being finalized.`;
-  }
-  get seasonEpisodeCommittingVersionNewPendingChangesFooter() {
-    return `There are new pending changes to finalize.`;
+  get seasonEpisodeSubtitleTrackSummary() {
+    return [``, ` subtitle tracks`];
   }
   get seasonEpisodeVideoTracksTitle() {
     return `Video tracks`;
-  }
-  get seasonEpisodeTrackStateLabel() {
-    return `State`;
   }
   get seasonEpisodeAudioTracksTitle() {
     return `Audio tracks`;
@@ -1073,7 +1070,7 @@ export default class Text {
     return `Subtitle tracks`;
   }
   get seasonEpisodeTrackStateCommittedLabel() {
-    return `Finalized`;
+    return `Compiled`;
   }
   get seasonEpisodeTrackStatePendingLabel() {
     return `Pending`;
@@ -1087,23 +1084,8 @@ export default class Text {
   get seasonEpisodeTrackStateDeletingLabel() {
     return `Deleting`;
   }
-  get seasonEpisodeTrackVideoDurationLabel() {
-    return `Duration`;
-  }
-  get seasonEpisodeTrackVideoResolutionLabel() {
-    return `Resolution`;
-  }
-  get seasonEpisodeTrackNameLabel() {
-    return `Name`;
-  }
   get seasonEpisodeTrackIsDefaultLabel() {
     return `Default`;
-  }
-  get seasonEpisodeTrackIsDefaultYesValue() {
-    return `Yes`;
-  }
-  get seasonEpisodeTrackIsDefaultNoValue() {
-    return `No`;
   }
   get seasonEpisodeStorageFeeTitle() {
     return `Storage summary`;
@@ -1112,7 +1094,7 @@ export default class Text {
     return `Size: `;
   }
   get seasonEpisodeStorageEstimatedFee() {
-    return `Estimated: `;
+    return `Estimated cost: `;
   }
   get pricingGiBMonthRate() {
     return [``, ` / GiB / month`];
@@ -1219,7 +1201,10 @@ export default class Text {
     return `Resume uploading`;
   }
   get resumeUploadInstructions() {
-    return `Make sure you're resuming with the same file. Or click "cancel" to start a new upload.`;
+    return `Make sure you are resuming with the same file. Or click "Cancel and restart" to start a new upload.`;
+  }
+  get cancelUploadButtonLabel() {
+    return `Cancel and restart`;
   }
   get updateEpisodeInfoTitle() {
     return `Update episode info`;
@@ -1234,7 +1219,7 @@ export default class Text {
     return `Update episode index`;
   }
   get updateEpisodeIndexLabel() {
-    return [`Index (from `, ` to `, `)`];
+    return [`Index (from `, ` to `, `, determines the order of episodes)`];
   }
   get updateEpisodeIndexError() {
     return `Invalid index.`;
@@ -1242,26 +1227,14 @@ export default class Text {
   get updateEpisodeIndexOutOfRangeError() {
     return `Index is out of range.`;
   }
-  get draftEpisodeTitle() {
-    return `Publish or delete episode`;
+  get deleteEpisodeTitle() {
+    return `Delete episode`;
   }
-  get draftEpisodePremieresAtLabel() {
-    return [`Schedule premiere at (`, `, optional)`];
-  }
-  get premiereTimeInThePastError() {
-    return `Premiere time cannot be in the past.`;
-  }
-  get noVideoCommittedError() {
-    return `No finalized video to publish.`;
-  }
-  get reachedMaximumPublishedEpisodeError() {
-    return `Too many published episodes in one season.`;
-  }
-  get publishEpisodeButtonLabel() {
-    return `Publish`;
-  }
-  get publishEpisodeGenericError() {
-    return `Failed to publish the episode. Please try again later.`;
+  get deleteEpisodeInstructions() {
+    return [
+      `To delete, please type "`,
+      `" below and click "Delete". This action cannot be undone.`,
+    ];
   }
   get deleteEpisodeButtonLabel() {
     return `Delete`;
@@ -1269,11 +1242,32 @@ export default class Text {
   get deleteEpisodeGenericError() {
     return `Failed to delete the episode. Please try again later.`;
   }
-  get publishedEpisodeTitle() {
-    return `Update or unpublish episode`;
+  get publishEpisodeTitle() {
+    return `Publish episode`;
+  }
+  get publishEpisodePremieresAtLabel() {
+    return [`Schedule premiere at (`, `, optional)`];
+  }
+  get premiereTimeInThePastError() {
+    return `Premiere time cannot be in the past.`;
+  }
+  get publishEpisodeButtonLabel() {
+    return `Publish`;
+  }
+  get publishEpisodeGenericError() {
+    return `Failed to publish the episode. Please try again later.`;
+  }
+  get publishedEpisodePremiereTimeTitle() {
+    return `Update episode premiere time`;
   }
   get publishedEpisodeUpdatePremiereTimeLabel() {
     return [`Premiere time (`, `)`];
+  }
+  get unpublishEpisodeTitle() {
+    return `Unpublish episode`;
+  }
+  get unpublishEpisodeInstructions() {
+    return `Are you sure you want to unpublish this episode? You can publish again later.`;
   }
   get unpublishEpisodeButtonLabel() {
     return `Unpublish`;
@@ -1285,37 +1279,37 @@ export default class Text {
     return `Update tracks`;
   }
   get saveTrackChangesButtonLabel() {
-    return `Save changes`;
+    return `Save pending changes`;
   }
   get commitTrackChangesButtonLabel() {
-    return `Finalize changes`;
+    return `Save and compile tracks`;
   }
   get updateEpisodeTracksTrackMismatchError() {
     return `Track information may be out of sync. Please refresh the page and try again.`;
   }
   get updateEpisodeTracksNoVideoError() {
-    return `No video track after finalized. One video track is required.`;
+    return `No video track after compiled. One video track is required.`;
   }
   get updateEpisodeTracksMoreThanOneVideoError() {
-    return `More than one video tracks after finalized. Only one video track is allowed.`;
+    return `More than one video tracks after compiled. Only one video track is allowed.`;
   }
   get updateEpisodeTracksTooManyAudioError() {
-    return `Too many audio tracks after finalized.`;
+    return `Too many audio tracks after compiled.`;
   }
   get updateEpisodeTracksNoDefaultAudioError() {
-    return `No default audio track after finalized.`;
+    return `No default audio track after compiled.`;
   }
   get updateEpisodeTracksMoreThanOneDefaultAudioError() {
-    return `More than one default audio tracks after finalized. Only one default audio track is allowed.`;
+    return `More than one default audio tracks after compiled. Only one default audio track is allowed.`;
   }
   get updateEpisodeTracksTooManySubtitleError() {
-    return `Too many subtitle tracks after finalized.`;
+    return `Too many subtitle tracks after compiled.`;
   }
   get saveEpisodeTracksGenericError() {
     return `Failed to save changes. Please try again later.`;
   }
   get commitEpisodeTracksGenericError() {
-    return `Failed to finalize the tracks. Please try again later.`;
+    return `Failed to compile the tracks. Please try again later.`;
   }
   get createEpisodeTitle() {
     return `Create a new draft episode`;
@@ -1360,14 +1354,14 @@ export default class Text {
       `-day notice`,
       `. The season itself `,
       `cannot be unpublished`,
-      `.`
+      `.`,
     ];
   }
   get seasonPublishConfirmation() {
     return `Are you sure you want to publish this season?`;
   }
   get seasonPublishButtonLabel() {
-    return `Confirm and Publish`;
+    return `Confirm and publish`;
   }
   get seasonPublishGenericError() {
     return `Failed to publish the season. Please try again later.`;

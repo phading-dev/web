@@ -19,6 +19,7 @@ export class SeasonDetailsPageMock extends SeasonDetailsPage {
       undefined,
       undefined,
       undefined,
+      undefined,
       appendBodies,
       seasonId,
     );

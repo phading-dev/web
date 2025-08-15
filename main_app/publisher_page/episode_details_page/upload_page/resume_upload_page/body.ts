@@ -9,8 +9,8 @@ import { FileDropZone } from "../../../../../common/file_drop_zone";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import {
   FONT_M,
-  GAP_2X,
   GAP_0_25X,
+  GAP_2X,
   LINE_HEIGHT_M,
 } from "../../../../../common/sizes";
 import { ePage } from "../common/elements";
@@ -60,16 +60,12 @@ export class ResumeUploadPage extends EventEmitter {
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
-      E.div(
-        {
-          class: "upload-page-uploading-actions",
-          style: `display: flex; flex-flow: row nowrap; justify-content: flex-end; align-items: center; gap: 2rem;`,
-        },
-        assign(
-          this.cancelButton,
-          new OutlineButton().append(E.text(LOCALIZED_TEXT.cancelButtonLabel)),
-        ).body,
-      ),
+      assign(
+        this.cancelButton,
+        new OutlineButton(`width: 100%;`).append(
+          E.text(LOCALIZED_TEXT.cancelUploadButtonLabel),
+        ),
+      ).body,
     );
     this.backButton.val.addAction(() => this.emit("back"));
     this.fileDropZone.val.on("select", (file) => this.emit("upload", file));

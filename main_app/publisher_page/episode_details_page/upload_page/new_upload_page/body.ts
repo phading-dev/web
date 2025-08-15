@@ -9,9 +9,11 @@ import {
 import { createQuestionMarkIcon } from "../../../../../common/icons";
 import { LOCALIZED_TEXT } from "../../../../../common/locales/localized_text";
 import {
+  BORDER_WIDTH_1,
   FONT_M,
-  GAP_2X,
   GAP_0_25X,
+  GAP_1X,
+  GAP_2X,
   ICON_BUTTON_M,
   ICON_L,
   LINE_HEIGHT_M,
@@ -194,12 +196,10 @@ export class NewUploadPage extends EventEmitter {
           E.text(LOCALIZED_TEXT.subtitlesFileTipTwo),
         ),
       ),
-      E.div({
-        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
-      }),
       E.div(
         {
-          style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+          class: "upload-page-drop-zone-pricing",
+          style: `margin-top: ${GAP_1X}rem; padding-top: ${GAP_1X}rem; border-top: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral2}; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
         },
         E.text(
           `${LOCALIZED_TEXT.uploadPricing[0]}${formatUploadPrice(this.getNowDate())}${LOCALIZED_TEXT.uploadPricing[1]}${formatStoragePrice(this.getNowDate())}${LOCALIZED_TEXT.uploadPricing[2]}`,

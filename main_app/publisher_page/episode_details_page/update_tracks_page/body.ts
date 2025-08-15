@@ -9,10 +9,10 @@ import {
 import { SCHEME } from "../../../../common/color_scheme";
 import { formatSecondsAsHHMMSS } from "../../../../common/formatter/timestamp";
 import {
+  createBoxIcon,
+  createCheckedBoxIcon,
   createCrossIcon,
   createEditIcon,
-  createLineArrowIcon,
-  createSwitchIcon,
   createTrashCanIcon,
 } from "../../../../common/icons";
 import { COMMON_BASIC_INPUT_STYLE } from "../../../../common/input_styles";
@@ -22,12 +22,12 @@ import {
   eCenteredTitle,
   ePageWithCenterForm,
 } from "../../../../common/page_elements";
+import { TabSwitcher } from "../../../../common/page_navigator";
+import { getRootFontSize } from "../../../../common/root_font_size";
 import {
   BORDER_WIDTH_1,
   FONT_M,
   FONT_WEIGHT_600,
-  GAP_2X,
-  GAP_0_25X,
   GAP_0_5X,
   ICON_BUTTON_M,
   ICON_L,
@@ -50,10 +50,8 @@ import {
 } from "@phading/product_service_interface/show/web/publisher/interface";
 import { ValidationError } from "@phading/video_service_interface/node/validation_error";
 import {
-  AUDIO_TRACK,
   AudioTrack,
-  SUBTITLE_TRACK,
-  VIDEO_TRACK,
+  SubtitleTrack,
   VideoContainer,
   VideoTrack,
 } from "@phading/video_service_interface/node/video_container";
@@ -61,7 +59,7 @@ import {
   AUDIO_TRACK_STAGING_DATA,
   AudioTrackStagingData,
   SUBTITLE_TRACK_STAGING_DATA,
-  VIDEO_TRACK_STAGING_DATA,
+  SubtitleTrackStagingData,
   VideoTrackStagingData,
 } from "@phading/video_service_interface/node/video_container_staging_data";
 import { E } from "@selfage/element/factory";
@@ -69,15 +67,7 @@ import { copyMessage } from "@selfage/message/copier";
 import { Ref, assign } from "@selfage/ref";
 import { WebServiceClient } from "@selfage/web_service_client";
 
-function eTransitionArrow(): HTMLDivElement {
-  return E.div(
-    {
-      class: "update-tracks-arrow-icon",
-      style: `width: ${ICON_L}rem; height: ${ICON_L}rem; transform: rotate(-90deg);`,
-    },
-    createLineArrowIcon(SCHEME.neutral1),
-  );
-}
+let STATE_WIDTH = 5; // rem
 
 export interface VideoTrackEditor {
   on(event: "change", listener: () => void): this;
@@ -86,236 +76,207 @@ export interface VideoTrackEditor {
 
 export class VideoTrackEditor extends EventEmitter {
   public body: HTMLDivElement;
-  private transitionArrowLine = new Ref<HTMLDivElement>();
+  private committedLine = new Ref<HTMLDivElement>();
+  private addingLine = new Ref<HTMLDivElement>();
+  private deletingLine = new Ref<HTMLDivElement>();
   public deleteTrackButton = new Ref<IconButton>();
-  private pendingValuesLine = new Ref<HTMLDivElement>();
   public dropStagingButton = new Ref<IconButton>();
-  public videoTrack: VideoTrack = {};
+  private lineSwitcher = new TabSwitcher();
 
-  public constructor(videoTrack: VideoTrack) {
+  public constructor(public videoTrack: VideoTrack) {
     super();
     this.body = E.div({
-      style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
+      style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral2}; display: flex;`,
     });
-    this.videoTrack = copyMessage(videoTrack, VIDEO_TRACK);
-    this.videoTrack.staging = undefined; // Only copy non-staging values
-    if (this.videoTrack.committed) {
-      this.body.append(
-        E.div(
-          {
-            class: "update-tracks-video-committed-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
-          },
-          E.div(
-            {
-              class: "update-tracks-video-committed-state",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-video-committed-duration",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(formatSecondsAsHHMMSS(this.videoTrack.durationSec)),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-video-committed-resolution",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(this.videoTrack.resolution),
-          ),
-          E.div({
-            style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          assign(
-            this.deleteTrackButton,
-            new IconButton(
-              ICON_BUTTON_M,
-              ICON_L,
-              createTrashCanIcon("currentColor"),
-            ),
-          ).body,
-        ),
-        E.divRef(
-          this.transitionArrowLine,
-          {
-            class: "update-tracks-video-transition-arrow-line",
-            style: `display: none; flex-flow: row nowrap;`,
-          },
-          E.div(
-            {
-              class: "update-tracks-video-committed-state-hidden",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; visibility: hidden;`,
-            },
-            E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          eTransitionArrow(),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-video-committed-resolution-hidden",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; visibility: hidden;`,
-            },
-            E.text(this.videoTrack.resolution),
-          ),
-          E.div({
-            style: `flex: 0 0 auto; width: ${GAP_0_5X + ICON_BUTTON_M}rem;`,
-          }),
-        ),
-      );
-      this.deleteTrackButton.val.addAction(() => this.deleteTrack());
-    }
-    this.applyNewStaging(videoTrack.staging);
+    this.applyNewStaging(this.videoTrack.staging);
   }
 
-  private applyNewStaging(newStaging: VideoTrackStagingData): void {
-    if (!this.videoTrack.staging?.toDelete && newStaging?.toDelete) {
-      this.deleteTrackButton.val.disable();
-      this.transitionArrowLine.val.style.display = "flex";
-      this.body.append(
-        E.divRef(
-          this.pendingValuesLine,
-          {
-            class: "update-tracks-video-deleting-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
+  public setHorizontal(): this {
+    this.body.style.flexFlow = "row nowrap";
+    this.body.style.alignItems = "center";
+    return this;
+  }
+
+  public setVertical(): this {
+    this.body.style.flexFlow = "column nowrap";
+    this.body.style.alignItems = "flex-end";
+    return this;
+  }
+
+  private applyNewStaging(newStaging?: VideoTrackStagingData): void {
+    this.videoTrack.staging = newStaging;
+    if (
+      !this.videoTrack.staging?.toAdd &&
+      !this.videoTrack.staging?.toDelete &&
+      this.videoTrack.committed
+    ) {
+      if (!this.committedLine.val) {
+        this.lineSwitcher.goTo(
+          () => {
+            this.body.append(
+              E.divRef(
+                this.committedLine,
+                {
+                  class: "update-tracks-video-committed-values",
+                  style: `flex: 1 0 0; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
+                },
+                E.div(
+                  {
+                    class: "update-tracks-video-committed-state",
+                    style: `flex: 0 0 auto; width: ${STATE_WIDTH}rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
+                ),
+                E.div(
+                  {
+                    class: "update-tracks-video-committed-resolution",
+                    style: `flex: 1 0 0; min-width: 0; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(this.videoTrack.resolution),
+                ),
+                E.div(
+                  {
+                    class: "update-tracks-video-committed-duration",
+                    style: `flex: 1 0 0; min-width: 0; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(formatSecondsAsHHMMSS(this.videoTrack.durationSec)),
+                ),
+              ),
+              assign(
+                this.deleteTrackButton,
+                new IconButton(
+                  ICON_BUTTON_M,
+                  ICON_L,
+                  createTrashCanIcon("currentColor"),
+                ),
+              ).body,
+            );
+            this.deleteTrackButton.val.addAction(() => this.deleteTrack());
           },
-          E.div(
-            {
-              class: "update-tracks-video-deleting-state",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateDeletingLabel),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-video-deleting-duration",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
-            },
-            E.text(formatSecondsAsHHMMSS(this.videoTrack.durationSec)),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-video-deleting-resolution",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
-            },
-            E.text(this.videoTrack.resolution),
-          ),
-          E.div({
-            style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          assign(
-            this.dropStagingButton,
-            new IconButton(
-              ICON_BUTTON_M,
-              ICON_M,
-              createCrossIcon(SCHEME.neutral1),
-            ),
-          ).body,
-        ),
-      );
-      this.dropStagingButton.val.addAction(() => this.dropStaging());
-    }
-    if (this.videoTrack.staging?.toDelete && !newStaging?.toDelete) {
-      this.deleteTrackButton.val.enable();
-      this.transitionArrowLine.val.style.display = "none";
-      this.pendingValuesLine.val.remove();
+          () => {
+            this.committedLine.val.remove();
+            this.committedLine.val = undefined;
+            this.deleteTrackButton.val.remove();
+          },
+        );
+      }
     }
 
-    if (!this.videoTrack.staging?.toAdd && newStaging?.toAdd) {
-      if (this.transitionArrowLine.val) {
-        this.transitionArrowLine.val.style.display = "flex";
-      }
-      this.body.append(
-        E.divRef(
-          this.pendingValuesLine,
-          {
-            class: "update-tracks-video-adding-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
+    if (this.videoTrack.staging?.toDelete) {
+      if (!this.deletingLine.val) {
+        this.lineSwitcher.goTo(
+          () => {
+            this.body.append(
+              E.divRef(
+                this.deletingLine,
+                {
+                  class: "update-tracks-video-deleting-values",
+                  style: `flex: 1 0 0; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
+                },
+                E.div(
+                  {
+                    class: "update-tracks-video-deleting-state",
+                    style: `flex: 0 0 auto; width: ${STATE_WIDTH}rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateDeletingLabel),
+                ),
+                E.div(
+                  {
+                    class: "update-tracks-video-deleting-resolution",
+                    style: `flex: 1 0 0; min-width: 0; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
+                  },
+                  E.text(this.videoTrack.resolution),
+                ),
+                E.div(
+                  {
+                    class: "update-tracks-video-deleting-duration",
+                    style: `flex: 1 0 0; min-width: 0; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
+                  },
+                  E.text(formatSecondsAsHHMMSS(this.videoTrack.durationSec)),
+                ),
+              ),
+              assign(
+                this.dropStagingButton,
+                new IconButton(
+                  ICON_BUTTON_M,
+                  ICON_M,
+                  createCrossIcon(SCHEME.neutral1),
+                ),
+              ).body,
+            );
+            this.dropStagingButton.val.addAction(() => this.dropStaging());
           },
-          E.div(
-            {
-              class: "update-tracks-video-adding-state",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              this.videoTrack.committed
-                ? LOCALIZED_TEXT.seasonEpisodeTrackStateModifyingLabel
-                : LOCALIZED_TEXT.seasonEpisodeTrackStateNewLabel,
-            ),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-video-adding-duration",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(formatSecondsAsHHMMSS(this.videoTrack.durationSec)),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-video-adding-resolution",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(this.videoTrack.resolution),
-          ),
-          E.div({
-            style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          assign(
-            this.dropStagingButton,
-            new IconButton(
-              ICON_BUTTON_M,
-              ICON_M,
-              createCrossIcon(SCHEME.neutral1),
-            ),
-          ).body,
-        ),
-      );
-      this.dropStagingButton.val.addAction(() => this.dropStaging());
-    }
-    if (this.videoTrack.staging?.toAdd && !newStaging?.toAdd) {
-      if (this.transitionArrowLine.val) {
-        this.transitionArrowLine.val.style.display = "none";
+          () => {
+            this.deletingLine.val.remove();
+            this.deletingLine.val = undefined;
+            this.dropStagingButton.val.remove();
+          },
+        );
       }
-      this.pendingValuesLine.val.remove();
     }
-    this.videoTrack.staging = newStaging;
+
+    if (this.videoTrack.staging?.toAdd) {
+      if (!this.addingLine.val) {
+        this.lineSwitcher.goTo(
+          () => {
+            this.body.append(
+              E.divRef(
+                this.addingLine,
+                {
+                  class: "update-tracks-video-adding-values",
+                  style: `flex: 1 0 0; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
+                },
+                E.div(
+                  {
+                    class: "update-tracks-video-adding-state",
+                    style: `flex: 0 0 auto; width: ${STATE_WIDTH}rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(
+                    this.videoTrack.committed
+                      ? LOCALIZED_TEXT.seasonEpisodeTrackStateModifyingLabel
+                      : LOCALIZED_TEXT.seasonEpisodeTrackStateNewLabel,
+                  ),
+                ),
+                E.div(
+                  {
+                    class: "update-tracks-video-adding-resolution",
+                    style: `flex: 1 0 0; min-width: 0; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(this.videoTrack.resolution),
+                ),
+                E.div(
+                  {
+                    class: "update-tracks-video-adding-duration",
+                    style: `flex: 1 0 0; min-width: 0; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(formatSecondsAsHHMMSS(this.videoTrack.durationSec)),
+                ),
+              ),
+              assign(
+                this.dropStagingButton,
+                new IconButton(
+                  ICON_BUTTON_M,
+                  ICON_M,
+                  createCrossIcon(SCHEME.neutral1),
+                ),
+              ).body,
+            );
+            this.dropStagingButton.val.addAction(() => this.dropStaging());
+          },
+          () => {
+            this.addingLine.val?.remove();
+            this.addingLine.val = undefined;
+            this.dropStagingButton.val.remove();
+          },
+        );
+      }
+    }
   }
 
   private deleteTrack(): void {
-    let newStaging = copyMessage(
-      this.videoTrack.staging,
-      VIDEO_TRACK_STAGING_DATA,
-    );
-    newStaging = {
+    this.applyNewStaging({
       toDelete: true,
-    };
-    this.applyNewStaging(newStaging);
+    });
     this.emit("change");
   }
 
@@ -341,287 +302,291 @@ export interface AudioTrackEditor {
 }
 
 export class AudioTrackEditor extends EventEmitter {
+  private static DEFAULT_LABEL_WIDTH = 5.625;
+
   public body: HTMLDivElement;
-  private transitionArrowLine = new Ref<HTMLDivElement>();
+  private committedLine = new Ref<HTMLDivElement>();
+  private addingLine = new Ref<HTMLDivElement>();
+  private deletingLine = new Ref<HTMLDivElement>();
+  private buttonsContainer = new Ref<HTMLDivElement>();
   public editTrackButton = new Ref<IconButton>();
   public deleteTrackButton = new Ref<IconButton>();
-  private pendingValuesLine = new Ref<HTMLDivElement>();
   public dropStagingButton = new Ref<IconButton>();
   public nameInput = new Ref<HTMLInputElement>();
   public isDefaultToggleButton = new Ref<HTMLDivElement>();
-  private isDefaultText = new Ref<HTMLDivElement>();
-  public audioTrack: AudioTrack = {};
+  public defaultSelectedIcon = new Ref<HTMLDivElement>();
+  public defaultNotSelectedIcon = new Ref<HTMLDivElement>();
+  private lineSwitcher = new TabSwitcher();
 
-  public constructor(audioTrack: AudioTrack) {
+  public constructor(public audioTrack: AudioTrack) {
     super();
     this.body = E.div({
-      style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
+      style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral2}; display: flex;`,
     });
-    this.audioTrack = copyMessage(audioTrack, AUDIO_TRACK);
-    this.audioTrack.staging = undefined; // Only copy non-staging values
-    if (this.audioTrack.committed) {
-      this.body.append(
-        E.div(
-          {
-            class: "update-tracks-audio-committed-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
-          },
-          E.div(
-            {
-              class: "update-tracks-audio-committed-state",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-audio-committed-name",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(this.audioTrack.committed.name),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-audio-committed-default",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              this.audioTrack.committed.isDefault
-                ? LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultYesValue
-                : LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultNoValue,
-            ),
-          ),
-          E.div({
-            style: `flex: 0 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          assign(
-            this.editTrackButton,
-            new IconButton(
-              ICON_BUTTON_M,
-              ICON_M,
-              createEditIcon("currentColor"),
-            ),
-          ).body,
-          E.div({
-            style: `flex: 0 0 auto; width: ${GAP_0_25X}rem;`,
-          }),
-          assign(
-            this.deleteTrackButton,
-            new IconButton(
-              ICON_BUTTON_M,
-              ICON_L,
-              createTrashCanIcon("currentColor"),
-            ),
-          ).body,
-        ),
-        E.divRef(
-          this.transitionArrowLine,
-          {
-            class: "update-tracks-audio-transition-arrow-line",
-            style: `display: none; flex-flow: row nowrap;`,
-          },
-          E.div(
-            {
-              class: "update-tracks-audio-committed-state-hidden",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; visibility: hidden;`,
-            },
-            E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          eTransitionArrow(),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-audio-committed-default-hidden",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; visibility: hidden;`,
-            },
-            E.text(
-              this.audioTrack.committed.isDefault
-                ? LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultYesValue
-                : LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultNoValue,
-            ),
-          ),
-          E.div({
-            style: `flex: 0 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M * 2}rem;`,
-          }),
-        ),
-      );
-      this.editTrackButton.val.addAction(() => this.editTrack());
-      this.deleteTrackButton.val.addAction(() => this.deleteTrack());
-    }
-    this.applyNewStaging(audioTrack.staging);
+    this.applyNewStaging(this.audioTrack.staging);
+  }
+
+  public setHorizontal(): this {
+    this.body.style.flexFlow = "row nowrap";
+    this.body.style.alignItems = "center";
+    return this;
+  }
+
+  public setVertical(): this {
+    this.body.style.flexFlow = "column nowrap";
+    this.body.style.alignItems = "flex-end";
+    return this;
   }
 
   private applyNewStaging(newStaging?: AudioTrackStagingData): void {
-    if (!this.audioTrack.staging?.toDelete && newStaging?.toDelete) {
-      this.editTrackButton.val.disable();
-      this.deleteTrackButton.val.disable();
-      this.transitionArrowLine.val.style.display = "flex";
-      this.body.append(
-        E.divRef(
-          this.pendingValuesLine,
-          {
-            class: "update-tracks-audio-deleting-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
+    this.audioTrack.staging = newStaging;
+    if (
+      !this.audioTrack.staging?.toAdd &&
+      !this.audioTrack.staging?.toDelete &&
+      this.audioTrack.committed
+    ) {
+      if (!this.committedLine.val) {
+        this.lineSwitcher.goTo(
+          () => {
+            this.body.append(
+              E.divRef(
+                this.committedLine,
+                {
+                  class: "update-tracks-audio-committed-values",
+                  style: `flex: 1 0 0; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
+                },
+                E.div(
+                  {
+                    class: "update-tracks-audio-committed-state",
+                    style: `flex: 0 0 auto; width: ${STATE_WIDTH}rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
+                ),
+                E.div(
+                  {
+                    class: "update-tracks-audio-committed-name",
+                    style: `flex: 1 0 0; min-width: 0; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(this.audioTrack.committed.name),
+                ),
+                E.div(
+                  {
+                    class: "update-tracks-audio-committed-default",
+                    style: ` flex: 0 1 auto; width: ${AudioTrackEditor.DEFAULT_LABEL_WIDTH}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(
+                    this.audioTrack.committed.isDefault
+                      ? LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultLabel
+                      : "",
+                  ),
+                ),
+              ),
+              E.divRef(
+                this.buttonsContainer,
+                {
+                  class: "update-tracks-audio-committed-buttons",
+                  style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; align-items: center;`,
+                },
+                assign(
+                  this.editTrackButton,
+                  new IconButton(
+                    ICON_BUTTON_M,
+                    ICON_M,
+                    createEditIcon("currentColor"),
+                  ),
+                ).body,
+                assign(
+                  this.deleteTrackButton,
+                  new IconButton(
+                    ICON_BUTTON_M,
+                    ICON_L,
+                    createTrashCanIcon("currentColor"),
+                  ),
+                ).body,
+              ),
+            );
+            this.editTrackButton.val.addAction(() => this.editTrack());
+            this.deleteTrackButton.val.addAction(() => this.deleteTrack());
           },
-          E.div(
-            {
-              class: "update-tracks-audio-deleting-state",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateDeletingLabel),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-audio-deleting-name",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
-            },
-            E.text(this.audioTrack.committed.name),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-audio-deleting-default",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
-            },
-            E.text(
-              this.audioTrack.committed.isDefault
-                ? LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultYesValue
-                : LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultNoValue,
-            ),
-          ),
-          E.div({
-            style: `flex: 0 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M}rem;`,
-          }),
-          assign(
-            this.dropStagingButton,
-            new IconButton(
-              ICON_BUTTON_M,
-              ICON_M,
-              createCrossIcon("currentColor"),
-            ),
-          ).body,
-        ),
-      );
-      this.dropStagingButton.val.addAction(() => this.dropStaging());
-    }
-    if (this.audioTrack.staging?.toDelete && !newStaging?.toDelete) {
-      this.editTrackButton.val.enable();
-      this.deleteTrackButton.val.enable();
-      this.transitionArrowLine.val.style.display = "none";
-      this.pendingValuesLine.val.remove();
+          () => {
+            this.committedLine.val?.remove();
+            this.committedLine.val = undefined;
+            this.buttonsContainer.val?.remove();
+          },
+        );
+      }
     }
 
-    if (!this.audioTrack.staging?.toAdd && newStaging?.toAdd) {
-      this.editTrackButton.val?.disable();
-      this.deleteTrackButton.val?.disable();
-      if (this.transitionArrowLine.val) {
-        this.transitionArrowLine.val.style.display = "flex";
-      }
-      this.body.append(
-        E.divRef(
-          this.pendingValuesLine,
-          {
-            class: "update-tracks-audio-adding-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
-          },
-          E.div(
-            {
-              class: "update-tracks-audio-adding-state",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              this.audioTrack.committed
-                ? LOCALIZED_TEXT.seasonEpisodeTrackStateModifyingLabel
-                : LOCALIZED_TEXT.seasonEpisodeTrackStateNewLabel,
-            ),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.inputRef(this.nameInput, {
-            class: "update-tracks-audio-adding-name",
-            style: `${COMMON_BASIC_INPUT_STYLE} width: 40%; text-align: center;`,
-            value: newStaging.toAdd.name,
-            maxlength: `${MAX_AUDIO_TRACK_NAME_LENGTH}`,
-          }),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.divRef(
-            this.isDefaultToggleButton,
-            {
-              class: "update-tracks-audio-default-button",
-              style: `cursor: pointer; box-sizing: border-box; height: ${ICON_BUTTON_M}rem; display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; gap: ${GAP_0_25X}rem;`,
-            },
-            E.divRef(
-              this.isDefaultText,
-              {
-                class: "update-tracks-audio-adding-default",
-                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-              },
-              E.text(
-                newStaging.toAdd.isDefault
-                  ? LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultYesValue
-                  : LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultNoValue,
+    if (this.audioTrack.staging?.toDelete) {
+      if (!this.deletingLine.val) {
+        this.lineSwitcher.goTo(
+          () => {
+            this.body.append(
+              E.divRef(
+                this.deletingLine,
+                {
+                  class: "update-tracks-audio-deleting-values",
+                  style: `flex: 1 0 0; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
+                },
+                E.div(
+                  {
+                    class: "update-tracks-audio-deleting-state",
+                    style: `flex: 0 0 auto; width: ${STATE_WIDTH}rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateDeletingLabel),
+                ),
+                E.div(
+                  {
+                    class: "update-tracks-audio-deleting-name",
+                    style: `flex: 1 0 0; min-width: 0; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
+                  },
+                  E.text(this.audioTrack.committed.name),
+                ),
+                E.div(
+                  {
+                    class: "update-tracks-audio-deleting-default",
+                    style: ` flex: 0 1 auto; width: ${AudioTrackEditor.DEFAULT_LABEL_WIDTH}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
+                  },
+                  E.text(
+                    this.audioTrack.committed.isDefault
+                      ? LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultLabel
+                      : "",
+                  ),
+                ),
               ),
-            ),
-            E.div(
-              {
-                class: "update-tracks-audio-adding-default-switch-icon",
-                style: `width: ${ICON_L}rem; height: ${ICON_L}rem;`,
-              },
-              createSwitchIcon(SCHEME.neutral1),
-            ),
-          ),
-          E.div({
-            style: `flex: 0 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M}rem;`,
-          }),
-          assign(
-            this.dropStagingButton,
-            new IconButton(
-              ICON_BUTTON_M,
-              ICON_M,
-              createCrossIcon("currentColor"),
-            ),
-          ).body,
-        ),
-      );
-      this.nameInput.val.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-          event.preventDefault();
-        }
-      });
-      this.nameInput.val.addEventListener("change", () => this.changeName());
-      this.isDefaultToggleButton.val.addEventListener("click", () =>
-        this.toggleDefaultValue(),
-      );
-      this.dropStagingButton.val.addAction(() => this.dropStaging());
-    }
-    if (this.audioTrack.staging?.toAdd && !newStaging?.toAdd) {
-      this.editTrackButton.val?.enable();
-      this.deleteTrackButton.val?.enable();
-      if (this.transitionArrowLine.val) {
-        this.transitionArrowLine.val.style.display = "none";
+              E.divRef(
+                this.buttonsContainer,
+                {
+                  class: "update-tracks-audio-deleting-buttons",
+                  style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; align-items: center;`,
+                },
+                E.div({
+                  style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem;`,
+                }),
+                assign(
+                  this.dropStagingButton,
+                  new IconButton(
+                    ICON_BUTTON_M,
+                    ICON_M,
+                    createCrossIcon("currentColor"),
+                  ),
+                ).body,
+              ),
+            );
+            this.dropStagingButton.val.addAction(() => this.dropStaging());
+          },
+          () => {
+            this.deletingLine.val?.remove();
+            this.deletingLine.val = undefined;
+            this.buttonsContainer.val?.remove();
+          },
+        );
       }
-      this.pendingValuesLine.val.remove();
     }
-    this.audioTrack.staging = newStaging;
+
+    if (this.audioTrack.staging?.toAdd) {
+      if (!this.addingLine.val) {
+        this.lineSwitcher.goTo(
+          () => {
+            this.body.append(
+              E.divRef(
+                this.addingLine,
+                {
+                  class: "update-tracks-audio-adding-values",
+                  style: `flex: 1 0 0; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
+                },
+                E.div(
+                  {
+                    class: "update-tracks-audio-adding-state",
+                    style: `flex: 0 0 auto; width: ${STATE_WIDTH}rem; font-size: ${FONT_M}rem; font-weight: ${FONT_WEIGHT_600}; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(
+                    this.audioTrack.committed
+                      ? LOCALIZED_TEXT.seasonEpisodeTrackStateModifyingLabel
+                      : LOCALIZED_TEXT.seasonEpisodeTrackStateNewLabel,
+                  ),
+                ),
+                E.div(
+                  {
+                    style: `flex: 1 0 0; min-width: 0;`,
+                  },
+                  E.inputRef(this.nameInput, {
+                    class: "update-tracks-audio-adding-name",
+                    style: `${COMMON_BASIC_INPUT_STYLE} width: 100%;`,
+                    value: this.audioTrack.staging.toAdd.name,
+                    maxlength: `${MAX_AUDIO_TRACK_NAME_LENGTH}`,
+                  }),
+                ),
+                E.divRef(
+                  this.isDefaultToggleButton,
+                  {
+                    class: "update-tracks-audio-default-toggle",
+                    style: `cursor: pointer; flex: 0 1 auto; width: ${AudioTrackEditor.DEFAULT_LABEL_WIDTH}rem; display: flex; flex-flow: row nowrap; align-items: center;`,
+                  },
+                  E.divRef(
+                    this.defaultSelectedIcon,
+                    {
+                      class: "update-tracks-audio-default-selected-icon",
+                      style: `${this.audioTrack.staging.toAdd.isDefault ? "display: block;" : "display: none;"} width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_M) / 2}rem;`,
+                    },
+                    createCheckedBoxIcon(SCHEME.neutral1),
+                  ),
+                  E.divRef(
+                    this.defaultNotSelectedIcon,
+                    {
+                      class: "update-tracks-audio-default-not-selected-icon",
+                      style: `${this.audioTrack.staging.toAdd.isDefault ? "display: none;" : "display: block;"} width: ${ICON_BUTTON_M}rem; height: ${ICON_BUTTON_M}rem; box-sizing: border-box; padding: ${(ICON_BUTTON_M - ICON_M) / 2}rem;`,
+                    },
+                    createBoxIcon(SCHEME.neutral1),
+                  ),
+                  E.div(
+                    {
+                      style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                    },
+                    E.text(LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultLabel),
+                  ),
+                ),
+              ),
+              E.divRef(
+                this.buttonsContainer,
+                {
+                  class: "update-tracks-audio-adding-buttons",
+                  style: `flex: 0 0 auto; display: flex; flex-flow: row nowrap; align-items: center;`,
+                },
+                E.div({
+                  style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem;`,
+                }),
+                assign(
+                  this.dropStagingButton,
+                  new IconButton(
+                    ICON_BUTTON_M,
+                    ICON_M,
+                    createCrossIcon("currentColor"),
+                  ),
+                ).body,
+              ),
+            );
+            this.nameInput.val.addEventListener("keydown", (event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+              }
+            });
+            this.nameInput.val.addEventListener("change", () =>
+              this.changeName(),
+            );
+            this.isDefaultToggleButton.val.addEventListener("click", () =>
+              this.toggleDefaultValue(),
+            );
+            this.dropStagingButton.val.addAction(() => this.dropStaging());
+          },
+          () => {
+            this.addingLine.val?.remove();
+            this.addingLine.val = undefined;
+            this.buttonsContainer.val?.remove();
+          },
+        );
+      }
+    }
   }
 
   private editTrack(): void {
@@ -684,9 +649,12 @@ export class AudioTrackEditor extends EventEmitter {
       AUDIO_TRACK_STAGING_DATA,
     );
     newStaging.toAdd.isDefault = !newStaging.toAdd.isDefault;
-    this.isDefaultText.val.textContent = newStaging.toAdd.isDefault
-      ? LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultYesValue
-      : LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultNoValue;
+    this.defaultSelectedIcon.val.style.display = newStaging.toAdd.isDefault
+      ? "block"
+      : "none";
+    this.defaultNotSelectedIcon.val.style.display = newStaging.toAdd.isDefault
+      ? "none"
+      : "block";
     this.applyNewStaging(newStaging);
     this.emit("change");
   }
@@ -704,210 +672,231 @@ export interface SubtitleTrackEditor {
 
 export class SubtitleTrackEditor extends EventEmitter {
   public body: HTMLDivElement;
-  private transitionArrowLine = new Ref<HTMLDivElement>();
+  private committedLine = new Ref<HTMLDivElement>();
+  private addingLine = new Ref<HTMLDivElement>();
+  private deletingLine = new Ref<HTMLDivElement>();
+  private buttonsContainer = new Ref<HTMLDivElement>();
   public editTrackButton = new Ref<IconButton>();
   public deleteTrackButton = new Ref<IconButton>();
-  private pendingValuesLine = new Ref<HTMLDivElement>();
   public dropStagingButton = new Ref<IconButton>();
   public nameInput = new Ref<HTMLInputElement>();
-  public subtitleTrack: any = {};
+  private lineSwitcher = new TabSwitcher();
 
-  public constructor(subtitleTrack: any) {
+  public constructor(public subtitleTrack: SubtitleTrack) {
     super();
     this.body = E.div({
-      style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: column nowrap;`,
+      style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_5X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral2}; display: flex; flex-flow: column nowrap;`,
     });
-    this.subtitleTrack = copyMessage(subtitleTrack, SUBTITLE_TRACK);
-    this.subtitleTrack.staging = undefined; // Only copy non-staging values
-    if (this.subtitleTrack.committed) {
-      this.body.append(
-        E.div(
-          {
-            class: "update-tracks-subtitle-committed-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
-          },
-          E.div(
-            {
-              class: "update-tracks-subtitle-committed-state",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-subtitle-committed-name",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(this.subtitleTrack.committed.name),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          assign(
-            this.editTrackButton,
-            new IconButton(
-              ICON_BUTTON_M,
-              ICON_M,
-              createEditIcon("currentColor"),
-            ),
-          ).body,
-          E.div({
-            style: `flex: 0 0 auto; width: ${GAP_0_25X}rem;`,
-          }),
-          assign(
-            this.deleteTrackButton,
-            new IconButton(
-              ICON_BUTTON_M,
-              ICON_L,
-              createTrashCanIcon("currentColor"),
-            ),
-          ).body,
-        ),
-        E.divRef(
-          this.transitionArrowLine,
-          {
-            class: "update-tracks-subtitle-transition-arrow-line",
-            style: `display: none; flex-flow: row nowrap;`,
-          },
-          E.div(
-            {
-              class: "update-tracks-subtitle-committed-state-hidden",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; visibility: hidden;`,
-            },
-            E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          eTransitionArrow(),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M * 2}rem;`,
-          }),
-        ),
-      );
-      this.editTrackButton.val.addAction(() => this.editTrack());
-      this.deleteTrackButton.val.addAction(() => this.deleteTrack());
-    }
     this.applyNewStaging(subtitleTrack.staging);
   }
 
-  private applyNewStaging(newStaging?: any): void {
-    if (!this.subtitleTrack.staging?.toDelete && newStaging?.toDelete) {
-      this.editTrackButton.val.disable();
-      this.deleteTrackButton.val.disable();
-      this.transitionArrowLine.val.style.display = "flex";
-      this.body.append(
-        E.divRef(
-          this.pendingValuesLine,
-          {
-            class: "update-tracks-subtitle-deleting-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
+  public setHorizontal(): this {
+    this.body.style.flexFlow = "row nowrap";
+    this.body.style.alignItems = "center";
+    return this;
+  }
+
+  public setVertical(): this {
+    this.body.style.flexFlow = "column nowrap";
+    this.body.style.alignItems = "flex-end";
+    return this;
+  }
+
+  private applyNewStaging(newStaging?: SubtitleTrackStagingData): void {
+    this.subtitleTrack.staging = newStaging;
+    if (
+      !this.subtitleTrack.staging?.toAdd &&
+      !this.subtitleTrack.staging?.toDelete &&
+      this.subtitleTrack.committed
+    ) {
+      if (!this.committedLine.val) {
+        this.lineSwitcher.goTo(
+          () => {
+            this.body.append(
+              E.divRef(
+                this.committedLine,
+                {
+                  class: "update-tracks-subtitle-committed-values",
+                  style: `flex: 1 0 0; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
+                },
+                E.div(
+                  {
+                    class: "update-tracks-subtitle-committed-state",
+                    style: `flex: 0 0 auto; width: ${STATE_WIDTH}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateCommittedLabel),
+                ),
+                E.div(
+                  {
+                    class: "update-tracks-subtitle-committed-name",
+                    style: `flex: 1 0 0; min-width: 0; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(this.subtitleTrack.committed.name),
+                ),
+              ),
+              E.divRef(
+                this.buttonsContainer,
+                {
+                  class: "update-tracks-subtitle-committed-buttons",
+                  style: `display: flex; flex-flow: row nowrap; align-items: center;`,
+                },
+                assign(
+                  this.editTrackButton,
+                  new IconButton(
+                    ICON_BUTTON_M,
+                    ICON_M,
+                    createEditIcon("currentColor"),
+                  ),
+                ).body,
+                assign(
+                  this.deleteTrackButton,
+                  new IconButton(
+                    ICON_BUTTON_M,
+                    ICON_L,
+                    createTrashCanIcon("currentColor"),
+                  ),
+                ).body,
+              ),
+            );
+            this.editTrackButton.val.addAction(() => this.editTrack());
+            this.deleteTrackButton.val.addAction(() => this.deleteTrack());
           },
-          E.div(
-            {
-              class: "update-tracks-subtitle-deleting-state",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateDeletingLabel),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.div(
-            {
-              class: "update-tracks-subtitle-deleting-name",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
-            },
-            E.text(this.subtitleTrack.committed.name),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M}rem;`,
-          }),
-          assign(
-            this.dropStagingButton,
-            new IconButton(
-              ICON_BUTTON_M,
-              ICON_M,
-              createCrossIcon("currentColor"),
-            ),
-          ).body,
-        ),
-      );
-      this.dropStagingButton.val.addAction(() => this.dropStaging());
-    }
-    if (this.subtitleTrack.staging?.toDelete && !newStaging?.toDelete) {
-      this.editTrackButton.val.enable();
-      this.deleteTrackButton.val.enable();
-      this.transitionArrowLine.val.style.display = "none";
-      this.pendingValuesLine.val.remove();
+          () => {
+            this.committedLine.val.remove();
+            this.committedLine.val = undefined;
+            this.buttonsContainer.val.remove();
+          },
+        );
+      }
     }
 
-    if (!this.subtitleTrack.staging?.toAdd && newStaging?.toAdd) {
-      this.editTrackButton.val?.disable();
-      this.deleteTrackButton.val?.disable();
-      if (this.transitionArrowLine.val) {
-        this.transitionArrowLine.val.style.display = "flex";
-      }
-      this.body.append(
-        E.divRef(
-          this.pendingValuesLine,
-          {
-            class: "update-tracks-subtitle-adding-values",
-            style: `display: flex; flex-flow: row nowrap; align-items: center;`,
+    if (this.subtitleTrack.staging?.toDelete) {
+      if (!this.deletingLine.val) {
+        this.lineSwitcher.goTo(
+          () => {
+            this.body.append(
+              E.divRef(
+                this.deletingLine,
+                {
+                  class: "update-tracks-subtitle-deleting-values",
+                  style: `flex: 1 0 0; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
+                },
+                E.div(
+                  {
+                    class: "update-tracks-subtitle-deleting-state",
+                    style: `flex: 0 0 auto; width: ${STATE_WIDTH}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateDeletingLabel),
+                ),
+                E.div(
+                  {
+                    class: "update-tracks-subtitle-deleting-name",
+                    style: `flex: 1 0 0; min-width: 0; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0}; text-decoration: line-through;`,
+                  },
+                  E.text(this.subtitleTrack.committed.name),
+                ),
+              ),
+              E.divRef(
+                this.buttonsContainer,
+                {
+                  class: "update-tracks-subtitle-deleting-buttons",
+                  style: `display: flex; flex-flow: row nowrap; align-items: center;`,
+                },
+                E.div({
+                  style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem;`,
+                }),
+                assign(
+                  this.dropStagingButton,
+                  new IconButton(
+                    ICON_BUTTON_M,
+                    ICON_M,
+                    createCrossIcon("currentColor"),
+                  ),
+                ).body,
+              ),
+            );
+            this.dropStagingButton.val.addAction(() => this.dropStaging());
           },
-          E.div(
-            {
-              class: "update-tracks-subtitle-adding-state",
-              style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-            },
-            E.text(
-              this.subtitleTrack.committed
-                ? LOCALIZED_TEXT.seasonEpisodeTrackStateModifyingLabel
-                : LOCALIZED_TEXT.seasonEpisodeTrackStateNewLabel,
-            ),
-          ),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-          }),
-          E.inputRef(this.nameInput, {
-            class: "update-tracks-subtitle-adding-name",
-            style: `${COMMON_BASIC_INPUT_STYLE} width: max(40%, 14rem); text-align: center;`,
-            value: newStaging.toAdd.name,
-            maxlength: `${MAX_SUBTITLE_TRACK_NAME_LENGTH}`,
-          }),
-          E.div({
-            style: `flex: 1 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M}rem;`,
-          }),
-          assign(
-            this.dropStagingButton,
-            new IconButton(
-              ICON_BUTTON_M,
-              ICON_M,
-              createCrossIcon("currentColor"),
-            ),
-          ).body,
-        ),
-      );
-      this.nameInput.val.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-          event.preventDefault();
-        }
-      });
-      this.nameInput.val.addEventListener("change", () => this.changeName());
-      this.dropStagingButton.val.addAction(() => this.dropStaging());
-    }
-    if (this.subtitleTrack.staging?.toAdd && !newStaging?.toAdd) {
-      this.editTrackButton.val?.enable();
-      this.deleteTrackButton.val?.enable();
-      if (this.transitionArrowLine.val) {
-        this.transitionArrowLine.val.style.display = "none";
+          () => {
+            this.deletingLine.val.remove();
+            this.deletingLine.val = undefined;
+            this.buttonsContainer.val.remove();
+          },
+        );
       }
-      this.pendingValuesLine.val.remove();
     }
-    this.subtitleTrack.staging = newStaging;
+
+    if (this.subtitleTrack.staging?.toAdd) {
+      if (!this.addingLine.val) {
+        this.lineSwitcher.goTo(
+          () => {
+            this.body.append(
+              E.divRef(
+                this.addingLine,
+                {
+                  class: "update-tracks-subtitle-adding-values",
+                  style: `flex: 1 0 0; width: 100%; display: flex; flex-flow: row nowrap; align-items: center; gap: ${GAP_0_5X}rem;`,
+                },
+                E.div(
+                  {
+                    class: "update-tracks-subtitle-adding-state",
+                    style: `flex: 0 0 auto; width: ${STATE_WIDTH}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(
+                    this.subtitleTrack.committed
+                      ? LOCALIZED_TEXT.seasonEpisodeTrackStateModifyingLabel
+                      : LOCALIZED_TEXT.seasonEpisodeTrackStateNewLabel,
+                  ),
+                ),
+                E.div(
+                  {
+                    style: `flex: 1 0 0; min-width: 0;`,
+                  },
+                  E.inputRef(this.nameInput, {
+                    class: "update-tracks-subtitle-adding-name",
+                    style: `${COMMON_BASIC_INPUT_STYLE} width: 100%;`,
+                    value: this.subtitleTrack.staging.toAdd.name,
+                    maxlength: `${MAX_SUBTITLE_TRACK_NAME_LENGTH}`,
+                  }),
+                ),
+              ),
+              E.divRef(
+                this.buttonsContainer,
+                {
+                  class: "update-tracks-subtitle-adding-buttons",
+                  style: `display: flex; flex-flow: row nowrap; align-items: center;`,
+                },
+                E.div({
+                  style: `flex: 0 0 auto; width: ${ICON_BUTTON_M}rem;`,
+                }),
+                assign(
+                  this.dropStagingButton,
+                  new IconButton(
+                    ICON_BUTTON_M,
+                    ICON_M,
+                    createCrossIcon("currentColor"),
+                  ),
+                ).body,
+              ),
+            );
+            this.nameInput.val.addEventListener("keydown", (event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+              }
+            });
+            this.nameInput.val.addEventListener("change", () =>
+              this.changeName(),
+            );
+            this.dropStagingButton.val.addAction(() => this.dropStaging());
+          },
+          () => {
+            this.addingLine.val.remove();
+            this.addingLine.val = undefined;
+            this.buttonsContainer.val.remove();
+          },
+        );
+      }
+    }
   }
 
   private editTrack(): void {
@@ -989,6 +978,8 @@ export class UpdateTracksPage extends EventEmitter {
     );
   }
 
+  private static BREAK_POINT_WIDTH = 28; // rem
+
   public body: HTMLDivElement;
   public backButton = new Ref<IconButton>();
   public saveStagingButton = new Ref<
@@ -1001,6 +992,7 @@ export class UpdateTracksPage extends EventEmitter {
   public audioTrackEditors = new Array<AudioTrackEditor>();
   public subtitleTrackEditors = new Array<SubtitleTrackEditor>();
   private actionError = new Ref<HTMLDivElement>();
+  private resizeObserver: ResizeObserver;
 
   public constructor(
     private serviceClient: WebServiceClient,
@@ -1015,148 +1007,77 @@ export class UpdateTracksPage extends EventEmitter {
       `max-width: ${PAGE_MAX_WIDTH_L}rem; display: flex; flex-flow: column nowrap;`,
       assign(this.backButton, createBackButton()).body,
       eCenteredTitle(LOCALIZED_TEXT.updateTracksTitle),
-      ...(videoContainer.videos.length === 0
-        ? []
-        : [
-            E.div(
-              {
-                class: "update-tracks-videos-title",
-                style: `margin-top: ${GAP_2X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
-              },
-              E.text(LOCALIZED_TEXT.seasonEpisodeVideoTracksTitle),
-            ),
-            E.div(
-              {
-                class: "update-tracks-videos-header",
-                style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center;`,
-              },
-              E.div(
-                {
-                  class: "update-tracks-video-state",
-                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
-              ),
-              E.div({
-                style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-              }),
-              E.div(
-                {
-                  class: "update-tracks-video-duration-sec",
-                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeTrackVideoDurationLabel),
-              ),
-              E.div({
-                style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-              }),
-              E.div(
-                {
-                  class: "update-tracks-video-resolution",
-                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeTrackVideoResolutionLabel),
-              ),
-              E.div({
-                style: `flex: 0 0 auto; width: ${GAP_0_5X + ICON_BUTTON_M}rem;`,
-              }),
-            ),
-          ]),
-      ...videoContainer.videos.map((videoTrack) =>
-        this.createVideoTrackEditor(videoTrack),
-      ),
-      ...(videoContainer.audios.length === 0
-        ? []
-        : [
-            E.div(
-              {
-                class: "update-tracks-audio-tracks-title",
-                style: `margin-top: ${GAP_2X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
-              },
-              E.text(LOCALIZED_TEXT.seasonEpisodeAudioTracksTitle),
-            ),
-            E.div(
-              {
-                class: "update-tracks-audio-tracks-header",
-                style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center;`,
-              },
-              E.div(
-                {
-                  class: "update-tracks-audio-state",
-                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
-              ),
-              E.div({
-                style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-              }),
-              E.div(
-                {
-                  class: "update-tracks-audio-name-label",
-                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
-              ),
-              E.div({
-                style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-              }),
-              E.div(
-                {
-                  class: "update-tracks-audio-default-label",
-                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeTrackIsDefaultLabel),
-              ),
-              E.div({
-                style: `flex: 0 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M * 2}rem;`,
-              }),
-            ),
-          ]),
-      ...videoContainer.audios.map((audioTrack) =>
-        this.createAudioTrackEditor(audioTrack),
-      ),
-      ...(videoContainer.subtitles.length === 0
-        ? []
-        : [
-            E.div(
-              {
-                class: "update-tracks-subtitle-tracks-title",
-                style: `margin-top: ${GAP_2X}rem; font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0}; text-align: center;`,
-              },
-              E.text(LOCALIZED_TEXT.seasonEpisodeSubtitleTracksTitle),
-            ),
-            E.div(
-              {
-                class: "update-tracks-subtitle-tracks-header",
-                style: `width: 100%; box-sizing: border-box; padding: ${GAP_0_25X}rem 0; border-bottom: ${BORDER_WIDTH_1}rem solid ${SCHEME.neutral1}; display: flex; flex-flow: row nowrap; align-items: center;`,
-              },
-              E.div(
-                {
-                  class: "update-tracks-subtitle-state",
-                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeTrackStateLabel),
-              ),
-              E.div({
-                style: `flex: 1 0 auto; width: ${GAP_0_5X}rem;`,
-              }),
-              E.div(
-                {
-                  class: "update-tracks-subtitle-name-label",
-                  style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
-                },
-                E.text(LOCALIZED_TEXT.seasonEpisodeTrackNameLabel),
-              ),
-              E.div({
-                style: `flex: 1 0 auto; width: ${GAP_0_5X + GAP_0_25X + ICON_BUTTON_M * 2}rem;`,
-              }),
-            ),
-          ]),
-      ...videoContainer.subtitles.map((subtitleTrack) =>
-        this.createSubtitleTrackEditor(subtitleTrack),
+      E.div({
+        style: `flex: 0 0 auto; height: 2rem;`,
+      }),
+      E.div(
+        {
+          class: "update-tracks-all-tracks",
+          style: `display: flex; flex-flow: column nowrap; gap: 3rem;`,
+        },
+        E.div(
+          {
+            class: "update-tracks-video-tracks",
+            style: `display: flex; flex-flow: column nowrap;`,
+          },
+          ...(videoContainer.videos.length === 0
+            ? []
+            : [
+                E.div(
+                  {
+                    class: "update-tracks-videos-title",
+                    style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(LOCALIZED_TEXT.seasonEpisodeVideoTracksTitle),
+                ),
+                ...videoContainer.videos.map((videoTrack) =>
+                  this.createVideoTrackEditor(videoTrack),
+                ),
+              ]),
+        ),
+        E.div(
+          {
+            class: "update-tracks-audio-tracks",
+            style: `display: flex; flex-flow: column nowrap;`,
+          },
+          ...(videoContainer.audios.length === 0
+            ? []
+            : [
+                E.div(
+                  {
+                    class: "update-tracks-audio-tracks-title",
+                    style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(LOCALIZED_TEXT.seasonEpisodeAudioTracksTitle),
+                ),
+                ...videoContainer.audios.map((audioTrack) =>
+                  this.createAudioTrackEditor(audioTrack),
+                ),
+              ]),
+        ),
+        E.div(
+          {
+            class: "update-tracks-subtitle-tracks",
+            style: `display: flex; flex-flow: column nowrap;`,
+          },
+          ...(videoContainer.subtitles.length === 0
+            ? []
+            : [
+                E.div(
+                  {
+                    class: "update-tracks-subtitle-tracks-title",
+                    style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${SCHEME.neutral0};`,
+                  },
+                  E.text(LOCALIZED_TEXT.seasonEpisodeSubtitleTracksTitle),
+                ),
+                ...videoContainer.subtitles.map((subtitleTrack) =>
+                  this.createSubtitleTrackEditor(subtitleTrack),
+                ),
+              ]),
+        ),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
+        style: `flex: 0 0 auto; height: 2rem;`,
       }),
       E.div(
         {
@@ -1186,8 +1107,12 @@ export class UpdateTracksPage extends EventEmitter {
       ),
     );
     this.backButton.val.addAction(() => this.emit("back"));
-
     this.refreshActions();
+    this.resizeObserver = new ResizeObserver((entries) => {
+      this.resizeTracks(entries[0]);
+    });
+    this.resizeObserver.observe(this.body);
+
     this.saveStagingButton.val.addAction(
       () => this.saveStagingChanges(),
       (error, response) => this.postSaveStagingChanges(error, response),
@@ -1246,6 +1171,24 @@ export class UpdateTracksPage extends EventEmitter {
       this.commitStagingButton.val.enable();
     } else {
       this.commitStagingButton.val.disable();
+    }
+  }
+
+  private resizeTracks(entry: ResizeObserverEntry): void {
+    let newWidth: number;
+    if (entry.borderBoxSize) {
+      newWidth = entry.borderBoxSize[0].inlineSize;
+    } else {
+      newWidth = entry.contentRect.width;
+    }
+    if (newWidth < getRootFontSize() * UpdateTracksPage.BREAK_POINT_WIDTH) {
+      this.videoTrackEditors.forEach((editor) => editor.setVertical());
+      this.audioTrackEditors.forEach((editor) => editor.setVertical());
+      this.subtitleTrackEditors.forEach((editor) => editor.setVertical());
+    } else {
+      this.videoTrackEditors.forEach((editor) => editor.setHorizontal());
+      this.audioTrackEditors.forEach((editor) => editor.setHorizontal());
+      this.subtitleTrackEditors.forEach((editor) => editor.setHorizontal());
     }
   }
 
@@ -1344,6 +1287,7 @@ export class UpdateTracksPage extends EventEmitter {
 
   public remove(): void {
     this.body.remove();
+    this.resizeObserver.disconnect();
     this.removeAllListeners();
   }
 }

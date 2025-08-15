@@ -8,9 +8,11 @@ import { ePageWithTopDownCard } from "../../../common/page_elements";
 import {
   FONT_M,
   FONT_WEIGHT_600,
+  GAP_0_25X,
+  GAP_0_5X,
   GAP_1X,
   GAP_2X,
-  GAP_0_5X,
+  LINE_HEIGHT_M,
   PAGE_MAX_WIDTH_L,
 } from "../../../common/sizes";
 import { SERVICE_CLIENT } from "../../../common/web_service_client";
@@ -64,7 +66,7 @@ export class StatementsPage extends EventEmitter {
       E.div(
         {
           class: "statements-page-title",
-          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; font-weight: ${FONT_WEIGHT_600};`,
+          style: `font-size: ${FONT_M}rem; color: ${SCHEME.neutral0}; line-height: ${LINE_HEIGHT_M}; font-weight: ${FONT_WEIGHT_600};`,
         },
         E.text(
           canEarn
@@ -73,7 +75,7 @@ export class StatementsPage extends EventEmitter {
         ),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_0_5X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_0_25X}rem;`,
       }),
       assign(
         this.monthRangeInput,

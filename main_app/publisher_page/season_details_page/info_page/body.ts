@@ -352,15 +352,16 @@ export class InfoPage extends EventEmitter {
             E.div(
               {
                 class: "season-details-state",
-                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; color: ${SCHEME.neutral0};`,
+                style: `font-size: ${FONT_S}rem; line-height: ${LINE_HEIGHT_S}rem; color: ${SCHEME.neutral1};`,
               },
-              E.text(LOCALIZED_TEXT.seasonStateLabel),
-              E.div(
-                {
-                  style: `display: inline; font-weight: ${FONT_WEIGHT_600}; color: ${seasonDetails.state === SeasonState.DRAFT ? SCHEME.fair0 : seasonDetails.state === SeasonState.PUBLISHED ? SCHEME.great0 : SCHEME.bad0}`,
-                },
-                E.text(this.getStateText(seasonDetails.state)),
-              ),
+              E.text(LOCALIZED_TEXT.seasonStateTitleLabel),
+            ),
+            E.div(
+              {
+                class: "season-details-state-value",
+                style: `font-size: ${FONT_M}rem; line-height: ${LINE_HEIGHT_M}rem; font-weight: ${FONT_WEIGHT_600}; color: ${seasonDetails.state === SeasonState.DRAFT ? SCHEME.fair0 : seasonDetails.state === SeasonState.PUBLISHED ? SCHEME.great0 : SCHEME.bad0}`,
+              },
+              E.text(this.getStateText(seasonDetails.state)),
             ),
             E.div(
               {

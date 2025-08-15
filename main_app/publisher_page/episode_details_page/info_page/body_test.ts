@@ -20,12 +20,13 @@ import { WebServiceClientMock } from "@selfage/web_service_client/client_mock";
 
 normalizeBody();
 
+// Test case: 1000 published episodes and not allowed more
 TEST_RUNNER.run({
   name: "EpisodeDetailsInfoPageTest",
   cases: [
     new (class implements TestCase {
       public name =
-        "TabletView_InitialDraft_DesktopView_PhoneView_Back_EditName_Upload_EditDraftState";
+        "TabletView_InitialDraft_DesktopView_PhoneView_Back_EditName_Upload_Publish_Delete";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -119,11 +120,7 @@ TEST_RUNNER.run({
         this.cut.editNameButton.val.click();
 
         // Verify
-        assertThat(
-          editEpisode.episodeName,
-          eq("The End of the Beginning and the Beginning of the End"),
-          "editEpisode.episodeName",
-        );
+        assertThat(editEpisode, eq(response.episode), "editEpisode");
 
         // Prepare
         let upload: EpisodeDetails;
@@ -133,25 +130,27 @@ TEST_RUNNER.run({
         this.cut.uploadButton.val.click();
 
         // Verify
-        assertThat(
-          upload.episodeName,
-          eq("The End of the Beginning and the Beginning of the End"),
-          "upload.episodeName",
-        );
+        assertThat(upload, eq(response.episode), "upload");
 
         // Prepare
-        let editDraftState: EpisodeDetails;
-        this.cut.on("editDraftState", (episode) => (editDraftState = episode));
+        let publish: EpisodeDetails;
+        this.cut.on("publish", (episode) => (publish = episode));
 
         // Execute
-        this.cut.editDraftStateButton.val.click();
+        this.cut.publishEpisodeButton.val.click();
 
         // Verify
-        assertThat(
-          editDraftState.episodeName,
-          eq("The End of the Beginning and the Beginning of the End"),
-          "editDraftState.episodeName",
-        );
+        assertThat(publish, eq(response.episode), "publish");
+
+        // Prepare
+        let deleteEpisode: EpisodeDetails;
+        this.cut.on("delete", (episode) => (deleteEpisode = episode));
+
+        // Execute
+        this.cut.deleteButton.val.click();
+
+        // Verify
+        assertThat(deleteEpisode, eq(response.episode), "deleteEpisode");
       }
       public tearDown() {
         this.cut.remove();
@@ -734,7 +733,8 @@ TEST_RUNNER.run({
       }
     })(),
     new (class implements TestCase {
-      public name = "TabletView_CommittedFirstVersion_DesktopView_PhoneView";
+      public name =
+        "TabletView_CommittedFirstVersion_DesktopView_PhoneView_WatchVideo";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -807,14 +807,6 @@ TEST_RUNNER.run({
           path.join(__dirname, "/info_page_tablet_committed_diff.png"),
           {
             fullPage: true,
-            excludedAreas: [
-              {
-                x: 310,
-                y: 330,
-                width: 100,
-                height: 100,
-              },
-            ],
           },
         );
 
@@ -828,14 +820,6 @@ TEST_RUNNER.run({
           path.join(__dirname, "/info_page_desktop_committed_diff.png"),
           {
             fullPage: true,
-            excludedAreas: [
-              {
-                x: 560,
-                y: 360,
-                width: 100,
-                height: 100,
-              },
-            ],
           },
         );
 
@@ -851,6 +835,101 @@ TEST_RUNNER.run({
             fullPage: true,
           },
         );
+
+        // Prepare
+        let watch: EpisodeDetails;
+        this.cut.on("watch", (episode) => (watch = episode));
+
+        // Execute
+        this.cut.watchButton.val.click();
+
+        // Verify
+        assertThat(watch, eq(response.episode), "watch");
+      }
+      public tearDown() {
+        this.cut.remove();
+      }
+    })(),
+    new (class implements TestCase {
+      public name = "TabletView_CommittedButSeasonWithTooManyEpisodes";
+      private cut: InfoPage;
+      public async execute() {
+        // Prepare
+        await setTabletView();
+        let serviceClientMock = new WebServiceClientMock();
+        let response: GetEpisodeResponse = {
+          episode: {
+            seasonName: "Re-Zero: Starting Life in Another World",
+            seasonState: SeasonState.DRAFT,
+            episodeName:
+              "The End of the Beginning and the Beginning of the End",
+            state: EpisodeState.DRAFT,
+            totalPublishedEpisodes: 1000,
+            videoContainerCached: {
+              version: 1,
+            },
+            videoUrl: video,
+            videoContainer: {
+              masterPlaylist: {
+                synced: {
+                  version: 1,
+                },
+              },
+              videos: [
+                {
+                  durationSec: 3600,
+                  resolution: "1920x1080",
+                  totalBytes: 1234500,
+                  committed: true,
+                },
+              ],
+              audios: [
+                {
+                  totalBytes: 2234500,
+                  committed: {
+                    name: "English",
+                    isDefault: true,
+                  },
+                },
+              ],
+              subtitles: [
+                {
+                  totalBytes: 3234500,
+                  committed: {
+                    name: "English",
+                  },
+                },
+              ],
+            },
+          },
+        };
+        serviceClientMock.response = response;
+        this.cut = new InfoPage(
+          {} as any,
+          serviceClientMock,
+          () => new Date("2023-10-01T00:00:00Z"),
+          "season1",
+          "episode1",
+        );
+
+        // Execute
+        document.body.append(this.cut.body);
+        await new Promise<void>((resolve) =>
+          this.cut.once("loaded", () => resolve()),
+        );
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/info_page_tablet_too_many_episodes.png"),
+          path.join(
+            __dirname,
+            "/golden/info_page_tablet_too_many_episodes.png",
+          ),
+          path.join(__dirname, "/info_page_tablet_too_many_episodes_diff.png"),
+          {
+            fullPage: true,
+          },
+        );
       }
       public tearDown() {
         this.cut.remove();
@@ -858,7 +937,7 @@ TEST_RUNNER.run({
     })(),
     new (class implements TestCase {
       public name =
-        "TabletView_SeasonDraftEpisodePublishedButCannotPlay_EditIndex_EditPublishedState";
+        "TabletView_SeasonDraftEpisodePublishedButCannotPlay_EditIndex_UpdatePremiereTime_Unpublish";
       private cut: InfoPage;
       public async execute() {
         // Prepare
@@ -935,14 +1014,6 @@ TEST_RUNNER.run({
           path.join(__dirname, "/info_page_tablet_ready_premieres_diff.png"),
           {
             fullPage: true,
-            excludedAreas: [
-              {
-                x: 310,
-                y: 425,
-                width: 100,
-                height: 100,
-              },
-            ],
           },
         );
 
@@ -954,24 +1025,34 @@ TEST_RUNNER.run({
         this.cut.editIndexButton.val.click();
 
         // Verify
-        assertThat(editIndex.episodeIndex, eq(1), "editIndex.episodeIndex");
+        assertThat(editIndex, eq(response.episode), "editIndex");
 
         // Prepare
-        let editPublishedState: EpisodeDetails;
+        let updatePremiereTime: EpisodeDetails;
         this.cut.on(
-          "editPublishedState",
-          (episode) => (editPublishedState = episode),
+          "updatePremiereTime",
+          (episode) => (updatePremiereTime = episode),
         );
 
         // Execute
-        this.cut.editPublishedStateButton.val.click();
+        this.cut.updatePremiereTimeButton.val.click();
 
         // Verify
         assertThat(
-          editPublishedState.episodeName,
-          eq("The End of the Beginning and the Beginning of the End"),
-          "editPublishedState.episodeName",
+          updatePremiereTime,
+          eq(response.episode),
+          "updatePremiereTime",
         );
+
+        // Prepare
+        let unpublish: EpisodeDetails;
+        this.cut.on("unpublish", (episode) => (unpublish = episode));
+
+        // Execute
+        this.cut.unpublishButton.val.click();
+
+        // Verify
+        assertThat(unpublish, eq(response.episode), "unpublish");
       }
       public tearDown() {
         this.cut.remove();
@@ -1104,14 +1185,6 @@ TEST_RUNNER.run({
           ),
           {
             fullPage: true,
-            excludedAreas: [
-              {
-                x: 310,
-                y: 425,
-                width: 100,
-                height: 100,
-              },
-            ],
           },
         );
       }

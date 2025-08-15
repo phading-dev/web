@@ -1,16 +1,21 @@
 import "../../../dev/env";
+import video = require("./common/test_data/two_audios_two_subs.m3u8");
 import path = require("path");
 import { normalizeBody } from "../../../common/normalize_body";
 import { setTabletView } from "../../../common/view_port";
 import { EpisodeDetailsPage } from "./body";
-import { DraftPage } from "./draft_page/body";
+import { DeletePage } from "./delete_page/body";
 import { InfoPageMock } from "./info_page/body_mock";
-import { PublishedPage } from "./published_page/body";
+import { PlayerPage } from "./player_page/body";
+import { PublishPage } from "./publish_page/body";
+import { UnpublishPage } from "./unpublish_page/body";
 import { UpdateIndexPage } from "./update_index_page/body";
 import { UpdateInfoPage } from "./update_info_page/body";
+import { UpdatePremiereTimePage } from "./update_premiere_time_page/body";
 import { UpdateTracksPage } from "./update_tracks_page/body";
 import { UploadPageMock } from "./upload_page/body_mock";
 import { EpisodeState } from "@phading/product_service_interface/show/episode_state";
+import { SeasonState } from "@phading/product_service_interface/show/season_state";
 import { EpisodeDetails } from "@phading/product_service_interface/show/web/publisher/details";
 import { TEST_RUNNER, TestCase } from "@selfage/puppeteer_test_runner";
 import { asyncAssertScreenshot } from "@selfage/screenshot_test_matcher";
@@ -20,28 +25,25 @@ normalizeBody();
 
 function createEpisodeDetailsPage(nowDate: Date): EpisodeDetailsPage {
   return new EpisodeDetailsPage(
-    (seasonId, episodeId, episode) =>
-      new DraftPage(
-        undefined,
-        () => nowDate.getTime(),
-        seasonId,
-        episodeId,
-        episode,
-      ),
+    (seasonId, episodeId) => new DeletePage(undefined, seasonId, episodeId),
     (seasonId, episodeId) =>
       new InfoPageMock(() => nowDate, seasonId, episodeId),
-    (seasonId, episodeId, episode) =>
-      new PublishedPage(
-        undefined,
-        () => nowDate.getTime(),
-        seasonId,
-        episodeId,
-        episode,
-      ),
+    (videoUrl) => new PlayerPage(videoUrl),
+    (seasonId, episodeId) =>
+      new PublishPage(undefined, () => nowDate.getTime(), seasonId, episodeId),
+    (seasonId, episodeId) => new UnpublishPage(undefined, seasonId, episodeId),
     (seasonId, episodeId, episode) =>
       new UpdateIndexPage(undefined, seasonId, episodeId, episode),
     (seasonId, episodeId, episode) =>
       new UpdateInfoPage(undefined, seasonId, episodeId, episode),
+    (seasonId, episodeId, episode) =>
+      new UpdatePremiereTimePage(
+        undefined,
+        () => nowDate.getTime(),
+        seasonId,
+        episodeId,
+        episode,
+      ),
     (seasonId, episodeId, videoContainer) =>
       new UpdateTracksPage(undefined, seasonId, episodeId, videoContainer),
     (appendBody, seasonId, episodeId, uploadingState) =>
@@ -69,6 +71,7 @@ TEST_RUNNER.run({
         await setTabletView();
         let episode: EpisodeDetails = {
           seasonName: "Re-Zero: Starting Life in Another World",
+          seasonState: SeasonState.DRAFT,
           episodeName: "The End of the Beginning and the Beginning of the End",
           state: EpisodeState.DRAFT,
           videoContainer: {
@@ -148,51 +151,6 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.infoPage.emit("editDraftState", episode);
-
-        // Verify
-        assertThat(
-          this.cut.draftPage.seasonId,
-          eq("season1"),
-          "draftPage.seasonId",
-        );
-        assertThat(
-          this.cut.draftPage.episodeId,
-          eq("episode1"),
-          "draftPage.episodeId",
-        );
-        assertThat(
-          this.cut.draftPage.episode.episodeName,
-          eq(episode.episodeName),
-          "draftPage.episode.episodeName",
-        );
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/episode_details_page_draft.png"),
-          path.join(__dirname, "/golden/episode_details_page_draft.png"),
-          path.join(__dirname, "/episode_details_page_draft_diff.png"),
-        );
-
-        // Prepare
-        let viewSeasonId: string;
-        this.cut.on("viewSeason", (seasonId) => (viewSeasonId = seasonId));
-
-        // Execute
-        this.cut.draftPage.emit("delete");
-
-        // Verify
-        assertThat(viewSeasonId, eq("season1"), "viewSeasonId after delete");
-
-        // Execute
-        this.cut.draftPage.emit("back");
-
-        // Verify
-        await asyncAssertScreenshot(
-          path.join(__dirname, "/episode_details_page_draft_back.png"),
-          path.join(__dirname, "/golden/episode_details_page.png"),
-          path.join(__dirname, "/episode_details_page_draft_back_diff.png"),
-        );
-
-        // Execute
         this.cut.infoPage.emit("upload", episode);
 
         // Verify
@@ -269,6 +227,66 @@ TEST_RUNNER.run({
           ),
         );
 
+        // Execute
+        this.cut.infoPage.emit("publish", episode);
+
+        // Verify
+        assertThat(
+          this.cut.publishPage.seasonId,
+          eq("season1"),
+          "publishPage.seasonId",
+        );
+        assertThat(
+          this.cut.publishPage.episodeId,
+          eq("episode1"),
+          "publishPage.episodeId",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/episode_details_page_publish.png"),
+          path.join(__dirname, "/golden/episode_details_page_publish.png"),
+          path.join(__dirname, "/episode_details_page_publish_diff.png"),
+        );
+
+        // Execute
+        this.cut.publishPage.emit("back");
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/episode_details_page_publish_back.png"),
+          path.join(__dirname, "/golden/episode_details_page.png"),
+          path.join(__dirname, "/episode_details_page_publish_back_diff.png"),
+        );
+
+        // Execute
+        this.cut.infoPage.emit("delete", episode);
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/episode_details_page_delete.png"),
+          path.join(__dirname, "/golden/episode_details_page_delete.png"),
+          path.join(__dirname, "/episode_details_page_delete_diff.png"),
+        );
+
+        // Prepare
+        let viewSeasonId: string;
+        this.cut.on("viewSeason", (seasonId) => (viewSeasonId = seasonId));
+
+        // Execute
+        this.cut.deletePage.emit("delete");
+
+        // Verify
+        assertThat(viewSeasonId, eq("season1"), "viewSeasonId after delete");
+
+        // Execute
+        this.cut.deletePage.emit("back");
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/episode_details_page_delete_back.png"),
+          path.join(__dirname, "/golden/episode_details_page.png"),
+          path.join(__dirname, "/episode_details_page_delete_back_diff.png"),
+        );
+
         // Prepare
         viewSeasonId = undefined;
 
@@ -290,6 +308,7 @@ TEST_RUNNER.run({
         await setTabletView();
         let episode: EpisodeDetails = {
           seasonName: "Re-Zero: Starting Life in Another World",
+          seasonState: SeasonState.DRAFT,
           episodeName: "The End of the Beginning and the Beginning of the End",
           state: EpisodeState.PUBLISHED,
           premiereTimeMs: new Date("2023-10-02T00:00:00Z").getTime(),
@@ -298,6 +317,7 @@ TEST_RUNNER.run({
           videoContainerCached: {
             version: 1,
           },
+          videoUrl: video,
           videoContainer: {
             masterPlaylist: {
               synced: {
@@ -351,44 +371,119 @@ TEST_RUNNER.run({
         );
 
         // Execute
-        this.cut.infoPage.emit("editPublishedState", episode);
+        this.cut.infoPage.emit("watch", episode);
 
         // Verify
-        assertThat(
-          this.cut.publishedPage.seasonId,
-          eq("season1"),
-          "publishedPage.seasonId",
-        );
-        assertThat(
-          this.cut.publishedPage.episodeId,
-          eq("episode1"),
-          "publishedPage.episodeId",
-        );
-        assertThat(
-          this.cut.publishedPage.episode.episodeName,
-          eq(episode.episodeName),
-          "publishedPage.episode.episodeName",
-        );
         await asyncAssertScreenshot(
-          path.join(__dirname, "/episode_details_page_published_page.png"),
-          path.join(
-            __dirname,
-            "/golden/episode_details_page_published_page.png",
-          ),
-          path.join(__dirname, "/episode_details_page_published_page_diff.png"),
+          path.join(__dirname, "/episode_details_page_player.png"),
+          path.join(__dirname, "/golden/episode_details_page_player.png"),
+          path.join(__dirname, "/episode_details_page_player_diff.png"),
+          {
+            excludedAreas: [
+              {
+                x: 300,
+                y: 180,
+                width: 100,
+                height: 100,
+              },
+              {
+                x: 0,
+                y: 385,
+                width: 700,
+                height: 50
+              }
+            ]
+          }
         );
 
         // Execute
-        this.cut.publishedPage.emit("back");
+        this.cut.playerPage.emit("back");
 
         // Verify
         await asyncAssertScreenshot(
-          path.join(__dirname, "/episode_details_page_published_page_back.png"),
+          path.join(__dirname, "/episode_details_page_player_back.png"),
+          path.join(__dirname, "/golden/episode_details_page.png"),
+          path.join(__dirname, "/episode_details_page_player_back_diff.png"),
+        );
+
+        // Execute
+        this.cut.infoPage.emit("updatePremiereTime", episode);
+
+        // Verify
+        assertThat(
+          this.cut.updatePremiereTimePage.seasonId,
+          eq("season1"),
+          "updatePremiereTimePage.seasonId",
+        );
+        assertThat(
+          this.cut.updatePremiereTimePage.episodeId,
+          eq("episode1"),
+          "updatePremiereTimePage.episodeId",
+        );
+        assertThat(
+          this.cut.updatePremiereTimePage.episode.episodeName,
+          eq(episode.episodeName),
+          "updatePremiereTimePage.episode.episodeName",
+        );
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/episode_details_page_update_premiere_time.png",
+          ),
+          path.join(
+            __dirname,
+            "/golden/episode_details_page_update_premiere_time.png",
+          ),
+          path.join(
+            __dirname,
+            "/episode_details_page_update_premiere_time_diff.png",
+          ),
+        );
+
+        // Execute
+        this.cut.updatePremiereTimePage.emit("back");
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(
+            __dirname,
+            "/episode_details_page_update_premiere_time_back.png",
+          ),
           path.join(__dirname, "/golden/episode_details_page.png"),
           path.join(
             __dirname,
-            "/episode_details_page_published_page_back_diff.png",
+            "/episode_details_page_update_premiere_time_back_diff.png",
           ),
+        );
+
+        // Execute
+        this.cut.infoPage.emit("unpublish", episode);
+
+        // Verify
+        assertThat(
+          this.cut.unpublishPage.seasonId,
+          eq("season1"),
+          "unpublishPage.seasonId",
+        );
+        assertThat(
+          this.cut.unpublishPage.episodeId,
+          eq("episode1"),
+          "unpublishPage.episodeId",
+        );
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/episode_details_page_unpublish.png"),
+          path.join(__dirname, "/golden/episode_details_page_unpublish.png"),
+          path.join(__dirname, "/episode_details_page_unpublish_diff.png"),
+        );
+
+        // Execute
+        this.cut.unpublishPage.emit("back");
+
+        // Verify
+        await asyncAssertScreenshot(
+          path.join(__dirname, "/episode_details_page_unpublish_back.png"),
+          path.join(__dirname, "/golden/episode_details_page.png"),
+          path.join(__dirname, "/episode_details_page_unpublish_back_diff.png"),
         );
       }
       public tearDown() {

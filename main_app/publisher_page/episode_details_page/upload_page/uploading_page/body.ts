@@ -128,18 +128,14 @@ export class UploadingPage extends EventEmitter {
         E.text(` / ${formatBytesShort(this.file.size)}`),
       ),
       E.div({
-        style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
+        style: `flex: 0 0 auto; height: ${GAP_2X}rem;`,
       }),
-      E.div(
-        {
-          class: "upload-page-uploading-actions",
-          style: `display: flex; flex-flow: row nowrap; justify-content: flex-end; align-items: center;`,
-        },
-        assign(
-          this.cancelButton,
-          new OutlineButton().append(E.text(LOCALIZED_TEXT.cancelButtonLabel)),
-        ).body,
-      ),
+      assign(
+        this.cancelButton,
+        new OutlineButton(`width: 100%;`).append(
+          E.text(LOCALIZED_TEXT.cancelUploadButtonLabel),
+        ),
+      ).body,
       E.div({
         style: `flex: 0 0 auto; height: ${GAP_1X}rem;`,
       }),
@@ -295,7 +291,7 @@ export class UploadingPage extends EventEmitter {
       if (done) {
         break;
       }
-      md5.append(value);
+      md5.append(value.buffer);
     }
     return md5.end();
   }
