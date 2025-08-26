@@ -74,7 +74,7 @@ export class ListTopRatedPage extends EventEmitter {
 
     this.ratingCursor = response.ratingCursor;
     this.createdTimeCursor = response.createdTimeCursor;
-    return Boolean(response.ratingCursor);
+    return Boolean(response.createdTimeCursor);
   }
 
   public remove(): void {
